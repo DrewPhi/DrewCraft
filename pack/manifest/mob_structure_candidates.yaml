@@ -1,0 +1,205 @@
+# DrewCraft compatibility-spike candidates discovered 2026-09-12.
+#
+# This is NOT a production lockfile. Entries here are candidates for controlled
+# Stage 2 / later subsystem spikes. Promotion requires exact artifact hash,
+# dependency resolution, licensing audit, compatibility tests and an explicit
+# decision recorded in the authoritative pack manifest.
+
+schema_version: 1
+last_researched: "2026-09-12"
+target:
+  minecraft: "1.21.1"
+  loader: "neoforge"
+
+candidate_sets:
+  hostile_tactical_ai:
+    mutually_exclusive_spike_branches:
+      - id: enhanced_hordes_stack
+        verdict: high_priority_spike
+        purpose: "Loaded hostile group cooperation only; DrewCraft remains strategic authority."
+        components:
+          - id: enhanced_hordes
+            provider: curseforge
+            project_id: 899308
+            candidate_version: "2.0"
+            filename: "eh2.0-neoforge1.21.1.jar"
+            file_id: null
+            release_status: beta
+            license: MIT
+            notes:
+              - "Supports tagged horde mobs, stacking/climbing, team behavior and configurable block tags."
+              - "Generic block breaking must not override DrewCraft siege-planner rules for strategic encounters."
+          - id: enhanced_hordes_tweaks
+            provider: curseforge
+            project_id: 1523294
+            candidate_version: "1.2.2"
+            filename: "enhanced_hordes_tweaks-neoforge-1.2.2-1.21.1.jar"
+            file_id: 8742662
+            release_status: release
+            license: MIT
+            notes:
+              - "Provides Horde Wandering, Collective Understanding, Horde Determination and Horde Mentality."
+              - "All spawning/difficulty behavior must be audited and disabled where it conflicts with DrewCraft strategic state."
+      - id: zombie_hordes_stack
+        verdict: high_priority_alternative_spike
+        purpose: "Alternative loaded horde behavior; do not install alongside overlapping horde backbone without proof."
+        components:
+          - id: zombie_hordes
+            provider: curseforge
+            project_id: 1536965
+            candidate_version: "1.1.0"
+            filename: "horde_hoard-neoforge-1.1.0.jar"
+            file_id: null
+            release_status: release
+            license: MIT
+            notes:
+              - "Current 1.21.1 NeoForge release exists; exact 1.21.1 file ID still needs resolver/provider verification before lock."
+              - "Useful local stacking/cooperative behavior."
+              - "Disable/avoid reinforcement/spawn features that create strategic strength outside DrewCraft accounting."
+    references_only:
+      - id: improved_mobs
+        verdict: reference_only
+        reason: "Powerful global pathfinding/block-breaking model is broader than needed and conflicts with path-first constrained siege ownership."
+      - id: invasion_mod
+        verdict: siege_research_reference
+        reason: "Engineer/building/obstruction behavior is useful R&D, but Nexus/wave loop duplicates DrewCraft strategic spawning."
+
+  passive_herd_ai:
+    spike_branches:
+      - id: ethological
+        verdict: high_functionality_experimental_spike
+        provider: curseforge
+        project_id: 1641376
+        candidate_version: "0.1.2"
+        filename: "ethological-0.1.2.jar"
+        file_id: 8758223
+        release_status: release
+        license: "All Rights Reserved"
+        notes:
+          - "1.21.1 NeoForge."
+          - "Dynamic herds, grazing, water seeking, group sleep, threat/weather response, rejoining and pen recognition."
+          - "Very new/small adoption; compatibility and performance must be proven before any baseline decision."
+          - "DrewCraft still owns unloaded HerdRecord state/materialization accounting."
+      - id: herd_instinct
+        verdict: low_risk_fallback_spike
+        provider: curseforge
+        project_id: 1527081
+        candidate_version: "v2"
+        filename: "herdinstinct-neoforge-v2-1.21.1.jar"
+        file_id: 8447007
+        release_status: release
+        license: MIT
+        notes:
+          - "Provides shared herd panic/flee response; roaming/herd-leader exploration is not currently the full feature set."
+          - "Good fallback if DrewCraft supplies local follow/group movement itself."
+    reject_for_v1:
+      - id: animal_husbandry
+        reason: "Adds genetics/sickness/hunger/dehydration/grooming and deep ranching systems outside current V1 pillars."
+
+  hostile_source_structures:
+    recommended_first_spike:
+      - id: minecraft_pillager_outpost
+        provider: vanilla
+        verdict: control_source
+        source_mapping: CAMP
+      - id: towns_and_towers
+        provider: curseforge
+        project_id: 626761
+        candidate_version: "1.13.11"
+        filename: "t_and_t-fabric-neoforge-1.13.11.jar"
+        file_id: 8657120
+        release_status: release
+        license: "CC-BY-NC-SA-4.0 (verify exact packaged project terms during lock)"
+        verdict: high_priority_spike
+        strategic_role: "Grounded pillager outpost variants for CAMP/OUTPOST sources; villages remain friendly/neutral."
+        required_dependencies:
+          - cristel_lib
+        notes:
+          - "Do not treat every village as a hostile source."
+          - "Evaluate as an alternative to CTOV unless non-overlap is demonstrated."
+      - id: when_dungeons_arise
+        provider: curseforge
+        project_id: 442508
+        candidate_version: "2.1.68"
+        filename: "DungeonsArise-1.21.1-2.1.68-release.jar"
+        file_id: null
+        release_status: release
+        license: "All Rights Reserved"
+        verdict: top_major_source_spike
+        strategic_role: "Selected large hostile structures for CAMP/FORT/CITY-class sources."
+        candidate_structure_concepts:
+          - illager_campsite
+          - illager_fort
+          - bandit_towers
+          - plague_asylum
+          - shiraz_palace
+        notes:
+          - "Exact 1.21.1 file ID/hash must be provider-verified before lock."
+          - "Enable only a small whitelist and increase spacing aggressively."
+          - "Terrain Diffusion World Scale 2 placement and density are hard gates."
+    alternatives_not_additive_by_default:
+      - id: ctov
+        provider: curseforge
+        project_id: 623908
+        candidate_version: "3.6.3"
+        filename: "[Neoforge]ctov-3.6.3.jar"
+        file_id: 7788733
+        release_status: release
+        verdict: towns_and_towers_alternative
+        required_dependencies:
+          - lithostitched
+        reason: "Also expands villages/pillager outposts; choose based on style/compatibility rather than stacking redundant settlement overhauls."
+      - id: repurposed_structures
+        candidate_version: "7.5.22"
+        release_status: release
+        verdict: medium_priority_gap_filler
+        reason: "Broad vanilla-style variants including fortresses/villages; evaluate only if selected source hierarchy still lacks archetypes."
+      - id: structory
+        release_status: release
+        verdict: atmospheric_optional
+        reason: "Good ruins/towers/settlements and exploration texture; not needed as the primary hostile kingdom source pack."
+      - id: dungeons_and_taverns
+        verdict: lower_priority_for_1_21_1
+        reason: "Useful hostile vanilla-style structures, but 1.21.1 NeoForge files are older/beta compared with preferred first candidates."
+      - id: moogs_voyager_structures
+        verdict: reject_initial_breadth
+        reason: "130+ structures is excessive for first V1 source layer unless heavily filtered."
+      - id: integrated_dungeons_arise
+        verdict: reject_baseline_dependency_bloat
+        reason: "Requires a large additional dependency stack solely to obtain structures and warns against direct coexistence with original WDA."
+
+  structure_density_controls:
+    preferred:
+      id: pack_owned_structure_sets
+      verdict: preferred
+      reason: "Per-structure enable/spacing/separation remains explicit, versioned and adds no runtime dependency."
+    evaluation_candidates:
+      - id: sparse_structures
+        provider: curseforge
+        project_id: 911437
+        candidate_version: "3.0"
+        filename: "sparsestructures-neoforge-1.21.1-3.0.jar"
+        file_id: 6456912
+        release_status: release
+        license: MIT
+        verdict: useful_spike_if_global_control_needed
+        notes:
+          - "Spreads vanilla and modded structures globally."
+          - "Less precise than pack-owned per-structure source configuration."
+      - id: limited_structures
+        verdict: experimental_unique_capital_tool
+        reason: "Could cap selected major structures per dimension; prefer deterministic pack-owned selection until reliability is proven."
+      - id: structurify
+        verdict: do_not_add_by_default
+        reason: "Powerful but generic structure modifiers can conflict with pack-specific generation schemes; use only after selected source mods are known."
+
+promotion_requirements:
+  - "Exact provider artifact and SHA-256 are resolved."
+  - "All transitive dependencies are recorded."
+  - "License/acquisition/redistribution path is audited."
+  - "Candidate boots on the 1.21.1 NeoForge DrewCraft stack."
+  - "Relevant Windows and Apple Silicon client checks pass."
+  - "Worldgen candidates pass Terrain Diffusion World Scale 2 generation and density tests."
+  - "No candidate creates a second strategic-state authority."
+  - "Restart/unload/materialization behavior passes the relevant strategic-world tests."
+  - "Performance is measured rather than assumed."
