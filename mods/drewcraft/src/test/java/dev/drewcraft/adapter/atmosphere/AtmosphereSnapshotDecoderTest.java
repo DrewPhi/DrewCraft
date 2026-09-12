@@ -28,7 +28,7 @@ class AtmosphereSnapshotDecoderTest {
 
     @Test
     void failsClosedWhenSnapshotShapeChanges() {
-        WeatherSample decoded = AtmosphereSnapshotDecoder.decode(new BrokenSnapshot(), BlockPos.ZERO);
+        WeatherSample decoded = AtmosphereSnapshotDecoder.decode(new BrokenSnapshot(1.0f), BlockPos.ZERO);
         assertFalse(decoded.available());
         assertTrue(decoded.status().startsWith("snapshot_api_mismatch:"));
     }
