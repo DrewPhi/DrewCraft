@@ -2,9 +2,9 @@
 
 **Last updated:** 2026-09-12  
 **Current phase:** environment/aviation/radar integration head implemented -> strategic-world kernel next  
-**Canonical contracts:** `docs/v_1_requirements.md`, `docs/v_1_development_tree.md`, and the V1 radar scope amendment `docs/RADAR_V1.md`
+**Canonical contracts:** `docs/v_1_requirements.md`, `docs/v_1_development_tree.md`, `docs/V1_REMAINING_EXECUTION_PLAN.md`, and the V1 radar scope amendment `docs/RADAR_V1.md`
 
-This file is the live execution-state overlay for DrewCraft V1. The requirements document defines the overall V1 product contract; the development tree defines dependency order; this file records which gates have actually passed and what work is next. For radar specifically, `docs/RADAR_V1.md` supersedes the older Stage 10 custom-hardware / V1 cockpit-radar implementation details: V1 uses Create: Radars for physical ground radar, Project Atmosphere's existing handheld Weather Radar for pilots/explorers, and defers an MTS cockpit radar instrument to V1.1+.
+This file is the live execution-state overlay for DrewCraft V1. The requirements document defines the overall V1 product contract; the development tree defines dependency order; `docs/V1_REMAINING_EXECUTION_PLAN.md` is the detailed post-8B plan from the current state through `1.0.0`; this file records which gates have actually passed and what work is next. For radar specifically, `docs/RADAR_V1.md` supersedes the older Stage 10 custom-hardware / V1 cockpit-radar implementation details: V1 uses Create: Radars for physical ground radar, Project Atmosphere's existing handheld Weather Radar for pilots/explorers, and defers an MTS cockpit radar instrument to V1.1+.
 
 ## Certified base snapshot and current integration profile
 
@@ -74,6 +74,36 @@ V1 uses the official **Create: Radars 0.4.9.4** physical ground radar instead of
 
 `docs/RADAR_V1.md` is the detailed acceptance contract. Automated code/manifest/hash validation is complete. The final representative client/world acceptance must still visually prove the physical Create monitor overlay, native contacts over weather, actual storm agreement, power-off recovery, and low-site versus high-site terrain coverage in the pregenerated world; those checks are intentionally part of the V1 full-stack acceptance rather than a synthetic unit test.
 
+## Remaining V1 execution contract
+
+`docs/V1_REMAINING_EXECUTION_PLAN.md` is now the detailed implementation order from this point to `1.0.0`.
+
+Its most important strategic-performance invariant is:
+
+> **Distant/unloaded groups are lightweight records with cached coarse routes and elapsed-time movement. They do not keep chunks loaded, run ordinary Minecraft AI, run siege planning, or recompute full paths continuously.**
+
+Normal Minecraft pathfinding and siege planning occur only for bounded materialized entities near players. Large army strength may therefore represent hundreds of units while only a capped tactical subset exists as entities at one time.
+
+The remaining critical path is:
+
+```text
+11 strategic persistence/scheduler/coarse routing/ETA
+→ 12 transactional materialization + casualty reconciliation
+→ 13 hostile sources + Source Core clearing
+→ 14 factions/hordes/raids/large armies
+→ 15 bounded path-first siege planner
+→ 16 strategic wild herds
+→ 17 local-spawn coexistence
+→ 18 cross-system scenarios
+→ 19 performance hardening
+→ 20 crash/persistence/backup/recovery
+→ 21 release-candidate freeze
+→ 22 hard acceptance
+→ 1.0.0
+```
+
+Production world/pregeneration, host/ARM benchmarking, immutable release artifacts, server updater/backups, and the Windows/macOS launcher proceed in parallel and converge before the RC freeze.
+
 ## CI policy after baseline certification
 
 Until V1 is substantially complete:
@@ -103,12 +133,24 @@ The radar dependency addition is such a compatibility change, so current-profile
 | Radar sensing engine | **PASS: compile/unit scope** | Step 8A implemented |
 | Physical ground radar/weather monitor integration | **DONE: code/manifest/hash scope** | Step 8B implemented; mod CI + graph + provider hashes green; `docs/RADAR_V1.md` defines final in-game acceptance |
 | MTS cockpit radar | **POST-V1** | V1 pilots use Atmosphere handheld + ATC communication |
-| Strategic-world kernel | **NEXT** | Persistent IDs, coarse clock, routes/ETA, materialization transaction |
-| Production world/pregen/restore | **OPEN** | Representative-world gate |
-| ARM/production host benchmark | **OPEN** | Benchmark after representative world exists |
-| Launcher/release/deployment | **OPEN** | Build against immutable release contract |
-| V1 full-stack acceptance | **OPEN** | Current profile, local/host/client/soak/restart/profiling and radar visual/terrain acceptance |
+| Strategic-world kernel | **NEXT** | Follow Stage 11 in `V1_REMAINING_EXECUTION_PLAN.md` |
+| Production world/pregen/restore | **OPEN / PARALLEL** | Track A in remaining-plan document |
+| ARM/production host benchmark | **OPEN / PARALLEL** | Track B after representative world exists |
+| Release artifact/server updater | **OPEN / PARALLEL** | Tracks C-D |
+| Windows/macOS launcher | **OPEN / PARALLEL** | Track E |
+| V1 full-stack acceptance | **OPEN** | Stages 18-22 |
 
 ## Immediate next sequence
 
-**Step 9 / strategic-world kernel is the next implementation head.** Start with the smallest restart-safe unloaded `StrategicGroup` proof: stable IDs/schema, coarse clock/catch-up bounds, coarse terrain-aware routing and ETA, then the materialization/dematerialization transaction. Do not jump directly to army/siege/herd breadth before persistence and reconciliation are correct.
+Follow `docs/V1_REMAINING_EXECUTION_PLAN.md` exactly unless a blocking discovery is documented.
+
+The immediate coding queue is:
+
+1. strategic persistence schema + stable IDs;
+2. bounded strategic scheduler + elapsed-time/catch-up semantics;
+3. coarse terrain-cost interface/cache;
+4. cached route engine + ETA;
+5. admin diagnostics + one fully unloaded moving-group proof;
+6. only then begin the materialization/dematerialization transaction.
+
+Do not jump directly to army content, source breadth, siege AI, or herds before the shared persistence/routing/materialization gates pass.
