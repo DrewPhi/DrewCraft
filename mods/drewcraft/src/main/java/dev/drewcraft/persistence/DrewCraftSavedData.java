@@ -3,7 +3,6 @@ package dev.drewcraft.persistence;
 import dev.drewcraft.strategic.model.StrategicGroup;
 import dev.drewcraft.strategic.persistence.StrategicGroupNbt;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,7 +43,7 @@ public final class DrewCraftSavedData extends SavedData {
         return server.overworld().getDataStorage().computeIfAbsent(factory(), DATA_NAME);
     }
 
-    private static DrewCraftSavedData load(CompoundTag tag, HolderLookup.Provider registries) {
+    static DrewCraftSavedData load(CompoundTag tag, HolderLookup.Provider registries) {
         int storedSchema = tag.contains(TAG_SCHEMA_VERSION) ? tag.getInt(TAG_SCHEMA_VERSION) : 0;
         if (storedSchema > CURRENT_SCHEMA_VERSION) {
             throw new IllegalStateException(
