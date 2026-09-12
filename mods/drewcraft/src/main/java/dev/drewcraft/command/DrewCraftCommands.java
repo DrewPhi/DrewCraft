@@ -6,6 +6,7 @@ import dev.drewcraft.config.DrewCraftConfig;
 import dev.drewcraft.net.DrewCraftProtocol;
 import dev.drewcraft.persistence.DrewCraftSavedData;
 import dev.drewcraft.service.DrewCraftServices;
+import dev.drewcraft.service.power.PowerSample;
 import dev.drewcraft.service.terrain.TerrainSample;
 import dev.drewcraft.service.weather.WeatherSample;
 import java.util.Locale;
@@ -33,6 +34,9 @@ public final class DrewCraftCommands {
                         .then(Commands.literal("env")
                                 .then(Commands.literal("sample")
                                         .executes(context -> sampleEnvironment(context.getSource()))))
+                        .then(Commands.literal("power")
+                                .then(Commands.literal("sample")
+                                        .executes(context -> samplePower(context.getSource()))))
         );
     }
 
@@ -69,6 +73,13 @@ public final class DrewCraftCommands {
         return terrain.available() || weather.available() ? 1 : 0;
     }
 
+    private static int samplePower(CommandSourceStack source) {
+        BlockPos position = BlockPos.containing(source.getPosition());
+        PowerSample power = DrewCraftServices.power().sample(source.getLevel(), position);
+        source.sendSuccess(() -> Component.literal(formatPower(power)), false);
+        return power.available() ? 1 : 0;
+    }
+
     private static String formatTerrain(TerrainSample sample) {
         if (!sample.available()) {
             return "terrain[" + sample.providerId() + "] unavailable: " + sample.status();
@@ -97,6 +108,23 @@ public final class DrewCraftCommands {
                 + " humidity=" + number(sample.humidityRelative(), "%.3f")
                 + " visibility=" + number(sample.visibilityMeters(), "%.0fm")
                 + " severity=" + number(sample.severity01(), "%.3f")
+                + " | " + sample.status();
+    }
+
+    private static String formatPower(PowerSample sample) {
+        if (!sample.available()) {
+            return "power[" + sample.providerId() + "] unavailable: " + sample.status();
+        }
+        String source = sample.sourcePosition()
+                .map(pos -> pos.getX() + "," + pos.getY() + "," + pos.getZ())
+                .orElse("none");
+        return "power[" + sample.providerId() + "]"
+                + " powered=" + sample.kineticallyPowered().map(String::valueOf).orElse("n/a")
+                + " speed=" + number(sample.speedRpm(), "%.2frpm")
+                + " theoretical=" + number(sample.theoreticalSpeedRpm(), "%.2frpm")
+                + " overstressed=" + sample.overstressed().map(String::valueOf).orElse("n/a")
+                + " network=" + sample.networkPresent().map(String::valueOf).orElse("n/a")
+                + " source=" + source
                 + " | " + sample.status();
     }
 

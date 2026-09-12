@@ -14,8 +14,8 @@ public final class DrewCraftConfig {
             .define("integrations.projectAtmosphere", true);
 
     public static final ModConfigSpec.BooleanValue CREATE_POWER_ADAPTER = BUILDER
-            .comment("Enable Create kinetic-power integration once implemented and validated.")
-            .define("integrations.createPower", false);
+            .comment("Enable the read-only Create kinetic-power adapter used by DrewCraft machinery.")
+            .define("integrations.createPower", true);
 
     public static final ModConfigSpec.BooleanValue MTS_VEHICLE_ADAPTER = BUILDER
             .comment("Enable Immersive Vehicles / MTS integration once implemented and validated.")

@@ -1,6 +1,7 @@
 package dev.drewcraft.service;
 
 import dev.drewcraft.adapter.atmosphere.ProjectAtmosphereWeatherService;
+import dev.drewcraft.adapter.create.CreatePowerService;
 import dev.drewcraft.adapter.terrain.TerrainDiffusionTerrainService;
 import dev.drewcraft.config.DrewCraftConfig;
 import dev.drewcraft.service.power.PowerSample;
@@ -16,6 +17,7 @@ import net.neoforged.fml.ModList;
 /** Central service selection boundary for DrewCraft integrations. */
 public final class DrewCraftServices {
     private static final TerrainService TERRAIN = new TerrainDiffusionTerrainService();
+    private static final PowerService CREATE = new CreatePowerService();
 
     private static final TerrainService TERRAIN_DISABLED = new TerrainService() {
         @Override
@@ -53,15 +55,15 @@ public final class DrewCraftServices {
         }
     };
 
-    private static final PowerService CREATE_PENDING = new PowerService() {
+    private static final PowerService CREATE_DISABLED = new PowerService() {
         @Override
         public String providerId() {
-            return "create.kinetic";
+            return CreatePowerService.PROVIDER_ID;
         }
 
         @Override
         public PowerSample sample(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos position) {
-            return PowerSample.unavailable(providerId(), position, "step_6_not_implemented");
+            return PowerSample.unavailable(providerId(), position, "disabled_by_config");
         }
     };
 
@@ -95,7 +97,7 @@ public final class DrewCraftServices {
     }
 
     public static PowerService power() {
-        return CREATE_PENDING;
+        return DrewCraftConfig.CREATE_POWER_ADAPTER.get() ? CREATE : CREATE_DISABLED;
     }
 
     public static VehicleService vehicles() {
