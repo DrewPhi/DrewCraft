@@ -6,12 +6,14 @@ Before making architectural or implementation changes, read:
 
 1. `docs/v_1_requirements.md` — the hard V1 product/release contract
 2. `docs/v_1_development_tree.md` — the canonical dependency-ordered execution checklist from current state to V1
-3. `docs/PROJECT_SPEC.md`
-4. `docs/SYSTEMS.md`
-5. `docs/MOD_STACK.md`
-6. `docs/REPO_ARCHITECTURE.md`
-7. `docs/LAUNCHER_HOSTING.md`
-8. `docs/ROADMAP.md` — older/high-level roadmap; where it conflicts with the V1 requirements or development tree, the two V1 documents above win
+3. `docs/UPSTREAM_DEPENDENCIES.md` — upstream ownership, source access, candidate-version, redistribution, and fork policy
+4. `pack/manifest/upstreams.yaml` — machine-readable upstream/candidate registry; candidates are not production locks
+5. `docs/PROJECT_SPEC.md`
+6. `docs/SYSTEMS.md`
+7. `docs/MOD_STACK.md`
+8. `docs/REPO_ARCHITECTURE.md`
+9. `docs/LAUNCHER_HOSTING.md`
+10. `docs/ROADMAP.md` — older/high-level roadmap; where it conflicts with the V1 requirements or development tree, the V1 documents above win
 
 ## Non-negotiable design principles
 
@@ -39,6 +41,7 @@ Before making architectural or implementation changes, read:
 In particular:
 
 - prove reproducible pack generation first;
+- perform the upstream ownership/source audit in `docs/UPSTREAM_DEPENDENCIES.md` and `pack/manifest/upstreams.yaml` as part of the reproducible-pack stage;
 - lock and test the complete baseline mod stack second;
 - prove the production world pipeline and real host constraints before advanced custom systems;
 - establish release/client/server artifact contracts before depending on them;
@@ -48,6 +51,20 @@ In particular:
 - perform full cross-system, failure/restart, restore, and performance tests before V1.
 
 Do **not** start substantial radar, army, siege, or balance work while an earlier hard gate in the V1 development tree is still failing.
+
+## Upstream dependency and fork policy
+
+The upstream registry is part of Stage 1 of the V1 development tree.
+
+- Track the official source repository for every third-party dependency even when DrewCraft consumes the official binary.
+- `pack/manifest/upstreams.yaml` contains discovered/test candidates; it is not the authoritative production lock until compatibility testing and SHA-256 verification promote an artifact.
+- Do not fork or vendor an upstream project merely to simplify packaging. The manifest/resolver is responsible for packaging.
+- Prefer upstream binaries plus a DrewCraft compatibility adapter.
+- Create a DrewCraft fork only when a required V1 integration or blocking bug genuinely needs maintained source changes **and** the upstream license permits the intended modification/distribution model.
+- If a fork is created, record the upstream base ref, fork URL, exact DrewCraft commit, build procedure, license notes, and resulting artifact hash in the upstream registry.
+- Keep fork patch sets minimal and upstream generally useful fixes when practical.
+- Source visibility is not redistribution permission. Respect provider/license restrictions, especially for All Rights Reserved projects.
+- Never silently replace a provider artifact with a locally modified build under the same version identity.
 
 ## Custom mod architecture
 
