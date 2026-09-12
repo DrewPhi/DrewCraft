@@ -2,8 +2,8 @@ schema_version: 1
 profile: stage2_base_performance
 evidence:
   workflow: pack-hash.yml
-  run_id: 34724118743
-  head_sha: a78f00ea6a193b3e929ad3c2cf1dcde7b32dda3b
+  run_id: 34724313143
+  head_sha: d55c7458fba86fa55ac9cb07c5ebcea2679568fd
   generated_at: '2026-09-12'
 artifacts:
   alltheleaks:
@@ -55,6 +55,13 @@ artifacts:
     filename: create-1.21.1-6.0.10.jar
     sha256: ef87fe5709f1ba1f5b8bb20a2925b5afb4669e178fd6d8bf10c167759eefe37a
     size: 19123767
+  create_big_cannons:
+    provider: curseforge
+    project_id: 646668
+    file_id: 8303106
+    filename: createbigcannons-5.11.7+mc.1.21.1.jar
+    sha256: ea017ab94637032d039899d88404838d173fa0e6286657cae6a6c3af459e87ca
+    size: 3771506
   create_radars:
     provider: modrinth
     project_id: BLu2Yqfq
@@ -188,6 +195,13 @@ artifacts:
     filename: NeoForge-projectatmosphere-0.9.1.2.jar
     sha256: d866b069e94554a25985e5f18f128e4655ff731e2d5ae917a9beb1ba01b34c48
     size: 14254631
+  ritchies_projectile_library:
+    provider: curseforge
+    project_id: 1279407
+    file_id: 7587771
+    filename: ritchiesprojectilelib-2.1.2-mc.1.21.1-neoforge.jar
+    sha256: cc509060833736fb650aa4c36b1ce33a7eeeb9ca6e9f8e80a7c951c9e7487b24
+    size: 76369
   scalablelux:
     provider: curseforge
     project_id: 1055925
