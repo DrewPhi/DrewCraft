@@ -1,0 +1,43 @@
+# DrewCraft generated artifacts / local runtime state
+.cache/
+build/
+dist/
+*.jar
+*.part
+
+# Minecraft runtime state
+world/
+world_nether/
+world_the_end/
+backups/
+logs/
+crash-reports/
+run/
+runtime/
+
+# Heavy generated/client caches
+Distant_Horizons_server_data/
+DistantHorizons.sqlite
+*.sqlite
+*.sqlite-journal
+*.db
+models/
+onnx/
+
+# Local secrets / provider credentials
+.env
+.env.*
+!.env.example
+secrets/
+
+# Python tooling
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.venv/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
