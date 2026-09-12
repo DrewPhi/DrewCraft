@@ -7,15 +7,16 @@ Before making architectural or implementation changes, read:
 1. `docs/v_1_requirements.md` — the hard V1 product/release contract
 2. `docs/v_1_development_tree.md` — the canonical dependency-ordered execution checklist from current state to V1
 3. `docs/STRATEGIC_WORLD_MODEL.md` — canonical hostile-source, roaming-force, unloaded-movement, source-core, and wild-herd behavior contract
-4. `docs/MOB_STRUCTURE_CANDIDATES.md` — researched tactical-AI, herd-AI, structure-source, and structure-density candidates; evaluation only, not the production lock
-5. `docs/UPSTREAM_DEPENDENCIES.md` — upstream ownership, source access, candidate-version, redistribution, and fork policy
-6. `pack/manifest/upstreams.yaml` — machine-readable upstream/candidate registry; candidates are not production locks
-7. `docs/PROJECT_SPEC.md`
-8. `docs/SYSTEMS.md`
-9. `docs/MOD_STACK.md`
-10. `docs/REPO_ARCHITECTURE.md`
-11. `docs/LAUNCHER_HOSTING.md`
-12. `docs/ROADMAP.md` — older/high-level roadmap; where it conflicts with the V1 requirements or development tree, the V1 documents above win
+4. `docs/SOURCE_CORE_SPEC.md` — exact V1 hostile-source core destruction, persistence, replacement, race-safety, and already-deployed-force semantics
+5. `docs/MOB_STRUCTURE_CANDIDATES.md` — researched tactical-AI, herd-AI, structure-source, and structure-density candidates; evaluation only, not the production lock
+6. `docs/UPSTREAM_DEPENDENCIES.md` — upstream ownership, source access, candidate-version, redistribution, and fork policy
+7. `pack/manifest/upstreams.yaml` — machine-readable upstream/candidate registry; candidates are not production locks
+8. `docs/PROJECT_SPEC.md`
+9. `docs/SYSTEMS.md`
+10. `docs/MOD_STACK.md`
+11. `docs/REPO_ARCHITECTURE.md`
+12. `docs/LAUNCHER_HOSTING.md`
+13. `docs/ROADMAP.md` — older/high-level roadmap; where it conflicts with the V1 requirements or development tree, the V1 documents above win
 
 ## Non-negotiable design principles
 
@@ -28,8 +29,11 @@ Before making architectural or implementation changes, read:
 - Important hostile groups must exist at real strategic positions while unloaded; do not implement attacks as timed spawn events around players.
 - Players may encounter patrols/hordes/armies by chance because their routes intersect during exploration.
 - Hostile camps/forts/towns/cities are real persistent strategic sources tied to generated structures.
-- Every hostile strategic source has an explicit DrewCraft source-core objective or equivalent stable source controller.
-- Destroying/clearing a source core permanently marks that source cleared and prevents it from launching new strategic forces across unload/restart/backup restore.
+- Every hostile strategic source has an explicit DrewCraft Source Core objective or equivalent stable source controller.
+- **The Source Core block is only the physical player-facing objective; the persistent `SourceRecord` is authoritative.**
+- Destroying a bound Source Core by a valid break/explosion event permanently marks that source `CLEARED`, and the cleared state survives unload/restart/backup restore.
+- Replacing, moving, duplicating, Silk-Touching, or otherwise reacquiring the physical core must never reactivate or duplicate strategic authority.
+- Source clearing must be race-safe against source launch scheduling: groups committed before clearing survive; no new group may commit after `CLEARED` becomes authoritative.
 - Clearing a source does not magically despawn already-deployed groups; they remain persistent world populations unless their strategic behavior later causes retreat/merge/destruction.
 - Source state is independent of ordinary mob spawner blocks.
 - Wild animal populations may be persistent strategic herds; materialized herds should spawn/behave as coherent groups rather than unrelated singleton events.
@@ -63,18 +67,25 @@ In particular:
 - prove one thin vertical slice before adding content breadth;
 - prove persistence/materialization correctness before scaling to armies;
 - implement/source-index hostile structures only after the strategic kernel/materialization semantics are stable;
+- implement Source Core clearing exactly according to `docs/SOURCE_CORE_SPEC.md`, including idempotency, persistence, replacement safety, and launch/clear race tests;
 - perform full cross-system, failure/restart, restore, and performance tests before V1.
 
 Do **not** start substantial radar, army, siege, or balance work while an earlier hard gate in the V1 development tree is still failing.
 
 ## Strategic world contract
 
-`docs/STRATEGIC_WORLD_MODEL.md` is the detailed player-facing behavioral contract. In particular:
+`docs/STRATEGIC_WORLD_MODEL.md` is the detailed player-facing behavioral contract. `docs/SOURCE_CORE_SPEC.md` is authoritative for the exact source-core clearing implementation contract.
+
+In particular:
 
 - strategic sources are indexed from real generated structures and have stable IDs;
 - the DrewCraft Source Core is the V1 clearing objective;
+- the core block itself is not the source state;
 - legitimate core destruction atomically persists `CLEARED` state before the source may launch another force;
 - replacing the physical core block does not reactivate a source;
+- core duplication/movement must not create, move, or duplicate source authority;
+- groups already committed before clearing remain valid persistent groups;
+- no group may be newly committed after clearing becomes authoritative;
 - sources launch real strategic groups from their real geographic location;
 - groups advance using coarse unloaded simulation with routes/ETAs rather than teleportation;
 - patrols and roaming hordes need not target a player at all;
