@@ -228,7 +228,8 @@ upstreams:
       project_id: "qIWoLcKJ"
       version_id: "QBPZU1Dp"
       candidate_version: "0.9.1.2"
-      filename: null
+      filename: "NeoForge-projectatmosphere-0.9.1.2.jar"
+      download_url: "https://cdn.modrinth.com/data/qIWoLcKJ/versions/QBPZU1Dp/NeoForge-projectatmosphere-0.9.1.2.jar"
       release_status: release
       sha256: null
     target:
@@ -244,6 +245,8 @@ upstreams:
     fork:
       required: false
       trigger: "Only if the weather sampling/API hooks needed by DrewCraft cannot be exposed through a clean external adapter and licensing permits the patch."
+    notes:
+      - "Exact Modrinth provider identity is version QBPZU1Dp; the pinned CDN URL is the provider's own Download link for that immutable version."
 
   simple_clouds:
     display_name: "Simple Clouds"
