@@ -1,6 +1,6 @@
 # DrewCraft Upstream Dependency Ownership and Fork Policy
 
-This document is the operational companion to `pack/manifest/upstreams.yaml`.
+This document is the operational companion to the candidate registries under `pack/manifest/`.
 
 It answers two separate questions:
 
@@ -15,9 +15,25 @@ Forking everything would not make packaging more reproducible. The manifest/buil
 
 ---
 
+## Candidate registry architecture
+
+Candidate research is split by purpose so the foundational registry does not become an unreadable kitchen-sink list:
+
+- `pack/manifest/upstreams.yaml` — foundational gameplay/platform dependencies;
+- `pack/manifest/performance_candidates.yaml` — intended optimization baseline plus isolated aggressive performance experiments;
+- `pack/manifest/mob_structure_candidates.yaml` — tactical hostile-AI, herd-AI, source-structure and structure-density compatibility branches.
+
+`pack/manifest/README.md` defines how the Stage 1 resolver merges these registries and how candidates are promoted.
+
+**All three are candidate registries, not production locks.** The future `mods.yaml` / `content-packs.yaml` contain only exact promoted choices with hashes.
+
+A candidate can be intentionally profile-specific. For example, Enhanced Hordes + Tweaks and Zombie Hordes are alternative test branches, and CTOV is initially an alternative to Towns and Towers rather than an automatic companion.
+
+---
+
 ## Ownership classes
 
-Every dependency in `pack/manifest/upstreams.yaml` is classified as one of:
+Every direct dependency that reaches a production lock is classified as one of:
 
 - `UPSTREAM_BINARY` — consume an official artifact from CurseForge, Modrinth, GitHub Releases, or another approved upstream provider. We still record the source repository for debugging/API research.
 - `UPSTREAM_SOURCE` — track/build a specific upstream source ref because no suitable immutable release artifact has yet been selected.
@@ -25,6 +41,8 @@ Every dependency in `pack/manifest/upstreams.yaml` is classified as one of:
 - `DREWCRAFT_OWNED` — DrewCraft owns the implementation, such as the custom integration mod.
 
 `UPSTREAM_BINARY` should be the default for ordinary dependencies.
+
+Candidate-only manifests may omit the ownership class until the candidate is serious enough to promote, but source/provider/license information should still be recorded as early as practical.
 
 ---
 
@@ -47,29 +65,28 @@ Instead, DrewCraft records immutable provider/version/file IDs and eventually SH
 
 ## Candidate registry vs production lock
 
-`pack/manifest/upstreams.yaml` is currently a **candidate registry**.
-
-A candidate appearing there does not mean it is already approved for the pack. This matters because some current 1.21.1 releases are marked Beta upstream.
+A candidate appearing in any registry does not mean it is already approved for the pack. This matters because some current 1.21.1 releases are Beta/Alpha, some are mutually exclusive alternatives, and some are only world-build experiments.
 
 Promotion flow:
 
-1. discover the latest sensible 1.21.1/NeoForge candidate;
-2. record official source repo, release provider, IDs, status, license, and dependencies;
+1. discover a sensible 1.21.1/NeoForge candidate;
+2. record official source repo, release provider, IDs, status, license, dependencies and intended profile;
 3. acquire the candidate through a permitted upstream path;
 4. compute SHA-256;
 5. resolve transitive dependencies;
-6. run the Stage 2 DrewCraft compatibility matrix;
+6. run the relevant DrewCraft compatibility matrix/profile;
 7. test Windows and Apple Silicon where client-relevant;
-8. verify release/redistribution policy;
-9. promote the exact artifact into the authoritative locked mod/content-pack manifest.
+8. benchmark performance when the candidate claims performance benefits;
+9. verify release/redistribution policy;
+10. promote the exact artifact into the authoritative locked mod/content-pack manifest.
 
-This lets DrewCraft test a newer Beta when necessary without pretending it is already a stable production dependency.
+This lets DrewCraft test newer or experimental builds without pretending they are already stable production dependencies.
 
 ---
 
-## Current core candidate set — researched 2026-09-12
+## Current foundational candidate set — researched 2026-09-12
 
-The candidate registry currently tracks:
+`pack/manifest/upstreams.yaml` currently tracks:
 
 | Dependency | Official source | Candidate for MC 1.21.1 / NeoForge | Status | DrewCraft ownership |
 | --- | --- | --- | --- | --- |
@@ -87,9 +104,35 @@ The candidate registry currently tracks:
 
 These versions are **candidates**, not the final lock. Artifact SHA-256 values are intentionally still unset until DrewCraft's resolver downloads and verifies the actual files.
 
-Project Atmosphere 0.9.1.2 currently declares Serene Seasons and Gabou's Libs as required content, while Simple Clouds is optional upstream. DrewCraft nevertheless intends to include Simple Clouds as part of the V1 weather/rendering stack, subject to compatibility testing.
+Project Atmosphere's selected candidate declares Serene Seasons and Gabou's Libs as required content, while Simple Clouds is optional upstream. DrewCraft nevertheless intends to include Simple Clouds as part of the V1 weather/rendering stack, subject to compatibility testing.
 
 Serene Seasons requires GlitchCore, so GlitchCore is explicitly tracked rather than left as an invisible transitive dependency.
+
+---
+
+## Current performance and content candidate sets
+
+The two companion manifests deliberately record candidates that are not all meant to coexist.
+
+### Performance
+
+The intended baseline profile includes the current 1.21.1 NeoForge candidates for ModernFix, FerriteCore, Lithium, ServerCore, ScalableLux, Chunk Sending, AllTheLeaks, FastSuite/FastWorkbench/FastFurnace, Clumps, Connectivity, spark, Embeddium, ImmediatelyFast, Entity Culling, MoreCulling and required libraries such as Placebo/Cupboard.
+
+C2ME is an isolated world-build experiment until Terrain Diffusion/structure correctness and restart/corruption testing pass. See `docs/PERFORMANCE_STACK.md`.
+
+### Tactical AI / herds / source structures
+
+Current profiles include:
+
+- Enhanced Hordes + Enhanced Hordes Tweaks **versus** Zombie Hordes;
+- Ethological **versus** Herd Instinct;
+- Towns and Towers + selective When Dungeons Arise as the first source-structure spike;
+- CTOV as an alternative settlement/outpost branch;
+- pack-owned structure density first, with Sparse Structures only if needed.
+
+Required candidate libraries are recorded explicitly, including Cristel Lib for Towns and Towers and Lithostitched for the CTOV branch.
+
+See `docs/MOB_STRUCTURE_CANDIDATES.md`.
 
 ---
 
@@ -126,7 +169,7 @@ If a dependency crosses the fork threshold:
 5. create a DrewCraft maintenance branch for the target Minecraft line;
 6. keep the patch set as small and isolated as possible;
 7. document every DrewCraft-specific patch and why it cannot live in the integration mod;
-8. update `upstreams.yaml` from `UPSTREAM_BINARY`/`UPSTREAM_SOURCE` to `DREWCRAFT_FORK`;
+8. update the relevant registry from `UPSTREAM_BINARY`/`UPSTREAM_SOURCE` to `DREWCRAFT_FORK`;
 9. record upstream base ref, fork URL, DrewCraft commit SHA, build command, license notes, and artifact hash;
 10. CI builds/tests the exact recorded fork commit;
 11. regularly test rebasing/cherry-picking the patch set onto upstream maintenance releases;
@@ -138,11 +181,11 @@ The goal of every fork should be to minimize permanent divergence.
 
 ## Source access without forking
 
-We already have source-level read access to the public GitHub repositories recorded in the registry. A development agent can inspect those repositories directly when implementing adapters or diagnosing compatibility.
+Public source repositories recorded in the registries can be inspected directly when implementing adapters or diagnosing compatibility.
 
 Distant Horizons is an exception only in hosting location: its official source is GitLab. It should remain recorded as GitLab rather than creating a GitHub mirror merely for uniformity.
 
-For All Rights Reserved or otherwise restrictive projects, source visibility does **not** imply permission to redistribute modified builds. The manifest therefore records source access separately from artifact acquisition/redistribution policy.
+For All Rights Reserved or otherwise restrictive projects, source visibility does **not** imply permission to redistribute modified builds. The manifests therefore record source access separately from artifact acquisition/redistribution policy.
 
 ---
 
@@ -150,15 +193,18 @@ For All Rights Reserved or otherwise restrictive projects, source visibility doe
 
 Before Stage 2 compatibility testing starts, the upstream/dependency portion of Stage 1 is complete only when:
 
-- [ ] every direct V1 dependency has an official source/provider record;
+- [ ] all three candidate registries parse successfully as one dependency namespace;
+- [ ] every direct baseline dependency has an official source/provider record;
+- [ ] every selected compatibility-spike dependency has an official provider/source record where available;
 - [ ] every known required transitive dependency has a record;
-- [ ] every dependency has an ownership class;
+- [ ] every promoted dependency has an ownership class;
 - [ ] the target 1.21.1/NeoForge maintenance branch/ref is known where source exists;
-- [ ] the best current candidate artifact is identified without pretending Beta candidates are stable;
+- [ ] the selected candidate artifacts are identified without pretending Beta/Alpha candidates are stable;
 - [ ] provider project/file/version IDs are recorded where available;
 - [ ] licenses and acquisition/redistribution constraints are recorded sufficiently to avoid accidental rehosting;
 - [ ] no dependency has been forked merely for convenience;
-- [ ] the resolver can eventually turn the candidate/lock metadata into verified local artifacts;
+- [ ] compatibility profiles prevent mutually exclusive alternatives from silently being stacked;
+- [ ] the resolver can turn selected candidate/lock metadata into verified local artifacts;
 - [ ] SHA-256 is computed from actual downloaded artifacts before any candidate is considered locked.
 
 The Stage 2 compatibility matrix then decides what becomes the first known-good DrewCraft mod lock.
