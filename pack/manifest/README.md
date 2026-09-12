@@ -12,6 +12,23 @@ Stage 1 dependency discovery currently comes from **three companion registries**
 
 All three files are discovery/evaluation registries, **not production lockfiles**.
 
+## Development profiles
+
+`profiles.yaml` is the machine-readable selector that tells the resolver which candidate IDs belong together for a specific compatibility test.
+
+It currently defines:
+
+- `stage2_base_performance` — foundational stack + conservative optimization baseline;
+- separate Enhanced Hordes/Tweaks and Zombie Hordes hostile-AI branches;
+- separate Ethological and Herd Instinct herd-AI branches;
+- the first Towns and Towers + selective WDA source-structure branch;
+- the CTOV alternative branch;
+- Sparse Structures as an optional density experiment;
+- C2ME as an isolated world-build experiment;
+- Structure Essentials as optional world-build/source-debug tooling.
+
+Profiles are development inputs, **not release locks**. Production releases contain exact promoted dependencies and hashes.
+
 ## Future authoritative manifests
 
 - `mods.yaml` — authoritative locked mod set produced after compatibility gates.
@@ -25,22 +42,21 @@ The eventual locked manifests contain only the exact promoted choices. For examp
 
 The Stage 1 resolver/downloader must:
 
-1. parse all candidate registries;
+1. parse all candidate registries and `profiles.yaml`;
 2. normalize canonical dependency IDs;
 3. detect duplicate/conflicting candidates;
-4. select the requested compatibility-spike profile;
-5. recursively resolve required dependencies such as Placebo, Cupboard, Cristel Lib, Lithostitched, GlitchCore and Gabou's Libs;
-6. acquire artifacts through permitted provider paths;
-7. compute/verify SHA-256;
-8. classify each artifact as `common`, `client`, `server`, or operational/world-build tooling;
-9. generate deterministic client/server layouts;
-10. fail closed on missing artifacts, hash drift, wrong-side files or unresolved transitives.
+4. select an explicit compatibility profile;
+5. expand profile inheritance and reject incompatible profile combinations;
+6. recursively resolve required dependencies such as Placebo, Cupboard, Cristel Lib, Lithostitched, GlitchCore and Gabou's Libs;
+7. acquire artifacts through permitted provider paths;
+8. compute/verify SHA-256;
+9. classify each artifact as `common`, `client`, `server`, or operational/world-build tooling;
+10. generate deterministic client/server layouts;
+11. fail closed on missing artifacts, hash drift, wrong-side files or unresolved transitives.
 
 No friend or server administrator should manually download a hidden prerequisite.
 
 ## Compatibility profiles
-
-The candidate registries imply explicit test profiles rather than one giant development `mods/` folder.
 
 ### Base + performance profile
 
@@ -96,7 +112,7 @@ research/discover upstream
         ↓
 candidate registry
         ↓
-select explicit compatibility profile
+select profiles.yaml compatibility profile
         ↓
 allowed-provider download
         ↓
