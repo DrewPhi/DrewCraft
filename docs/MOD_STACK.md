@@ -67,7 +67,7 @@ It must be tested for:
 - interaction with Simple Clouds
 - sensible pack defaults
 
-Distant Horizons does not own weather, world generation, navigation, or strategic simulation.
+Distant Horizons does not own weather, world generation, navigation or strategic simulation.
 
 ### Create
 
@@ -124,7 +124,7 @@ This includes the source data used by:
 
 Simple Clouds may itself expose localized cloud/weather behavior, but inside DrewCraft it is **not a competing weather authority**. Project Atmosphere is expected to control/integrate the atmospheric behavior, while Simple Clouds supplies the cloud rendering/local visual machinery.
 
-This pairing is intentional rather than redundant: Project Atmosphere's own documentation describes its simulation as replacing Simple Clouds' random cloud spawning with climate-driven behavior. citeturn397926search0turn397926search1
+This pairing is intentional rather than redundant: Project Atmosphere's own documentation describes its simulation as replacing Simple Clouds' random cloud spawning with climate-driven behavior.
 
 ### Serene Seasons
 
@@ -136,7 +136,7 @@ Serene Seasons can affect foliage, temperature context, weather and crop growth,
 - Project Atmosphere consumes/integrates seasonal state for atmospheric behavior;
 - DrewCraft does not create a third season simulation.
 
-Current Project Atmosphere releases explicitly support Serene Seasons, and the selected dependency graph determines whether it is required. Serene Seasons itself requires GlitchCore on modern versions. citeturn849177search0turn397926search4
+Current Project Atmosphere releases explicitly support Serene Seasons, and the selected dependency graph determines whether it is required. Serene Seasons itself requires GlitchCore on modern versions.
 
 ### Required libraries
 
