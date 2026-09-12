@@ -1,457 +1,286 @@
 # DrewCraft Implementation Roadmap
 
-This is the high-level roadmap. The **canonical execution order and checklist** is `docs/v_1_development_tree.md`; the **hard V1 contract** is `docs/v_1_requirements.md`. Where this older/high-level document is less specific, those two V1 documents win.
+This is the high-level roadmap. The **hard V1 contract** is `docs/v_1_requirements.md`; the **canonical dependency-ordered checklist** is `docs/v_1_development_tree.md`; the **live state/evidence overlay** is `docs/V1_EXECUTION_STATUS.md`. If this roadmap is less specific, those documents win.
 
-DrewCraft should be built in layers that retire risky assumptions early. The defining rule is: **do not spend weeks polishing dependent gameplay systems before proving the pack, world, release pipeline, host, and integration boundaries they depend on.**
+DrewCraft V1 is **feature-complete and integration-complete, not balance-complete**. Broad recipe/economy/difficulty tuning belongs after V1 unless an upstream default clearly breaks a core design pillar.
 
-DrewCraft V1 is **feature-complete and integration-complete, not balance-complete**. Broad recipe/economy/difficulty tuning is post-V1 unless an upstream default clearly destroys a core design pillar.
+## Current position — 2026-09-12
 
-## Phase 0 — Reproducible repository and upstream ownership
+The reproducible base profile is **certified and frozen for V1 integration development**.
 
-Goal: a clean machine can identify and reproduce one exact development pack from the repository.
+Completed evidence-backed gates:
 
-Build:
+- exact Minecraft 1.21.1 / NeoForge 21.1.250 / Java 21 platform lock;
+- deterministic profile resolution and provider-artifact hash verification;
+- exact Terrain Diffusion Plus source/build/model provenance;
+- exact `stage2_base_performance` reconstruction;
+- real dedicated-server fresh-world creation and readiness;
+- clean shutdown;
+- successful restart of the same persisted world;
+- fatal-error scan.
 
-- canonical pack manifest
-- Minecraft 1.21.1 / NeoForge / Java 21 lock
-- upstream dependency/source registry
-- ownership classification for every direct/transitive dependency
-- mod/content-pack inventory with exact versions and hashes before promotion
-- common/client/server/operational separation
-- pack build and verification scripts
-- `.gitignore` for generated/binary state
-- CI schema/build checks
+Full profile verification: run `34702233400` — **PASS**.  
+Dedicated-server certification: run `34704011609` / job `103580655867` — **PASS**.
 
-Rules:
+The fresh Terrain Diffusion Plus world required roughly 26 minutes to initialize in GitHub CI; the same-world restart required roughly 2 minutes. The first-world cost is therefore treated as a provisioning/world-build concern.
 
-- track every official upstream source;
-- fork only when DrewCraft must maintain a real source patch;
-- do not vendor every upstream repo merely for packaging convenience.
+**Base mod selection is closed unless a blocking defect or mandatory transitive requires a change.** Ordinary work now moves into DrewCraft integration, interactions, persistence, release infrastructure, and optimization.
 
-Exit gate:
+## 0. Reproducible pack foundation — PASS
 
-- no developer machine's `mods/` folder is needed to reproduce the pack
-- every baseline dependency has one documented responsibility and does not duplicate another authoritative subsystem
+The repository can reconstruct the selected development profile without a developer's hand-managed `mods/` directory.
 
-## Phase 1 — Core compatibility lock
+Implemented/validated:
 
-Goal: verify the proposed foundation together before custom feature work.
+- canonical manifests and profiles;
+- Minecraft/loader/Java lock;
+- upstream source/provider registry;
+- client/server classification;
+- provider artifact acquisition and SHA-256 verification;
+- exact Terrain Diffusion Plus source-build provenance;
+- verified-pack builder and evidence output;
+- CI pack/profile verification.
 
-Test the smallest viable stack containing:
+Future dependency changes must be intentional because they invalidate part of the certified baseline evidence.
 
-- Terrain Diffusion Plus
-- Chunky as pregeneration tooling
-- Distant Horizons
-- Create
-- Immersive Vehicles plus the smallest curated content-pack set providing at least one useful road vehicle and one aircraft
-- Project Atmosphere
-- Simple Clouds
-- Serene Seasons where required/stable with the selected Atmosphere release
-- required support libraries
+## 1. Base dedicated-server compatibility — PASS
 
-Responsibility rules:
+The selected baseline has booted a real new Terrain Diffusion Plus world and restarted the same persisted world successfully.
 
-- Terrain Diffusion owns overworld terrain/climate/caves; no second cave/terrain overhaul by default
-- Create owns rail/industrial infrastructure
-- MTS owns road vehicles and aircraft, not a competing train system
-- Project Atmosphere owns atmospheric state
-- Simple Clouds supplies the cloud/local-weather rendering substrate under Atmosphere integration
-- Serene Seasons owns the season calendar/hooks where used
-- DrewCraft owns radar, strategic populations, armies, herds and siege behavior
+This does **not** close the later client/platform/full-game interaction gates. Windows, Apple Silicon, representative Create/MTS/weather/DH gameplay, long soak, and full V1 cross-system tests remain acceptance work.
 
-Required tests:
+## 2. DrewCraft integration-mod platform — NEXT ACTIVE MILESTONE
 
-- dedicated server boot
-- Windows client connection
-- Apple Silicon macOS connection
-- Terrain Diffusion world creation/loading
-- Create contraption and train
-- car/truck
-- aircraft
-- dynamic weather/cloud stack
-- Distant Horizons
-- clean restart/rejoin
-- log audit for registry/mixin/network errors
+Goal: create stable DrewCraft-owned boundaries before feature-specific bridges.
 
-Exit gate:
+Build `mods/drewcraft/` as one NeoForge 1.21.1 / Java 21 integration mod with:
 
-- one known-good exact mod/content lock exists and is committed
+- mod/version identity;
+- configuration and server-side feature flags;
+- network/protocol boundary;
+- versioned SavedData persistence foundation;
+- admin/debug observability;
+- test infrastructure and cheap CI.
 
-## Phase 2 — Production world pipeline
+Define upstream-independent services:
 
-Goal: prove that the World Scale 2 world is operationally manageable.
+- `TerrainService`;
+- `WeatherService`;
+- `PowerService`;
+- `VehicleService`.
 
-Work:
+Upstream implementation types stay inside adapter modules.
 
-- benchmark candidate world radii before choosing the production border
-- generate production candidate using exact locked generation pack
-- pre-generate with Chunky on capable hardware
-- record world identity, seed/settings, world scale, border and generation pack version
-- validate rivers, mountains, structures, Terrain Diffusion cave behavior, Nether and End
-- archive world
-- generate checksums
-- restore archive onto a clean server
-- measure compressed size, disk size, backup time and restore time
+Exit gate: the custom mod compiles/tests independently, loads cleanly when later exercised, and has stable contracts that feature code can target.
 
-Exit gate:
+## 3. Upstream capability/API audit — NEXT ACTIVE MILESTONE
 
-- a reproducible world artifact can be generated, uploaded, restored and verified
+Audit in this order:
 
-## Phase 3 — Real host / ARM / performance gate
+1. Terrain Diffusion Plus;
+2. Project Atmosphere;
+3. Create;
+4. MTS / Immersive Vehicles.
 
-Goal: determine whether the preferred low-cost host is actually suitable rather than designing around assumptions.
+For each upstream identify public APIs/events, required state, client/server authority, cadence, threading assumptions, persistence/network implications, and the minimum necessary access strategy.
 
-Oracle Ampere A1 is the first benchmark target, not a V1 identity requirement.
+Preferred strategy:
 
-Verify especially:
+**public API/event -> external adapter -> narrow accessor/mixin -> fork only as a last resort and only when licensing permits.**
 
-- ARM64 Java 21
-- Terrain Diffusion native/ONNX runtime behavior
-- pregenerated chunk loading
-- weather stack
-- Create
-- MTS server behavior
-- representative multiplayer load
+Exit gate: a checked-in adapter capability matrix says exactly how DrewCraft can read/write the state required for V1.
 
-Measure:
+## 4. Environment vertical slice
 
-- MSPT/tick percentiles
-- CPU saturation
-- heap/native memory
-- GC pauses
-- disk I/O
-- network
-- save/restart time
+Implement Terrain Diffusion Plus + Project Atmosphere adapters first.
 
-Exit A:
+First proof: a server-side command such as `/drewcraft env sample` reports the environmental truth DrewCraft needs at a position: terrain/elevation/climate context plus available wind, temperature, pressure, humidity, precipitation, visibility, and severity.
 
-- preferred A1 target is acceptably playable -> keep it
+Exit gate: the command samples both authorities through DrewCraft interfaces without feature code importing their implementation types.
 
-Exit B:
+## 5. Create power + MTS adapters
 
-- it is not acceptable -> intentionally choose a larger/alternate fixed host
+Create adapter:
 
-Never hide a failed benchmark behind automatic paid scaling.
+- use **kinetic** power semantics, not a generic electrical abstraction;
+- expose only the power availability/consumption semantics DrewCraft machines need.
 
-## Phase 4 — Release artifact contract
+MTS adapter:
 
-Goal: give the launcher, CI and server updater one immutable release language.
+- expose supported vehicle/aircraft pose, velocity, orientation, and instrument/control hooks;
+- establish server/client authority for weather effects;
+- avoid an MTS fork if an external adapter/accessor is sufficient.
 
-Implement:
+Exit gate: DrewCraft can consume Create power and MTS vehicle state through stable internal contracts.
 
-- versioned `release-manifest.json`
-- stable-channel pointer
-- deterministic client pack
-- deterministic server pack
-- SHA-256 verification
-- pack/protocol/Minecraft/loader versions
-- separate world artifact identity
+## 6. Aviation weather vertical slice
 
-Exit gate:
+Prove:
 
-- CI can produce and independently verify a synthetic DrewCraft release.
+`Terrain Diffusion Plus -> Project Atmosphere -> DrewCraft -> MTS`
 
-## Phase 5A — One-click DrewCraft installer
+Initial effects:
 
-Goal: a non-technical friend can install the exact pack without learning Java, NeoForge or Prism.
+- headwind/tailwind/crosswind;
+- bounded turbulence;
+- storm/severity influence;
+- visibility;
+- terrain/elevation contribution;
+- conservative synchronization/fallback behavior.
+
+Exit gate: one supported aircraft experiences stable server-authoritative environmental effects without a parallel weather model.
+
+## 7. Physical radar
+
+Build radar on the same environment pipeline.
+
+MVP:
+
+- dish/antenna;
+- controller;
+- Create-powered adapter;
+- data/connectivity path;
+- cached shared scan;
+- terrain/height horizon and coarse obstruction;
+- physical display;
+- aircraft weather-radar consumer using the same scan/product model.
+
+Prioritize sensing correctness, cadence, caching, power, and terrain masking before decorative UI breadth.
+
+Exit gate: differently sited/powered installations have meaningfully different coverage and display real Atmosphere-derived weather.
+
+## 8. Strategic world kernel
+
+Establish correctness before army content breadth.
 
 Implement:
 
-- Windows bootstrapper
-- macOS bootstrapper/app
-- managed Java 21
-- managed Prism installation/instance
-- Microsoft login delegated to Prism
-- per-file hash verification
-- staged/atomic pack updates
-- repair mode
-- server-version/readiness check
-- useful user-facing errors
+- stable strategic IDs;
+- versioned persistence;
+- coarse simulation clock;
+- route/ETA engine;
+- `SourceRecord`, `StrategicGroup`, and `HerdRecord` foundations;
+- transactional/idempotent materialization;
+- casualty reconciliation;
+- safe dematerialization;
+- restart/unload recovery;
+- admin inspection commands.
 
-Website target:
+Exit gate: an unloaded group advances consistently, materializes exactly once, records casualties, unloads without duplication, survives restart, and continues correctly.
 
-- DrewCraft
-- one Windows button
-- one Mac button
-- no normal setup guide required
+## 9. Hostile sources and multiple forces
 
-Exit gate:
+After the kernel is stable:
 
-- clean Windows and Apple Silicon machines can install, authenticate, update and join from the DrewCraft page
+- index approved generated source structures;
+- bind persistent source IDs/Source Cores;
+- implement race-safe launch/clear lifecycle;
+- implement patrols, warbands/hordes, raids, reinforcements, armies, and multiple compositions/factions;
+- use geography, routes, source distance, and explainable target knowledge rather than omniscient player spawning;
+- preserve already-deployed groups after source clearing.
 
-## Phase 5B — Server deployment and update automation
+Exit gate: clearing a legitimate source permanently stops future production while already-existing forces continue as real populations.
 
-Goal: client and server never drift into incompatible pack states.
+## 10. Siege planning
 
-Implement:
+Implement path-first siege behavior:
 
-- server install script
-- systemd service
-- health/version endpoint
-- server updater
-- staged verified releases
-- controlled restart policy
-- backup-before-update
-- startup health verification
-- safe application rollback
-- off-host backups
-- documented restore procedure
+1. normal path and entrance preference;
+2. inaccessible-target detection;
+3. useful breach-corridor selection;
+4. siege-capable role assignment;
+5. hardness/time-based breach;
+6. protected-block rules;
+7. plan caching/invalidation.
 
-Exit gate:
+Critical behavior: open or viable entrances are used; sealed defenses may be deliberately breached; unrelated decorative builds are not arbitrary targets.
 
-- publish a test pack update and demonstrate client/server convergence without manual mod copying
+## 11. Strategic animal herds and local-spawn coexistence
 
-## Phase 6 — DrewCraft integration-mod platform
+Add unloaded persistent wild-herd records, coarse movement, coherent materialization, hunting/casualty reconciliation, and safe summarization.
 
-Goal: establish stable APIs and persistence before complicated gameplay.
+Named/domesticated/leashed/penned/player-owned animals remain ordinary entities and must not be reabsorbed into wild-herd state.
 
-Build:
+Verify coexistence with ordinary local spawning, caves, mob farms, and normal spawners.
 
-- NeoForge mod skeleton
-- protocol/version handshake
-- configuration system
-- versioned SavedData persistence
-- compatibility-adapter interfaces
-- commands/observability
-- subsystem feature flags
-- tests
+## 12. Production world pipeline
 
-Adapters:
+The successful smoke test is **not** production pregeneration.
 
-- Terrain Diffusion
-- Project Atmosphere
-- Immersive Vehicles
-- Create
+On suitable/local hardware:
 
-Exit gate:
+- choose/benchmark candidate world radius;
+- generate with the exact locked generation profile;
+- Chunky-pregenerate offline;
+- record seed/settings/World Scale 2/border/generation identity;
+- validate terrain/rivers/mountains/caves/structures/Nether/End;
+- archive/checksum;
+- restore onto a clean server;
+- measure disk/compressed size, backup, restore, and traversal behavior.
 
-- mod builds in CI, connects client/server, persists test state and starts with integrations enabled/disabled cleanly
+Exit gate: a reproducible world artifact can be built, restored, and verified.
 
-## Phase 7 — Weather and aviation integration
+## 13. Host/performance gate
 
-Goal: make the existing atmospheric system materially affect supported aircraft.
+Oracle Ampere A1 is the first low-cost benchmark target, not a V1 identity requirement.
 
-Implement in order:
+Measure representative pregenerated-world behavior, weather, Create, MTS, strategic materialization, MSPT percentiles, CPU, heap/native memory, GC, disk I/O, network, save/restart, and spark profiles.
 
-1. internal weather-sampling adapter
-2. wind vector exposure
-3. aircraft wind effects
-4. crosswind/headwind/tailwind behavior
-5. bounded turbulence
-6. terrain/elevation contribution
-7. storm/severity contribution
-8. synchronization and conservative defaults
+If A1 is unsuitable, intentionally choose a larger/fixed host. Never hide a failed benchmark behind silent paid autoscaling.
 
-Exit gate:
+## 14. Release, server deployment, and one-click launcher
 
-- one supported aircraft has stable server-authoritative weather effects
+Create one immutable release contract shared by launcher and server updater:
 
-## Phase 8 — Physical weather radar
+- versioned release manifest;
+- stable-channel pointer;
+- deterministic client/server artifacts;
+- hashes and protocol/platform versions;
+- separate world-artifact identity;
+- staged server updates with backup/health/rollback;
+- Windows bootstrapper;
+- Apple Silicon macOS bootstrapper/app;
+- managed Java 21 and Prism instance;
+- Microsoft login delegated to Prism;
+- atomic updates/repair/rollback;
+- server readiness/version checks.
 
-Goal: create physical sensing infrastructure based on the same real Atmosphere state.
+Exit gate: clean Windows and Apple Silicon machines can install/update/join without hand-managing Java/mods, and a test release update converges client/server automatically.
 
-MVP blocks:
+## 15. V1 cross-system integration and acceptance
 
-- radar dish
-- radar controller
-- Create-powered adapter
-- data/power cable
-- physical radar display
+Once all V1 systems exist, perform the expensive comprehensive test cycle locally/on the production candidate host rather than continuously burning GitHub Actions minutes.
 
-MVP mechanics:
+Validate together:
 
-- physical connectivity
-- range cap
-- height-dependent horizon
-- coarse terrain masking
-- Project Atmosphere precipitation/severity product
-- shared cached scan per controller
-- physical display rendering
-- aircraft radar using the same data pipeline
-
-Exit gate:
-
-- differently sited installations show meaningfully different coverage and correctly display an approaching real weather system
-
-## Phase 9 — Strategic world kernel
-
-Goal: prove unloaded-chunk persistence before attempting armies.
-
-Implement:
-
-- strategic IDs/state schema
-- coarse simulation clock
-- route/ETA engine
-- persistence
-- admin inspection commands
-- materialization transaction
-- casualty tracking
-- dematerialization
-- restart safety
-
-Test scenario:
-
-1. create a group far from players
-2. advance it while destination chunks are unloaded
-3. ETA changes consistently
-4. player encounters it
-5. it materializes exactly once
-6. casualties are recorded
-7. area unloads
-8. survivors remain reduced
-9. restart server
-10. group continues correctly
-
-Exit gate:
-
-- no duplication, reset or teleport behavior
-
-## Phase 10 — Hostile source lifecycle
-
-Implement:
-
-- sparse generated structure/source indexing
-- explicit source-clear objective
-- population/reinforcement budget
-- launch cooldowns
-- target selection
-- permanent cleared state
-- player/admin feedback
-
-Exit gate:
-
-- an intact source can produce strategic threats and a legitimately cleared source cannot silently resume them
-
-## Phase 11 — Multiple hostile forces and armies
-
-Add:
-
-- composition summaries
-- multiple hostile mob families/factions
-- patrols, hordes and armies
-- roles/unit classes
-- merge/split/reinforcement only where useful
-- materialization caps/waves where required for performance
-
-Exit gate:
-
-- a convincingly large persistent force can approach and fight without requiring its full strategic population to remain loaded
-
-## Phase 12 — Siege planning
-
-Implement in layers:
-
-1. normal path-to-objective planning
-2. entrance/gate/road preference
-3. inaccessible-target detection
-4. constrained breach-corridor calculation
-5. siege-capable unit assignment
-6. hardness/time-based breach
-7. protected block tags
-8. plan cache/invalidation
-
-Critical tests:
-
-- open gate -> mobs use it; no wall damage
-- usable weak entrance -> prefer it
-- fully sealed fort -> deliberate breach
-- nearby decorative statue off route -> untouched
-- breach opens a genuinely navigable path
-
-Exit gate:
-
-- defenders benefit from architecture and mobs do not vandalize arbitrary builds
-
-## Phase 13 — Strategic animal herds and local-spawn coexistence
-
-Implement:
-
-- strategic herd records
-- species/count/home-range data
-- coarse movement
-- nearby materialization
-- safe summarization on unload
-- coexistence tests with ordinary hostile spawning, caves, mob farms and ordinary spawners
-
-Do not add a second persistent ecology/horde simulator.
-
-Exit gate:
-
-- herds make unloaded geography feel inhabited while ordinary Minecraft ecology remains intact
-
-## Phase 14 — Cross-system integration and conservative defaults
-
-Goal: prove that the systems work together without doing the post-V1 balance pass.
-
-Test:
-
-- Terrain Diffusion -> weather/aviation terrain inputs
-- Atmosphere -> flight + ground radar + aircraft radar
-- Create -> radar power
-- source -> strategic group -> materialization -> siege
-- source clearing -> future threat suppression
-- strategic herds alongside normal local mobs
-- launcher/server release compatibility
-- failure of one custom subsystem with its kill switch
-
-Set only conservative safety/performance defaults needed for a playable V1, such as caps that prevent constant armies or excessive planners. Do not redesign the game's economy here.
-
-Exit gate:
-
-- every V1 vertical slice operates on the same candidate release.
-
-## Phase 15 — Hardening and V1
-
-Before `1.0.0`:
-
-- Windows fresh-install test
-- Apple Silicon fresh-install test
-- Intel Mac only if supported
-- automatic upgrade from older development pack versions
-- backup/restore drill including strategic state
-- world expansion drill
-- crash/restart tests during strategic encounters/materialization
-- source persistence tests
-- siege grief-safety tests
-- radar performance tests
-- complete-stack multiplayer performance test
-- mod-license/redistribution audit
-- macOS signing/notarization for final UX
-- release notes and rollback procedures
-
-## V1 definition
-
-DrewCraft V1 is reached when:
-
-- joining/updating is one-click enough for non-technical friends
-- the large pre-generated world runs reliably
-- roads/cars, Create rail and aircraft function as real transport options
-- weather affects aviation
-- physical radar provides useful real weather information
-- distant hostile sources create persistent moving threats
-- armies can arrive from unloaded geography
-- clearing sources matters permanently
-- castles have functional defensive value
-- block breaching is constrained and understandable
-- strategic animal herds exist
-- ordinary Minecraft spawning/farming/building remains intact
-- server updates and backups are boring and reliable
-
-V1 does **not** require a perfected recipe/economy/difficulty curve.
-
-## Post-V1 / V1.1+ — Balance and progression pass
+- fresh install/world + persisted restart;
+- Windows + Apple Silicon clients;
+- long-distance travel and Distant Horizons;
+- Create + MTS;
+- Atmosphere -> aviation + ground radar + aircraft radar;
+- source -> strategic force -> materialization -> casualties -> unload/restart;
+- permanent source clearing and already-deployed-force semantics;
+- siege grief safety;
+- strategic herds + normal local mobs/farms;
+- pregeneration/archive/restore;
+- launcher/update/repair/rollback;
+- long soak, spark/MSPT/memory/GC profiling;
+- complete log/crash audit;
+- licensing/redistribution audit.
+
+Exit gate: the same candidate release satisfies the entire V1 contract reliably.
+
+## Post-V1 / V1.1+
 
 Only after playing the complete V1 system should DrewCraft broadly tune:
 
-- vehicle acquisition costs
-- fuel economics
-- repair/maintenance costs
-- train economics
-- aircraft cost and airport requirements
-- road usefulness
-- exact source density and army frequency/difficulty
-- radar crafting/tier progression
-- ship role if a stable ship implementation exists
-- Nether portal distance/compression beyond any minimal V1 pillar-preserving rule
+- recipes/acquisition costs;
+- fuel/repair/maintenance economics;
+- train/aircraft progression;
+- road usefulness;
+- exact source density and army frequency/difficulty;
+- radar tier/crafting progression;
+- extended portal-distance rules;
+- other economy/difficulty balancing.
 
-The purpose of V1.1+ is to make the already-complete systems balanced, not to finish missing V1 architecture.
+The purpose of V1.1+ is to balance an already complete integrated game, not to finish missing V1 architecture.
