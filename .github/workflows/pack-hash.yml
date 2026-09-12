@@ -1,0 +1,43 @@
+name: Hash provider artifacts
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/pack-hash.yml"
+      - "tools/hash_profile.py"
+      - "tools/drewcraft_pack.py"
+      - "pack/manifest/upstreams.yaml"
+      - "pack/manifest/performance_candidates.yaml"
+      - "pack/manifest/profiles.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  hash-stage2-base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pack tooling
+        run: python -m pip install -r tools/requirements-pack.txt
+      - name: Acquire provider artifacts and compute SHA-256
+        run: python tools/hash_profile.py --profile stage2_base_performance --output build/stage2-base-hashes.json
+      - name: Print summary
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('build/stage2-base-hashes.json'))
+          print('provider_artifacts=', p['provider_artifact_count'])
+          print('source_builds_pending=', p['source_builds_pending'])
+          print('hard_failures=', p['hard_failures'])
+          PY
+      - name: Upload hash report only
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage2-base-hashes
+          path: build/stage2-base-hashes.json
