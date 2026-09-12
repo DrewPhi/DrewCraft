@@ -15,7 +15,7 @@ permissions:
 jobs:
   server-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -116,15 +116,23 @@ jobs:
           bash ./run.sh nogui < server.stdin > server-first.log 2>&1 &
           PID=$!
           READY=0
-          for i in $(seq 1 180); do
+          # Terrain Diffusion Plus performs expensive one-time model loading and
+          # initial terrain/spawn analysis on a fresh world. Give that real work
+          # enough room to complete instead of treating a healthy long first boot
+          # as a compatibility failure.
+          for i in $(seq 1 480); do
             if grep -q 'Done (' server-first.log 2>/dev/null; then READY=1; break; fi
             if ! kill -0 "$PID" 2>/dev/null; then
               echo 'Server exited before readiness'; cat server-first.log; exit 1
             fi
+            if [ $((i % 12)) -eq 0 ]; then
+              echo "Still waiting for first-world readiness ($((i * 5))s elapsed)..."
+              tail -n 8 server-first.log || true
+            fi
             sleep 5
           done
           if [ "$READY" -ne 1 ]; then
-            echo 'Timed out waiting for server readiness'; tail -n 300 server-first.log; kill "$PID" || true; exit 1
+            echo 'Timed out waiting for server readiness after 40 minutes'; tail -n 300 server-first.log; kill "$PID" || true; exit 1
           fi
           printf 'stop\n' >&3
           for i in $(seq 1 60); do
@@ -147,15 +155,22 @@ jobs:
           bash ./run.sh nogui < server.stdin > server-restart.log 2>&1 &
           PID=$!
           READY=0
-          for i in $(seq 1 120); do
+          # Restart should be substantially cheaper because the world and model
+          # files already exist, but still allow enough time to catch slow real
+          # initialization rather than an arbitrary CI timeout.
+          for i in $(seq 1 240); do
             if grep -q 'Done (' server-restart.log 2>/dev/null; then READY=1; break; fi
             if ! kill -0 "$PID" 2>/dev/null; then
               echo 'Server exited before restart readiness'; cat server-restart.log; exit 1
             fi
+            if [ $((i % 12)) -eq 0 ]; then
+              echo "Still waiting for restart readiness ($((i * 5))s elapsed)..."
+              tail -n 8 server-restart.log || true
+            fi
             sleep 5
           done
           if [ "$READY" -ne 1 ]; then
-            echo 'Timed out waiting for restart readiness'; tail -n 300 server-restart.log; kill "$PID" || true; exit 1
+            echo 'Timed out waiting for restart readiness after 20 minutes'; tail -n 300 server-restart.log; kill "$PID" || true; exit 1
           fi
           printf 'stop\n' >&3
           for i in $(seq 1 60); do
