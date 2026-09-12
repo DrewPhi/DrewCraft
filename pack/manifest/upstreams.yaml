@@ -1,0 +1,376 @@
+# DrewCraft upstream dependency registry
+#
+# This file records where DrewCraft's third-party dependencies come from and
+# how we intend to consume/maintain them. It is NOT the production lockfile.
+# A candidate is promoted into the locked pack manifest only after the Stage 2
+# compatibility matrix passes and the exact downloaded artifact SHA-256 has
+# been recorded.
+
+schema_version: 1
+last_researched: "2026-09-12"
+target:
+  minecraft: "1.21.1"
+  loader: "neoforge"
+  java: 21
+
+ownership_classes:
+  UPSTREAM_BINARY: "Consume an official upstream artifact; do not maintain a DrewCraft fork unless patching becomes necessary and licensing permits it."
+  UPSTREAM_SOURCE: "Track an official source repository/ref because the selected candidate is source-built or no suitable immutable binary release has yet been locked."
+  DREWCRAFT_FORK: "DrewCraft maintains a minimal patch set against an upstream repository and must track both fork and upstream refs."
+  DREWCRAFT_OWNED: "Source is owned and maintained directly by DrewCraft."
+
+policy:
+  fork_only_when_required: true
+  vendor_upstream_source_in_monorepo: false
+  require_exact_sha256_before_lock: true
+  require_compatibility_gate_before_lock: true
+  obey_upstream_redistribution_terms: true
+  notes:
+    - "A source repository is tracked for audit/debug/API work even when releases are consumed as binaries."
+    - "Do not fork a project merely to make packaging easier; packaging is the manifest/build system's responsibility."
+    - "If a fork is required, record the fork repository, upstream repository, exact upstream base ref, and exact DrewCraft commit here."
+    - "Third-party binaries and model assets are not committed to this repository by default."
+
+upstreams:
+  terrain_diffusion_plus:
+    display_name: "Terrain Diffusion Plus"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_SOURCE
+    side: common
+    source:
+      provider: github
+      repository: "derekvawdrey/terrain-diffusion-plus"
+      url: "https://github.com/derekvawdrey/terrain-diffusion-plus"
+      branch: "master"
+      candidate_ref: "05fdcf5681cc53a9685325d714750b4427661a21"
+      candidate_ref_date: "2026-09-07"
+    artifact:
+      provider: source_build
+      candidate_version: "source-head-2026-09-07"
+      release_status: source-head-candidate
+      project_id: null
+      file_id: null
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "MIT for repository source; verify any separately downloaded model/assets terms before redistribution"
+    redistribution: "Do not bundle model/runtime assets until their individual terms are audited."
+    fork:
+      required: false
+      trigger: "Only if the public integration surface cannot expose the climate/elevation/worldgen data DrewCraft requires, or an upstream fix must be carried."
+    notes:
+      - "GitHub currently exposes no Release objects for this repository; source ref is therefore only a compatibility candidate, not a production release lock."
+      - "World Scale 2 remains the DrewCraft target."
+
+  chunky:
+    display_name: "Chunky"
+    kind: world_build_tool
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: server_build_only
+    source:
+      provider: github
+      repository: "pop4959/Chunky"
+      url: "https://github.com/pop4959/Chunky"
+      branch: "master"
+      candidate_ref: null
+    artifact:
+      provider: curseforge
+      project_id: 485681
+      file_id: 6383261
+      candidate_version: "1.4.23"
+      filename: "Chunky-NeoForge-1.4.23.jar"
+      release_status: release
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "GPL-3.0"
+    redistribution: "Audit final release packaging policy; normally used by world-build/server administration rather than shipped to friends."
+    fork:
+      required: false
+      trigger: "Only if a DrewCraft-specific pregeneration bug cannot be solved upstream/configurationally."
+
+  distant_horizons:
+    display_name: "Distant Horizons"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: client_and_server_candidate
+    source:
+      provider: gitlab
+      repository: "distant-horizons-team/distant-horizons"
+      url: "https://gitlab.com/distant-horizons-team/distant-horizons"
+      branch: null
+      candidate_ref: null
+    artifact:
+      provider: curseforge
+      project_id: 508933
+      file_id: 8389148
+      candidate_version: "3.2.0-b"
+      filename: "DistantHorizons-3.2.0-b-1.21.1-fabric-neoforge.jar"
+      release_status: beta
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "LGPL-3.0"
+    redistribution: "Verify final artifact redistribution/provider rules during release audit."
+    fork:
+      required: false
+      trigger: "Only if a critical DrewCraft compatibility patch is required; official source is GitLab, so do not create a fake GitHub source-of-truth mirror for convenience."
+    notes:
+      - "3.2.0-b is the newest 1.21.1 NeoForge candidate found, but upstream marks it Beta; it must earn promotion through the compatibility matrix."
+
+  create:
+    display_name: "Create"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: github
+      repository: "Creators-of-Create/Create"
+      url: "https://github.com/Creators-of-Create/Create"
+      branch: "mc1.21.1/dev"
+      candidate_ref: null
+    artifact:
+      provider: curseforge
+      project_id: 328085
+      file_id: 7963363
+      candidate_version: "6.0.10"
+      filename: "create-1.21.1-6.0.10.jar"
+      release_status: release
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "Verify upstream LICENSE/redistribution terms before public packaging"
+    redistribution: "Prefer original provider/acquisition path until the release audit records exact permission."
+    fork:
+      required: false
+      trigger: "Only if the Create API cannot support the small DrewCraft kinetic-power adapter without an upstream patch."
+
+  immersive_vehicles:
+    display_name: "Immersive Vehicles / MTS"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: github
+      repository: "DonBruce64/MinecraftTransportSimulator"
+      url: "https://github.com/DonBruce64/MinecraftTransportSimulator"
+      branch: "master"
+      candidate_ref: null
+    artifact:
+      provider: curseforge
+      project_id: 286703
+      file_id: 7926606
+      candidate_version: "24.0.0"
+      filename: "Immersive Vehicles-1.21.1-24.0.0.jar"
+      release_status: release
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "All Rights Reserved"
+    redistribution: "Do not rehost for convenience. Acquire through the permitted original-provider path and verify hash locally."
+    fork:
+      required: false
+      trigger: "Avoid forking unless upstream licensing explicitly permits the required modification and the aviation bridge cannot be implemented externally."
+
+  mts_official_pack:
+    display_name: "MTS Official Content Pack"
+    kind: content_pack
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: upstream_content_pack
+      repository: null
+      url: null
+      branch: null
+      candidate_ref: null
+    artifact:
+      provider: curseforge
+      project_id: 292217
+      file_id: 7933734
+      candidate_version: "V29"
+      filename: "MTS Official Pack-1.21.1-V29.jar"
+      release_status: release
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "All Rights Reserved"
+    redistribution: "Do not rehost. Acquire through the original provider and verify locally."
+    fork:
+      required: false
+      trigger: "Never fork merely for recipe/balance changes; V1 uses upstream content as-is unless a hard compatibility problem appears."
+
+  project_atmosphere:
+    display_name: "Project Atmosphere"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: github
+      repository: "xGabou/Project-Atmosphere"
+      url: "https://github.com/xGabou/Project-Atmosphere"
+      branch: "NeoForge-1.21.1"
+      candidate_ref: null
+    artifact:
+      provider: modrinth
+      project_id: "qIWoLcKJ"
+      version_id: "QBPZU1Dp"
+      candidate_version: "0.9.1.2"
+      filename: null
+      release_status: release
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    required_dependencies:
+      - serene_seasons
+      - gabous_libs
+    optional_upstream_dependencies:
+      - simple_clouds
+    license: "All Rights Reserved"
+    redistribution: "Do not rehost unless the author/provider terms explicitly permit it; use provider acquisition and hash verification."
+    fork:
+      required: false
+      trigger: "Only if the weather sampling/API hooks needed by DrewCraft cannot be exposed through a clean external adapter and licensing permits the patch."
+
+  simple_clouds:
+    display_name: "Simple Clouds"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: github
+      repository: "nonamecrackers2/simple-clouds"
+      url: "https://github.com/nonamecrackers2/simple-clouds"
+      branch: "1.21.1"
+      candidate_ref: null
+    artifact:
+      provider: curseforge
+      project_id: 1121215
+      file_id: 6928979
+      candidate_version: "0.7.3+1.21.1"
+      filename: "simpleclouds-0.7.3+1.21.1-all.jar"
+      release_status: beta
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "Custom upstream license; verify repository license before any modification/redistribution"
+    redistribution: "Third-party sharing/Curse Maven limitations are documented upstream; acquire from an allowed original-provider path."
+    fork:
+      required: false
+      trigger: "Only if a required Atmosphere/render integration cannot be achieved through supported hooks and licensing allows it."
+    notes:
+      - "V1 chooses Simple Clouds even though Project Atmosphere currently lists it as optional."
+      - "Candidate is upstream Beta and must pass the DH + Atmosphere rendering compatibility gate."
+
+  serene_seasons:
+    display_name: "Serene Seasons"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: github
+      repository: "Glitchfiend/SereneSeasons"
+      url: "https://github.com/Glitchfiend/SereneSeasons"
+      branch: "1.21.1"
+      candidate_ref: null
+    artifact:
+      provider: curseforge
+      project_id: 291874
+      file_id: 6182596
+      candidate_version: "10.1.0.3"
+      filename: "SereneSeasons-neoforge-1.21.1-10.1.0.3.jar"
+      release_status: beta
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    required_dependencies:
+      - glitchcore
+    license: "All Rights Reserved"
+    redistribution: "Use original-provider acquisition unless final audit documents explicit permission."
+    fork:
+      required: false
+      trigger: "Only for a hard compatibility issue that cannot be handled in DrewCraft and only if upstream terms permit it."
+
+  glitchcore:
+    display_name: "GlitchCore"
+    kind: library
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: github
+      repository: "Glitchfiend/GlitchCore"
+      url: "https://github.com/Glitchfiend/GlitchCore"
+      branch: "1.21.1"
+      candidate_ref: null
+    artifact:
+      provider: curseforge
+      project_id: 955399
+      file_id: 8109792
+      candidate_version: "2.1.0.2"
+      filename: "GlitchCore-neoforge-1.21.1-2.1.0.2.jar"
+      release_status: beta
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "All Rights Reserved"
+    redistribution: "Use original-provider acquisition unless final audit documents explicit permission."
+    fork:
+      required: false
+      trigger: "Do not fork a transitive library unless a blocking upstream bug requires it and licensing permits it."
+
+  gabous_libs:
+    display_name: "Gabou's Libs"
+    kind: library
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: github
+      repository: "xGabou/Gabou-s-Libs"
+      url: "https://github.com/xGabou/Gabou-s-Libs"
+      branch: "1.21.1"
+      candidate_ref: null
+    artifact:
+      provider: curseforge
+      project_id: 1367332
+      file_id: 8774265
+      candidate_version: "1.9"
+      filename: "gaboulibs-neoforge-1.9.jar"
+      release_status: release
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "All Rights Reserved"
+    redistribution: "Use original-provider acquisition unless final audit documents explicit permission."
+    fork:
+      required: false
+      trigger: "Do not fork unless Project Atmosphere requires a blocking library fix and upstream terms permit it."
+
+promotion_requirements:
+  - "Download candidate through an allowed provider path."
+  - "Compute and record SHA-256 from the actual artifact."
+  - "Resolve and record all transitive dependencies."
+  - "Run the Stage 2 dedicated-server/client compatibility matrix."
+  - "Run Windows and Apple Silicon client checks where the dependency is client-relevant."
+  - "Confirm redistribution/acquisition policy for the launcher/release flow."
+  - "Only then copy the promoted exact version/provider IDs/hash into the authoritative locked mods/content-pack manifests."
