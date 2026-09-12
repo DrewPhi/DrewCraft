@@ -10,6 +10,7 @@ on:
       - "tools/drewcraft_pack.py"
       - "pack/manifest/upstreams.yaml"
       - "pack/manifest/performance_candidates.yaml"
+      - "pack/manifest/radar_candidates.yaml"
       - "pack/manifest/profiles.yaml"
 
 permissions:
