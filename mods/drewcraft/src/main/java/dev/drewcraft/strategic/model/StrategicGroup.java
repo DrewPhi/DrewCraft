@@ -138,7 +138,7 @@ public final class StrategicGroup {
         if (!Double.isFinite(maxCatchupSeconds) || maxCatchupSeconds < 0.0) {
             throw new IllegalArgumentException("maxCatchupSeconds must be finite and non-negative");
         }
-        if (currentGameTime <= lastSimulatedGameTime) {
+        if (state != StrategicGroupState.TRAVELING || currentGameTime <= lastSimulatedGameTime) {
             return AdvanceResult.none();
         }
 
@@ -157,13 +157,16 @@ public final class StrategicGroup {
         if (!Double.isFinite(maxCatchupSeconds) || maxCatchupSeconds < 0.0) {
             throw new IllegalArgumentException("maxCatchupSeconds must be finite and non-negative");
         }
+        if (state != StrategicGroupState.TRAVELING) {
+            return AdvanceResult.none();
+        }
         boolean clamped = elapsedSeconds > maxCatchupSeconds;
         return advanceSecondsInternal(Math.min(elapsedSeconds, maxCatchupSeconds), clamped);
     }
 
     private AdvanceResult advanceSecondsInternal(double elapsedSeconds, boolean clamped) {
-        if (state != StrategicGroupState.TRAVELING || elapsedSeconds <= 0.0) {
-            return new AdvanceResult(elapsedSeconds, 0.0, false, clamped);
+        if (elapsedSeconds <= 0.0) {
+            return AdvanceResult.none();
         }
         double movementBudget = movementSpeedBlocksPerSecond * elapsedSeconds;
         StrategicRoute.AdvanceResult routeAdvance = route.advance(position, movementBudget);
