@@ -1,202 +1,172 @@
 # AGENTS.md — DrewCraft / ServerMc
 
-This repository is the canonical source for the **DrewCraft** Minecraft server experience. `ServerMc` is the repository/internal project name; DrewCraft is the friend-facing product/server name.
+This repository is the canonical source for the **DrewCraft** Minecraft server experience. `ServerMc` is the repository/internal project name; DrewCraft is the player-facing product/server name.
 
-Before making architectural or implementation changes, read:
+## Read first
 
-1. `docs/v_1_requirements.md` — the hard V1 product/release contract
-2. `docs/v_1_development_tree.md` — the canonical dependency-ordered execution checklist from current state to V1
-3. `docs/STRATEGIC_WORLD_MODEL.md` — canonical hostile-source, roaming-force, unloaded-movement, source-core, and wild-herd behavior contract
-4. `docs/SOURCE_CORE_SPEC.md` — exact V1 hostile-source core destruction, persistence, replacement, race-safety, and already-deployed-force semantics
-5. `docs/MOB_STRUCTURE_CANDIDATES.md` — tactical-AI, herd-AI, structure-source, and structure-density compatibility candidates
-6. `docs/PERFORMANCE_STACK.md` — canonical performance/optimization architecture and compatibility matrix
-7. `docs/UPSTREAM_DEPENDENCIES.md` — upstream ownership, source access, candidate-version, redistribution, and fork policy
-8. `pack/manifest/README.md` — how candidate registries/profiles merge and promote into exact locks
-9. `pack/manifest/upstreams.yaml` — foundational upstream candidates
-10. `pack/manifest/performance_candidates.yaml` — performance baseline and aggressive optimization spikes
-11. `pack/manifest/mob_structure_candidates.yaml` — mob/herd/structure compatibility-spike candidates
-12. `pack/manifest/profiles.yaml` — exact development compatibility profiles; do not silently merge mutually exclusive branches
-13. `docs/PROJECT_SPEC.md`
-14. `docs/SYSTEMS.md`
-15. `docs/MOD_STACK.md`
-16. `docs/REPO_ARCHITECTURE.md`
-17. `docs/LAUNCHER_HOSTING.md`
-18. `docs/ROADMAP.md` — older/high-level roadmap; where it conflicts with the V1 requirements or development tree, the V1 documents above win
+Before making architectural or implementation changes, read these in order:
+
+1. `docs/v_1_requirements.md` — hard V1 product/release contract
+2. `docs/v_1_development_tree.md` — canonical dependency-ordered execution checklist
+3. `docs/V1_EXECUTION_STATUS.md` — **live gate status, certification evidence, frozen-baseline policy, and immediate next work**
+4. `docs/STRATEGIC_WORLD_MODEL.md` — strategic hostile-source / roaming-force / herd behavior contract
+5. `docs/SOURCE_CORE_SPEC.md` — exact hostile-source clearing/persistence semantics
+6. `docs/PERFORMANCE_STACK.md` — performance/optimization architecture
+7. `docs/MOD_STACK.md` — subsystem ownership / anti-redundancy policy
+8. `docs/UPSTREAM_DEPENDENCIES.md` — source, fork, licensing, and redistribution policy
+9. `pack/manifest/README.md` — resolver/profile/promotion architecture
+10. `pack/manifest/upstreams.yaml`, `performance_candidates.yaml`, and `profiles.yaml` — machine-readable dependency state
+11. `docs/PROJECT_SPEC.md`, `docs/SYSTEMS.md`, `docs/REPO_ARCHITECTURE.md`, and `docs/LAUNCHER_HOSTING.md`
+12. `docs/ROADMAP.md` — high-level roadmap only; the requirements/development-tree/execution-status documents above win on conflicts
+
+## Current execution state — 2026-09-12
+
+The reproducible base stack is **certified for V1 integration development**.
+
+- Minecraft 1.21.1 / NeoForge 21.1.250 / Java 21
+- `stage2_base_performance` resolves and verifies successfully
+- exact dependency graph: 30 provider artifacts + one exact Terrain Diffusion Plus source build
+- full profile verification run `34702233400`: **PASS**
+- dedicated-server smoke run `34704011609` / job `103580655867`: **PASS**
+- fresh Terrain Diffusion Plus world reached readiness and shut down cleanly
+- the same persisted world restarted, reached readiness, and shut down cleanly
+- fatal-error scan passed
+
+The current mod/dependency profile is therefore the **frozen V1 integration baseline**. Do not restart mod shopping, opportunistic version bumps, structure-pack stacking, or tactical-AI experiments unless a blocking V1 defect makes a baseline change necessary. Mandatory transitives for already-selected dependencies are allowed when genuinely required.
+
+The next active milestone is `mods/drewcraft/`: integration-mod scaffolding, upstream capability/API audit, stable adapter contracts, and the first thin environment vertical slice.
+
+## CI policy after baseline certification
+
+The successful smoke test is the baseline certification run, not a test to repeat on every commit.
+
+During normal V1 integration development:
+
+- prefer compile, manifest, schema, unit, and focused integration tests;
+- do not run full fresh Terrain Diffusion Plus world creation on ordinary commits;
+- do not Chunky-pregenerate a production-scale world in GitHub Actions;
+- rerun an expensive full baseline boot only if an unavoidable dependency/platform change invalidates the certification, or during the meaningful V1 acceptance cycle;
+- prefer the final full-stack/soak/profiling cycle on local or dedicated hardware where long runs and client observation are cheap.
 
 ## Non-negotiable design principles
 
-- Minecraft target is 1.21.1 / NeoForge / Java 21 until an explicit migration decision is made.
-- DrewCraft V1 is **feature-complete and integration-complete, not balance-complete**. Broad recipe, economy, fuel-cost, spawn-frequency, and difficulty tuning belongs in V1.1+ unless an upstream default clearly destroys a core design pillar.
-- Geography must matter. Do not introduce routine teleportation or systems that make roads, rail, ships, aircraft, or weather irrelevant.
-- Create is the primary infrastructure/technology language. Avoid redundant giant tech trees.
-- Project Atmosphere is the atmospheric source of truth; bridge it rather than building another weather simulation.
-- Strategic mobs outside loaded chunks are persistent lightweight records, not permanently loaded entities.
-- Important hostile groups must exist at real strategic positions while unloaded; do not implement attacks as timed spawn events around players.
-- Players may encounter patrols/hordes/armies by chance because their routes intersect during exploration.
-- Hostile camps/forts/towns/cities are real persistent strategic sources tied to generated structures.
-- Every hostile strategic source has an explicit DrewCraft Source Core objective or equivalent stable source controller.
-- **The Source Core block is only the physical player-facing objective; the persistent `SourceRecord` is authoritative.**
-- Destroying a bound Source Core by a valid break/explosion event permanently marks that source `CLEARED`, and the cleared state survives unload/restart/backup restore.
-- Replacing, moving, duplicating, Silk-Touching, or otherwise reacquiring the physical core must never reactivate or duplicate strategic authority.
-- Source clearing must be race-safe against source launch scheduling: groups committed before clearing survive; no new group may commit after `CLEARED` becomes authoritative.
-- Clearing a source does not magically despawn already-deployed groups; they remain persistent world populations unless their strategic behavior later causes retreat/merge/destruction.
-- Source state is independent of ordinary mob spawner blocks.
-- Wild animal populations may be persistent strategic herds; materialized herds should spawn/behave as coherent groups rather than unrelated singleton events.
-- Player-owned/domesticated/penned animals must not be silently absorbed into roaming wild-herd state.
-- Normal local Minecraft spawning/farms remain available; strategic spawning is additive.
-- Existing mob/herd AI mods may be reused for **loaded tactical behavior only** when they pass compatibility gates. DrewCraft remains authoritative for source identity, strategic movement, materialization, casualties, and herd persistence.
-- Enhanced Hordes + Enhanced Hordes Tweaks and Zombie Hordes are **alternative tactical spikes**, not mods to stack blindly.
-- Ethological and Herd Instinct are herd-AI candidates; neither may become a second unloaded population simulator.
-- Towns and Towers plus a selective When Dungeons Arise whitelist is the first hostile-source structure spike; CTOV is initially an alternative to Towns and Towers, not an automatic companion.
-- Siege mobs path normally first and breach only when needed.
-- Siege block damage must be constrained to meaningful breach corridors; never implement indiscriminate nearest-block griefing, even if an upstream horde mod supports generic block breaking.
-- Structure mods are content suppliers, not strategic-state authorities. Only whitelisted structure IDs become strategic sources.
-- Structure density must stay sparse enough that Terrain Diffusion World Scale 2 still feels genuinely large; prefer explicit structure-set configuration/whitelists to indiscriminate structure-pack stacking.
-- The performance stack owns **performance only**, never gameplay state or simulation semantics.
-- Baseline performance candidates are tested as part of the Stage 2 full-stack lock; do not treat them as optional cosmetic QoL additions.
-- Start optimization mods with semantics-preserving settings. Dynamic entity activation, mobcap changes, AI freezing, asynchronous worldgen and similar behavior-changing optimizations require separate evidence before enabling.
-- C2ME is an isolated world-build compatibility spike until Terrain Diffusion/structure output, restart safety, and corruption tests pass; do not silently add it to production.
-- Client culling must be tested/whitelisted for Create, MTS and DrewCraft block entities whose render bounds exceed normal bounds.
-- Every optimizer retained in the production lock needs either measurable benefit or a concrete reliability benefit worth its maintenance/conflict surface.
-- `profiles.yaml` is the selector for candidate combinations. Do not manually assemble an ad hoc development `mods/` directory that bypasses the selected profile.
-- Radar is physical infrastructure with power/data connectivity and physical displays.
-- Radar antenna height/terrain obstruction should matter.
+- DrewCraft V1 is **feature-complete and integration-complete, not balance-complete**. Broad recipe/economy/fuel/spawn/difficulty tuning is V1.1+ unless an upstream default destroys a core design pillar.
+- Geography matters. Do not introduce routine teleportation or systems that make roads, rail, aircraft, or weather irrelevant.
+- Terrain Diffusion Plus owns overworld terrain/climate/caves.
+- Project Atmosphere is the atmospheric source of truth.
+- Create is the primary infrastructure/technology language and owns rail/industry.
+- MTS / Immersive Vehicles owns road vehicles and aircraft.
+- Distant Horizons owns distant terrain LOD.
+- Chunky is offline pregeneration tooling, not live world simulation.
+- Simple Clouds is rendering/visual support under the weather integration; it is not a second weather authority.
+- DrewCraft owns radar, cross-mod environmental bridges, strategic sources/populations, unloaded movement, armies, materialization, casualty reconciliation, herds, and siege semantics.
+- Normal Minecraft local spawning, farms, ordinary spawners, caves, redstone, building, and Create contraptions remain available; strategic simulation is additive.
+- Strategic populations outside loaded chunks are persistent lightweight records, not permanently ticked entities.
+- Important hostile groups occupy real strategic positions while unloaded. Do not implement attacks as arbitrary timed spawn events near players.
+- Hostile strategic sources are tied to real generated geography and persistent `SourceRecord`s.
+- The player-facing Source Core block is not itself authoritative state.
+- Legitimate Source Core destruction atomically persists `CLEARED`; replacing/moving/duplicating the block cannot reactivate or duplicate source authority.
+- Groups committed before source clearing remain real populations; no new group may commit after `CLEARED` becomes authoritative.
+- Wild herds may use persistent strategic records, but named/domesticated/leashed/penned/player-owned animals must not be silently absorbed.
+- Sieges path normally first. Breaching is constrained to useful corridors; never implement indiscriminate nearest-block griefing.
+- Radar is physical infrastructure: antenna/dish, controller, Create kinetic power, connectivity/data, terrain/height-dependent coverage, physical display.
 - Friends must not manually manage Java, NeoForge, or mod folders.
 - Client and server releases come from one locked manifest and must not drift.
-- Do not commit the full generated world, third-party jars by default, Java runtimes, model weights, credentials, backups, or large caches to Git.
-- Do not add automatic cloud autoscaling that can silently create charges.
+- Do not commit generated worlds, third-party jars by default, Java runtimes, model weights, credentials, backups, or large caches.
+- Do not add cloud autoscaling that can silently create charges.
 
-## Development order
+## Development order from the certified baseline
 
-`docs/v_1_development_tree.md` is the canonical implementation order and checklist. Work from the earliest unmet dependency/gate rather than jumping to the most interesting feature.
+`docs/v_1_development_tree.md` remains the canonical dependency graph. `docs/V1_EXECUTION_STATUS.md` says which gates are already complete.
 
-In particular:
+From the current state, work in this order:
 
-- prove reproducible pack generation first;
-- Stage 1 resolver work must read `upstreams.yaml`, `performance_candidates.yaml`, `mob_structure_candidates.yaml`, and `profiles.yaml`, expand the selected profile, reject incompatible combinations, resolve transitives, classify sides, acquire legal artifacts and compute exact hashes;
-- the first resolver target is `stage2_base_performance` from `profiles.yaml`;
-- perform the upstream ownership/source audit in `docs/UPSTREAM_DEPENDENCIES.md` as part of the reproducible-pack stage;
-- use `docs/MOB_STRUCTURE_CANDIDATES.md` only to select controlled compatibility spikes; do not promote candidates by documentation alone;
-- use `docs/PERFORMANCE_STACK.md` to extend the Stage 2 technical baseline with the intended optimization suite;
-- lock and test the complete foundational + performance baseline before optional structures, ship mods or tactical-AI branches are promoted;
-- run Enhanced Hordes/Tweaks versus Zombie Hordes as separate hostile-AI profiles;
-- run Ethological versus the narrower Herd Instinct path as separate herd-AI profiles;
-- run the first structure-source profile with vanilla control + Towns and Towers + a tiny WDA whitelist, with CTOV held as an alternative;
-- run C2ME only as a separate world-build experiment against the same seed/config and compare correctness as well as speed;
-- prove the production world pipeline and real host constraints before advanced custom systems;
-- establish release/client/server artifact contracts before depending on them;
-- build the DrewCraft integration-mod platform and adapters before feature-specific bridges;
-- prove one thin vertical slice before adding content breadth;
-- prove persistence/materialization correctness before scaling to armies;
-- implement/source-index hostile structures only after the strategic kernel/materialization semantics are stable;
-- implement Source Core clearing exactly according to `docs/SOURCE_CORE_SPEC.md`, including idempotency, persistence, replacement safety, and launch/clear race tests;
-- perform full cross-system, failure/restart, restore, profiling and performance tests before V1.
+1. scaffold one NeoForge 1.21.1 / Java 21 `mods/drewcraft/` integration mod;
+2. establish configuration, feature flags, observability/debug commands, tests, network/version boundaries, and versioned SavedData persistence foundation;
+3. define upstream-independent adapter contracts for terrain, weather, Create kinetic power, and MTS vehicle/aircraft state;
+4. audit integration surfaces in order: Terrain Diffusion Plus -> Project Atmosphere -> Create -> MTS;
+5. prefer public API/events, then an external adapter, then the narrowest possible accessor/mixin; fork only as a last resort when the upstream license permits it;
+6. prove a server-side environment sampler using Terrain Diffusion Plus + Project Atmosphere;
+7. add Create kinetic-power and MTS adapters;
+8. prove the first cross-mod slice `Terrain Diffusion Plus -> Project Atmosphere -> DrewCraft -> MTS` for aviation weather;
+9. build physical radar on the same environment pipeline and cache scans/terrain masks;
+10. establish strategic persistence/IDs/coarse clock/route-ETA/materialization/casualty reconciliation before scaling to sources, armies, sieges, or herds;
+11. build launcher/release/server-update paths against immutable manifest/artifact contracts;
+12. perform production-world, host, client-platform, restore, soak, failure, and performance acceptance tests before V1.
 
-Do **not** start substantial radar, army, siege, or balance work while an earlier hard gate in the V1 development tree is still failing.
-
-## Candidate-manifest architecture
-
-`pack/manifest/README.md` defines the promotion flow.
-
-- `upstreams.yaml` contains foundational platform/gameplay candidates.
-- `performance_candidates.yaml` contains the intended Stage 2 performance suite plus isolated aggressive experiments.
-- `mob_structure_candidates.yaml` contains mutually exclusive or subsystem-specific gameplay/content spikes.
-- `profiles.yaml` defines explicit combinations of those candidates for resolver/build/test runs.
-- The future `mods.yaml` / `content-packs.yaml` contain only exact promoted choices with hashes.
-
-A candidate appearing in a registry does **not** mean it belongs in every generated profile.
-
-## Strategic world contract
-
-`docs/STRATEGIC_WORLD_MODEL.md` is the detailed player-facing behavioral contract. `docs/SOURCE_CORE_SPEC.md` is authoritative for the exact source-core clearing implementation contract.
-
-In particular:
-
-- strategic sources are indexed from real generated structures and have stable IDs;
-- the DrewCraft Source Core is the V1 clearing objective;
-- the core block itself is not the source state;
-- legitimate core destruction atomically persists `CLEARED` state before the source may launch another force;
-- replacing the physical core block does not reactivate a source;
-- core duplication/movement must not create, move, or duplicate source authority;
-- groups already committed before clearing remain valid persistent groups;
-- no group may be newly committed after clearing becomes authoritative;
-- sources launch real strategic groups from their real geographic location;
-- groups advance using coarse unloaded simulation with routes/ETAs rather than teleportation;
-- patrols and roaming hordes need not target a player at all;
-- player-targeting forces should gain target knowledge through explicit, explainable rules rather than omniscience;
-- materialization is transactional/idempotent and casualties survive unload/restart;
-- wild herds reuse the same strategic-kernel philosophy and materialize as groups;
-- tactical mob/herd AI is replaceable compatibility infrastructure, not the persistence authority.
-
-## Performance contract
-
-`docs/PERFORMANCE_STACK.md` defines the optimization architecture.
-
-The intended baseline compatibility suite includes ModernFix, FerriteCore, Lithium, ServerCore, ScalableLux, Chunk Sending, AllTheLeaks, the FastSuite/FastWorkbench/FastFurnace family, Clumps, Connectivity, spark, Embeddium, ImmediatelyFast, Entity Culling, MoreCulling, and their required libraries where applicable.
-
-Rules:
-
-- offline pregeneration remains the primary defense against live Terrain Diffusion + giant-structure worldgen cost;
-- measure p50/p95/p99 MSPT, memory/GC and representative client frame performance rather than relying on mod marketing;
-- inspect mixin/lighting/network/render conflicts after every baseline change;
-- generic AI/entity-freezing optimizers are not a substitute for DrewCraft's strategic record/materialization architecture;
-- a large strategic army is bounded as active entities/waves rather than kept permanently ticked;
-- spark is required development/diagnostic tooling even though it does not itself make the server faster.
-
-## Upstream dependency and fork policy
-
-The upstream registries are part of Stage 1 of the V1 development tree.
-
-- Track the official source repository for every third-party dependency even when DrewCraft consumes the official binary.
-- Candidate registries are not authoritative production locks until compatibility testing and SHA-256 verification promote an artifact.
-- Do not fork or vendor an upstream project merely to simplify packaging. The manifest/resolver is responsible for packaging.
-- Prefer upstream binaries plus a DrewCraft compatibility adapter.
-- Create a DrewCraft fork only when a required V1 integration or blocking bug genuinely needs maintained source changes **and** the upstream license permits the intended modification/distribution model.
-- If a fork is created, record the upstream base ref, fork URL, exact DrewCraft commit, build procedure, license notes, and resulting artifact hash in the upstream registry.
-- Keep fork patch sets minimal and upstream generally useful fixes when practical.
-- Source visibility is not redistribution permission. Respect provider/license restrictions, especially for All Rights Reserved projects.
-- Never silently replace a provider artifact with a locally modified build under the same version identity.
+Do not jump straight to radar UI, army content breadth, decorative blocks, or difficulty tuning before the adapter/persistence foundations they depend on exist.
 
 ## Custom mod architecture
 
-Prefer one NeoForge integration mod with internal modules/adapters rather than many tiny mutually dependent custom mods.
+Prefer **one NeoForge integration mod with internal modules/adapters** rather than many tiny mutually dependent mods.
 
-Keep third-party integrations behind explicit adapters so upstream changes are localized.
+Core logic should depend on DrewCraft-owned contracts rather than third-party implementation types. Initial service boundaries should be roughly:
+
+- `TerrainService.sample(position)` -> elevation / terrain / climate data needed by DrewCraft;
+- `WeatherService.sample(position)` -> wind / temperature / pressure / humidity / precipitation / visibility / severity;
+- `PowerService` -> Create kinetic availability / consumption semantics;
+- `VehicleService` -> MTS pose / velocity / orientation / instrument-control hooks.
+
+Third-party types belong inside their adapter modules. This is how DrewCraft localizes upstream churn and keeps radar, aviation, and strategic logic testable without booting the whole game.
 
 Every major custom subsystem should have:
 
-- a server-side feature flag
-- versioned persistence where applicable
-- admin/debug observability
-- bounded performance behavior
-- tests for restart/unload edge cases
+- a server-side feature flag;
+- bounded performance behavior;
+- admin/debug observability;
+- versioned persistence where applicable;
+- restart/unload/failure tests where applicable.
 
-## Performance assumptions
+## Strategic world contract
 
-The initial production target is constrained. Therefore:
+`docs/STRATEGIC_WORLD_MODEL.md` and `docs/SOURCE_CORE_SPEC.md` are authoritative.
 
-- no global per-tick scans
-- no distant entity ticking
-- no full-resolution unloaded-chunk entity pathfinding
-- use coarse elapsed-time strategic simulation
-- cache radar products and terrain masks
-- cap expensive siege planners
-- make performance limits configurable
-- pregenerate expensive production terrain/structures offline
-- profile before introducing additional optimization dependencies
+The strategic kernel should provide stable IDs, coarse elapsed-time simulation, route/ETA state, persistent sources/groups/herds, transactional materialization/dematerialization, and casualty reconciliation. Loaded tactical behavior is replaceable; strategic identity and persistence are not.
+
+No global per-tick scans or distant full-resolution pathfinding. Distant groups move coarsely; nearby groups materialize into bounded tactical entities/waves and reconcile back to their strategic record.
+
+## Weather / aviation / radar contract
+
+Project Atmosphere provides weather state. Terrain Diffusion Plus provides terrain/elevation/climate context. DrewCraft adapts both into upstream-independent data used by aviation and radar.
+
+The first meaningful integration proof is an environment-sampling debug command. Only after that should weather forces be applied to MTS aircraft.
+
+Radar should reuse the same environment pipeline. Height, terrain obstruction, power, range, cadence, and caching must matter. Ground radar and aircraft radar should not become separate weather simulations.
+
+## Performance contract
+
+The performance stack owns performance only; it never owns gameplay state or strategic semantics.
+
+- offline pregeneration remains the primary defense against live Terrain Diffusion worldgen cost;
+- strategic records remain the primary defense against ticking thousands of distant entities;
+- cache radar products and terrain masks;
+- cap expensive siege planners/materialized populations;
+- measure p50/p95/p99 MSPT, memory/GC, and representative client frame behavior;
+- use `spark` for profiling;
+- behavior-changing optimizers require separate evidence before promotion;
+- C2ME remains an isolated experiment unless correctness and speed are both proven.
+
+## Upstream dependency and fork policy
+
+- Track official upstream source for every third-party dependency.
+- Provider artifacts use exact identity/hash verification.
+- Terrain Diffusion Plus source builds use exact source commit/build recipe/model provenance; raw JAR bytes are not assumed reproducible across Gradle builds when archive metadata varies.
+- Prefer official binaries plus DrewCraft adapters.
+- Do not fork/vendor an upstream merely to simplify packaging.
+- Fork only when a required V1 integration/bug fix cannot live cleanly in DrewCraft and licensing permits the intended modification/distribution.
+- If a fork becomes necessary, record upstream base ref, fork URL, DrewCraft commit, patch purpose, build procedure, license notes, and artifact identity.
+- Source visibility is not redistribution permission; respect provider/license restrictions.
 
 ## Release discipline
 
-Do not update a dependency merely because a newer version exists.
+Do not update a dependency merely because a newer version exists. The certified baseline is evidence, and changing a base dependency invalidates some of that evidence.
 
-A dependency change is complete only after the generated client/server pack boots, connects, loads the existing world where relevant, and the affected integration has been tested.
+World-generation changes are especially sensitive because they can permanently change new terrain.
 
-World-generation changes require special caution because new terrain may differ permanently from existing terrain.
-
-Do not call a V1 feature complete because it worked once in a development world. Completion requires the relevant gate in `docs/v_1_development_tree.md`, including restart/unload/performance testing where specified.
+A V1 feature is complete only after its relevant dependency-tree gate passes, including restart/unload/performance behavior where required. Working once in a development world is not sufficient.
 
 ## User experience
 
 The public-facing name is **DrewCraft**.
 
-The download site should remain deliberately simple: Windows and Mac install buttons. Complexity belongs in the launcher, not in setup instructions for friends.
+The download site should remain deliberately simple: one Windows install path and one Mac install path. Complexity belongs in the launcher/updater, not in instructions for friends.
