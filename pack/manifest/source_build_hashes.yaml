@@ -16,11 +16,14 @@ artifacts:
     variant: cpu
     build_command: ./gradlew -p versions/1.21.1 buildNeoForgeCpu --no-daemon
     filename: terrain-diffusion-mc-neoforge-1.21.1-2.3.0-cpu.jar
-    sha256: 4aee1254c01085b745a20db8b48025a77fba802b7b6bc90456a33f38fd3ae5bd
-    size: 93968726
+    raw_sha256_observed: 4aee1254c01085b745a20db8b48025a77fba802b7b6bc90456a33f38fd3ae5bd
+    raw_size_observed: 93968726
+    verification_mode: source_ref_plus_embedded_manifest
     model_assets_manifest_sha256: d6ce77b3e475b85b0ac2a17d56be3b670b842648fd5e3958301951b98780cdbc
     model_repository: xandergos/terrain-diffusion-30m-onnx
     model_revision: ad2df557eca5645f588766101cf3bc3682455c3e
 notes:
-  - "This hash is reproducible source-build evidence for the pinned Terrain Diffusion Plus candidate; the compiled jar is not committed to this repository."
-  - "The model assets are downloaded separately at runtime/build-time according to the upstream manifest and are individually hash-pinned by that manifest."
+  - "The upstream Gradle build is not byte-for-byte reproducible: archive metadata/timestamps can change the raw jar SHA-256 between equivalent builds. Do not use raw_sha256_observed as the CI source-build equivalence check."
+  - "CI verifies the exact source repository/ref, expected output filename, embedded model-assets manifest hash, pinned model repository/revision, and required model asset set."
+  - "Each produced jar still receives a raw SHA-256 in the generated pack layout. When DrewCraft publishes a specific compiled jar as a release asset, that exact binary SHA-256 becomes the release lock."
+  - "Model assets are downloaded separately according to the upstream manifest and are individually hash-pinned by that manifest; DrewCraft does not commit model weights."
