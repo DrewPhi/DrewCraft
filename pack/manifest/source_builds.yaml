@@ -1,0 +1,52 @@
+schema_version: 1
+last_researched: "2026-09-12"
+
+source_builds:
+  terrain_diffusion_plus:
+    display_name: "Terrain Diffusion Plus"
+    source:
+      provider: github
+      repository: "derekvawdrey/terrain-diffusion-plus"
+      ref: "05fdcf5681cc53a9685325d714750b4427661a21"
+    target:
+      minecraft: "1.21.1"
+      loader: neoforge
+      java: 21
+    upstream_version: "2.3.0"
+    variant: cpu
+    rationale: "CPU/CoreML is the neutral Stage 2 artifact: unlike DirectML it requires no local DML jar, and unlike CUDA it is not NVIDIA-specific."
+    build:
+      working_directory: "."
+      command: "./gradlew -p versions/1.21.1 buildNeoForgeCpu --no-daemon"
+      output_directory: "versions/1.21.1/neoforge/build/libs"
+      output_rule: "Exactly one production jar after excluding *-sources.jar, *-javadoc.jar, *-dev.jar and obvious test artifacts."
+      gradle_heap: "4G"
+    runtime:
+      onnx_runtime_version: "1.20.0"
+      variant_dependency: "com.microsoft.onnxruntime:onnxruntime:1.20.0"
+    model_assets:
+      provider: huggingface
+      repository: "xandergos/terrain-diffusion-30m-onnx"
+      revision: "ad2df557eca5645f588766101cf3bc3682455c3e"
+      required_files:
+        - base_model.onnx
+        - coarse_model.onnx
+        - decoder_model.onnx
+        - pipeline_data.json
+        - world_pipeline_config.json
+      note: "Upstream build generates and embeds model-assets-manifest.json containing provider URLs, sizes and SHA-256s; DrewCraft does not commit model weights."
+    bundled_dependencies:
+      - name: "YUNG's Better Caves"
+        version: "1.21.1-NeoForge-3.1.4"
+        license: LGPL-3.0
+      - name: "YUNG's API"
+        version: "1.21.1-NeoForge-5.1.6"
+        license: LGPL-3.0
+    licensing:
+      source: MIT
+      note: "Upstream third-party notice documents unmodified jar-in-jar YUNG dependencies. Model-asset redistribution remains separately audited; normal runtime may acquire them from their pinned provider."
+    lock_requirements:
+      - "Build from the exact source ref with Java 21."
+      - "Record production jar filename, size and SHA-256."
+      - "Extract and record the embedded model-assets manifest and its SHA-256."
+      - "Do not publish the built jar as a DrewCraft artifact until redistribution packaging policy is finalized."
