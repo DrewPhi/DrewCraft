@@ -4,11 +4,11 @@ This document defines how dependencies enter DrewCraft and, critically, **which 
 
 The hard rule is:
 
-> **One authoritative owner per subsystem. Other mods may render, consume, or bridge that state, but they must not create a competing second implementation.**
+> **One authoritative owner per subsystem. Other mods may render, consume, optimize, or bridge that state, but they must not create a competing second implementation.**
 
 The current target is Minecraft **1.21.1**, **NeoForge**, **Java 21**.
 
-Exact artifacts are tracked as candidates in `pack/manifest/upstreams.yaml` and are promoted into the production lock only after the V1 Stage 2 compatibility matrix passes.
+Candidate artifacts are split across the machine-readable registries under `pack/manifest/`. They are promoted into the production lock only after the relevant compatibility matrix passes and exact artifact SHA-256 values are recorded.
 
 ## 1. Responsibility / anti-redundancy matrix
 
@@ -23,14 +23,21 @@ Exact artifacts are tracked as candidates in `pack/manifest/upstreams.yaml` and 
 | Clouds and localized weather rendering | Simple Clouds, under Project Atmosphere control/integration | visual/local precipitation substrate | treating Simple Clouds as an independent competing weather authority |
 | Seasonal calendar / foliage / crop-season behavior | Serene Seasons where required/stable | Project Atmosphere integrates with it | a second season system |
 | Physical weather radar | DrewCraft custom mod | consumes Project Atmosphere; powered through Create adapter | a separate radar mod/minimap weather cheat |
-| Strategic mobs, distant hordes, armies and herds | DrewCraft custom mod | normal Minecraft entities only when materialized | a second macro horde/world-simulation mod |
-| Siege planning and constrained breaching | DrewCraft custom mod | ordinary mob navigation first | generic indiscriminate block-breaking AI |
+| Strategic mobs, distant hordes, armies and herds | DrewCraft custom mod | tactical AI helpers only after compatibility tests | a second macro horde/world-simulation mod |
+| Loaded hostile horde behavior | selected tactical helper or DrewCraft goals | Enhanced Hordes + Tweaks **or** Zombie Hordes are candidate branches | stacking overlapping horde overhauls; helper spawning strategic strength |
+| Loaded wild-herd behavior | selected herd helper or DrewCraft goals | Ethological or Herd Instinct are candidate branches | a second unloaded ecology/population simulator |
+| Hostile source architecture/content | selected generated structures + DrewCraft source mapping/core | Towns and Towers + selective WDA is the first spike | treating every structure as a source; indiscriminate structure-pack stacking |
+| Hostile source state / Source Core lifecycle | DrewCraft custom mod | structure mods only supply architecture | deriving source state from ordinary spawners or third-party raid state |
+| Siege planning and constrained breaching | DrewCraft custom mod | ordinary mob navigation first; external siege code may be studied | generic indiscriminate block-breaking AI |
 | Local vanilla spawning and mob farms | Minecraft / selected upstream spawn rules | DrewCraft strategic system is additive | replacing ordinary spawning with the strategic layer |
+| Server/core performance | semantics-preserving optimization suite | ModernFix, FerriteCore, Lithium, ServerCore, ScalableLux, etc. | an optimizer becoming a gameplay/system authority |
+| Client rendering performance | Embeddium + targeted render optimizers | ImmediatelyFast, Entity Culling, MoreCulling | renderer/culling settings that make required content disappear |
+| Profiling | spark + process metrics | evidence for optimization decisions | cargo-cult performance mods without measurement |
 | Routine long-distance travel | roads, Create rail, MTS vehicles, vanilla boats; ships if proven stable | Nether remains available subject to a coarse pillar-preserving rule if necessary | Waystones/routine teleportation |
 
 This matrix is the default answer when a new mod appears to overlap an existing one: **do not add it unless it solves a missing capability that cannot be implemented cleanly through the existing owner or DrewCraft bridge.**
 
-## 2. Baseline dependencies
+## 2. Foundational gameplay dependencies
 
 ### Terrain Diffusion Plus
 
@@ -55,6 +62,8 @@ Official source: `derekvawdrey/terrain-diffusion-plus`.
 
 Chunky is operational tooling, not gameplay. It exists because Terrain Diffusion generation is expensive and the production world should be built ahead of time.
 
+Offline pregeneration is also DrewCraft's most important performance strategy: ordinary production play should load already-built Terrain Diffusion terrain and source structures rather than generate them while players are flying or driving.
+
 ### Distant Horizons
 
 **Role:** communicate the huge world's scale visually using distant LOD rendering.
@@ -65,6 +74,7 @@ It must be tested for:
 - multiplayer behavior
 - memory/GPU burden
 - interaction with Simple Clouds
+- interaction with Embeddium and the client optimization stack
 - sensible pack defaults
 
 Distant Horizons does not own weather, world generation, navigation or strategic simulation.
@@ -124,7 +134,7 @@ This includes the source data used by:
 
 Simple Clouds may itself expose localized cloud/weather behavior, but inside DrewCraft it is **not a competing weather authority**. Project Atmosphere is expected to control/integrate the atmospheric behavior, while Simple Clouds supplies the cloud rendering/local visual machinery.
 
-This pairing is intentional rather than redundant: Project Atmosphere's own documentation describes its simulation as replacing Simple Clouds' random cloud spawning with climate-driven behavior.
+This pairing is intentional rather than redundant: Project Atmosphere's integration is expected to drive climate/weather behavior while Simple Clouds supplies the visible cloud machinery.
 
 ### Serene Seasons
 
@@ -136,15 +146,157 @@ Serene Seasons can affect foliage, temperature context, weather and crop growth,
 - Project Atmosphere consumes/integrates seasonal state for atmospheric behavior;
 - DrewCraft does not create a third season simulation.
 
-Current Project Atmosphere releases explicitly support Serene Seasons, and the selected dependency graph determines whether it is required. Serene Seasons itself requires GlitchCore on modern versions.
+The selected dependency graph determines whether it is required. Serene Seasons itself requires GlitchCore on modern versions.
 
 ### Required libraries
 
 Support libraries such as GlitchCore or Gabou's Libs are dependencies, not gameplay systems. They must be tracked explicitly in the manifest so they never become invisible manual prerequisites.
 
-## 3. Compatibility-gated candidates
+## 3. Performance baseline
 
-These capabilities are allowed only after the baseline passes.
+`docs/PERFORMANCE_STACK.md` is the detailed optimization contract and `pack/manifest/performance_candidates.yaml` is its machine-readable candidate registry.
+
+Performance mods **do not own gameplay behavior**. They are allowed only while DrewCraft's simulation semantics remain correct.
+
+### Intended Stage 2 baseline suite
+
+Common/server-side technical baseline:
+
+- **ModernFix** — broad memory/startup/performance fixes
+- **FerriteCore** — memory reduction
+- **Lithium** — game-logic/ticking optimization
+- **ServerCore** — server optimization with conservative semantics-preserving settings first
+- **ScalableLux** — lighting optimization
+- **Chunk Sending** — smoother/prioritized/cached chunk delivery
+- **AllTheLeaks** — leak mitigation
+- **FastSuite**
+- **FastWorkbench**
+- **FastFurnace**
+- **Clumps** — XP-orb entity reduction
+- **Connectivity** — networking/login reliability helper
+- **spark** — profiler/diagnostics
+
+Client performance baseline:
+
+- **Embeddium** — primary NeoForge renderer optimization
+- **ImmediatelyFast**
+- **Entity Culling**
+- **MoreCulling**
+
+Required libraries such as **Placebo** and **Cupboard** are resolved automatically by the pack resolver.
+
+### Configuration rules
+
+Start with correctness-preserving settings.
+
+In particular:
+
+- ServerCore entity-activation/dynamic-distance/mobcap behavior remains off until separately proven;
+- no generic AI/entity freezing for strategic encounter entities;
+- ScalableLux must pass Create + structure + restart lighting tests;
+- Entity Culling/MoreCulling must not hide Create contraptions, MTS content, cloud/weather visuals or DrewCraft radar displays; whitelist renderers when necessary;
+- Connectivity may improve resilience but cannot mask a broken custom networking protocol;
+- every retained optimizer needs measurable performance value or a concrete reliability benefit.
+
+### C2ME
+
+C2ME is an **isolated compatibility spike**, not part of the first baseline.
+
+Its concurrency could substantially accelerate offline pregeneration, but Terrain Diffusion and large modded structure generation are exactly where asynchronous assumptions need proof. Test the same seed/config with and without C2ME and compare correctness, structures, restart safety, warnings, memory, CPU and chunks/second.
+
+Even if useful on the world-build machine, C2ME does not automatically belong on the production server after the bounded world is pregenerated.
+
+### Deliberately deferred performance mods
+
+- Noisium — archived; do not baseline.
+- SuperChunk/GPU worldgen bundles — too aggressive/hardware-specific for V1 baseline.
+- DoesPotatoTick?/generic AI freezers — not baseline because they can violate strategic encounter semantics.
+
+DrewCraft's primary mob optimization is architectural: distant armies/herds are records, nearby groups materialize, and large encounters use bounded active entities/waves rather than permanently ticking thousands of mobs.
+
+## 4. Tactical hostile AI candidates
+
+DrewCraft owns macro-scale strategic state regardless of which local helper wins.
+
+### Branch A — Enhanced Hordes + Enhanced Hordes Tweaks
+
+High-priority loaded-behavior spike for:
+
+- horde grouping/wandering;
+- collective pursuit;
+- stacking/climbing;
+- tagged mob participation;
+- other local cooperative behavior.
+
+Requirements:
+
+- disable/avoid timed/random spawning that creates strategic strength outside DrewCraft accounting;
+- generic block breaking must not override DrewCraft's siege planner;
+- materialized strategic IDs/casualties remain authoritative in DrewCraft.
+
+### Branch B — Zombie Hordes
+
+Alternative loaded-horde spike. Test against Branch A rather than stacking both.
+
+Choose the branch that gives the desired behavior with the smallest compatibility and maintenance surface. If neither is clean enough, implement only the required local goals in DrewCraft.
+
+### Reference-only AI
+
+- **Improved Mobs** — useful pathfinding/block-breaking techniques, but too globally invasive for the desired siege rules.
+- **Invasion Mod** — useful engineer/bridge/ladder/siege R&D, but its Nexus/wave loop duplicates DrewCraft's strategic system.
+
+See `docs/MOB_STRUCTURE_CANDIDATES.md`.
+
+## 5. Wild-herd AI candidates
+
+DrewCraft owns `HerdRecord`, unloaded movement, materialization and population accounting.
+
+### Ethological
+
+Rich experimental branch for coherent loaded livestock/herd behavior including group movement, rejoining, threat response, grazing/water/rest and pen recognition.
+
+Because it is young and broad, it must earn inclusion through performance and interaction testing.
+
+### Herd Instinct
+
+Narrower fallback focused on shared panic/flee behavior. Lower scope may make it easier to combine with DrewCraft-owned local follow/group goals.
+
+Do not add deep animal husbandry/genetics/sickness/thirst systems merely to obtain herd movement.
+
+## 6. Strategic-source structure candidates
+
+Structure mods supply **architecture**. DrewCraft supplies source identity, Source Core, population budget, outgoing strategic groups, clearing and persistence.
+
+The production world must remain sparse.
+
+### First source-content spike
+
+1. vanilla pillager outpost as a control;
+2. **Towns and Towers** for grounded pillager-outpost variants;
+3. **When Dungeons Arise**, but with a tiny hostile whitelist and aggressively increased spacing.
+
+Candidate WDA concepts include camps, forts and a very small number of major palace/city-class sites. Do not turn every WDA structure into a source and do not accept default density blindly.
+
+### Alternatives
+
+- **CTOV** — initially an alternative to Towns and Towers because both expand village/outpost space.
+- **Repurposed Structures** — gap filler only if a source archetype remains missing.
+- **Structory** — optional atmospheric exploration texture, not the primary hostile kingdom hierarchy.
+- broad 100+ structure collections — avoid unless heavily filtered and a specific need is demonstrated.
+
+### Density tools
+
+Pack-owned structure-set enable/spacing/separation configuration is preferred.
+
+- **Sparse Structures** is a useful fallback spike if global density control is genuinely cleaner.
+- **Limited Structures** may eventually help enforce a tiny number of unique capitals.
+- **Structurify** is not a default because generic frequency modifiers can conflict with pack-specific generation schemes.
+
+### Structure Essentials
+
+Structure Essentials is an optional world-build/server tooling candidate. Faster locating, spacing/separation, overlap and structure-debug features may help validate pregeneration/source indexing, but it is not required if pack-owned configuration already solves those jobs.
+
+## 7. Other compatibility-gated capabilities
 
 ### Large player-buildable ships
 
@@ -158,21 +310,7 @@ Do not add multiple ship systems.
 
 A restrained map may be useful because the world is huge. It must not provide routine teleportation, omniscient hostile/player tracking, or information that makes physical radar/weather/navigation infrastructure irrelevant.
 
-### Herd/ecology helpers
-
-A nearby-animal behavior mod is allowed only if it complements DrewCraft's strategic distant-herd records. It must not become a second persistent population simulator or explode entity counts.
-
-### Local spawn/horde helpers
-
-Do not add a general horde mod just because hordes are desired. DrewCraft owns macro-scale persistent groups, sources, movement, ETA and armies.
-
-A local spawning/AI helper may be introduced only when a concrete loaded-chunk behavior cannot be implemented adequately in the DrewCraft integration layer. It must remain subordinate to DrewCraft strategic state.
-
-### Structure content
-
-Do not install a giant structure pack for variety. Add only sparse, purpose-specific structure content needed for exploration or hostile source sites, and only after density is measured against the World Scale 2 geography.
-
-## 4. Features that belong in the DrewCraft integration mod
+## 8. Features that belong in the DrewCraft integration mod
 
 Prefer one NeoForge integration mod with internal modules for:
 
@@ -185,10 +323,11 @@ Prefer one NeoForge integration mod with internal modules for:
 - Create-compatible radar power adapter
 - strategic populations
 - hostile source lifecycle
+- Source Core binding/clearing/persistence
 - unloaded movement/ETA
 - materialization/dematerialization and casualty reconciliation
 - army composition
-- animal herds
+- animal-herd persistence
 - siege planner
 - constrained block breaching
 - strategic/local spawn coexistence
@@ -196,23 +335,32 @@ Prefer one NeoForge integration mod with internal modules for:
 
 Do not solve these by collecting overlapping standalone mods unless integration into the existing architecture is demonstrably impossible.
 
-## 5. Intentionally excluded by default
+## 9. Intentionally excluded by default
 
 - Waystones or routine teleportation
 - additional overworld terrain/cave overhauls
-- giant structure packs
+- indiscriminate giant structure packs
 - extra dimensions without a specific project need
 - multiple giant technology/power systems
 - separate weather simulators
 - generic world-scale horde/army mods
 - generic indiscriminate mob block-breaking mods
+- generic AI/entity freezers that can break strategic encounters
 - unrelated hunger/thirst/body-temperature micromanagement
+- deep animal husbandry micromanagement solely for herd behavior
 - novelty vehicle-pack collections
 - parallel rail systems that compete with Create trains
+- redundant village/outpost overhauls without a demonstrated non-overlapping purpose
 
-## 6. Dependency and source policy
+## 10. Dependency and source policy
 
-`pack/manifest/upstreams.yaml` is the candidate/source registry. The eventual locked `mods.yaml` / `content-packs.yaml` is authoritative for a release.
+Candidate registries:
+
+- `pack/manifest/upstreams.yaml` — foundational platform/gameplay dependencies
+- `pack/manifest/performance_candidates.yaml` — performance baseline and experimental optimizers
+- `pack/manifest/mob_structure_candidates.yaml` — tactical AI, herd AI, structure sources and density spikes
+
+The eventual locked `mods.yaml` / `content-packs.yaml` is authoritative for a release.
 
 Every dependency must record:
 
@@ -221,16 +369,16 @@ Every dependency must record:
 - Minecraft version and loader
 - exact artifact/version
 - exact SHA-256 before lock
-- side (`common`, `client`, `server`)
+- side (`common`, `client`, `server`, operational/world-build)
 - required/optional state
 - redistribution/acquisition policy
 - provider IDs/download identity
 - compatibility notes
-- ownership class (`UPSTREAM_BINARY`, `UPSTREAM_SOURCE`, `DREWCRAFT_FORK`, `DREWCRAFT_OWNED`)
+- ownership class where applicable
 
 Do not fork a mod merely for convenient packaging. Track upstream source for debugging/API work and fork only when DrewCraft must maintain a source patch that cannot live cleanly in the integration mod.
 
-## 7. Redistribution policy
+## 11. Redistribution policy
 
 The builder/launcher must support both:
 
@@ -241,18 +389,18 @@ The resulting file is always verified against the locked SHA-256.
 
 Never commit third-party mod jars merely because doing so is convenient.
 
-## 8. Client/server partition
+## 12. Client/server partition
 
 Every dependency is classified as common, client-only, server-only, or operational tooling.
 
-- **Common:** gameplay/content/protocol mods required on both sides.
-- **Client:** rendering/UI/performance dependencies that a dedicated server should not load unless a documented multiplayer mode requires it.
-- **Server:** admin/profiling/server-only helpers.
-- **Operational:** tools such as Chunky when used only for world-build workflows.
+- **Common:** gameplay/content/protocol or common optimizers required on both sides.
+- **Client:** rendering/UI/performance dependencies that the dedicated server should not load.
+- **Server:** admin/profiling/server-only optimization/reliability helpers.
+- **Operational/world-build:** tools such as Chunky and potentially Structure Essentials/C2ME profiles used for generating/validating the world.
 
 The client and server packs must be generated from one source manifest rather than maintained independently.
 
-## 9. Update rules
+## 13. Update rules
 
 No dependency update goes directly to production.
 
@@ -261,17 +409,19 @@ Required flow:
 1. update candidate/manifest metadata;
 2. acquire the exact artifact through an allowed provider;
 3. verify SHA-256;
-4. build client/server packs;
-5. boot dedicated server;
-6. connect supported clients;
-7. load the existing world where relevant;
-8. test affected ownership boundaries (weather, Create, vehicle, worldgen, etc.);
-9. inspect registry/mixin/network logs;
-10. promote only after the relevant compatibility matrix passes.
+4. resolve all transitives;
+5. build client/server packs;
+6. boot dedicated server;
+7. connect supported clients;
+8. load the existing world where relevant;
+9. test affected ownership boundaries and compatibility profiles;
+10. inspect registry/mixin/network/render/lighting logs;
+11. measure performance when the dependency claims performance benefit;
+12. promote only after the relevant compatibility matrix passes.
 
 World-generation dependency changes require extra caution because newly generated terrain may differ permanently from the existing production world.
 
-## 10. V1 scope rule
+## 14. V1 scope rule
 
 DrewCraft V1 is **feature-complete and integration-complete, not balance-complete**.
 
