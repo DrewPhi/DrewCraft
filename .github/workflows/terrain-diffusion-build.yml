@@ -1,0 +1,109 @@
+name: Build Terrain Diffusion candidate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/terrain-diffusion-build.yml"
+      - "pack/manifest/source_builds.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-terrain-diffusion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Read pinned source build spec
+        id: spec
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import yaml
+          d=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
+          print('repository=' + d['source']['repository'])
+          print('ref=' + d['source']['ref'])
+          PY
+      - name: Clone exact upstream source
+        run: |
+          git clone "https://github.com/${{ steps.spec.outputs.repository }}.git" /tmp/terrain-diffusion-plus
+          cd /tmp/terrain-diffusion-plus
+          git checkout --detach "${{ steps.spec.outputs.ref }}"
+          test "$(git rev-parse HEAD)" = "${{ steps.spec.outputs.ref }}"
+      - name: Build 1.21.1 NeoForge CPU artifact
+        working-directory: /tmp/terrain-diffusion-plus
+        run: ./gradlew -p versions/1.21.1 buildNeoForgeCpu --no-daemon
+      - name: Identify and hash production jar
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib, zipfile, yaml
+
+          repo=pathlib.Path('/tmp/terrain-diffusion-plus')
+          spec=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
+          libs=repo/spec['build']['output_directory']
+          jars=[]
+          for p in sorted(libs.glob('*.jar')):
+              low=p.name.lower()
+              if any(x in low for x in ('-sources.jar','-javadoc.jar','-dev.jar','-test.jar','-tests.jar')):
+                  continue
+              jars.append(p)
+          if len(jars) != 1:
+              raise SystemExit(f'Expected exactly one production jar in {libs}, found: {[p.name for p in jars]}')
+          jar=jars[0]
+          def sha(path):
+              h=hashlib.sha256()
+              with path.open('rb') as f:
+                  for chunk in iter(lambda:f.read(1024*1024), b''):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          model_manifest=None
+          model_manifest_sha=None
+          with zipfile.ZipFile(jar) as z:
+              names=z.namelist()
+              matches=[n for n in names if n.endswith('model-assets-manifest.json')]
+              if len(matches) != 1:
+                  raise SystemExit(f'Expected one embedded model-assets-manifest.json, found {matches}')
+              raw=z.read(matches[0])
+              model_manifest=json.loads(raw)
+              model_manifest_sha=hashlib.sha256(raw).hexdigest()
+
+          expected_repo=spec['model_assets']['repository']
+          expected_rev=spec['model_assets']['revision']
+          if model_manifest.get('repositorySlug') != expected_repo or model_manifest.get('revision') != expected_rev:
+              raise SystemExit('Embedded model manifest does not match pinned model repository/revision')
+          required=set(spec['model_assets']['required_files'])
+          actual=set((model_manifest.get('assets') or {}).keys())
+          if required != actual:
+              raise SystemExit(f'Model asset set mismatch expected={sorted(required)} actual={sorted(actual)}')
+
+          report={
+              'schema_version':1,
+              'id':'terrain_diffusion_plus',
+              'source_repository':spec['source']['repository'],
+              'source_ref':spec['source']['ref'],
+              'minecraft':spec['target']['minecraft'],
+              'loader':spec['target']['loader'],
+              'java':spec['target']['java'],
+              'variant':spec['variant'],
+              'build_command':spec['build']['command'],
+              'filename':jar.name,
+              'size':jar.stat().st_size,
+              'sha256':sha(jar),
+              'model_assets_manifest_sha256':model_manifest_sha,
+              'model_assets_manifest':model_manifest,
+          }
+          pathlib.Path('build').mkdir(exist_ok=True)
+          pathlib.Path('build/terrain-diffusion-build.json').write_text(json.dumps(report, indent=2, sort_keys=True)+'\n')
+          print(json.dumps({k:v for k,v in report.items() if k != 'model_assets_manifest'}, indent=2))
+          PY
+      - name: Upload build evidence only
+        uses: actions/upload-artifact@v4
+        with:
+          name: terrain-diffusion-build-report
+          path: build/terrain-diffusion-build.json
