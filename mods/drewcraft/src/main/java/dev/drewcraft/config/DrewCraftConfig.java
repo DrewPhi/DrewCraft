@@ -49,6 +49,22 @@ public final class DrewCraftConfig {
             .comment("Maximum elapsed strategic movement applied to a group in one cycle; excess is intentionally discarded.")
             .defineInRange("strategic.maxCatchupSeconds", 300.0, 1.0, 86400.0);
 
+    public static final ModConfigSpec.IntValue STRATEGIC_ROUTING_CELL_SIZE_BLOCKS = BUILDER
+            .comment("Coarse strategic routing cell width. Routing never operates at per-block world resolution.")
+            .defineInRange("strategic.routing.cellSizeBlocks", 64, 16, 512);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_ROUTING_MAX_EXPANDED_NODES = BUILDER
+            .comment("Hard A* node-expansion cap for a single strategic route calculation.")
+            .defineInRange("strategic.routing.maxExpandedNodes", 20000, 100, 250000);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_ROUTING_DETOUR_PADDING_CELLS = BUILDER
+            .comment("Extra coarse cells allowed around the start/destination bounding box for route detours.")
+            .defineInRange("strategic.routing.detourPaddingCells", 32, 0, 512);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_ROUTING_CACHE_ENTRIES = BUILDER
+            .comment("Maximum number of solved strategic route templates retained in the in-memory LRU cache.")
+            .defineInRange("strategic.routing.cacheEntries", 512, 1, 10000);
+
     public static final ModConfigSpec.BooleanValue RADAR = BUILDER
             .comment("Enable DrewCraft radar sensing and Create: Radars weather/terrain integration.")
             .define("features.radar", true);
