@@ -1,29 +1,34 @@
-# ServerMc Project Specification
+# DrewCraft Project Specification
 
-This document is the canonical gameplay/product specification for ServerMc. It records the intended experience before implementation details force accidental design decisions.
+This document is the canonical gameplay/product specification for **DrewCraft**. The GitHub repository may still carry the internal name `ServerMc` until it is renamed; user-facing product/server naming is DrewCraft.
+
+For release scope, `v_1_requirements.md` is authoritative. DrewCraft V1 is **feature-complete and integration-complete, not balance-complete**. Long-term progression goals in this document describe the direction for V1.1+ tuning unless they are explicitly listed as hard V1 requirements.
 
 ## 1. Product statement
 
-ServerMc is a private cooperative survival world designed around the fact that **the world is genuinely large**.
+DrewCraft is a private cooperative survival world designed around the fact that **the world is genuinely large**.
 
-Most Minecraft modpacks respond to large worlds by adding faster teleportation. ServerMc takes the opposite approach: large geography is the reason to build roads, railways, ports, airports, radar stations, defensive positions, supply chains, and vehicles.
+Most Minecraft modpacks respond to large worlds by adding faster teleportation. DrewCraft takes the opposite approach: large geography is the reason to build roads, railways, ports, airports, radar stations, defensive positions, supply chains and vehicles.
 
 The world should feel persistent beyond the player's render distance. Weather systems move across regions. Animal populations can form herds. Hostile settlements can project force over distance. An army can be known to exist before it is physically loaded. A fortified settlement is useful because there are threats against which fortification matters.
 
-The server should nevertheless remain recognizably Minecraft: mining, building, farms, caves, local mobs, redstone/Create contraptions, exploration, and ordinary survival remain the substrate.
+The server should nevertheless remain recognizably Minecraft: mining, building, farms, caves, local mobs, redstone/Create contraptions, exploration and ordinary survival remain the substrate.
 
 ## 2. Core design rules
 
 Any new mod or feature should pass these tests:
 
-1. **Does it reinforce geography, infrastructure, weather, transportation, strategy, or building?**
+1. **Does it reinforce geography, infrastructure, weather, transportation, strategy or building?**
 2. **Does it create a reason to build something in the world rather than bypass the world?**
-3. **Does it preserve meaningful progression?**
+3. **Does it preserve meaningful long-term progression potential?**
 4. **Can it run reliably in multiplayer?**
 5. **Can it be distributed and updated without asking friends to perform mod-management work?**
 6. **Does it avoid duplicating another system already in the pack?**
+7. **Does it have one clear authoritative subsystem owner?**
 
-If the answer is mostly no, it probably does not belong in ServerMc.
+If the answer is mostly no, it probably does not belong in DrewCraft.
+
+The subsystem ownership matrix in `MOD_STACK.md` should be consulted before adding a new mod.
 
 ## 3. World and geography
 
@@ -31,7 +36,7 @@ If the answer is mostly no, it probably does not belong in ServerMc.
 
 The overworld target is Terrain Diffusion Plus on Minecraft 1.21.1 / NeoForge with **World Scale 2**.
 
-At this scale, continental terrain, mountain chains, watersheds, rivers, valleys, and climate zones operate at a much larger spatial scale than normal Minecraft. This is desirable. The map should contain journeys that feel like journeys.
+At this scale, continental terrain, mountain chains, watersheds, rivers, valleys and climate zones operate at a much larger spatial scale than normal Minecraft. This is desirable. The map should contain journeys that feel like journeys.
 
 Still Life is not a required dependency. Terrain Diffusion Plus is the baseline on its own unless a later test demonstrates that an additional world-generation layer materially improves the experience without destabilizing compatibility.
 
@@ -43,8 +48,8 @@ Reasons:
 
 - Terrain Diffusion generation includes neural inference and expensive hydrology calculations.
 - live generation can create severe latency spikes on a modest dedicated server.
-- a bounded world makes storage, backup, strategic simulation, source-structure indexing, and Distant Horizons preparation tractable.
-- the border can be expanded deliberately in later seasons/releases after generating the next ring offline.
+- a bounded world makes storage, backup, strategic simulation, source-structure indexing and Distant Horizons preparation tractable.
+- the border can be expanded deliberately in later releases after generating the next ring offline.
 
 The exact initial radius is a benchmark/configuration decision, not hard-coded into the design document.
 
@@ -52,11 +57,11 @@ The exact initial radius is a benchmark/configuration decision, not hard-coded i
 
 Use normal/sparse structures rather than flooding the world with points of interest. Large geography only works if empty space exists.
 
-Strategically important hostile sites may include camps, forts, occupied ruins, towns, and larger cities. These can come from carefully selected structure content or ServerMc-specific structure data, but their density must remain low enough that discovering one matters.
+Strategically important hostile sites may include camps, forts, occupied ruins, towns and larger cities. These can come from carefully selected structure content or DrewCraft-specific structure data, but their density must remain low enough that discovering one matters.
 
 ### 3.4 Caves and underground
 
-Terrain Diffusion Plus' 1.21.1 build already integrates its tall-world cave handling. Underground gameplay should remain substantial but should not be overloaded with multiple competing cave overhauls unless testing demonstrates a need.
+Terrain Diffusion Plus' 1.21.1 build already integrates its tall-world cave handling. Underground gameplay should remain substantial, but **do not add another general cave overhaul by default**. A second cave system is justified only if testing exposes a real deficiency that cannot be solved in the existing stack.
 
 ## 4. Travel and progression
 
@@ -66,9 +71,9 @@ Do not add Waystones or an equivalent routine player-teleport network.
 
 Teleportation would remove the primary reason for the transportation/infrastructure stack.
 
-### 4.2 Intended travel progression
+### 4.2 Long-term intended travel progression
 
-The desired progression is approximately:
+The desired eventual progression is approximately:
 
 1. walking, horses, vanilla boats
 2. maintained paths, roads, bridges, river routes
@@ -77,42 +82,35 @@ The desired progression is approximately:
 5. large ships if a stable compatible implementation is available
 6. expensive late-game aircraft and airports
 
-These are not merely faster movement tiers. Each should introduce infrastructure and operational constraints.
+These are not merely faster movement tiers. Each should eventually introduce infrastructure and operational constraints.
 
-### 4.3 Cars
+**This progression is a post-V1 balance target, not a V1 release blocker.** V1 needs the relevant transport systems to work together reliably; it does not need carefully rewritten recipes, fuel prices or acquisition curves.
 
-Immersive Vehicles is the preferred realistic vehicle foundation. Cars should become useful in the mid-game, especially once roads connect settlements/resources.
+### 4.3 Cars and trucks
 
-Recipes, fuel, repair, speed, terrain handling, and vehicle availability should be tuned so cars are valuable without replacing every other form of travel.
+Immersive Vehicles is the preferred road-vehicle foundation. V1 should provide a stable useful road vehicle set in multiplayer.
+
+Long term, roads, fuel, repairs and acquisition cost should make cars valuable without replacing every other form of travel. Broad tuning of those costs belongs to V1.1+ after the complete system has been played.
 
 ### 4.4 Trains
 
-Create trains are infrastructure-heavy by design and therefore fit the project extremely well.
+Create trains are infrastructure-heavy by design and therefore fit the project extremely well. **Create is the authoritative rail system; do not add a parallel MTS/other train progression.**
 
-Rail should be particularly effective for:
+Rail should eventually be particularly effective for repeated routes, heavy cargo, linking established settlements, industrial logistics and strategic supply movement.
 
-- repeated routes
-- heavy cargo
-- linking established settlements
-- moving resources between industrial sites
-- strategic logistics during large attacks
+V1 requires reliable Create rail functionality, not perfectly tuned rail economics.
 
 ### 4.5 Ships
 
-A player-buildable large-ship system is desirable but compatibility-gated. Do not anchor the pack to an abandoned or unstable ship mod merely to satisfy the feature checklist.
+A player-buildable large-ship system is desirable but compatibility-gated. Do not anchor V1 to an abandoned or unstable ship mod merely to satisfy the feature checklist.
 
 Vanilla/small boats remain useful regardless.
 
 ### 4.6 Aircraft
 
-Aircraft should be late-game and expensive. They should require meaningful supporting infrastructure such as:
+V1 requires at least one stable supported aircraft integrated with DrewCraft weather.
 
-- aircraft acquisition/construction
-- fuel
-- runway or suitable operating site
-- weather awareness
-- navigation
-- maintenance/resource cost
+The long-term target is for aircraft to be expensive and infrastructure-dependent through acquisition, fuel, runways/operating sites, weather awareness, navigation and maintenance. Those cost/progression details are **V1.1+ balance work** rather than prerequisites for V1.
 
 Aircraft should make enormous geography manageable without making geography irrelevant.
 
@@ -120,17 +118,19 @@ Aircraft should make enormous geography manageable without making geography irre
 
 Vanilla's 8:1 portal distance compression risks becoming the optimal solution to every long-distance trip.
 
-ServerMc should test reduced portal compression (for example approximately 2:1) or other portal constraints if normal Nether travel trivializes roads, trains, ships, and aircraft. This remains a tunable balance rule rather than a fixed implementation requirement until playtesting.
+If testing shows that this destroys the geography/transport premise, V1 may use a coarse portal-distance constraint or compression change sufficient to preserve the core pillar. Fine progression tuning remains post-V1.
 
 There is no requirement to make aircraft practical in the Nether.
 
 ## 5. Weather and climate
 
-### 5.1 Baseline
+### 5.1 Authority model
 
-Project Atmosphere + Simple Clouds are the intended weather foundation, with Serene Seasons integration where stable.
+Project Atmosphere is the **sole atmospheric simulation authority**.
 
-Weather should be spatial and persistent rather than a global random toggle. A player should be able to see a storm system approaching from far away.
+Simple Clouds is the cloud/localized-weather rendering substrate used with Atmosphere; it should not become a second independent weather authority.
+
+Serene Seasons owns its season calendar/seasonal gameplay hooks where the selected Atmosphere dependency graph requires or benefits from it. Project Atmosphere consumes/integrates that seasonal state. DrewCraft does not create a third season system.
 
 ### 5.2 Desired atmosphere behavior
 
@@ -146,34 +146,37 @@ The experience should communicate:
 
 ### 5.3 Terrain coupling
 
-Terrain Diffusion already provides meaningful elevation and climate. ServerMc should use the strongest stable integration available in this order:
+Terrain Diffusion already provides meaningful elevation and climate. DrewCraft should use the strongest stable integration available in this order:
 
-1. baseline biome-driven coupling if Project Atmosphere already derives climate from loaded biome/elevation context
+1. biome/elevation coupling already available through the selected weather stack
 2. direct bridge to Terrain Diffusion climate/elevation fields if stable APIs/data access make this feasible
-3. additional terrain effects such as orographic precipitation, lee-side behavior, and terrain-induced turbulence where computationally affordable
+3. additional terrain effects such as orographic precipitation, lee-side behavior and terrain-induced turbulence where computationally affordable
 
-Do not duplicate Project Atmosphere's atmospheric simulation. ServerMc should bridge systems rather than rewrite them unnecessarily.
+Do not duplicate Project Atmosphere's atmospheric simulation. DrewCraft bridges systems rather than rewriting them unnecessarily.
 
 ### 5.4 Aviation weather
 
-Weather must have gameplay consequences for aircraft.
+Weather must have gameplay consequences for supported aircraft.
 
-Candidate effects:
+Required/desired effects include:
 
-- crosswind component
+- crosswind
 - headwind/tailwind ground-speed difference
-- turbulence near strong gradients, storms, and mountains
+- turbulence near strong gradients, storms and mountains
 - reduced visibility
 - storm avoidance incentives
-- optional icing/severe-weather effects only if they remain fun and understandable
 
-The server should be authoritative for the weather state used by flight effects.
+Optional icing or richer severe-weather effects can follow only if they remain understandable and fun.
+
+Gameplay-affecting weather state should be server-authoritative.
 
 ## 6. Radar and sensing
 
 ### 6.1 Purpose
 
 Radar converts weather from random inconvenience into information players can invest in obtaining.
+
+Radar belongs in the DrewCraft integration mod rather than as a second weather/radar ecosystem.
 
 ### 6.2 Ground weather radar
 
@@ -187,32 +190,19 @@ A working site should require at minimum:
 - data/signal connection
 - one or more physical screen/display blocks
 
-The exact block topology may evolve, but free-floating powered dishes should not be possible.
+The exact topology may evolve, but free-floating powered dishes should not be possible.
 
 ### 6.3 Height and line of sight
 
-Antenna height should matter.
+Antenna height should matter. Effective range should be bounded by equipment capability, antenna elevation, terrain obstruction/line of sight, an effective radar-horizon rule and server performance limits.
 
-Effective range should be bounded by:
+This gives towers, mountains and siting strategy practical value.
 
-- hardware tier
-- antenna elevation
-- terrain obstruction / line of sight
-- an effective radar-horizon rule
-- optionally weather attenuation for extreme systems if worth the complexity
+### 6.4 Radar progression
 
-This gives towers, mountains, and siting strategy practical value.
+V1 may ship one functional radar tier or preliminary tiers. The eventual progression may vary maximum range, resolution, update frequency, storm-motion projection, severity information and display/network capacity.
 
-### 6.4 Radar tiers
-
-Tiers should change meaningful capabilities rather than only crafting cost. Possible dimensions include:
-
-- maximum range
-- angular resolution
-- update frequency
-- storm-motion projection
-- vertical/severity information
-- network/display capacity
+**Perfect radar-tier costs and progression are post-V1 balance work.**
 
 ### 6.5 Physical displays
 
@@ -220,7 +210,7 @@ Radar screens must exist as rendered world blocks showing the connected radar co
 
 ### 6.6 Aircraft radar
 
-Compatible aircraft can equip a cockpit weather-radar instrument using the same atmospheric data model. Range/quality should be constrained by the installed instrument and aircraft power/configuration.
+Supported aircraft should use the same atmospheric data pipeline for cockpit weather radar. Exact crafting cost, upgrade path and range balance may remain preliminary in V1.
 
 ## 7. Living-world simulation
 
@@ -230,139 +220,99 @@ Minecraft normally stops simulating almost everything outside loaded chunks. In 
 
 ### 7.2 Strategic populations
 
-ServerMc should maintain lightweight persistent records for selected populations even when no chunks are loaded.
+DrewCraft maintains lightweight persistent records for selected populations even when no chunks are loaded.
 
 Examples:
 
 - animal herds
-- zombie hordes
+- zombie/undead hordes
 - pillager/raider groups
 - faction patrols
 - large hostile armies
 
-A strategic population record is not thousands of always-loaded entities. It is a compact server-side state such as group type, strength, composition, location, destination, speed, health/readiness, source, route, and timestamps.
+A strategic population record is not thousands of always-loaded entities. It is compact server-side state containing group identity/type, strength/composition, location, destination, speed, source, route and timestamps.
+
+**DrewCraft is the sole macro strategic-population owner.** Do not add a second general world-scale horde/army/ecology simulator.
 
 ### 7.3 Materialization
 
-When players approach a strategic group, the record materializes into ordinary entities in loaded chunks. When the encounter ends or the group moves far enough away, surviving entities can be summarized back into strategic state.
+When players approach a strategic group, the record materializes into ordinary entities. When safely distant again, surviving entities may be summarized back into strategic state.
 
-Transitions must preserve approximate casualties and composition so unload/reload cannot reset an army.
+Transitions must preserve casualties/composition so unload/reload cannot reset an army.
 
 ### 7.4 Hostile sources
 
-Certain generated sites are persistent hostile sources.
+Certain generated sites are persistent hostile sources with faction/type, population budget, reinforcement behavior, action cooldowns, objectives and cleared state.
 
-A source can have:
-
-- faction/type
-- population budget
-- reinforcement rate
-- patrol/army cooldown
-- detection/influence radius
-- strategic objectives
-- destroyed/cleared state
-
-A source can send groups toward players, player settlements, roads, or other objectives.
+A source can send groups toward player settlements or other strategic objectives.
 
 ### 7.5 Clearing sources matters permanently
 
-Destroying/clearing a source should change the persistent world state and stop or sharply reduce that site's future strategic spawns.
+Destroying/clearing a source changes persistent world state and stops or sharply reduces that site's future strategic force generation according to an explicit source rule.
 
-Threat timing therefore depends on geography: the nearest intact hostile source may be days of strategic travel away, or a fort may exist just over the mountains.
+Threat timing therefore depends on real geography and the nearest relevant intact source.
 
 ### 7.6 Movement across unloaded space
 
 Unloaded movement should be deterministic enough to explain and cheap enough to simulate.
 
-A group stores a route or route corridor and advances based on elapsed wall/game time and strategic movement speed. Path cost can account for broad terrain categories, roads, water, bridges, mountains, and other map features without running full Minecraft entity pathfinding over unloaded chunks.
+A group stores a route/corridor and advances based on elapsed simulation time and movement speed. Cost may account for broad terrain categories, roads, water, bridges and mountains without running full entity pathfinding over unloaded chunks.
 
 No teleporting armies.
 
 ### 7.7 Attraction and objectives
 
-Possible reasons for a hostile group to choose a target:
-
-- proximity
-- player settlement/activity score
-- noise/industrial activity
-- known roads
-- faction objective
-- retaliation after a hostile source is attacked
-
-The first implementation should stay understandable and deterministic; richer behavior can follow.
+Possible target signals include proximity, player settlement/activity, roads, faction objectives and retaliation after a source attack. The first implementation should stay understandable and deterministic.
 
 ## 8. Sieges and block interaction
 
 ### 8.1 Path first
 
-Hostiles should first use normal paths and accessible entrances.
-
-They should prefer:
-
-- open routes
-- roads/bridges
-- gates/doors where their mob type can interact
-- navigable stairs/terrain
+Hostiles first use normal paths and accessible entrances: open routes, roads/bridges, usable gates/doors and navigable terrain.
 
 ### 8.2 Breach only when necessary
 
-Selected siege units may breach blocks only when the planner determines no viable route to the target exists or a route exceeds configured cost limits.
+Only selected siege-capable units may meaningfully breach blocks, and only when no reasonable route exists or route cost exceeds an explicit threshold.
 
 ### 8.3 Structural targeting
 
-Breaching should choose blocks that meaningfully open a route. It should not simply break the nearest block or randomly vandalize decoration.
+Breaching chooses blocks that meaningfully open a route. It does not break the nearest block or randomly vandalize decoration.
 
-Candidate safeguards:
-
-- only blocks lying on a planned breach corridor
-- hardness/time-based destruction
-- protected/unbreakable block tags
-- no arbitrary block breaking outside an active siege objective
-- rate limits and group-specific breach capability
-- prefer doors/gates/weaker materials before thick structural walls
+Safeguards include planned breach corridors, hardness/time-based destruction, protected tags, rate limits and preference for sensible weak entrances.
 
 ### 8.4 Why this matters
 
-The desired result is that building a castle is a real engineering decision. Walls, gates, kill zones, bridges, trenches, elevation, fallback lines, and defensive weapons should matter.
+The desired result is that walls, gates, kill zones, bridges, trenches, elevation and defensive weapons matter without making players afraid to build decorative structures.
 
-The system must create reasons for good architecture without making players afraid to build decorative structures.
-
-## 9. Normal mobs, farms, and spawners
+## 9. Normal mobs, farms and spawners
 
 Strategic simulation must not delete ordinary Minecraft ecology.
 
 ### 9.1 Local hostile spawning
 
-Normal local hostile spawning remains enabled with tuning as required for performance/balance. This preserves:
-
-- caves
-- night danger
-- normal mob farms
-- ordinary exploration encounters
+Normal local hostile spawning remains enabled with only conservative tuning required for performance/safety. This preserves caves, night danger, mob farms and ordinary exploration encounters.
 
 ### 9.2 Strategic spawning is separate
 
-Hostile structures do not need to replace every vanilla spawn. A zombie horde coming from a ruined city is a macro event layered on top of normal zombies.
+Hostile sources do not replace vanilla spawning. A horde from a ruined city is a macro event layered on top of normal Minecraft mobs.
 
 ### 9.3 Spawners
 
-Vanilla/modded spawner blocks may remain lootable/preservable gameplay objects. A strategic source should be represented by persistent source state rather than relying on one vanilla spawner block, so players do not have to choose between keeping a useful farm block and ending world-scale attacks.
+Vanilla/modded spawner blocks may remain useful gameplay objects. Strategic source state is independent, so clearing a strategic hostile site does not require destroying every ordinary spawner/farm mechanic.
 
 ### 9.4 Animal herds
 
-Herd behavior should make large landscapes feel inhabited while controlling entity count. Strategic herd records are preferable for distant populations; nearby animals can materialize into normal entities.
+Distant herds use the same lightweight strategic architecture where possible. Nearby animals materialize into ordinary entities. A separate persistent ecology simulator should not be added.
 
 ## 10. Industry and power
 
-Create is the primary technology/infrastructure mod.
+Create is the primary technology/infrastructure mod and the authoritative rail system.
 
-ServerMc should avoid adding a second giant tech tree merely to power radar. The custom integration can expose a Create-compatible power adapter/controller. Radar/data cabling can be ServerMc-specific if needed.
+DrewCraft avoids adding a second giant tech/electrical tree merely to power radar. The custom integration exposes a small Create-compatible power adapter/controller converting sufficient kinetic input into DrewCraft's simple powered state/budget.
 
-Create's core system is rotational stress rather than conventional electricity, so the implementation should be explicit: either consume Create kinetic power through a dedicated adapter or add a very small ServerMc electrical abstraction backed by Create generation. Do not pretend Create itself provides a generic electrical grid.
+Do not pretend Create itself provides a generic electrical grid.
 
 ## 11. Multiplayer and administration
-
-The server is intended for friends rather than a public MMO, but it should be operationally robust.
 
 Required characteristics:
 
@@ -373,42 +323,38 @@ Required characteristics:
 - no secrets in client builds
 - server-authoritative strategic state
 - persistence across crashes/restarts
-- admin commands for diagnosing weather, strategic groups, source state, and version mismatches
-- ability to disable a custom subsystem via configuration if it destabilizes a play session
+- admin commands for diagnosing weather, strategic groups, source state, radar and version mismatches
+- ability to disable a custom subsystem if it destabilizes a play session
 
 ## 12. Friend-facing installation
 
-The user experience target is:
+The target experience is:
 
-1. open the ServerMc download page
-2. click Windows or macOS
+1. open the DrewCraft page
+2. click Windows or Mac
 3. run the bootstrapper
-4. sign into Microsoft/Minecraft once when Prism requests it
+4. sign into Microsoft/Minecraft when Prism requests it
 5. click Play thereafter
 
-The launcher handles Java, Prism instance creation, NeoForge, exact mods/configs, and updates.
-
-No friend should have to understand a mods folder.
+The launcher handles Java, Prism, NeoForge, exact mods/configs and updates. No friend should have to understand a mods folder.
 
 ## 13. Hosting
 
-Oracle Ampere A1 ARM is the first deployment target because it can potentially provide the required Java server at extremely low/no compute cost.
+Oracle Ampere A1 ARM is the first low-cost deployment benchmark, not a V1 product requirement.
 
-The current Always Free baseline must be treated as 2 OCPU / 12 GB total and benchmarked honestly.
+Critical principles:
 
-Critical constraints:
-
-- do not generate large amounts of Terrain Diffusion terrain live on the A1 host
+- do not generate large amounts of Terrain Diffusion terrain live on the production host
 - pre-generate elsewhere and upload the production world
 - no automatic paid autoscaling
-- keep world, strategic database/state, configuration, and backups recoverable independently of the VM
-- benchmark tick time with representative Create contraptions, Atmosphere simulation, loaded mobs, and a materialized siege
+- keep world/custom strategic state/config/backups recoverable independently of the VM
+- benchmark the complete stack honestly
 
-If free A1 is inadequate, scaling is an explicit owner decision.
+If the preferred A1 target is inadequate, choosing a larger/alternate fixed host is preferable to cutting core V1 gameplay solely to fit it.
 
 ## 14. Non-goals
 
-ServerMc is not trying to be:
+DrewCraft is not trying to be:
 
 - a kitchen-sink pack
 - an RPG quest pack
@@ -416,31 +362,35 @@ ServerMc is not trying to be:
 - a hardcore realism simulator for its own sake
 - a teleport-heavy convenience pack
 - an extra-dimensions showcase
-- an automation benchmark with five competing power systems
+- an automation benchmark with competing power systems
+- a pack with multiple terrain/cave generators
+- a pack with multiple weather simulators
+- a pack with multiple rail systems
+- a pack with multiple world-scale horde/ecology simulators
 - an MMO with thousands of permanently simulated NPCs
 
-Realism is used where it produces interesting decisions, infrastructure, and stories.
+Realism is used where it produces interesting decisions, infrastructure and stories.
 
-## 15. Acceptance criteria for the eventual 1.0 server
+## 15. V1 acceptance direction
 
-A 1.0-quality build should demonstrate all of the following in a real multiplayer test:
+The exact release checklist lives in `v_1_requirements.md` and `v_1_development_tree.md`. At a minimum, one real V1 release candidate must demonstrate:
 
 - clean one-click installation on Windows and Apple Silicon macOS
 - automatic update from one pack version to the next
-- server rejects or launcher repairs stale clients before connection
-- stable world loading from the pre-generated Terrain Diffusion map
-- Distant Horizons usable without unacceptable client burden
-- cars and trains useful for materially different travel/logistics roles
-- at least one tested aircraft with wind/weather integration
-- a storm visible and trackable before arrival
-- a ground radar site whose useful range improves with siting/height
-- a physical radar display
-- a strategic hostile source that launches a group
-- that group advances while unloaded and arrives at approximately the predicted time
-- the group materializes without duplication/reset exploits
-- a siege attempts valid paths before any block breach
-- clearing the source prevents future forces from that source
-- normal local mob spawning/farming still works
-- backup/restore recovers both world blocks and strategic state
+- stable loading of the pre-generated Terrain Diffusion world
+- usable Distant Horizons
+- functional road vehicles, Create trains and at least one aircraft
+- aircraft affected by real weather
+- a storm visible/trackable before arrival
+- physical ground radar whose coverage responds to siting/height
+- aircraft radar using the same weather data pipeline
+- strategic hostile sources and unloaded movement with ETA
+- casualty-preserving materialization/dematerialization
+- multiple hostile compositions and large armies
+- path-first constrained siege breaching
+- permanent source clearing
+- strategic animal herds
+- normal local mob spawning/farming/spawners
+- backup/restore of world and strategic state
 
-Until those tests pass, the project is still a development build regardless of how many mods are installed.
+V1 does **not** require a perfected economy or difficulty curve. Those are V1.1+ concerns once the full system can actually be played.
