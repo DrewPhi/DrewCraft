@@ -1,5 +1,6 @@
 # DrewCraft generated artifacts / local runtime state
 .cache/
+.gradle/
 build/
 dist/
 *.jar
