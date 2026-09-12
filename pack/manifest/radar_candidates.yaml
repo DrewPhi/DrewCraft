@@ -20,6 +20,7 @@ create_radars:
   sha256: null
   required_dependencies:
     - create
+    - create_big_cannons
   source_repository: "Arsenalists-of-Create/Create-Radar"
   source_release_boundary: "15e36014949fdbed11c88690b3a68777c604effe"
   target_minecraft: "1.21.1"
@@ -29,7 +30,54 @@ create_radars:
   integration_policy: "Optional runtime compatibility through isolated reflection and @Pseudo mixins; no DrewCraft fork."
   notes:
     - "Official 0.4.9.4 release is the V1 physical radar frontend."
+    - "Its 1.21.1 NeoForge metadata requires Create Big Cannons >=5.11.2; this dependency is resolved explicitly rather than discovered only at server boot."
     - "Create: Radars owns dish construction, Create kinetic operation, native tracks, filters, networks and monitors."
     - "DrewCraft contributes cached Project Atmosphere weather returns and Terrain Diffusion terrain masking only."
     - "Project Atmosphere's existing handheld Weather Radar remains the V1 pilot/explorer weather device."
     - "MTS cockpit/airborne radar integration is deferred to V1.1+."
+
+create_big_cannons:
+  display_name: "Create Big Cannons"
+  kind: mod
+  required_for_v1: true
+  ownership_class: UPSTREAM_BINARY
+  side: common
+  provider: curseforge
+  project_id: 646668
+  file_id: 8303106
+  candidate_version: "5.11.7"
+  filename: "createbigcannons-5.11.7+mc.1.21.1.jar"
+  release_status: release
+  sha256: null
+  required_dependencies:
+    - create
+    - ritchies_projectile_library
+  source_repository: "Cannoneers-of-Create/CreateBigCannons"
+  source_branch: "create-v6-1.21.1"
+  target_minecraft: "1.21.1"
+  target_loader: "neoforge"
+  license: "Mixed MIT and CC BY-NC-SA; see upstream LICENSE.md"
+  redistribution: "Acquire the unmodified provider artifact and preserve upstream license/attribution terms."
+  notes:
+    - "5.11.7 is the latest stable 1.21.1 NeoForge release and supports Create 6.0.7+, including DrewCraft's pinned Create 6.0.10."
+    - "This is included because Create: Radars declares createbigcannons as a required runtime dependency."
+
+ritchies_projectile_library:
+  display_name: "Ritchie's Projectile Library"
+  kind: library
+  required_for_v1: true
+  ownership_class: UPSTREAM_BINARY
+  side: common
+  provider: curseforge
+  project_id: 1279407
+  file_id: 7587771
+  candidate_version: "2.1.2"
+  filename: "ritchiesprojectilelib-2.1.2-mc.1.21.1-neoforge.jar"
+  release_status: release
+  sha256: null
+  target_minecraft: "1.21.1"
+  target_loader: "neoforge"
+  license: "MIT"
+  redistribution: "Acquire the unmodified provider artifact through the pinned provider identity."
+  notes:
+    - "2.1.2 is the latest stable 1.21.1 NeoForge release and the version used by Create Big Cannons 5.11.7."
