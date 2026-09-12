@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://drewcraft.invalid/schemas/release-manifest-v1.json",
+  "title": "DrewCraft Release Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "packId", "packVersion", "minecraft", "loader", "java", "files"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "packId": {"type": "string", "minLength": 1},
+    "packVersion": {"type": "string", "minLength": 1},
+    "minecraft": {"const": "1.21.1"},
+    "loader": {"const": "neoforge"},
+    "java": {"const": 21},
+    "minimumLauncherVersion": {"type": ["string", "null"]},
+    "worldId": {"type": ["string", "null"]},
+    "worldRevision": {"type": ["integer", "null"], "minimum": 0},
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "side"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "side": {"enum": ["common", "client", "server"]},
+          "source": {"type": ["string", "null"]},
+          "size": {"type": ["integer", "null"], "minimum": 0}
+        }
+      }
+    }
+  }
+}
