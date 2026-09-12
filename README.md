@@ -16,15 +16,17 @@ Already established:
 - dependency-ordered development tree
 - subsystem architecture
 - anti-redundancy/mod ownership policy
-- upstream source/dependency registry
+- foundational upstream source/dependency registry
+- performance candidate registry and benchmark/compatibility policy
 - canonical strategic-world/source-core/herd behavior contract
 - researched tactical-AI, herd-AI and strategic-source structure candidates
+- machine-readable gameplay/content compatibility-spike registry
 - launcher/server deployment architecture
 - simple DrewCraft download-site HTML
 
 Next implementation milestone:
 
-> resolve the registered upstream candidates into exact verified artifacts, compute hashes, generate reproducible client/server development packs, and run the full compatibility lock.
+> resolve the registered candidates into exact verified artifacts, compute hashes, generate reproducible client/server development packs, and run the full foundational + performance compatibility lock.
 
 Target platform:
 
@@ -54,7 +56,10 @@ V1 requires the intended systems and bridges to exist and work together reliably
 | Cloud/localized-weather rendering substrate | Simple Clouds under Atmosphere integration |
 | Season calendar/gameplay hooks | Serene Seasons where required/stable |
 | Radar, aviation bridges, strategic populations, armies, herds and sieges | DrewCraft custom NeoForge integration mod |
+| Loaded horde/herd behavior | selected compatibility-tested helper or DrewCraft goals; never strategic authority |
+| Hostile-source architecture | selected sparse structures; DrewCraft owns source identity/core/state |
 | Ordinary local spawning/farms | Minecraft/upstream local rules; strategic simulation is additive |
+| Technical performance | measured optimization suite; no gameplay-state ownership |
 
 Consequences:
 
@@ -65,7 +70,8 @@ Consequences:
 - no generic macro horde/army mod competing with DrewCraft strategic state;
 - no generic random mob block-breaking system;
 - no Waystones/routine teleportation;
-- no giant structure pack unless a narrow, measured need is demonstrated.
+- no indiscriminate structure-pack stacking;
+- no optimizer is allowed to silently change strategic encounter semantics.
 
 See [`docs/MOD_STACK.md`](docs/MOD_STACK.md) for the detailed ownership matrix.
 
@@ -94,7 +100,7 @@ For V1, these systems must function and interoperate; they do not yet need perfe
 
 **Project Atmosphere is the atmospheric source of truth.**
 
-Simple Clouds is used as the cloud/local-weather visual substrate integrated with Atmosphere, not as a competing weather simulation. The current Project Atmosphere 1.21.1 release requires Serene Seasons and Gabou's Libs and lists Simple Clouds as optional; DrewCraft intentionally evaluates Simple Clouds because distant visible cloud/weather systems are central to the design.
+Simple Clouds is used as the cloud/local-weather visual substrate integrated with Atmosphere, not as a competing weather simulation. DrewCraft intentionally evaluates the pairing because distant visible cloud/weather systems are central to the design.
 
 DrewCraft bridges the real atmospheric state into supported aircraft:
 
@@ -153,7 +159,7 @@ If players destroy the bound Source Core — including deliberately blowing it u
 
 Replacing the physical block does not reactivate the source. Already-deployed forces do not magically disappear; they remain real populations already out in the world.
 
-See [`docs/STRATEGIC_WORLD_MODEL.md`](docs/STRATEGIC_WORLD_MODEL.md) for the full contract.
+See [`docs/STRATEGIC_WORLD_MODEL.md`](docs/STRATEGIC_WORLD_MODEL.md) and [`docs/SOURCE_CORE_SPEC.md`](docs/SOURCE_CORE_SPEC.md).
 
 ### Wild animal herds
 
@@ -169,16 +175,46 @@ Existing 1.21.1 NeoForge herd-AI mods are being evaluated only for **loaded beha
 
 DrewCraft should reuse upstream code/content where it fits without surrendering strategic ownership.
 
-Current compatibility-spike research includes:
+Current controlled compatibility branches are:
 
-- Enhanced Hordes + Enhanced Hordes Tweaks versus Zombie Hordes for loaded hostile cooperation/wandering/stacking behavior;
-- Ethological! versus the narrower Herd Instinct for loaded passive-herd behavior;
-- When Dungeons Arise as a strong source of selectively enabled hostile camps/forts/palaces;
-- Towns and Towers as a grounded source of pillager-outpost variants;
-- CTOV as a Towns-and-Towers alternative rather than an automatic additional settlement overhaul;
-- pack-owned structure spacing/whitelists first, with Sparse Structures only as a compatibility-spike option if global density control is useful.
+- **Enhanced Hordes + Enhanced Hordes Tweaks** versus **Zombie Hordes** for loaded hostile cooperation/wandering/stacking behavior;
+- **Ethological** versus the narrower **Herd Instinct** for loaded passive-herd behavior;
+- **Towns and Towers + a tiny selective When Dungeons Arise whitelist** as the first hostile-source structure experiment;
+- **CTOV** as a Towns-and-Towers alternative rather than an automatic additional settlement overhaul;
+- pack-owned structure spacing/whitelists first, with **Sparse Structures** only as a compatibility-spike option if global density control proves useful;
+- **Structure Essentials** only as optional world-build/source-debug tooling if it adds concrete value.
+
+Alternatives are not installed together simply because they all appear in research. The exact winner is chosen by compatibility, performance, visual fit and maintenance surface.
 
 See [`docs/MOB_STRUCTURE_CANDIDATES.md`](docs/MOB_STRUCTURE_CANDIDATES.md) and [`pack/manifest/mob_structure_candidates.yaml`](pack/manifest/mob_structure_candidates.yaml).
+
+## Performance strategy
+
+DrewCraft treats performance as a designed subsystem rather than a pile of random optimization jars.
+
+The intended **Stage 2 performance baseline** currently contains:
+
+- ModernFix
+- FerriteCore
+- Lithium
+- ServerCore with conservative semantics-preserving settings
+- ScalableLux
+- Chunk Sending
+- AllTheLeaks
+- FastSuite + FastWorkbench + FastFurnace
+- Clumps
+- Connectivity
+- spark for profiling/diagnostics
+- Embeddium, ImmediatelyFast, Entity Culling and MoreCulling on clients
+- required libraries such as Placebo and Cupboard
+
+The first and most important optimization remains architectural: **pregenerate the expensive bounded world offline** and represent distant armies/herds as lightweight records rather than ticking thousands of entities.
+
+C2ME is deliberately isolated as an aggressive world-build experiment. It is promoted only if Terrain Diffusion/structure output, restart safety and corruption tests pass in addition to showing a meaningful pregeneration speedup.
+
+Client culling/render optimizers must be checked with Distant Horizons, Simple Clouds, Create, MTS and future DrewCraft radar displays. Server optimizers may not silently freeze strategic entities, change mobcaps, or alter materialization radii without explicit testing.
+
+See [`docs/PERFORMANCE_STACK.md`](docs/PERFORMANCE_STACK.md) and [`pack/manifest/performance_candidates.yaml`](pack/manifest/performance_candidates.yaml).
 
 ## Sieges
 
@@ -223,13 +259,19 @@ The intended flow is:
 
 The launcher manages Java 21, Prism, the exact pack, hashes, updates and server-version readiness.
 
-## Upstream/source strategy
+## Dependency/source strategy
 
-DrewCraft tracks the official source repository and artifact provider for every important dependency in [`pack/manifest/upstreams.yaml`](pack/manifest/upstreams.yaml).
+DrewCraft uses companion candidate registries under [`pack/manifest/`](pack/manifest/):
+
+- [`upstreams.yaml`](pack/manifest/upstreams.yaml) — foundational gameplay/platform dependencies;
+- [`performance_candidates.yaml`](pack/manifest/performance_candidates.yaml) — intended optimizer baseline and isolated aggressive experiments;
+- [`mob_structure_candidates.yaml`](pack/manifest/mob_structure_candidates.yaml) — tactical AI, herd AI, structure source and density branches.
+
+The Stage 1 resolver merges these registries, recursively resolves transitives, downloads through permitted provider paths, computes hashes and generates deterministic client/server layouts. The future `mods.yaml` / `content-packs.yaml` contain only the exact candidates that have actually passed their gates.
 
 We **do not fork every mod** merely to package it. Normal upstream releases remain upstream dependencies. A DrewCraft fork is created only when a required V1 integration/bug fix genuinely needs a source patch that cannot live cleanly in the DrewCraft integration mod.
 
-See [`docs/UPSTREAM_DEPENDENCIES.md`](docs/UPSTREAM_DEPENDENCIES.md).
+See [`pack/manifest/README.md`](pack/manifest/README.md) and [`docs/UPSTREAM_DEPENDENCIES.md`](docs/UPSTREAM_DEPENDENCIES.md).
 
 ## Repository direction
 
@@ -263,15 +305,18 @@ Third-party binaries, huge generated worlds, Java runtimes, model assets, backup
 
 1. [`docs/v_1_requirements.md`](docs/v_1_requirements.md) — hard V1 product/release contract
 2. [`docs/v_1_development_tree.md`](docs/v_1_development_tree.md) — canonical dependency-ordered execution checklist
-3. [`docs/STRATEGIC_WORLD_MODEL.md`](docs/STRATEGIC_WORLD_MODEL.md) — persistent sources, source cores, roaming forces and wild-herd behavior contract
-4. [`docs/MOB_STRUCTURE_CANDIDATES.md`](docs/MOB_STRUCTURE_CANDIDATES.md) — current AI/herd/structure compatibility-spike research
-5. [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md) — product/gameplay architecture
-6. [`docs/MOD_STACK.md`](docs/MOD_STACK.md) — mod ownership and anti-redundancy policy
-7. [`docs/UPSTREAM_DEPENDENCIES.md`](docs/UPSTREAM_DEPENDENCIES.md) — source/fork policy
-8. [`docs/SYSTEMS.md`](docs/SYSTEMS.md) — custom systems design
-9. [`docs/REPO_ARCHITECTURE.md`](docs/REPO_ARCHITECTURE.md) — repository/artifact boundaries
-10. [`docs/LAUNCHER_HOSTING.md`](docs/LAUNCHER_HOSTING.md) — launcher/server/deployment architecture
-11. [`docs/ROADMAP.md`](docs/ROADMAP.md) — high-level roadmap; the V1 development tree is more authoritative
+3. [`docs/STRATEGIC_WORLD_MODEL.md`](docs/STRATEGIC_WORLD_MODEL.md) — persistent sources, roaming forces and wild-herd behavior
+4. [`docs/SOURCE_CORE_SPEC.md`](docs/SOURCE_CORE_SPEC.md) — exact hostile-source clearing contract
+5. [`docs/MOB_STRUCTURE_CANDIDATES.md`](docs/MOB_STRUCTURE_CANDIDATES.md) — AI/herd/structure compatibility research
+6. [`docs/PERFORMANCE_STACK.md`](docs/PERFORMANCE_STACK.md) — optimization baseline, experiments and performance gates
+7. [`pack/manifest/README.md`](pack/manifest/README.md) — candidate-registry and promotion architecture
+8. [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md) — product/gameplay architecture
+9. [`docs/MOD_STACK.md`](docs/MOD_STACK.md) — mod ownership and anti-redundancy policy
+10. [`docs/UPSTREAM_DEPENDENCIES.md`](docs/UPSTREAM_DEPENDENCIES.md) — source/fork policy
+11. [`docs/SYSTEMS.md`](docs/SYSTEMS.md) — custom systems design
+12. [`docs/REPO_ARCHITECTURE.md`](docs/REPO_ARCHITECTURE.md) — repository/artifact boundaries
+13. [`docs/LAUNCHER_HOSTING.md`](docs/LAUNCHER_HOSTING.md) — launcher/server/deployment architecture
+14. [`docs/ROADMAP.md`](docs/ROADMAP.md) — high-level roadmap; the V1 development tree is more authoritative
 
 ## Definition of V1 success
 
@@ -279,6 +324,7 @@ One release candidate must demonstrate the whole intended system together:
 
 - clean one-click Windows and Apple Silicon installation/update
 - reliable huge pregenerated Terrain Diffusion world
+- performance baseline that survives representative long traversals and large structures
 - Distant Horizons
 - functional road vehicles, Create trains and aircraft
 - real weather affecting flight
