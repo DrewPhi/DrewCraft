@@ -11,6 +11,9 @@ DrewCraft's integration layer for compatibility bridges, physical radar, aviatio
 and persistent strategic-world systems.
 '''
 
+[[mixins]]
+config="drewcraft.mixins.json"
+
 [[dependencies.${mod_id}]]
 modId="neoforge"
 type="required"

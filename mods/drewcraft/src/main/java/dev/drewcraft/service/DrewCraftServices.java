@@ -2,6 +2,7 @@ package dev.drewcraft.service;
 
 import dev.drewcraft.adapter.atmosphere.ProjectAtmosphereWeatherService;
 import dev.drewcraft.adapter.create.CreatePowerService;
+import dev.drewcraft.adapter.mts.MtsVehicleService;
 import dev.drewcraft.adapter.terrain.TerrainDiffusionTerrainService;
 import dev.drewcraft.config.DrewCraftConfig;
 import dev.drewcraft.service.power.PowerSample;
@@ -18,64 +19,47 @@ import net.neoforged.fml.ModList;
 public final class DrewCraftServices {
     private static final TerrainService TERRAIN = new TerrainDiffusionTerrainService();
     private static final PowerService CREATE = new CreatePowerService();
+    private static final VehicleService MTS = new MtsVehicleService();
 
     private static final TerrainService TERRAIN_DISABLED = new TerrainService() {
-        @Override
-        public String providerId() {
-            return TerrainDiffusionTerrainService.PROVIDER_ID;
-        }
-
-        @Override
-        public TerrainSample sample(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos position) {
+        @Override public String providerId() { return TerrainDiffusionTerrainService.PROVIDER_ID; }
+        @Override public TerrainSample sample(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos position) {
             return TerrainSample.unavailable(providerId(), position, "disabled_by_config");
         }
     };
 
     private static final WeatherService WEATHER_DISABLED = new WeatherService() {
-        @Override
-        public String providerId() {
-            return ProjectAtmosphereWeatherService.PROVIDER_ID;
-        }
-
-        @Override
-        public WeatherSample sample(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos position) {
+        @Override public String providerId() { return ProjectAtmosphereWeatherService.PROVIDER_ID; }
+        @Override public WeatherSample sample(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos position) {
             return WeatherSample.unavailable(providerId(), position, "disabled_by_config");
         }
     };
 
     private static final WeatherService WEATHER_MISSING = new WeatherService() {
-        @Override
-        public String providerId() {
-            return ProjectAtmosphereWeatherService.PROVIDER_ID;
-        }
-
-        @Override
-        public WeatherSample sample(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos position) {
+        @Override public String providerId() { return ProjectAtmosphereWeatherService.PROVIDER_ID; }
+        @Override public WeatherSample sample(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos position) {
             return WeatherSample.unavailable(providerId(), position, "projectatmosphere_mod_missing");
         }
     };
 
     private static final PowerService CREATE_DISABLED = new PowerService() {
-        @Override
-        public String providerId() {
-            return CreatePowerService.PROVIDER_ID;
-        }
-
-        @Override
-        public PowerSample sample(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos position) {
+        @Override public String providerId() { return CreatePowerService.PROVIDER_ID; }
+        @Override public PowerSample sample(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos position) {
             return PowerSample.unavailable(providerId(), position, "disabled_by_config");
         }
     };
 
-    private static final VehicleService MTS_PENDING = new VehicleService() {
-        @Override
-        public String providerId() {
-            return "mts.vehicle";
+    private static final VehicleService MTS_DISABLED = new VehicleService() {
+        @Override public String providerId() { return MtsVehicleService.PROVIDER_ID; }
+        @Override public VehicleQueryResult query(net.minecraft.server.level.ServerLevel level, net.minecraft.world.phys.Vec3 center, double radiusBlocks) {
+            return VehicleQueryResult.unavailable(providerId(), "disabled_by_config");
         }
+    };
 
-        @Override
-        public VehicleQueryResult query(net.minecraft.server.level.ServerLevel level, net.minecraft.world.phys.Vec3 center, double radiusBlocks) {
-            return VehicleQueryResult.unavailable(providerId(), "step_7a_not_implemented");
+    private static final VehicleService MTS_MISSING = new VehicleService() {
+        @Override public String providerId() { return MtsVehicleService.PROVIDER_ID; }
+        @Override public VehicleQueryResult query(net.minecraft.server.level.ServerLevel level, net.minecraft.world.phys.Vec3 center, double radiusBlocks) {
+            return VehicleQueryResult.unavailable(providerId(), "mts_mod_missing");
         }
     };
 
@@ -87,12 +71,8 @@ public final class DrewCraftServices {
     }
 
     public static WeatherService weather() {
-        if (!DrewCraftConfig.PROJECT_ATMOSPHERE_ADAPTER.get()) {
-            return WEATHER_DISABLED;
-        }
-        if (!ModList.get().isLoaded("projectatmosphere")) {
-            return WEATHER_MISSING;
-        }
+        if (!DrewCraftConfig.PROJECT_ATMOSPHERE_ADAPTER.get()) return WEATHER_DISABLED;
+        if (!ModList.get().isLoaded("projectatmosphere")) return WEATHER_MISSING;
         return AtmosphereHolder.INSTANCE;
     }
 
@@ -101,7 +81,9 @@ public final class DrewCraftServices {
     }
 
     public static VehicleService vehicles() {
-        return MTS_PENDING;
+        if (!DrewCraftConfig.MTS_VEHICLE_ADAPTER.get()) return MTS_DISABLED;
+        if (!ModList.get().isLoaded("mts")) return MTS_MISSING;
+        return MTS;
     }
 
     private static final class AtmosphereHolder {

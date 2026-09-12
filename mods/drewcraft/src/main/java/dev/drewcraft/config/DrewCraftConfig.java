@@ -18,8 +18,12 @@ public final class DrewCraftConfig {
             .define("integrations.createPower", true);
 
     public static final ModConfigSpec.BooleanValue MTS_VEHICLE_ADAPTER = BUILDER
-            .comment("Enable Immersive Vehicles / MTS integration once implemented and validated.")
-            .define("integrations.mtsVehicle", false);
+            .comment("Enable the read-only Immersive Vehicles / MTS vehicle observation adapter.")
+            .define("integrations.mtsVehicle", true);
+
+    public static final ModConfigSpec.BooleanValue AVIATION_WEATHER = BUILDER
+            .comment("Enable server-authoritative Project Atmosphere wind/turbulence in MTS aircraft aerodynamics.")
+            .define("features.aviationWeather", true);
 
     public static final ModConfigSpec.BooleanValue STRATEGIC_KERNEL = BUILDER
             .comment("Enable DrewCraft strategic-world persistence/simulation once implemented.")
@@ -39,6 +43,7 @@ public final class DrewCraftConfig {
                 + ", atmosphere=" + PROJECT_ATMOSPHERE_ADAPTER.get()
                 + ", create=" + CREATE_POWER_ADAPTER.get()
                 + ", mts=" + MTS_VEHICLE_ADAPTER.get()
+                + ", aviationWeather=" + AVIATION_WEATHER.get()
                 + ", strategic=" + STRATEGIC_KERNEL.get()
                 + ", radar=" + RADAR.get();
     }
