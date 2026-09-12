@@ -1,0 +1,361 @@
+# DrewCraft performance compatibility candidates
+#
+# This file is NOT the production lockfile. Baseline entries are intended for
+# the Stage 2 compatibility stack, but promotion still requires exact artifact
+# resolution, SHA-256 verification, transitive-dependency resolution, source/
+# licensing audit and successful compatibility/performance testing.
+
+schema_version: 1
+last_researched: "2026-09-12"
+target:
+  minecraft: "1.21.1"
+  loader: "neoforge"
+  java: 21
+
+policy:
+  baseline_enters_stage2_compatibility_stack: true
+  require_exact_sha256_before_lock: true
+  require_transitive_dependency_resolution: true
+  require_before_after_measurement: true
+  semantics_preserving_defaults_first: true
+  c2me_isolated_worldgen_spike: true
+  notes:
+    - "Performance mods own no gameplay state; DrewCraft strategic/weather/transport authorities remain unchanged."
+    - "Do not enable entity-freezing, dynamic-distance, mobcap or async-worldgen behavior merely because it benchmarks faster."
+    - "Client culling must be visually tested with Create, MTS, Simple Clouds, Distant Horizons and future DrewCraft radar displays."
+    - "Exact provider file IDs marked null must be resolved by the Stage 1 resolver before promotion."
+
+baseline:
+  modernfix:
+    display_name: "ModernFix"
+    provider: curseforge
+    project_id: 790626
+    file_id: null
+    candidate_version: "5.27.24+mc1.21.1"
+    filename: "modernfix-neoforge-5.27.24+mc1.21.1.jar"
+    release_status: release
+    side: common
+    source_repository: "embeddedt/ModernFix"
+    license: "LGPL-3.0-or-later; verify packaged artifact metadata during lock"
+    role: "Broad memory, startup, performance and bug-fix layer."
+    sha256: null
+
+  ferritecore:
+    display_name: "FerriteCore"
+    provider: curseforge
+    project_id: 429235
+    file_id: null
+    candidate_version: "7.0.3"
+    filename: "ferritecore-7.0.3-neoforge.jar"
+    release_status: release
+    side: common
+    source_repository: "malte0811/FerriteCore"
+    license: MIT
+    role: "Reduce blockstate/model memory pressure."
+    sha256: null
+
+  lithium:
+    display_name: "Lithium"
+    provider: curseforge
+    project_id: 360438
+    file_id: 8330365
+    candidate_version: "0.15.4+mc1.21.1"
+    filename: "lithium-neoforge-0.15.4+mc1.21.1.jar"
+    release_status: release
+    side: common
+    source_repository: "CaffeineMC/lithium"
+    license: LGPL-3.0
+    role: "Core game-logic and ticking optimization."
+    notes:
+      - "Must pass Create, MTS, strategic-entity and normal-spawn correctness tests."
+    sha256: null
+
+  servercore:
+    display_name: "ServerCore"
+    provider: curseforge
+    project_id: 550579
+    file_id: null
+    candidate_version: "1.5.19+1.21.1"
+    filename: null
+    release_status: release
+    side: server
+    source_repository: "Wesley1808/ServerCore"
+    license: MIT
+    role: "Server tick/chunk/spawn/login optimizations."
+    config_policy: "Start with semantics-preserving defaults; entity activation, dynamic view/simulation distance and mobcap changes remain disabled until separately proven."
+    sha256: null
+
+  scalablelux:
+    display_name: "ScalableLux"
+    provider: curseforge
+    project_id: 1055925
+    file_id: null
+    candidate_version: "0.1.0.1"
+    filename: null
+    release_status: release
+    side: common
+    source_repository: "RelativityMC/ScalableLux"
+    license: LGPL-3.0
+    role: "Lighting-engine optimization."
+    notes:
+      - "Hard compatibility gate with Create, generated structures and repeated chunk reloads."
+      - "Do not promote if lighting corruption or Create-related incompatibility appears."
+    sha256: null
+
+  chunk_sending:
+    display_name: "Chunk Sending"
+    provider: curseforge
+    project_id: 831663
+    file_id: null
+    candidate_version: "3.9"
+    filename: "chunksending-1.21-3.9.jar"
+    release_status: release
+    side: server
+    source_repository: "someaddons/chunksending"
+    license: "All Rights Reserved; verify acquisition/redistribution policy"
+    role: "Prioritize, stagger and cache chunk packet delivery."
+    required_dependencies:
+      - cupboard
+    sha256: null
+
+  alltheleaks:
+    display_name: "AllTheLeaks"
+    provider: curseforge
+    project_id: 1091339
+    file_id: null
+    candidate_version: "1.1.12+1.21.1"
+    filename: "alltheleaks-1.1.12+1.21.1-neoforge.jar"
+    release_status: release
+    side: common
+    source_repository: "pietro-lopes/AllTheLeaks"
+    license: MIT
+    role: "Memory-leak fixes for long-running modded sessions."
+    sha256: null
+
+  fastsuite:
+    display_name: "FastSuite"
+    provider: curseforge
+    project_id: 475117
+    file_id: null
+    candidate_version: "6.0.7"
+    filename: "FastSuite-1.21.1-6.0.7.jar"
+    release_status: release
+    side: common
+    source_repository: "Shadows-of-Fire/FastSuite"
+    role: "Recipe-system optimization."
+    required_dependencies:
+      - placebo
+    sha256: null
+
+  fastworkbench:
+    display_name: "FastWorkbench"
+    provider: curseforge
+    project_id: 288885
+    file_id: null
+    candidate_version: "9.1.3"
+    filename: "FastWorkbench-1.21.1-9.1.3.jar"
+    release_status: release
+    side: common
+    source_repository: "Shadows-of-Fire/FastWorkbench"
+    role: "Crafting-table recipe/cache optimization."
+    required_dependencies:
+      - placebo
+    sha256: null
+
+  fastfurnace:
+    display_name: "FastFurnace"
+    provider: curseforge
+    project_id: 299540
+    file_id: null
+    candidate_version: "9.0.1"
+    filename: "FastFurnace-1.21.1-9.0.1.jar"
+    release_status: release
+    side: common
+    source_repository: "Shadows-of-Fire/FastFurnace"
+    role: "Furnace recipe/cache optimization."
+    required_dependencies:
+      - placebo
+    sha256: null
+
+  clumps:
+    display_name: "Clumps"
+    provider: curseforge
+    project_id: 256717
+    file_id: null
+    candidate_version: "19.0.0.1"
+    filename: "Clumps-neoforge-1.21.1-19.0.0.1.jar"
+    release_status: release
+    side: server
+    source_repository: "jaredlll08/Clumps"
+    role: "Merge XP orbs to reduce entity overhead after fights/farms."
+    sha256: null
+
+  connectivity:
+    display_name: "Connectivity"
+    provider: curseforge
+    project_id: 470193
+    file_id: null
+    candidate_version: "7.6"
+    filename: "connectivity-1.21.1-7.6.jar"
+    release_status: release
+    side: common
+    source_repository: "someaddons/connectivity"
+    license: "All Rights Reserved; verify acquisition/redistribution policy"
+    role: "Networking/login/payload reliability fixes."
+    required_dependencies:
+      - cupboard
+    notes:
+      - "Reliability helper only; never use it to mask a broken DrewCraft protocol implementation."
+    sha256: null
+
+  spark:
+    display_name: "spark"
+    provider: curseforge
+    project_id: 361579
+    file_id: null
+    candidate_version: "1.10.124"
+    filename: null
+    release_status: release
+    side: server
+    source_repository: "lucko/spark"
+    license: GPL-3.0
+    role: "Profiler and production diagnostics; not itself an optimization."
+    sha256: null
+
+  embeddium:
+    display_name: "Embeddium"
+    provider: curseforge
+    project_id: 908741
+    file_id: null
+    candidate_version: "1.0.15"
+    filename: null
+    release_status: release
+    side: client
+    source_repository: "FiniteReality/embeddium"
+    license: LGPL-3.0
+    role: "Primary NeoForge client renderer optimization."
+    sha256: null
+
+  immediatelyfast:
+    display_name: "ImmediatelyFast"
+    provider: curseforge
+    project_id: 686911
+    file_id: null
+    candidate_version: "1.6.13"
+    filename: null
+    release_status: release
+    side: client
+    source_repository: "RaphiMC/ImmediatelyFast"
+    role: "Immediate-mode/entity/UI/particle rendering optimization."
+    sha256: null
+
+  entity_culling:
+    display_name: "Entity Culling"
+    provider: curseforge
+    project_id: 448233
+    file_id: null
+    candidate_version: "1.10.5"
+    filename: null
+    release_status: release
+    side: client
+    source_repository: "tr7zw/EntityCulling"
+    license: "Custom upstream license; verify exact terms"
+    role: "Occlusion culling for hidden entities/block entities."
+    notes:
+      - "Create pulleys and other renderers whose visual bounds exceed their block/entity bounds may require whitelisting."
+      - "Future DrewCraft radar/display block entities must be visually tested and whitelisted if required."
+    sha256: null
+
+  moreculling:
+    display_name: "MoreCulling"
+    provider: curseforge
+    project_id: 630104
+    file_id: 8833217
+    candidate_version: "1.0.10"
+    filename: "moreculling-neoforge-1.21.1-1.0.10.jar"
+    release_status: release
+    side: client
+    source_repository: "FxMorin/MoreCulling"
+    license: GPL-3.0
+    role: "Additional block/face/item culling."
+    sha256: null
+
+libraries:
+  placebo:
+    display_name: "Placebo"
+    provider: curseforge
+    project_id: 283644
+    file_id: null
+    candidate_version: "9.9.2"
+    filename: null
+    release_status: release
+    side: common
+    source_repository: "Shadows-of-Fire/Placebo"
+    role: "Required library for the Fast* optimization family."
+    sha256: null
+
+  cupboard:
+    display_name: "Cupboard"
+    provider: curseforge
+    project_id: 326652
+    file_id: null
+    candidate_version: "4.1"
+    filename: "cupboard-1.21.1-4.1.jar"
+    release_status: release
+    side: common
+    source_repository: "someaddons/cupboard"
+    license: "All Rights Reserved; verify acquisition/redistribution policy"
+    role: "Required library for Chunk Sending / Connectivity current lines."
+    sha256: null
+
+experimental:
+  c2me_neoforge:
+    display_name: "C2ME NeoForge"
+    provider: curseforge
+    project_id: 533097
+    file_id: 8123104
+    candidate_version: "0.3.0+alpha.0.93"
+    filename: "c2me-neoforge-mc1.21.1-0.3.0+alpha.0.93.jar"
+    release_status: alpha
+    side: server_worldbuild_spike
+    source_repository: "RelativityMC/C2ME-neoforge"
+    role: "Concurrent chunk generation/loading/I/O; primarily an offline pregeneration experiment."
+    verdict: isolated_worldgen_spike
+    notes:
+      - "Never promote solely from synthetic speed numbers."
+      - "Must pass Terrain Diffusion output/parity, structure placement, restart and corruption tests."
+      - "May be useful on the world-build machine without being needed on the production server."
+    sha256: null
+
+  structure_essentials:
+    display_name: "Structure Essentials"
+    provider: curseforge
+    project_id: 832882
+    file_id: null
+    candidate_version: "5.0"
+    filename: "structureessentials-1.21.1-5.0.jar"
+    release_status: release
+    side: server_worldbuild_candidate
+    license: "All Rights Reserved; verify acquisition/redistribution policy"
+    role: "Structure locating/spacing/overlap/debug tooling for world-build and source-index validation."
+    verdict: optional_structure_tool
+    sha256: null
+
+rejected_or_deferred:
+  noisium:
+    reason: "Archived upstream and overlaps the highest-risk worldgen optimization area."
+  does_potato_tick:
+    reason: "Generic entity freezing could break strategic materialization/encounter semantics; DrewCraft solves macro population scale architecturally."
+  generic_ai_throttlers:
+    reason: "Do not alter strategic/tactical behavior until actual profiler evidence identifies an AI hotspot that cannot be solved in DrewCraft."
+  superchunk:
+    reason: "Too aggressive/hardware-specific for the V1 baseline; reconsider only for offline world-build experimentation after the conservative stack is stable."
+
+promotion_requirements:
+  - "Acquire the exact artifact through an allowed provider path."
+  - "Compute and record SHA-256."
+  - "Resolve and record all transitives."
+  - "Audit source/license/acquisition/redistribution."
+  - "Pass the Stage 2 dedicated-server and supported-client compatibility matrix."
+  - "Measure before/after server and client performance on representative DrewCraft workloads."
+  - "Reject an optimizer whose benefit is negligible relative to its maintenance/conflict risk."
