@@ -40,10 +40,9 @@ public final class StrategicRoutingService {
 
         runtime.successes++;
         runtime.cache.put(start, destination, terrainVersion, planned.route());
-        StrategicRoute fresh = runtime.cache.get(start, destination, terrainVersion);
-        runtime.last = new RoutingStats(true, false, fresh.waypoints().size(), planned.expandedNodes(),
+        runtime.last = new RoutingStats(true, false, planned.route().waypoints().size(), planned.expandedNodes(),
                 planned.elapsedMillis(), planned.weightedCost(), planned.status());
-        return new RoutingResult(true, fresh, runtime.last);
+        return new RoutingResult(true, planned.route(), runtime.last);
     }
 
     public static synchronized ServiceStats stats() {
