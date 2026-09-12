@@ -95,7 +95,8 @@ def artifact(entry: dict[str, Any]) -> dict[str, Any]:
         "provider": pick("provider"), "project_id": pick("project_id"),
         "file_id": pick("file_id"), "version_id": pick("version_id"),
         "candidate_version": pick("candidate_version"), "filename": pick("filename"),
-        "sha256": pick("sha256"), "release_status": pick("release_status"),
+        "download_url": pick("download_url"), "sha256": pick("sha256"),
+        "release_status": pick("release_status"),
     }
 
 
@@ -219,6 +220,14 @@ def hydrate(plan: dict[str, Any]) -> dict[str, Any]:
     for dep in plan["dependencies"]:
         a = dep["artifact"]
         provider = a.get("provider")
+        if a.get("download_url"):
+            dep["hydration"] = {
+                "status": "resolved",
+                "filename": a.get("filename"),
+                "download_url": a.get("download_url"),
+                "sha256": a.get("sha256"),
+            }
+            continue
         try:
             if provider == "curseforge":
                 if not key:
@@ -291,7 +300,7 @@ def fetch(plan: dict[str, Any], cache: Path, hydrated: dict[str, Any] | None) ->
     for dep in plan["dependencies"]:
         a = dep["artifact"]
         h = hmap.get(dep["id"], {})
-        url = h.get("download_url")
+        url = h.get("download_url") or a.get("download_url")
         if not url and a.get("provider") == "curseforge" and a.get("project_id") and a.get("file_id"):
             url = f"https://www.curseforge.com/api/v1/mods/{a['project_id']}/files/{a['file_id']}/download"
         filename = h.get("filename") or a.get("filename") or f"{dep['id']}.jar"
