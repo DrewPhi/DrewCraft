@@ -17,6 +17,7 @@ registries:
   foundation: "pack/manifest/upstreams.yaml"
   performance: "pack/manifest/performance_candidates.yaml"
   gameplay_spikes: "pack/manifest/mob_structure_candidates.yaml"
+  runtime_libraries: "pack/manifest/runtime_candidates.yaml"
 
 profiles:
   stage2_base_performance:
@@ -54,11 +55,13 @@ profiles:
     performance_libraries:
       - placebo
       - cupboard
+      - architectury
     config_policy:
       - "Use semantics-preserving optimizer defaults first."
       - "ServerCore entity activation/dynamic distance/mobcap changes disabled until separately tested."
       - "No C2ME in this profile."
       - "No tactical horde/herd AI or source-structure pack in this profile."
+      - "Architectury is a required transitive of Gabou's Libs / Project Atmosphere, discovered by the dedicated-server smoke test."
     gate: "Pass the foundational + performance Stage 2 matrix before optional gameplay/content profiles are promoted."
 
   hostile_ai_enhanced_hordes:
