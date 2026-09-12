@@ -1,0 +1,25 @@
+schema_version: 1
+last_researched: "2026-09-12"
+
+minecraft:
+  version: "1.21.1"
+
+loader:
+  id: neoforge
+  version: "21.1.250"
+  channel: stable
+  provider: neoforge_maven
+  installer_filename: "neoforge-21.1.250-installer.jar"
+  installer_url: "https://maven.neoforged.net/releases/net/neoforged/neoforge/21.1.250/neoforge-21.1.250-installer.jar"
+  installer_sha256: null
+  rationale: "Current latest stable 1.21.1 NeoForge build at the Stage 1 lock date; compatibility must still pass the DrewCraft Stage 2 matrix."
+
+java:
+  major: 21
+  development_distribution: temurin
+  policy: "Java 21 is the pack/runtime ABI requirement. Exact launcher-managed per-OS/per-architecture runtime binaries and hashes are locked in the launcher runtime manifest, not represented by one cross-platform archive here."
+
+promotion_requirements:
+  - "Hash the exact official NeoForge installer."
+  - "Install server/client layouts from the exact loader version during Stage 2."
+  - "Run the full mod compatibility matrix before declaring this loader build production-locked."
