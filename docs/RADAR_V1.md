@@ -6,6 +6,8 @@ DrewCraft V1 uses **Create: Radars 0.4.9.4 for Minecraft 1.21.1 NeoForge** as th
 
 The official unmodified Create: Radars artifact remains an upstream dependency. DrewCraft integrates externally through an isolated fail-closed compatibility bridge and optional `@Pseudo` mixins; no upstream source or art is copied into this repository.
 
+Create: Radars declares **Create Big Cannons >=5.11.2** as a required runtime dependency. DrewCraft pins the current stable **Create Big Cannons 5.11.7** for 1.21.1 NeoForge, which in turn requires **Ritchie's Projectile Library 2.1.2**. These are treated as ordinary pinned upstream dependencies; their presence does not expand 8B into cannon progression/balance work.
+
 ### Ground radar behavior
 
 Create: Radars remains authoritative for whether the ground radar is assembled/running and for the hardware range returned by its dish construction. DrewCraft uses that exact range for its weather product.
@@ -21,7 +23,7 @@ DrewCraft adds:
 
 Weather sampling is server-authoritative and cached for 20 ticks. Every monitor update for the same radar/range reuses that cached product. DrewCraft does not client-scan the world, force-load chunks, or invoke Terrain Diffusion inference.
 
-Terrain samples that are unavailable remain `UNKNOWN`; a positive realized-terrain obstruction masks the weather return. This preserves the V1 rule that a larger dish increases potential hardware range while a higher/better-sited antenna determines how much of that range is usable through terrain.
+Terrain samples that are unavailable remain `UNKNOWN`; a positive realized-terrain obstruction masks the weather return. This preserves the V1 rule that a larger dish increases potential hardware range while a higher/better-sited antenna determines how much of that range is usable through terrain. The final representative pre-generated-world acceptance run is the authority for the practical low-site/high-site coverage behavior.
 
 ### Native contacts
 
