@@ -6,12 +6,12 @@ public final class DrewCraftConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.BooleanValue TERRAIN_DIFFUSION_ADAPTER = BUILDER
-            .comment("Enable the Terrain Diffusion Plus adapter once implemented and validated.")
-            .define("integrations.terrainDiffusion", false);
+            .comment("Enable the Terrain Diffusion Plus realized-world adapter. Sampling never force-loads chunks or invokes neural inference.")
+            .define("integrations.terrainDiffusion", true);
 
     public static final ModConfigSpec.BooleanValue PROJECT_ATMOSPHERE_ADAPTER = BUILDER
-            .comment("Enable the Project Atmosphere adapter once implemented and validated.")
-            .define("integrations.projectAtmosphere", false);
+            .comment("Enable the read-only Project Atmosphere public API adapter. The adapter fails closed if the upstream API shape changes.")
+            .define("integrations.projectAtmosphere", true);
 
     public static final ModConfigSpec.BooleanValue CREATE_POWER_ADAPTER = BUILDER
             .comment("Enable Create kinetic-power integration once implemented and validated.")
