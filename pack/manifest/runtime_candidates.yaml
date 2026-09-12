@@ -1,0 +1,32 @@
+# DrewCraft runtime/library compatibility candidates
+#
+# Libraries here are required transitives discovered by actual Stage 2 runtime
+# validation. They are candidate inputs, not production locks.
+
+schema_version: 1
+last_researched: "2026-09-12"
+target:
+  minecraft: "1.21.1"
+  loader: "neoforge"
+  java: 21
+
+libraries:
+  architectury:
+    display_name: "Architectury API"
+    kind: library
+    provider: curseforge
+    project_id: 419699
+    file_id: 8492726
+    candidate_version: "13.0.11"
+    filename: "architectury-13.0.11-neoforge.jar"
+    release_status: release
+    side: common
+    source_repository: "architectury/architectury-api"
+    license: "LGPL-3.0-only"
+    role: "Mandatory runtime dependency of Gabou's Libs 1.9 / Project Atmosphere stack."
+    discovered_by: "Dedicated server smoke test: Gabou's Libs requires architectury >=13.0.8."
+    sha256: null
+
+promotion_requirements:
+  - "Acquire from the exact original-provider identity and record SHA-256."
+  - "Pass dedicated-server boot/restart and supported-client compatibility gates."
