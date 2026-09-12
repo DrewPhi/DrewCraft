@@ -4,7 +4,12 @@
   "package": "dev.drewcraft.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "MtsVehiclePhysicsMixin"
+    "MtsVehiclePhysicsMixin",
+    "CreateRadarMonitorBlockEntityMixin"
+  ],
+  "client": [
+    "CreateRadarMonitorRendererMixin",
+    "CreateRadarMonitorScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 0

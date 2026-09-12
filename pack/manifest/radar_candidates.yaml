@@ -1,0 +1,35 @@
+# DrewCraft radar integration candidates.
+# Kept separate from the original certified base snapshot so the radar addition
+# is explicit and can be re-certified with the final V1 full-stack acceptance run.
+
+schema_version: 1
+last_researched: "2026-09-12"
+
+create_radars:
+  display_name: "Create: Radars"
+  kind: mod
+  required_for_v1: true
+  ownership_class: UPSTREAM_BINARY
+  side: common
+  provider: modrinth
+  project_id: "BLu2Yqfq"
+  version_id: "AntNFNAx"
+  candidate_version: "0.4.9.4-1.21.1"
+  filename: "create_radar-0.4.9.4-1.21.1.jar"
+  release_status: release
+  sha256: null
+  required_dependencies:
+    - create
+  source_repository: "Arsenalists-of-Create/Create-Radar"
+  source_release_boundary: "15e36014949fdbed11c88690b3a68777c604effe"
+  target_minecraft: "1.21.1"
+  target_loader: "neoforge"
+  license: "Arsenalists of Create Source Available License"
+  redistribution: "Use the official unmodified provider artifact. Do not copy protected source/assets into DrewCraft."
+  integration_policy: "Optional runtime compatibility through isolated reflection and @Pseudo mixins; no DrewCraft fork."
+  notes:
+    - "Official 0.4.9.4 release is the V1 physical radar frontend."
+    - "Create: Radars owns dish construction, Create kinetic operation, native tracks, filters, networks and monitors."
+    - "DrewCraft contributes cached Project Atmosphere weather returns and Terrain Diffusion terrain masking only."
+    - "Project Atmosphere's existing handheld Weather Radar remains the V1 pilot/explorer weather device."
+    - "MTS cockpit/airborne radar integration is deferred to V1.1+."

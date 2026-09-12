@@ -17,6 +17,10 @@ public final class DrewCraftConfig {
             .comment("Enable the read-only Create kinetic-power adapter used by DrewCraft machinery.")
             .define("integrations.createPower", true);
 
+    public static final ModConfigSpec.BooleanValue CREATE_RADARS_ADAPTER = BUILDER
+            .comment("Enable DrewCraft weather/terrain integration with the official Create: Radars monitor and ground radar.")
+            .define("integrations.createRadars", true);
+
     public static final ModConfigSpec.BooleanValue MTS_VEHICLE_ADAPTER = BUILDER
             .comment("Enable the read-only Immersive Vehicles / MTS vehicle observation adapter.")
             .define("integrations.mtsVehicle", true);
@@ -30,8 +34,8 @@ public final class DrewCraftConfig {
             .define("features.strategicKernel", false);
 
     public static final ModConfigSpec.BooleanValue RADAR = BUILDER
-            .comment("Enable DrewCraft radar once implemented.")
-            .define("features.radar", false);
+            .comment("Enable DrewCraft radar sensing and Create: Radars weather/terrain integration.")
+            .define("features.radar", true);
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 
@@ -42,6 +46,7 @@ public final class DrewCraftConfig {
         return "terrain=" + TERRAIN_DIFFUSION_ADAPTER.get()
                 + ", atmosphere=" + PROJECT_ATMOSPHERE_ADAPTER.get()
                 + ", create=" + CREATE_POWER_ADAPTER.get()
+                + ", createRadars=" + CREATE_RADARS_ADAPTER.get()
                 + ", mts=" + MTS_VEHICLE_ADAPTER.get()
                 + ", aviationWeather=" + AVIATION_WEATHER.get()
                 + ", strategic=" + STRATEGIC_KERNEL.get()

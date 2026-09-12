@@ -18,15 +18,17 @@ registries:
   performance: "pack/manifest/performance_candidates.yaml"
   gameplay_spikes: "pack/manifest/mob_structure_candidates.yaml"
   runtime_libraries: "pack/manifest/runtime_candidates.yaml"
+  radar_integrations: "pack/manifest/radar_candidates.yaml"
 
 profiles:
   stage2_base_performance:
-    description: "First full-stack compatibility lock: foundational DrewCraft stack plus conservative performance baseline."
+    description: "Foundational DrewCraft stack plus conservative performance baseline and the V1 physical radar frontend."
     foundation:
       - terrain_diffusion_plus
       - chunky
       - distant_horizons
       - create
+      - create_radars
       - immersive_vehicles
       - mts_official_pack
       - project_atmosphere
@@ -62,7 +64,8 @@ profiles:
       - "No C2ME in this profile."
       - "No tactical horde/herd AI or source-structure pack in this profile."
       - "Architectury is a required transitive of Gabou's Libs / Project Atmosphere, discovered by the dedicated-server smoke test."
-    gate: "Pass the foundational + performance Stage 2 matrix before optional gameplay/content profiles are promoted."
+      - "Create: Radars is the V1 physical radar frontend; DrewCraft extends it externally rather than forking or duplicating its hardware/network stack."
+    gate: "Pass the foundational + performance matrix and final V1 full-stack acceptance before release promotion."
 
   hostile_ai_enhanced_hordes:
     extends:
