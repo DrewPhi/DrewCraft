@@ -37,6 +37,7 @@ public final class DrewCraftCommands {
                         .then(Commands.literal("power")
                                 .then(Commands.literal("sample")
                                         .executes(context -> samplePower(context.getSource()))))
+                        .then(StrategicCommands.node())
         );
     }
 
@@ -46,6 +47,7 @@ public final class DrewCraftCommands {
                 "DrewCraft " + DrewCraft.version()
                         + " | protocol=" + DrewCraftProtocol.CURRENT
                         + " | persistenceSchema=" + DrewCraftSavedData.CURRENT_SCHEMA_VERSION
+                        + " | strategicGroups=" + data.strategicGroups().size()
                         + " | lastTouched=" + data.lastTouchedGameTime()
         ), false);
         source.sendSuccess(() -> Component.literal("Feature flags: " + DrewCraftConfig.integrationSummary()), false);
