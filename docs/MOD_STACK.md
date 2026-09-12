@@ -1,290 +1,256 @@
-# ServerMc Mod Stack
+# DrewCraft Mod Stack
 
-This document defines how dependencies enter ServerMc and separates **baseline dependencies**, **compatibility-gated candidates**, and **functionality that belongs in the custom ServerMc mod**.
+This document defines how dependencies enter DrewCraft and, critically, **which system owns which responsibility**. The pack should not become a kitchen sink. Every dependency adds update risk, client burden, startup time, memory use, and multiplayer failure modes.
 
-Do not turn this file into a wish list. Every dependency increases update risk, client burden, startup time, memory use, and multiplayer failure modes.
+The hard rule is:
 
-## 1. Platform lock
+> **One authoritative owner per subsystem. Other mods may render, consume, or bridge that state, but they must not create a competing second implementation.**
 
-Current target:
+The current target is Minecraft **1.21.1**, **NeoForge**, **Java 21**.
 
-- Minecraft: **1.21.1**
-- Loader: **NeoForge**
-- Java: **21**
+Exact artifacts are tracked as candidates in `pack/manifest/upstreams.yaml` and are promoted into the production lock only after the V1 Stage 2 compatibility matrix passes.
 
-This combination is intentional because the core stack now has 1.21.1 NeoForge support.
+## 1. Responsibility / anti-redundancy matrix
 
-Verified during initial repository specification on 2026-09-12:
+| Responsibility | Authoritative owner | Supporting role | Explicitly avoid |
+| --- | --- | --- | --- |
+| Overworld terrain, elevation, rivers, climate fields, tall-world caves | Terrain Diffusion Plus | Chunky pregenerates it; DrewCraft reads/bridges its data | another terrain generator or cave overhaul by default |
+| Offline chunk pregeneration | Chunky | build/admin tooling only | treating Chunky as player-facing gameplay |
+| Long-distance visual LOD | Distant Horizons | client rendering | a second distant-terrain renderer |
+| Industry, mechanical infrastructure, logistics, rail | Create | DrewCraft adapters consume Create kinetic power | a second giant tech tree; MTS rail as a competing rail system |
+| Cars/trucks and aircraft | Immersive Vehicles / MTS + minimal curated content | DrewCraft adds weather/radar integration | overlapping vehicle ecosystems or novelty-pack sprawl |
+| Atmospheric simulation / weather state | Project Atmosphere | DrewCraft weather API consumes it | a second weather simulator |
+| Clouds and localized weather rendering | Simple Clouds, under Project Atmosphere control/integration | visual/local precipitation substrate | treating Simple Clouds as an independent competing weather authority |
+| Seasonal calendar / foliage / crop-season behavior | Serene Seasons where required/stable | Project Atmosphere integrates with it | a second season system |
+| Physical weather radar | DrewCraft custom mod | consumes Project Atmosphere; powered through Create adapter | a separate radar mod/minimap weather cheat |
+| Strategic mobs, distant hordes, armies and herds | DrewCraft custom mod | normal Minecraft entities only when materialized | a second macro horde/world-simulation mod |
+| Siege planning and constrained breaching | DrewCraft custom mod | ordinary mob navigation first | generic indiscriminate block-breaking AI |
+| Local vanilla spawning and mob farms | Minecraft / selected upstream spawn rules | DrewCraft strategic system is additive | replacing ordinary spawning with the strategic layer |
+| Routine long-distance travel | roads, Create rail, MTS vehicles, vanilla boats; ships if proven stable | Nether remains available subject to a coarse pillar-preserving rule if necessary | Waystones/routine teleportation |
 
-- Terrain Diffusion Plus: supports 1.21.1 NeoForge and recommends World Scale 2
-- Immersive Vehicles: 1.21.1 NeoForge release exists
-- Create: 1.21.1 NeoForge release exists
-- Project Atmosphere: advertises 1.21.1 NeoForge support
-- NeoForge 1.21.1 requires Java 21
-
-Versions must still be pinned and tested together before the pack is called runnable.
+This matrix is the default answer when a new mod appears to overlap an existing one: **do not add it unless it solves a missing capability that cannot be implemented cleanly through the existing owner or DrewCraft bridge.**
 
 ## 2. Baseline dependencies
 
 ### Terrain Diffusion Plus
 
-**Role:** overworld generator and large-scale geography.
+**Role:** sole overworld generation foundation and source of large-scale terrain/climate geometry.
 
 Target configuration:
 
 - World Scale 2
 - bounded production world
 - offline pre-generation using Chunky
-- no assumption that the production server can cheaply generate new terrain under load
+- no expectation of large live diffusion generation on the production server
 
-Important operational detail: Terrain Diffusion downloads multi-gigabyte model assets and performs neural inference. The live Oracle ARM server path therefore depends on pre-generation and explicit ARM/runtime testing.
+Terrain Diffusion Plus already contains the intended tall-world cave handling for the 1.21.1 line. **Do not add YUNG-style Better Caves, Tectonic, TerraForged, Continents, or another general cave/terrain overhaul by default.** A second world-generation layer is allowed only if a concrete deficiency is demonstrated and compatibility is proven.
 
-Project: https://github.com/derekvawdrey/terrain-diffusion-plus
+Its climate/elevation data should be exposed to DrewCraft through a compatibility adapter rather than recreated.
+
+Official source: `derekvawdrey/terrain-diffusion-plus`.
 
 ### Chunky
 
 **Role:** controlled pre-generation of the playable world.
 
-Chunky belongs in world-build/admin workflows, not in the player experience.
-
-The exact release must match 1.21.1 NeoForge.
+Chunky is operational tooling, not gameplay. It exists because Terrain Diffusion generation is expensive and the production world should be built ahead of time.
 
 ### Distant Horizons
 
-**Role:** render the scale of Terrain Diffusion geography.
+**Role:** communicate the huge world's scale visually using distant LOD rendering.
 
-Must be tested carefully for:
+It must be tested for:
 
-- client memory/GPU impact
-- multiplayer LOD behavior
-- Apple Silicon
-- interaction with Simple Clouds/weather rendering
-- pack-default quality settings
+- Windows and Apple Silicon performance
+- multiplayer behavior
+- memory/GPU burden
+- interaction with Simple Clouds
+- sensible pack defaults
 
-It is fundamentally client-facing unless a chosen multiplayer configuration requires server support.
+Distant Horizons does not own weather, world generation, navigation, or strategic simulation.
 
 ### Create
 
-**Role:** primary technology/infrastructure layer.
+**Role:** primary technology/infrastructure language.
 
-Use for:
+Create owns:
 
 - mechanical industry
 - logistics
-- trains
-- bridges/tunnels/construction
-- infrastructure that makes large geography usable
+- trains and rail infrastructure
+- bridges/tunnels/construction-oriented infrastructure
 
-ServerMc should integrate with Create rather than add a redundant all-purpose tech mod.
+**Create is the only intended rail/industrial tech system.** Even if a vehicle pack contains rail-capable content, DrewCraft should not establish a second parallel train progression for V1.
 
-Verified current line during specification: Create 6.0.x for Minecraft 1.21.1 NeoForge.
+DrewCraft should integrate with Create rather than add another all-purpose energy/technology mod. Custom systems that need a powered state should use a small DrewCraft adapter from Create kinetic stress/RPM rather than importing a second electrical tech tree.
 
-Project: https://www.curseforge.com/minecraft/mc-mods/create
+### Immersive Vehicles / MTS
 
-### Immersive Vehicles (MTS)
+**Role:** realistic-ish road vehicles and aircraft.
 
-**Role:** realistic cars and aircraft.
+MTS provides the vehicle physics/content framework; it does not own weather or rail progression.
 
-Use a deliberately small set of curated content packs. Do not install every vehicle pack available.
+Use the **smallest curated content-pack set** that provides the V1 road and aircraft capabilities. One content pack may satisfy both requirements. The MTS Official Pack is currently a compatibility candidate because it contains cars/trucks and aircraft in one package; it is not automatically the final V1 content selection, especially if unwanted content cannot be cleanly hidden.
 
 Selection criteria:
 
-- believable visual style
-- progression-compatible speeds/capabilities
-- stable 1.21.1 behavior
-- useful cars/trucks/aircraft rather than novelty spam
-- server/client licensing/distribution compatibility
+- stable 1.21.1 multiplayer behavior
+- useful cars/trucks and aircraft
+- visual tone compatible with Minecraft/DrewCraft
+- no unnecessary duplicate train ecosystem
+- no novelty-content sprawl
+- acceptable licensing/distribution model
 
-Verified during specification: a Minecraft 1.21.1 NeoForge release exists.
-
-Project: https://www.curseforge.com/minecraft/mc-mods/minecraft-transport-simulator
+DrewCraft owns the bridge from atmospheric wind/severity to supported aircraft and the aircraft weather-radar integration.
 
 ### Project Atmosphere
 
-**Role:** dynamic climate/weather simulation.
+**Role:** **sole atmospheric simulation authority**.
 
-This should be the source of truth for atmospheric state. ServerMc consumes/bridges its state rather than creating a second weather simulation.
+Project Atmosphere owns atmospheric/weather state. DrewCraft consumes its state; it must not implement a second independent storm model.
 
-Project: https://modrinth.com/mod/project-atmosphere
+This includes the source data used by:
+
+- wind effects
+- precipitation/storm severity
+- visibility
+- ground weather radar
+- aircraft weather radar
+- aviation turbulence inputs
 
 ### Simple Clouds
 
-**Role:** cloud simulation/rendering used by Project Atmosphere.
+**Role:** cloud/localized-weather rendering substrate integrated with Project Atmosphere.
 
-Test against Distant Horizons and the intended client graphics settings.
+Simple Clouds may itself expose localized cloud/weather behavior, but inside DrewCraft it is **not a competing weather authority**. Project Atmosphere is expected to control/integrate the atmospheric behavior, while Simple Clouds supplies the cloud rendering/local visual machinery.
+
+This pairing is intentional rather than redundant: Project Atmosphere's own documentation describes its simulation as replacing Simple Clouds' random cloud spawning with climate-driven behavior. citeturn397926search0turn397926search1
 
 ### Serene Seasons
 
-**Role:** seasons where supported by Project Atmosphere and the final biome/world setup.
+**Role:** season calendar and seasonal world/gameplay presentation where required/stable with the chosen Project Atmosphere release.
 
-This is included because the weather stack explicitly supports it, not because ServerMc needs a broad farming overhaul.
+Serene Seasons can affect foliage, temperature context, weather and crop growth, so ownership must remain clear:
+
+- Serene Seasons owns its seasonal calendar and seasonal gameplay hooks;
+- Project Atmosphere consumes/integrates seasonal state for atmospheric behavior;
+- DrewCraft does not create a third season simulation.
+
+Current Project Atmosphere releases explicitly support Serene Seasons, and the selected dependency graph determines whether it is required. Serene Seasons itself requires GlitchCore on modern versions. citeturn849177search0turn397926search4
 
 ### Required libraries
 
-Install only libraries required by selected mods, for example Gabou's Libs if required by the locked Project Atmosphere version.
-
-Libraries should be generated into the pack from the dependency manifest; friends should never locate them manually.
+Support libraries such as GlitchCore or Gabou's Libs are dependencies, not gameplay systems. They must be tracked explicitly in the manifest so they never become invisible manual prerequisites.
 
 ## 3. Compatibility-gated candidates
 
-These are desired capabilities, not guaranteed dependencies.
+These capabilities are allowed only after the baseline passes.
 
 ### Large player-buildable ships
 
-Goal: progression between small boats and aircraft, with meaningful ports/cargo.
+Desired role: water logistics/transport between small boats and aircraft.
 
-Candidate must:
+A ship implementation is **not a hard V1 blocker**. It must support 1.21.1 NeoForge, multiplayer, Create coexistence, acceptable performance, and avoid chunk/contraption corruption.
 
-- support 1.21.1 NeoForge
-- coexist with Create
-- be stable in multiplayer
-- not corrupt chunks/contraptions
-- have acceptable performance
-- support the desired realistic-ish style
-
-Do not lock the pack to an unstable ship mod merely because the feature sounds good.
+Do not add multiple ship systems.
 
 ### Navigation/map tooling
 
-A restrained map/navigation option may be useful because the world is huge.
-
-Avoid:
-
-- free teleportation
-- omniscient hostile/player tracking
-- features that remove navigation/weather/radar gameplay
-
-Coordinates/maps are acceptable; bypassing travel is not.
+A restrained map may be useful because the world is huge. It must not provide routine teleportation, omniscient hostile/player tracking, or information that makes physical radar/weather/navigation infrastructure irrelevant.
 
 ### Herd/ecology helpers
 
-Mods that improve nearby animal behavior may complement ServerMc's distant strategic herd simulation.
-
-Candidates are only useful if they:
-
-- support 1.21.1 NeoForge
-- do not duplicate the persistent world simulation
-- do not explode entity counts
-- do not radically rewrite survival balance
+A nearby-animal behavior mod is allowed only if it complements DrewCraft's strategic distant-herd records. It must not become a second persistent population simulator or explode entity counts.
 
 ### Local spawn/horde helpers
 
-Spawn-control or local-horde mods may be useful as adapters for ordinary loaded-chunk behavior.
+Do not add a general horde mod just because hordes are desired. DrewCraft owns macro-scale persistent groups, sources, movement, ETA and armies.
 
-Examples previously considered conceptually include In Control!-style spawn tuning and horde behavior mods. They are **not baseline dependencies until compatibility is verified**.
+A local spawning/AI helper may be introduced only when a concrete loaded-chunk behavior cannot be implemented adequately in the DrewCraft integration layer. It must remain subordinate to DrewCraft strategic state.
 
-ServerMc's strategic world simulation remains authoritative for unloaded macro-scale groups.
+### Structure content
 
-## 4. Features that should NOT be separate mods unless necessary
+Do not install a giant structure pack for variety. Add only sparse, purpose-specific structure content needed for exploration or hostile source sites, and only after density is measured against the World Scale 2 geography.
 
-Prefer implementing these inside the single `servermc` integration mod:
+## 4. Features that belong in the DrewCraft integration mod
 
-- Terrain Diffusion climate/elevation bridge
-- atmospheric wind → aircraft effects
-- mountain/terrain turbulence
-- weather-radar logic
-- physical radar blocks/screens/network
+Prefer one NeoForge integration mod with internal modules for:
+
+- Terrain Diffusion climate/elevation adapter
+- Project Atmosphere weather adapter
+- atmospheric wind -> MTS aircraft effects
+- terrain/mountain turbulence
+- physical weather radar and displays
+- aircraft weather radar
 - Create-compatible radar power adapter
 - strategic populations
 - hostile source lifecycle
 - unloaded movement/ETA
-- materialization/dematerialization
+- materialization/dematerialization and casualty reconciliation
+- army composition
+- animal herds
 - siege planner
 - constrained block breaching
 - strategic/local spawn coexistence
-- Nether portal-balance rule if needed
+- Nether portal-distance rule if testing proves a core-pillar problem
 
-This keeps the defining gameplay systems versioned together and avoids dependency spaghetti.
+Do not solve these by collecting overlapping standalone mods unless integration into the existing architecture is demonstrably impossible.
 
-## 5. Mods/categories intentionally excluded by default
+## 5. Intentionally excluded by default
 
-### Waystones and routine teleportation
+- Waystones or routine teleportation
+- additional overworld terrain/cave overhauls
+- giant structure packs
+- extra dimensions without a specific project need
+- multiple giant technology/power systems
+- separate weather simulators
+- generic world-scale horde/army mods
+- generic indiscriminate mob block-breaking mods
+- unrelated hunger/thirst/body-temperature micromanagement
+- novelty vehicle-pack collections
+- parallel rail systems that compete with Create trains
 
-Conflicts directly with the large-world transportation design.
+## 6. Dependency and source policy
 
-### Giant structure packs
+`pack/manifest/upstreams.yaml` is the candidate/source registry. The eventual locked `mods.yaml` / `content-packs.yaml` is authoritative for a release.
 
-A huge density of structures makes the world feel small and destroys the value of travel/discovery. Add individual structure content only when it has a clear purpose.
-
-### Extra dimensions
-
-Do not add dimensions simply because they exist. The Overworld is the project.
-
-### Multiple giant technology mods
-
-Create is the primary technology language. Add a second major tech system only if it solves a critical problem Create + ServerMc cannot solve cleanly.
-
-### Unrelated survival difficulty overhauls
-
-Hunger/thirst/body-temperature systems are not automatically more realistic in a useful way. Project Atmosphere temperature can matter where it supports weather/travel, but the server is not intended to become a micromanagement survival pack.
-
-### Novelty vehicle packs
-
-Vehicle content should match the project's visual/progression tone.
-
-## 6. Dependency manifest policy
-
-Never treat the `mods/` folder on one developer machine as the source of truth.
-
-The repository should hold a machine-readable manifest containing for every dependency:
+Every dependency must record:
 
 - canonical ID/name
-- provider/source
-- Minecraft version
-- loader
-- exact version
-- expected SHA-256
-- side: `common`, `client`, `server`
-- required/optional
-- redistribution policy
-- download URL/API identifier where legally/technically appropriate
-- notes/compatibility constraints
+- official source repository/provider
+- Minecraft version and loader
+- exact artifact/version
+- exact SHA-256 before lock
+- side (`common`, `client`, `server`)
+- required/optional state
+- redistribution/acquisition policy
+- provider IDs/download identity
+- compatibility notes
+- ownership class (`UPSTREAM_BINARY`, `UPSTREAM_SOURCE`, `DREWCRAFT_FORK`, `DREWCRAFT_OWNED`)
 
-Example conceptual entry:
-
-```yaml
-- id: create
-  side: common
-  minecraft: 1.21.1
-  loader: neoforge
-  version: 6.0.10
-  required: true
-  sha256: TO_BE_LOCKED
-  source: curseforge
-```
-
-Do not copy that example into production without obtaining and verifying the actual artifact/hash.
+Do not fork a mod merely for convenient packaging. Track upstream source for debugging/API work and fork only when DrewCraft must maintain a source patch that cannot live cleanly in the integration mod.
 
 ## 7. Redistribution policy
 
-Many Minecraft mods have licenses or platform rules restricting redistribution.
+The builder/launcher must support both:
 
-Therefore the release builder must support both:
+1. artifacts DrewCraft is legally permitted to redistribute; and
+2. artifacts that must be fetched from the original provider at build/install time.
 
-1. **redistributable artifacts** included in generated releases when permitted
-2. **download-at-install artifacts** referenced by provider/version/hash when redistribution is not permitted
+The resulting file is always verified against the locked SHA-256.
 
-The launcher must verify the resulting file regardless of how it was obtained.
+Never commit third-party mod jars merely because doing so is convenient.
 
-Never commit third-party mod jars to Git merely because they are convenient.
+## 8. Client/server partition
 
-## 8. Common/client/server partition
+Every dependency is classified as common, client-only, server-only, or operational tooling.
 
-Every dependency must be classified.
+- **Common:** gameplay/content/protocol mods required on both sides.
+- **Client:** rendering/UI/performance dependencies that a dedicated server should not load unless a documented multiplayer mode requires it.
+- **Server:** admin/profiling/server-only helpers.
+- **Operational:** tools such as Chunky when used only for world-build workflows.
 
-### Common
-
-Required on both client and server, for example world/gameplay mods whose protocol/content must match.
-
-### Client-only
-
-Rendering/UI/performance utilities that the dedicated server should never load.
-
-### Server-only
-
-Administration, backup, profiling, or other dedicated-server tooling that should not be sent to players.
-
-The release system generates separate client and server packs from these categories.
+The client and server packs must be generated from one source manifest rather than maintained independently.
 
 ## 9. Update rules
 
@@ -292,34 +258,23 @@ No dependency update goes directly to production.
 
 Required flow:
 
-1. update manifest on a development branch
-2. build the entire pack
-3. run startup smoke test
-4. run client/server connection test
-5. test world load
-6. test weather
-7. test Create basics
-8. test at least one vehicle
-9. test custom ServerMc protocol
-10. inspect logs for mixin/registry errors
-11. only then publish a new pack version
+1. update candidate/manifest metadata;
+2. acquire the exact artifact through an allowed provider;
+3. verify SHA-256;
+4. build client/server packs;
+5. boot dedicated server;
+6. connect supported clients;
+7. load the existing world where relevant;
+8. test affected ownership boundaries (weather, Create, vehicle, worldgen, etc.);
+9. inspect registry/mixin/network logs;
+10. promote only after the relevant compatibility matrix passes.
 
-World-generation dependency changes require extra caution because they may make newly generated terrain incompatible with the existing production world.
+World-generation dependency changes require extra caution because newly generated terrain may differ permanently from the existing production world.
 
-## 10. Versioning principle
+## 10. V1 scope rule
 
-The real version of the game friends play is **the ServerMc pack version**, not a list of individual mod versions.
+DrewCraft V1 is **feature-complete and integration-complete, not balance-complete**.
 
-Example:
+The V1 mod stack therefore needs working systems and bridges, not broad recipe/economy retuning. Exact vehicle cost, fuel economics, aircraft price, radar progression and army difficulty belong to V1.1+ unless an upstream default demonstrably destroys a core design pillar.
 
-```text
-ServerMc 0.3.0
-  Minecraft 1.21.1
-  NeoForge <locked>
-  Create <locked>
-  Atmosphere <locked>
-  ...
-  servermc-mod 0.3.0
-```
-
-The launcher and server compare the ServerMc pack/protocol version before connection.
+The real version friends play is the **DrewCraft pack version**, not a collection of individual mod version numbers.
