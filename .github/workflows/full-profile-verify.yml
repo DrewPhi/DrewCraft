@@ -1,0 +1,90 @@
+name: Verify full DrewCraft base profile
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/full-profile-verify.yml"
+      - "pack/manifest/candidate_hashes.yaml"
+      - "pack/manifest/source_build_hashes.yaml"
+      - "pack/manifest/source_builds.yaml"
+      - "pack/manifest/profiles.yaml"
+      - "pack/manifest/upstreams.yaml"
+      - "pack/manifest/performance_candidates.yaml"
+      - "tools/build_verified_profile.py"
+      - "tools/drewcraft_pack.py"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-stage2-base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pack tooling
+        run: python -m pip install -r tools/requirements-pack.txt
+
+      - name: Read Terrain Diffusion Plus source pin
+        id: td
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import yaml
+          d=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
+          print('repository=' + d['source']['repository'])
+          print('ref=' + d['source']['ref'])
+          PY
+
+      - name: Build exact Terrain Diffusion Plus jar
+        run: |
+          git clone "https://github.com/${{ steps.td.outputs.repository }}.git" /tmp/terrain-diffusion-plus
+          cd /tmp/terrain-diffusion-plus
+          git checkout --detach "${{ steps.td.outputs.ref }}"
+          test "$(git rev-parse HEAD)" = "${{ steps.td.outputs.ref }}"
+          ./gradlew -p versions/1.21.1 buildNeoForgeCpu --no-daemon
+
+      - name: Locate exact Terrain Diffusion Plus production jar
+        id: tdjar
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import pathlib, yaml
+          spec=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
+          libs=pathlib.Path('/tmp/terrain-diffusion-plus')/spec['build']['output_directory']
+          jars=[]
+          for p in sorted(libs.glob('*.jar')):
+              low=p.name.lower()
+              if any(x in low for x in ('-sources.jar','-javadoc.jar','-dev.jar','-test.jar','-tests.jar')):
+                  continue
+              jars.append(p)
+          if len(jars) != 1:
+              raise SystemExit(f'Expected one production Terrain Diffusion Plus jar, found {[p.name for p in jars]}')
+          print('path=' + str(jars[0]))
+          PY
+
+      - name: Rebuild and verify full 30 dependency profile
+        run: |
+          python tools/build_verified_profile.py \
+            --profile stage2_base_performance \
+            --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
+            --output-dir build/verified-pack \
+            --evidence-output build/full-profile-verification.json
+
+      - name: Upload verification evidence only
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-profile-verification
+          path: |
+            build/full-profile-verification.json
+            build/verified-pack/client/drewcraft-layout.json
+            build/verified-pack/server/drewcraft-layout.json
