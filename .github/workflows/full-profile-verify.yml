@@ -12,6 +12,7 @@ on:
       - "pack/manifest/profiles.yaml"
       - "pack/manifest/upstreams.yaml"
       - "pack/manifest/performance_candidates.yaml"
+      - "pack/manifest/radar_candidates.yaml"
       - "tools/build_verified_profile.py"
       - "tools/drewcraft_pack.py"
 
@@ -72,7 +73,7 @@ jobs:
           print('path=' + str(jars[0]))
           PY
 
-      - name: Rebuild and verify full 30 dependency profile
+      - name: Rebuild and verify full current dependency profile
         run: |
           python tools/build_verified_profile.py \
             --profile stage2_base_performance \
