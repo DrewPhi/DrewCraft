@@ -11,7 +11,7 @@ loader:
   provider: neoforge_maven
   installer_filename: "neoforge-21.1.250-installer.jar"
   installer_url: "https://maven.neoforged.net/releases/net/neoforged/neoforge/21.1.250/neoforge-21.1.250-installer.jar"
-  installer_sha256: null
+  installer_sha256: "0e47a91ba2139a8db4bf7627af081f7b5789b508bb039ee8dea1272b79693d60"
   rationale: "Current latest stable 1.21.1 NeoForge build at the Stage 1 lock date; compatibility must still pass the DrewCraft Stage 2 matrix."
 
 java:
