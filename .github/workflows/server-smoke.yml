@@ -1,0 +1,191 @@
+name: Dedicated server smoke test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/server-smoke.yml"
+      - "pack/manifest/**"
+      - "tools/**"
+
+permissions:
+  contents: read
+
+jobs:
+  server-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pack tooling
+        run: python -m pip install -r tools/requirements-pack.txt
+
+      - name: Read pinned Terrain Diffusion Plus source
+        id: td
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import yaml
+          d=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
+          print('repository=' + d['source']['repository'])
+          print('ref=' + d['source']['ref'])
+          PY
+
+      - name: Build exact Terrain Diffusion Plus jar
+        run: |
+          git clone "https://github.com/${{ steps.td.outputs.repository }}.git" /tmp/terrain-diffusion-plus
+          cd /tmp/terrain-diffusion-plus
+          git checkout --detach "${{ steps.td.outputs.ref }}"
+          test "$(git rev-parse HEAD)" = "${{ steps.td.outputs.ref }}"
+          ./gradlew -p versions/1.21.1 buildNeoForgeCpu --no-daemon
+
+      - name: Locate Terrain Diffusion Plus jar
+        id: tdjar
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          from pathlib import Path
+          import yaml
+          d=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
+          libs=Path('/tmp/terrain-diffusion-plus')/d['build']['output_directory']
+          jars=[p for p in sorted(libs.glob('*.jar')) if not any(x in p.name.lower() for x in ('-sources.jar','-javadoc.jar','-dev.jar','-test.jar','-tests.jar'))]
+          if len(jars) != 1:
+              raise SystemExit(f'Expected one production jar, got {[str(p) for p in jars]}')
+          print('path=' + str(jars[0]))
+          PY
+
+      - name: Rebuild verified server mod tree
+        run: |
+          python tools/build_verified_profile.py \
+            --profile stage2_base_performance \
+            --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
+            --output-dir build/verified-pack \
+            --evidence-output build/verified-pack-evidence.json
+
+      - name: Install pinned NeoForge server
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, urllib.request, yaml
+          p=yaml.safe_load(open('pack/manifest/platform.yaml'))['loader']
+          url=p['installer_url']
+          expected=p.get('installer_sha256')
+          out=pathlib.Path('/tmp/neoforge-installer.jar')
+          with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent':'DrewCraft-ServerSmoke/0.1'}), timeout=180) as r:
+              out.write_bytes(r.read())
+          got=hashlib.sha256(out.read_bytes()).hexdigest()
+          if expected and got.lower()!=expected.lower():
+              raise SystemExit(f'NeoForge installer hash mismatch expected={expected} got={got}')
+          print('NeoForge installer SHA-256:', got)
+          PY
+          mkdir -p /tmp/drewcraft-server
+          java -jar /tmp/neoforge-installer.jar --installServer /tmp/drewcraft-server
+
+      - name: Inject verified server mods and configure smoke world
+        run: |
+          rm -rf /tmp/drewcraft-server/mods
+          cp -a build/verified-pack/server/mods /tmp/drewcraft-server/mods
+          printf 'eula=true\n' > /tmp/drewcraft-server/eula.txt
+          cat > /tmp/drewcraft-server/server.properties <<'EOF'
+          online-mode=false
+          max-tick-time=-1
+          view-distance=4
+          simulation-distance=4
+          spawn-protection=0
+          allow-flight=true
+          motd=DrewCraft CI smoke test
+          EOF
+          printf '%s\n' '-Xms2G' '-Xmx6G' > /tmp/drewcraft-server/user_jvm_args.txt
+          chmod +x /tmp/drewcraft-server/run.sh || true
+
+      - name: Boot new world, wait for readiness, stop cleanly
+        working-directory: /tmp/drewcraft-server
+        run: |
+          set -euo pipefail
+          rm -f server.stdin server-first.log
+          mkfifo server.stdin
+          exec 3<>server.stdin
+          bash ./run.sh nogui < server.stdin > server-first.log 2>&1 &
+          PID=$!
+          READY=0
+          for i in $(seq 1 180); do
+            if grep -q 'Done (' server-first.log 2>/dev/null; then READY=1; break; fi
+            if ! kill -0 "$PID" 2>/dev/null; then
+              echo 'Server exited before readiness'; cat server-first.log; exit 1
+            fi
+            sleep 5
+          done
+          if [ "$READY" -ne 1 ]; then
+            echo 'Timed out waiting for server readiness'; tail -n 300 server-first.log; kill "$PID" || true; exit 1
+          fi
+          printf 'stop\n' >&3
+          for i in $(seq 1 60); do
+            if ! kill -0 "$PID" 2>/dev/null; then break; fi
+            sleep 2
+          done
+          if kill -0 "$PID" 2>/dev/null; then echo 'Server failed to stop cleanly'; kill "$PID" || true; exit 1; fi
+          wait "$PID"
+          test -d world
+          grep -q 'Done (' server-first.log
+          echo 'FIRST BOOT OK'
+
+      - name: Restart same world and stop cleanly
+        working-directory: /tmp/drewcraft-server
+        run: |
+          set -euo pipefail
+          rm -f server.stdin server-restart.log
+          mkfifo server.stdin
+          exec 3<>server.stdin
+          bash ./run.sh nogui < server.stdin > server-restart.log 2>&1 &
+          PID=$!
+          READY=0
+          for i in $(seq 1 120); do
+            if grep -q 'Done (' server-restart.log 2>/dev/null; then READY=1; break; fi
+            if ! kill -0 "$PID" 2>/dev/null; then
+              echo 'Server exited before restart readiness'; cat server-restart.log; exit 1
+            fi
+            sleep 5
+          done
+          if [ "$READY" -ne 1 ]; then
+            echo 'Timed out waiting for restart readiness'; tail -n 300 server-restart.log; kill "$PID" || true; exit 1
+          fi
+          printf 'stop\n' >&3
+          for i in $(seq 1 60); do
+            if ! kill -0 "$PID" 2>/dev/null; then break; fi
+            sleep 2
+          done
+          if kill -0 "$PID" 2>/dev/null; then echo 'Server failed to stop cleanly after restart'; kill "$PID" || true; exit 1; fi
+          wait "$PID"
+          grep -q 'Done (' server-restart.log
+          echo 'RESTART OK'
+
+      - name: Reject obvious fatal errors
+        if: always()
+        run: |
+          if [ -f /tmp/drewcraft-server/server-first.log ]; then
+            ! grep -Eqi 'Mod loading has failed|Failed to start the minecraft server|Exception in server tick loop|Missing or unsupported mandatory dependencies' /tmp/drewcraft-server/server-first.log
+          fi
+          if [ -f /tmp/drewcraft-server/server-restart.log ]; then
+            ! grep -Eqi 'Mod loading has failed|Failed to start the minecraft server|Exception in server tick loop|Missing or unsupported mandatory dependencies' /tmp/drewcraft-server/server-restart.log
+          fi
+
+      - name: Upload smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dedicated-server-smoke-evidence
+          if-no-files-found: warn
+          path: |
+            build/verified-pack-evidence.json
+            /tmp/drewcraft-server/server-first.log
+            /tmp/drewcraft-server/server-restart.log
+            /tmp/drewcraft-server/crash-reports/**
+            /tmp/drewcraft-server/logs/**
