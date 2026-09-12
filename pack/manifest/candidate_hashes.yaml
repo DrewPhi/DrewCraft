@@ -2,8 +2,8 @@ schema_version: 1
 profile: stage2_base_performance
 evidence:
   workflow: pack-hash.yml
-  run_id: 34702164432
-  head_sha: 7e3f8d8e9443d24135f4adbf97f7cc49161f27f4
+  run_id: 34724118743
+  head_sha: a78f00ea6a193b3e929ad3c2cf1dcde7b32dda3b
   generated_at: '2026-09-12'
 artifacts:
   alltheleaks:
@@ -55,6 +55,13 @@ artifacts:
     filename: create-1.21.1-6.0.10.jar
     sha256: ef87fe5709f1ba1f5b8bb20a2925b5afb4669e178fd6d8bf10c167759eefe37a
     size: 19123767
+  create_radars:
+    provider: modrinth
+    project_id: BLu2Yqfq
+    version_id: AntNFNAx
+    filename: create_radar-0.4.9.4-1.21.1.jar
+    sha256: 4554359fee389b1c255b4cef23ac41e978b2a371cec9e952185f4ec0a90ee930
+    size: 2990812
   cupboard:
     provider: curseforge
     project_id: 326652
@@ -217,6 +224,6 @@ artifacts:
     sha256: 647e8a81afbe414dba1df4ba15fd06c5d32d4cb544e68828405e8e074c2e16db
     size: 3642581
 source_builds_pending:
-  - terrain_diffusion_plus
+- terrain_diffusion_plus
 notes:
-  - "Hashes are computed from artifacts acquired from the pinned original-provider identities; candidate hashes are verification evidence, not Stage 2 compatibility approval."
+- Hashes are computed from artifacts acquired from the pinned original-provider identities; candidate hashes are verification evidence, not Stage 2 compatibility approval.
