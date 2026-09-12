@@ -1,0 +1,191 @@
+# DrewCraft development / compatibility profiles
+#
+# Profiles select entries from the companion candidate registries. They are
+# development inputs, NOT production release locks. The Stage 1 resolver should
+# resolve a profile into a deterministic dependency graph, then exact hashes and
+# compatibility gates decide what is promoted to future mods.yaml/content-packs.yaml.
+
+schema_version: 1
+last_updated: "2026-09-12"
+
+target:
+  minecraft: "1.21.1"
+  loader: "neoforge"
+  java: 21
+
+registries:
+  foundation: "pack/manifest/upstreams.yaml"
+  performance: "pack/manifest/performance_candidates.yaml"
+  gameplay_spikes: "pack/manifest/mob_structure_candidates.yaml"
+
+profiles:
+  stage2_base_performance:
+    description: "First full-stack compatibility lock: foundational DrewCraft stack plus conservative performance baseline."
+    foundation:
+      - terrain_diffusion_plus
+      - chunky
+      - distant_horizons
+      - create
+      - immersive_vehicles
+      - mts_official_pack
+      - project_atmosphere
+      - simple_clouds
+      - serene_seasons
+      - glitchcore
+      - gabous_libs
+    performance_baseline:
+      - modernfix
+      - ferritecore
+      - lithium
+      - servercore
+      - scalablelux
+      - chunk_sending
+      - alltheleaks
+      - fastsuite
+      - fastworkbench
+      - fastfurnace
+      - clumps
+      - connectivity
+      - spark
+      - embeddium
+      - immediatelyfast
+      - entity_culling
+      - moreculling
+    performance_libraries:
+      - placebo
+      - cupboard
+    config_policy:
+      - "Use semantics-preserving optimizer defaults first."
+      - "ServerCore entity activation/dynamic distance/mobcap changes disabled until separately tested."
+      - "No C2ME in this profile."
+      - "No tactical horde/herd AI or source-structure pack in this profile."
+    gate: "Pass the foundational + performance Stage 2 matrix before optional gameplay/content profiles are promoted."
+
+  hostile_ai_enhanced_hordes:
+    extends:
+      - stage2_base_performance
+    gameplay_components:
+      - enhanced_hordes
+      - enhanced_hordes_tweaks
+    purpose: "Loaded strategic-hostile cooperation/wandering/stacking spike."
+    requirements:
+      - "Disable/avoid spawning or reinforcement that creates strategic strength outside DrewCraft."
+      - "Disable/restrict generic block breaking for strategic groups so DrewCraft siege ownership remains intact."
+      - "Verify externally materialized/tagged mobs participate correctly."
+    incompatible_profiles:
+      - hostile_ai_zombie_hordes
+
+  hostile_ai_zombie_hordes:
+    extends:
+      - stage2_base_performance
+    gameplay_components:
+      - zombie_hordes
+    purpose: "Alternative loaded horde behavior spike."
+    requirements:
+      - "Disable/avoid strategic-strength creation outside DrewCraft accounting."
+      - "Verify stacking/cooperation with materialized strategic entities."
+    incompatible_profiles:
+      - hostile_ai_enhanced_hordes
+
+  herd_ai_ethological:
+    extends:
+      - stage2_base_performance
+    gameplay_components:
+      - ethological
+    purpose: "Rich loaded wild-herd behavior spike."
+    requirements:
+      - "DrewCraft remains authoritative for HerdRecord/unloaded movement/materialization."
+      - "Verify player-owned/named/leashed/bred/penned animals are not absorbed into strategic wild-herd state."
+      - "Measure CPU cost for large materialized herds."
+    incompatible_profiles:
+      - herd_ai_instinct
+
+  herd_ai_instinct:
+    extends:
+      - stage2_base_performance
+    gameplay_components:
+      - herd_instinct
+    purpose: "Narrow shared-panic herd behavior fallback."
+    requirements:
+      - "DrewCraft remains authoritative for HerdRecord/unloaded movement/materialization."
+    incompatible_profiles:
+      - herd_ai_ethological
+
+  source_structures_first_spike:
+    extends:
+      - stage2_base_performance
+    vanilla_controls:
+      - minecraft:pillager_outpost
+    gameplay_components:
+      - towns_and_towers
+      - when_dungeons_arise
+    gameplay_libraries:
+      - cristel_lib
+    worldgen_policy:
+      - "Towns and Towers villages remain friendly/neutral unless explicitly mapped otherwise."
+      - "Only explicitly whitelisted WDA structures can become strategic sources."
+      - "Use pack-owned structure enable/spacing/separation configuration first."
+      - "Increase source spacing aggressively for Terrain Diffusion World Scale 2."
+      - "Pregenerate a disposable representative region and produce structure/source density counts before promotion."
+    initial_source_mapping_concepts:
+      minecraft:pillager_outpost: CAMP
+      towns_and_towers:pillager_outpost_variants: CAMP_OR_OUTPOST
+      when_dungeons_arise:illager_campsite: CAMP
+      when_dungeons_arise:illager_fort: FORT
+      when_dungeons_arise:bandit_towers: FORT_OR_OUTPOST
+      when_dungeons_arise:plague_asylum: MAJOR_FORT_OR_RUIN
+      when_dungeons_arise:shiraz_palace: CITY_OR_CAPITAL
+    notes:
+      - "Conceptual IDs must be replaced by exact registry structure IDs during the structure audit before source mappings become authoritative."
+      - "Every promoted source structure receives DrewCraft SourceRecord + Source Core semantics; the structure mod never owns strategic state."
+
+  source_structures_ctov_alternative:
+    extends:
+      - stage2_base_performance
+    gameplay_components:
+      - ctov
+    gameplay_libraries:
+      - lithostitched
+    purpose: "Alternative village/outpost branch to compare against Towns and Towers."
+    incompatible_profiles:
+      - source_structures_first_spike
+    notes:
+      - "Do not stack CTOV with Towns and Towers by default. Compare style, density, Terrain Diffusion placement and maintenance surface first."
+
+  source_density_sparse_structures_spike:
+    extends:
+      - source_structures_first_spike
+    gameplay_components:
+      - sparse_structures
+    purpose: "Evaluate global structure spacing only if pack-owned per-structure controls are insufficient or cumbersome."
+    notes:
+      - "Not preferred if exact pack-owned spacing gives sufficient control."
+
+  worldbuild_c2me_spike:
+    extends:
+      - stage2_base_performance
+    experimental_performance:
+      - c2me_neoforge
+    purpose: "Disposable offline pregeneration benchmark/correctness branch."
+    deployment: worldbuild_only_until_promoted
+    requirements:
+      - "Run same seed/config without C2ME as control."
+      - "Compare Terrain Diffusion output and structure placement."
+      - "Inspect thread/worldgen warnings."
+      - "Repeatedly restart/reload generated chunks."
+      - "Record chunks/sec, CPU, heap/native memory and wall time."
+      - "Reject on corruption/nondeterminism even if faster."
+
+  worldbuild_structure_essentials_spike:
+    extends:
+      - source_structures_first_spike
+    experimental_performance:
+      - structure_essentials
+    purpose: "Evaluate structure locating/spacing/overlap/debug tooling during world build and source indexing."
+    deployment: worldbuild_or_server_admin_only_if_useful
+
+rules:
+  - "Profiles may extend the baseline, but mutually exclusive profiles must never be merged silently."
+  - "All selected dependencies must resolve transitively and receive exact SHA-256 before lock."
+  - "A candidate profile passing once does not imply production promotion; record evidence and rerun affected gates after updates."
+  - "Production release manifests contain promoted exact dependencies, not references to mutable candidate profiles."
