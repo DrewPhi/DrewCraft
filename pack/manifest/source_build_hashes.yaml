@@ -1,0 +1,26 @@
+schema_version: 1
+profile: stage2_base_performance
+evidence:
+  workflow: terrain-diffusion-build.yml
+  run_id: 34698534074
+  head_sha: 53594260228692cab601b5e47d411f7cdb32751f
+  generated_at: '2026-09-12'
+artifacts:
+  terrain_diffusion_plus:
+    provider: source_build
+    source_repository: derekvawdrey/terrain-diffusion-plus
+    source_ref: 05fdcf5681cc53a9685325d714750b4427661a21
+    minecraft: '1.21.1'
+    loader: neoforge
+    java: 21
+    variant: cpu
+    build_command: ./gradlew -p versions/1.21.1 buildNeoForgeCpu --no-daemon
+    filename: terrain-diffusion-mc-neoforge-1.21.1-2.3.0-cpu.jar
+    sha256: 4aee1254c01085b745a20db8b48025a77fba802b7b6bc90456a33f38fd3ae5bd
+    size: 93968726
+    model_assets_manifest_sha256: d6ce77b3e475b85b0ac2a17d56be3b670b842648fd5e3958301951b98780cdbc
+    model_repository: xandergos/terrain-diffusion-30m-onnx
+    model_revision: ad2df557eca5645f588766101cf3bc3682455c3e
+notes:
+  - "This hash is reproducible source-build evidence for the pinned Terrain Diffusion Plus candidate; the compiled jar is not committed to this repository."
+  - "The model assets are downloaded separately at runtime/build-time according to the upstream manifest and are individually hash-pinned by that manifest."
