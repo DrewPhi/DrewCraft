@@ -2,18 +2,21 @@
 
 This repository is the canonical source for the **DrewCraft** Minecraft server experience. `ServerMc` is the repository/internal project name; DrewCraft is the friend-facing product/server name.
 
-Before making architectural changes, read:
+Before making architectural or implementation changes, read:
 
-1. `docs/PROJECT_SPEC.md`
-2. `docs/SYSTEMS.md`
-3. `docs/MOD_STACK.md`
-4. `docs/REPO_ARCHITECTURE.md`
-5. `docs/LAUNCHER_HOSTING.md`
-6. `docs/ROADMAP.md`
+1. `docs/v_1_requirements.md` — the hard V1 product/release contract
+2. `docs/v_1_development_tree.md` — the canonical dependency-ordered execution checklist from current state to V1
+3. `docs/PROJECT_SPEC.md`
+4. `docs/SYSTEMS.md`
+5. `docs/MOD_STACK.md`
+6. `docs/REPO_ARCHITECTURE.md`
+7. `docs/LAUNCHER_HOSTING.md`
+8. `docs/ROADMAP.md` — older/high-level roadmap; where it conflicts with the V1 requirements or development tree, the two V1 documents above win
 
 ## Non-negotiable design principles
 
 - Minecraft target is 1.21.1 / NeoForge / Java 21 until an explicit migration decision is made.
+- DrewCraft V1 is **feature-complete and integration-complete, not balance-complete**. Broad recipe, economy, fuel-cost, spawn-frequency, and difficulty tuning belongs in V1.1+ unless an upstream default clearly destroys a core design pillar.
 - Geography must matter. Do not introduce routine teleportation or systems that make roads, rail, ships, aircraft, or weather irrelevant.
 - Create is the primary infrastructure/technology language. Avoid redundant giant tech trees.
 - Project Atmosphere is the atmospheric source of truth; bridge it rather than building another weather simulation.
@@ -31,7 +34,20 @@ Before making architectural changes, read:
 
 ## Development order
 
-Follow `docs/ROADMAP.md`. In particular, prove mod compatibility, world pre-generation, ARM hosting, and launcher/release reproducibility before spending substantial effort on advanced strategic simulation.
+`docs/v_1_development_tree.md` is the canonical implementation order and checklist. Work from the earliest unmet dependency/gate rather than jumping to the most interesting feature.
+
+In particular:
+
+- prove reproducible pack generation first;
+- lock and test the complete baseline mod stack second;
+- prove the production world pipeline and real host constraints before advanced custom systems;
+- establish release/client/server artifact contracts before depending on them;
+- build the DrewCraft integration-mod platform and adapters before feature-specific bridges;
+- prove one thin vertical slice before adding content breadth;
+- prove persistence/materialization correctness before scaling to armies;
+- perform full cross-system, failure/restart, restore, and performance tests before V1.
+
+Do **not** start substantial radar, army, siege, or balance work while an earlier hard gate in the V1 development tree is still failing.
 
 ## Custom mod architecture
 
@@ -66,6 +82,8 @@ Do not update a dependency merely because a newer version exists.
 A dependency change is complete only after the generated client/server pack boots, connects, loads the existing world where relevant, and the affected integration has been tested.
 
 World-generation changes require special caution because new terrain may differ permanently from existing terrain.
+
+Do not call a V1 feature complete because it worked once in a development world. Completion requires the relevant gate in `docs/v_1_development_tree.md`, including restart/unload/performance testing where specified.
 
 ## User experience
 
