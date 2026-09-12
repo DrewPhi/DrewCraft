@@ -53,7 +53,7 @@ candidate_sets:
             release_status: release
             license: MIT
             notes:
-              - "Current 1.21.1 NeoForge release exists; exact 1.21.1 file ID still needs resolver/provider verification before lock."
+              - "Current 1.21.1 NeoForge release exists; exact file ID still needs resolver/provider verification before lock."
               - "Useful local stacking/cooperative behavior."
               - "Disable/avoid reinforcement/spawn features that create strategic strength outside DrewCraft accounting."
     references_only:
@@ -109,7 +109,7 @@ candidate_sets:
         filename: "t_and_t-fabric-neoforge-1.13.11.jar"
         file_id: 8657120
         release_status: release
-        license: "CC-BY-NC-SA-4.0 (verify exact packaged project terms during lock)"
+        license: "Creative Commons 4.0 project listing; verify exact packaged terms during lock"
         verdict: high_priority_spike
         strategic_role: "Grounded pillager outpost variants for CAMP/OUTPOST sources; villages remain friendly/neutral."
         required_dependencies:
@@ -192,6 +192,43 @@ candidate_sets:
       - id: structurify
         verdict: do_not_add_by_default
         reason: "Powerful but generic structure modifiers can conflict with pack-specific generation schemes; use only after selected source mods are known."
+
+libraries:
+  cristel_lib:
+    display_name: "Cristel Lib"
+    provider: curseforge
+    project_id: 856996
+    file_id: 8241767
+    candidate_version: "3.1.7"
+    filename: "cristellib-neoforge-1.21.1-3.1.7.jar"
+    release_status: release
+    side: common
+    source_repository: "Cristelknight/Cristel-Lib"
+    license: "Custom License; verify redistribution/acquisition terms during lock"
+    required_by:
+      - towns_and_towers
+    notes:
+      - "Library for structure configuration/runtime datapacks."
+      - "Current 1.21.1 NeoForge candidate as of research snapshot."
+    sha256: null
+
+  lithostitched:
+    display_name: "Lithostitched"
+    provider: curseforge
+    project_id: 936015
+    file_id: 8378498
+    candidate_version: "1.7.13"
+    filename: "lithostitched-1.7.13-neoforge-21.1.jar"
+    release_status: release
+    side: common
+    source_repository: "Apollounknowndev/lithostitched"
+    license: MIT
+    required_by:
+      - ctov
+    notes:
+      - "CTOV 3.6.3 requires Lithostitched 1.6.0 or newer."
+      - "CTOV remains an alternative branch, so this library is only selected with that profile."
+    sha256: null
 
 promotion_requirements:
   - "Exact provider artifact and SHA-256 are resolved."
