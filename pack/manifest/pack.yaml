@@ -1,0 +1,24 @@
+schema_version: 1
+pack:
+  id: drewcraft
+  display_name: DrewCraft
+  version: 0.1.0-dev
+  channel: development
+platform:
+  minecraft: "1.21.1"
+  loader: neoforge
+  java: 21
+protocol:
+  release_manifest_schema: 1
+  custom_mod_protocol: 1
+world:
+  world_id: drewcraft-production
+  world_revision: 0
+  strategic_persistence_schema: 1
+profiles:
+  default_development: stage2_base_performance
+  source: pack/manifest/profiles.yaml
+policy:
+  exact_hash_required_for_lock: true
+  candidate_profiles_are_not_release_locks: true
+  no_unverified_artifacts_in_release: true
