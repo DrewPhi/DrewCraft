@@ -11,16 +11,17 @@ Before making architectural or implementation changes, read:
 5. `docs/MOB_STRUCTURE_CANDIDATES.md` — tactical-AI, herd-AI, structure-source, and structure-density compatibility candidates
 6. `docs/PERFORMANCE_STACK.md` — canonical performance/optimization architecture and compatibility matrix
 7. `docs/UPSTREAM_DEPENDENCIES.md` — upstream ownership, source access, candidate-version, redistribution, and fork policy
-8. `pack/manifest/README.md` — how all candidate registries merge and promote into exact locks
+8. `pack/manifest/README.md` — how candidate registries/profiles merge and promote into exact locks
 9. `pack/manifest/upstreams.yaml` — foundational upstream candidates
 10. `pack/manifest/performance_candidates.yaml` — performance baseline and aggressive optimization spikes
 11. `pack/manifest/mob_structure_candidates.yaml` — mob/herd/structure compatibility-spike candidates
-12. `docs/PROJECT_SPEC.md`
-13. `docs/SYSTEMS.md`
-14. `docs/MOD_STACK.md`
-15. `docs/REPO_ARCHITECTURE.md`
-16. `docs/LAUNCHER_HOSTING.md`
-17. `docs/ROADMAP.md` — older/high-level roadmap; where it conflicts with the V1 requirements or development tree, the V1 documents above win
+12. `pack/manifest/profiles.yaml` — exact development compatibility profiles; do not silently merge mutually exclusive branches
+13. `docs/PROJECT_SPEC.md`
+14. `docs/SYSTEMS.md`
+15. `docs/MOD_STACK.md`
+16. `docs/REPO_ARCHITECTURE.md`
+17. `docs/LAUNCHER_HOSTING.md`
+18. `docs/ROADMAP.md` — older/high-level roadmap; where it conflicts with the V1 requirements or development tree, the V1 documents above win
 
 ## Non-negotiable design principles
 
@@ -57,6 +58,7 @@ Before making architectural or implementation changes, read:
 - C2ME is an isolated world-build compatibility spike until Terrain Diffusion/structure output, restart safety, and corruption tests pass; do not silently add it to production.
 - Client culling must be tested/whitelisted for Create, MTS and DrewCraft block entities whose render bounds exceed normal bounds.
 - Every optimizer retained in the production lock needs either measurable benefit or a concrete reliability benefit worth its maintenance/conflict surface.
+- `profiles.yaml` is the selector for candidate combinations. Do not manually assemble an ad hoc development `mods/` directory that bypasses the selected profile.
 - Radar is physical infrastructure with power/data connectivity and physical displays.
 - Radar antenna height/terrain obstruction should matter.
 - Friends must not manually manage Java, NeoForge, or mod folders.
@@ -71,7 +73,8 @@ Before making architectural or implementation changes, read:
 In particular:
 
 - prove reproducible pack generation first;
-- Stage 1 resolver work must read `upstreams.yaml`, `performance_candidates.yaml`, and `mob_structure_candidates.yaml`, resolve transitives, classify sides, acquire legal artifacts and compute exact hashes;
+- Stage 1 resolver work must read `upstreams.yaml`, `performance_candidates.yaml`, `mob_structure_candidates.yaml`, and `profiles.yaml`, expand the selected profile, reject incompatible combinations, resolve transitives, classify sides, acquire legal artifacts and compute exact hashes;
+- the first resolver target is `stage2_base_performance` from `profiles.yaml`;
 - perform the upstream ownership/source audit in `docs/UPSTREAM_DEPENDENCIES.md` as part of the reproducible-pack stage;
 - use `docs/MOB_STRUCTURE_CANDIDATES.md` only to select controlled compatibility spikes; do not promote candidates by documentation alone;
 - use `docs/PERFORMANCE_STACK.md` to extend the Stage 2 technical baseline with the intended optimization suite;
@@ -98,6 +101,7 @@ Do **not** start substantial radar, army, siege, or balance work while an earlie
 - `upstreams.yaml` contains foundational platform/gameplay candidates.
 - `performance_candidates.yaml` contains the intended Stage 2 performance suite plus isolated aggressive experiments.
 - `mob_structure_candidates.yaml` contains mutually exclusive or subsystem-specific gameplay/content spikes.
+- `profiles.yaml` defines explicit combinations of those candidates for resolver/build/test runs.
 - The future `mods.yaml` / `content-packs.yaml` contain only exact promoted choices with hashes.
 
 A candidate appearing in a registry does **not** mean it belongs in every generated profile.
