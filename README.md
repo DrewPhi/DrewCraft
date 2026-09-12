@@ -17,6 +17,8 @@ Already established:
 - subsystem architecture
 - anti-redundancy/mod ownership policy
 - upstream source/dependency registry
+- canonical strategic-world/source-core/herd behavior contract
+- researched tactical-AI, herd-AI and strategic-source structure candidates
 - launcher/server deployment architecture
 - simple DrewCraft download-site HTML
 
@@ -127,17 +129,56 @@ The world continues to exist outside loaded chunks through compact server-side r
 
 DrewCraft tracks:
 
-- hostile sources such as camps/forts/ruins/towns/cities
-- patrols, hordes and armies
+- real hostile source structures such as camps, forts, ruins, towns and cities
+- patrols, roaming hordes/warbands, raids, reinforcements and armies
 - multiple hostile compositions/factions
 - strategic movement and ETA across unloaded geography
 - casualties across materialization/unload/restart
 - persistent cleared-source state
-- strategic animal herds
+- strategic wild animal herds
+
+A hostile group is not created just because a player is nearby. It can already be moving through the world while unloaded. A player exploring can accidentally intersect its route and encounter it where it really is.
 
 When players approach a strategic group, it materializes into ordinary entities. When safely distant again, survivors can be summarized back into persistent strategic state.
 
 No teleporting/resetting armies.
+
+### Hostile source cores
+
+Every strategic hostile source has one explicit DrewCraft **Source Core** objective (the visible theme can vary: command table, war banner/controller, corrupted heart, fortress core, etc.).
+
+While the source is active it can launch new strategic groups from its real geographic location.
+
+If players destroy the bound Source Core — including deliberately blowing it up when an explosion actually destroys the core — DrewCraft atomically marks that source **CLEARED** in persistent state. That source then launches **no new patrols, hordes, reinforcements or armies**, even after chunk unload, server restart or backup restore.
+
+Replacing the physical block does not reactivate the source. Already-deployed forces do not magically disappear; they remain real populations already out in the world.
+
+See [`docs/STRATEGIC_WORLD_MODEL.md`](docs/STRATEGIC_WORLD_MODEL.md) for the full contract.
+
+### Wild animal herds
+
+Important wild animals should exist as persistent herds rather than only as unrelated singleton spawns.
+
+A herd can move coarsely while unloaded, materialize as a coherent group when a player approaches, exhibit group/panic behavior while loaded, and collapse back to a strategic record after the player leaves. Hunting reduces persistent herd count; animals deliberately domesticated/claimed by players leave wild-herd accounting.
+
+Player-owned, named, leashed, bred or penned livestock must not be silently absorbed into a roaming herd.
+
+Existing 1.21.1 NeoForge herd-AI mods are being evaluated only for **loaded behavior**; DrewCraft remains the unloaded herd-state authority.
+
+## Tactical mob and structure reuse
+
+DrewCraft should reuse upstream code/content where it fits without surrendering strategic ownership.
+
+Current compatibility-spike research includes:
+
+- Enhanced Hordes + Enhanced Hordes Tweaks versus Zombie Hordes for loaded hostile cooperation/wandering/stacking behavior;
+- Ethological! versus the narrower Herd Instinct for loaded passive-herd behavior;
+- When Dungeons Arise as a strong source of selectively enabled hostile camps/forts/palaces;
+- Towns and Towers as a grounded source of pillager-outpost variants;
+- CTOV as a Towns-and-Towers alternative rather than an automatic additional settlement overhaul;
+- pack-owned structure spacing/whitelists first, with Sparse Structures only as a compatibility-spike option if global density control is useful.
+
+See [`docs/MOB_STRUCTURE_CANDIDATES.md`](docs/MOB_STRUCTURE_CANDIDATES.md) and [`pack/manifest/mob_structure_candidates.yaml`](pack/manifest/mob_structure_candidates.yaml).
 
 ## Sieges
 
@@ -222,13 +263,15 @@ Third-party binaries, huge generated worlds, Java runtimes, model assets, backup
 
 1. [`docs/v_1_requirements.md`](docs/v_1_requirements.md) — hard V1 product/release contract
 2. [`docs/v_1_development_tree.md`](docs/v_1_development_tree.md) — canonical dependency-ordered execution checklist
-3. [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md) — product/gameplay architecture
-4. [`docs/MOD_STACK.md`](docs/MOD_STACK.md) — mod ownership and anti-redundancy policy
-5. [`docs/UPSTREAM_DEPENDENCIES.md`](docs/UPSTREAM_DEPENDENCIES.md) — source/fork policy
-6. [`docs/SYSTEMS.md`](docs/SYSTEMS.md) — custom systems design
-7. [`docs/REPO_ARCHITECTURE.md`](docs/REPO_ARCHITECTURE.md) — repository/artifact boundaries
-8. [`docs/LAUNCHER_HOSTING.md`](docs/LAUNCHER_HOSTING.md) — launcher/server/deployment architecture
-9. [`docs/ROADMAP.md`](docs/ROADMAP.md) — high-level roadmap; the V1 development tree is more authoritative
+3. [`docs/STRATEGIC_WORLD_MODEL.md`](docs/STRATEGIC_WORLD_MODEL.md) — persistent sources, source cores, roaming forces and wild-herd behavior contract
+4. [`docs/MOB_STRUCTURE_CANDIDATES.md`](docs/MOB_STRUCTURE_CANDIDATES.md) — current AI/herd/structure compatibility-spike research
+5. [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md) — product/gameplay architecture
+6. [`docs/MOD_STACK.md`](docs/MOD_STACK.md) — mod ownership and anti-redundancy policy
+7. [`docs/UPSTREAM_DEPENDENCIES.md`](docs/UPSTREAM_DEPENDENCIES.md) — source/fork policy
+8. [`docs/SYSTEMS.md`](docs/SYSTEMS.md) — custom systems design
+9. [`docs/REPO_ARCHITECTURE.md`](docs/REPO_ARCHITECTURE.md) — repository/artifact boundaries
+10. [`docs/LAUNCHER_HOSTING.md`](docs/LAUNCHER_HOSTING.md) — launcher/server/deployment architecture
+11. [`docs/ROADMAP.md`](docs/ROADMAP.md) — high-level roadmap; the V1 development tree is more authoritative
 
 ## Definition of V1 success
 
@@ -242,10 +285,12 @@ One release candidate must demonstrate the whole intended system together:
 - physical ground radar and aircraft weather radar
 - persistent hostile sources and unloaded strategic travel
 - multiple hostile compositions and large armies
+- chance encounters with strategic groups already moving through the world
 - casualty-preserving materialization/dematerialization
-- source clearing with permanent consequences
+- source-core destruction permanently preventing new forces from that source
+- already-deployed forces surviving source destruction appropriately
 - path-first constrained sieges
-- strategic animal herds
+- persistent wild animal herds that materialize as coherent groups
 - normal local spawning/farms/building intact
 - reliable release updates, backups and restores
 
