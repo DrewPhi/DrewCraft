@@ -23,14 +23,14 @@ policy:
     - "Performance mods own no gameplay state; DrewCraft strategic/weather/transport authorities remain unchanged."
     - "Do not enable entity-freezing, dynamic-distance, mobcap or async-worldgen behavior merely because it benchmarks faster."
     - "Client culling must be visually tested with Create, MTS, Simple Clouds, Distant Horizons and future DrewCraft radar displays."
-    - "Exact provider file IDs marked null must be resolved by the Stage 1 resolver before promotion."
+    - "Provider file IDs below are exact current 1.21.1 NeoForge candidate identities; SHA-256 is still computed from the acquired artifact before lock."
 
 baseline:
   modernfix:
     display_name: "ModernFix"
     provider: curseforge
     project_id: 790626
-    file_id: null
+    file_id: 8774737
     candidate_version: "5.27.24+mc1.21.1"
     filename: "modernfix-neoforge-5.27.24+mc1.21.1.jar"
     release_status: release
@@ -44,7 +44,7 @@ baseline:
     display_name: "FerriteCore"
     provider: curseforge
     project_id: 429235
-    file_id: null
+    file_id: 7524151
     candidate_version: "7.0.3"
     filename: "ferritecore-7.0.3-neoforge.jar"
     release_status: release
@@ -74,9 +74,9 @@ baseline:
     display_name: "ServerCore"
     provider: curseforge
     project_id: 550579
-    file_id: null
+    file_id: 8312220
     candidate_version: "1.5.19+1.21.1"
-    filename: null
+    filename: "servercore-neoforge-1.5.19+1.21.1.jar"
     release_status: release
     side: server
     source_repository: "Wesley1808/ServerCore"
@@ -89,9 +89,9 @@ baseline:
     display_name: "ScalableLux"
     provider: curseforge
     project_id: 1055925
-    file_id: null
+    file_id: 6952385
     candidate_version: "0.1.0.1"
-    filename: null
+    filename: "ScalableLux-0.1.0.1+neoforge.1cb1e91-all.jar"
     release_status: release
     side: common
     source_repository: "RelativityMC/ScalableLux"
@@ -106,7 +106,7 @@ baseline:
     display_name: "Chunk Sending"
     provider: curseforge
     project_id: 831663
-    file_id: null
+    file_id: 8752593
     candidate_version: "3.9"
     filename: "chunksending-1.21-3.9.jar"
     release_status: release
@@ -122,7 +122,7 @@ baseline:
     display_name: "AllTheLeaks"
     provider: curseforge
     project_id: 1091339
-    file_id: null
+    file_id: 8648639
     candidate_version: "1.1.12+1.21.1"
     filename: "alltheleaks-1.1.12+1.21.1-neoforge.jar"
     release_status: release
@@ -136,7 +136,7 @@ baseline:
     display_name: "FastSuite"
     provider: curseforge
     project_id: 475117
-    file_id: null
+    file_id: 7527945
     candidate_version: "6.0.7"
     filename: "FastSuite-1.21.1-6.0.7.jar"
     release_status: release
@@ -151,7 +151,7 @@ baseline:
     display_name: "FastWorkbench"
     provider: curseforge
     project_id: 288885
-    file_id: null
+    file_id: 6751534
     candidate_version: "9.1.3"
     filename: "FastWorkbench-1.21.1-9.1.3.jar"
     release_status: release
@@ -166,7 +166,7 @@ baseline:
     display_name: "FastFurnace"
     provider: curseforge
     project_id: 299540
-    file_id: null
+    file_id: 6751551
     candidate_version: "9.0.1"
     filename: "FastFurnace-1.21.1-9.0.1.jar"
     release_status: release
@@ -181,7 +181,7 @@ baseline:
     display_name: "Clumps"
     provider: curseforge
     project_id: 256717
-    file_id: null
+    file_id: 5623731
     candidate_version: "19.0.0.1"
     filename: "Clumps-neoforge-1.21.1-19.0.0.1.jar"
     release_status: release
@@ -194,7 +194,7 @@ baseline:
     display_name: "Connectivity"
     provider: curseforge
     project_id: 470193
-    file_id: null
+    file_id: 7367221
     candidate_version: "7.6"
     filename: "connectivity-1.21.1-7.6.jar"
     release_status: release
@@ -212,9 +212,9 @@ baseline:
     display_name: "spark"
     provider: curseforge
     project_id: 361579
-    file_id: null
+    file_id: 6225208
     candidate_version: "1.10.124"
-    filename: null
+    filename: "spark-1.10.124-neoforge.jar"
     release_status: release
     side: server
     source_repository: "lucko/spark"
@@ -226,9 +226,9 @@ baseline:
     display_name: "Embeddium"
     provider: curseforge
     project_id: 908741
-    file_id: null
+    file_id: 6118392
     candidate_version: "1.0.15"
-    filename: null
+    filename: "embeddium-1.0.15+mc1.21.1.jar"
     release_status: release
     side: client
     source_repository: "FiniteReality/embeddium"
@@ -240,9 +240,9 @@ baseline:
     display_name: "ImmediatelyFast"
     provider: curseforge
     project_id: 686911
-    file_id: null
+    file_id: 8749421
     candidate_version: "1.6.13"
-    filename: null
+    filename: "ImmediatelyFast-NeoForge-1.6.13+1.21.1.jar"
     release_status: release
     side: client
     source_repository: "RaphiMC/ImmediatelyFast"
@@ -253,9 +253,9 @@ baseline:
     display_name: "Entity Culling"
     provider: curseforge
     project_id: 448233
-    file_id: null
+    file_id: 8287097
     candidate_version: "1.10.5"
-    filename: null
+    filename: "entityculling-neoforge-1.10.5-mc1.21.1.jar"
     release_status: release
     side: client
     source_repository: "tr7zw/EntityCulling"
@@ -285,9 +285,9 @@ libraries:
     display_name: "Placebo"
     provider: curseforge
     project_id: 283644
-    file_id: null
+    file_id: 8463693
     candidate_version: "9.9.2"
-    filename: null
+    filename: "Placebo-1.21.1-9.9.2.jar"
     release_status: release
     side: common
     source_repository: "Shadows-of-Fire/Placebo"
@@ -298,7 +298,7 @@ libraries:
     display_name: "Cupboard"
     provider: curseforge
     project_id: 326652
-    file_id: null
+    file_id: 8749806
     candidate_version: "4.1"
     filename: "cupboard-1.21.1-4.1.jar"
     release_status: release
