@@ -16,6 +16,8 @@ public record WeatherSample(
         OptionalDouble windAngleRad,
         OptionalDouble pressureHpa,
         OptionalDouble humidityRelative,
+        OptionalDouble visibilityMeters,
+        OptionalDouble severity01,
         Optional<Boolean> storming,
         Optional<Boolean> snowing,
         String status
@@ -30,6 +32,8 @@ public record WeatherSample(
         Objects.requireNonNull(windAngleRad);
         Objects.requireNonNull(pressureHpa);
         Objects.requireNonNull(humidityRelative);
+        Objects.requireNonNull(visibilityMeters);
+        Objects.requireNonNull(severity01);
         Objects.requireNonNull(storming);
         Objects.requireNonNull(snowing);
         Objects.requireNonNull(status);
@@ -40,6 +44,8 @@ public record WeatherSample(
                 false,
                 providerId,
                 position.immutable(),
+                OptionalDouble.empty(),
+                OptionalDouble.empty(),
                 OptionalDouble.empty(),
                 OptionalDouble.empty(),
                 OptionalDouble.empty(),
@@ -74,6 +80,8 @@ public record WeatherSample(
                 OptionalDouble.of(temperatureC),
                 OptionalDouble.of(windSpeedMps),
                 OptionalDouble.of(windAngleRad),
+                OptionalDouble.empty(),
+                OptionalDouble.empty(),
                 OptionalDouble.empty(),
                 OptionalDouble.empty(),
                 Optional.of(storming),

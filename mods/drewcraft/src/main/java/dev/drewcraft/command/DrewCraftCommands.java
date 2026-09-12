@@ -95,6 +95,8 @@ public final class DrewCraftCommands {
                 + " snow=" + sample.snowing().map(String::valueOf).orElse("n/a")
                 + " pressure=" + number(sample.pressureHpa(), "%.2fhPa")
                 + " humidity=" + number(sample.humidityRelative(), "%.3f")
+                + " visibility=" + number(sample.visibilityMeters(), "%.0fm")
+                + " severity=" + number(sample.severity01(), "%.3f")
                 + " | " + sample.status();
     }
 

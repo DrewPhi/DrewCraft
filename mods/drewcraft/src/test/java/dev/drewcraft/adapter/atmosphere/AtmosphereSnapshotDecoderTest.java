@@ -24,6 +24,8 @@ class AtmosphereSnapshotDecoderTest {
         assertFalse(decoded.snowing().orElseThrow());
         assertTrue(decoded.pressureHpa().isEmpty());
         assertTrue(decoded.humidityRelative().isEmpty());
+        assertTrue(decoded.visibilityMeters().isEmpty());
+        assertTrue(decoded.severity01().isEmpty());
     }
 
     @Test
