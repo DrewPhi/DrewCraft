@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dev.drewcraft.strategic.encounter.StrategicEncounter;
+import dev.drewcraft.strategic.encounter.StrategicEncounterPlanner;
 import dev.drewcraft.strategic.encounter.StrategicEncounterState;
 import dev.drewcraft.strategic.model.StrategicGroup;
 import dev.drewcraft.strategic.model.StrategicGroupState;
@@ -51,6 +52,9 @@ class DrewCraftEncounterTransactionTest {
         assertEquals(63, group.composition().get("minecraft:zombie"));
         assertEquals(27, encounter.activeEntityCount());
         assertEquals(37, encounter.casualtyCount());
+
+        // Only 36 surviving abstract units remain available to refill the 64-entity tactical cap.
+        assertEquals(36, StrategicEncounterPlanner.nextWave(group, encounter, 64).size());
 
         // Player leaves: surviving tactical objects collapse back into the strategic record.
         data.completeStrategicEncounter(encounter.encounterId());
