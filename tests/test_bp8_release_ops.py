@@ -22,6 +22,7 @@ serverctl = load_module("serverctl", "infra/serverctl.py")
 launcher = load_module("drewcraft_bootstrap", "launcher/drewcraft_bootstrap.py")
 world_index = load_module("world_seed_index", "tools/world_seed_index.py")
 world_bundle = load_module("world_bundle", "tools/world_bundle.py")
+release_layout = load_module("assemble_release_layout", "tools/assemble_release_layout.py")
 
 
 class Bp8ReleaseOperationsTest(unittest.TestCase):
@@ -82,6 +83,27 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
             "herds": [],
         }) + "\n", encoding="utf-8")
         return world
+
+    def test_verified_client_server_trees_collapse_identical_files_to_common(self):
+        client = self.tmp / "verified-client"
+        server = self.tmp / "verified-server"
+        for root in (client, server):
+            (root / "mods").mkdir(parents=True)
+            (root / "config").mkdir(parents=True)
+            (root / "mods" / "shared.jar").write_bytes(b"same")
+        (client / "config" / "side.txt").write_text("client\n", encoding="utf-8")
+        (server / "config" / "side.txt").write_text("server\n", encoding="utf-8")
+        (client / "client-only.txt").write_text("client only\n", encoding="utf-8")
+        (server / "server-only.txt").write_text("server only\n", encoding="utf-8")
+
+        output = self.tmp / "release-layout"
+        counts = release_layout.assemble(client, server, output)
+        self.assertEqual(b"same", (output / "common" / "mods" / "shared.jar").read_bytes())
+        self.assertEqual("client\n", (output / "client" / "config" / "side.txt").read_text())
+        self.assertEqual("server\n", (output / "server" / "config" / "side.txt").read_text())
+        self.assertTrue((output / "client" / "client-only.txt").is_file())
+        self.assertTrue((output / "server" / "server-only.txt").is_file())
+        self.assertEqual({"common": 1, "client": 2, "server": 2}, counts)
 
     def test_one_manifest_drives_client_and_server_and_repairs_drift(self):
         manifest, _, live_path = self.build_release()
