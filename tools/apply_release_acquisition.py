@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import pathlib
-import urllib.request
+import urllib.parse
 
 import yaml
 
@@ -23,18 +23,23 @@ def curseforge_url(item: dict) -> str:
 
 
 def resolve_modrinth_url(item: dict) -> str:
-    version_id = item["version_id"]
-    request = urllib.request.Request(
-        f"https://api.modrinth.com/v2/version/{version_id}",
-        headers={"User-Agent": "DrewCraft-ReleaseAcquisition/1"},
+    """Return the immutable Modrinth CDN URL from pinned project/version/file identity.
+
+    The launcher still verifies the exact committed SHA-256 before accepting the
+    download, so release construction does not need a mutable/occasionally
+    unavailable Modrinth metadata API lookup just to rediscover this URL.
+    """
+    project_id = str(item["project_id"])
+    version_id = str(item["version_id"])
+    filename = str(item["filename"])
+    if not project_id or not version_id or not filename:
+        raise RuntimeError("Modrinth artifact is missing project/version/filename identity")
+    return (
+        "https://cdn.modrinth.com/data/"
+        f"{urllib.parse.quote(project_id, safe='')}/versions/"
+        f"{urllib.parse.quote(version_id, safe='')}/"
+        f"{urllib.parse.quote(filename, safe='')}"
     )
-    with urllib.request.urlopen(request, timeout=60) as response:
-        payload = json.loads(response.read().decode("utf-8"))
-    filename = item.get("filename")
-    matches = [file for file in payload.get("files", []) if file.get("filename") == filename]
-    if len(matches) != 1 or not matches[0].get("url"):
-        raise RuntimeError(f"Modrinth version {version_id} did not resolve exact file {filename!r}")
-    return matches[0]["url"]
 
 
 def provider_urls(evidence: dict, *, modrinth_resolver=resolve_modrinth_url) -> dict[str, dict]:
