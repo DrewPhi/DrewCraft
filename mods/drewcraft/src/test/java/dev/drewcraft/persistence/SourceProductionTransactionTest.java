@@ -115,6 +115,27 @@ class SourceProductionTransactionTest {
     }
 
     @Test
+    void failedRouteBacksOffWithoutConsumingPopulation() {
+        DrewCraftSavedData data = emptyData();
+        SourceRecord source = data.discoverSource(descriptor(0), 0L).source();
+        int originalBudget = source.populationBudget();
+        long originalGeneration = source.generation();
+        long now = source.nextActionGameTime();
+
+        SourceProductionScheduler.CycleStats stats = SourceProductionScheduler.runCycle(
+                data, now, 16, 4, 1200L,
+                (planningSource, gameTime) -> new SourceLaunchPlanner.PlanResult(null, "no_route")
+        );
+
+        assertEquals(1, stats.routeFailures());
+        assertEquals(0, stats.groupsLaunched());
+        assertEquals(originalBudget, source.populationBudget());
+        assertTrue(source.nextActionGameTime() >= now + 1200L);
+        assertEquals(originalGeneration + 1, source.generation());
+        assertTrue(data.strategicGroups().isEmpty());
+    }
+
+    @Test
     void productionCycleObeysGlobalLaunchCap() {
         DrewCraftSavedData data = emptyData();
         SourceRecord first = data.discoverSource(descriptor(0), 0L).source();
