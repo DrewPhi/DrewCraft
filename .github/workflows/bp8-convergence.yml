@@ -9,6 +9,7 @@ on:
       - 'tools/release_contract.py'
       - 'tools/build_release_manifest.py'
       - 'tools/assemble_release_layout.py'
+      - 'tools/evaluate_world_candidates.py'
       - 'tools/world_seed_index.py'
       - 'tools/world_bundle.py'
       - 'world/**'
@@ -73,7 +74,9 @@ jobs:
           lock = json.loads(pathlib.Path('launcher/runtime-lock.json').read_text('utf-8'))
           runtime = b.ensure_runtime({'runtime': lock['platforms']}, pathlib.Path('.runtime-proof'))
           subprocess.run([runtime['java'], '-version'], check=True)
-          subprocess.run([runtime['prism'], '--version'], check=True)
+          prism = pathlib.Path(runtime['prism'])
+          assert prism.name.lower() == 'prismlauncher.exe' and prism.is_file()
+          assert prism.read_bytes()[:2] == b'MZ', 'Prism executable is not a Windows PE file'
           print(runtime)
           '@ | python -
       - name: Build Windows one-click executable
