@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "faction": {
+    "official_name": "The Covenant of the Closed Sky",
+    "common_name": "the Covenant",
+    "outsider_epithet_for_players": "the Unmoored",
+    "capital": "Vespera, the Rooted Crown",
+    "founder": "Saint Orun",
+    "catastrophe": "the Falling Fire",
+    "core_doctrine": "Height is not sin. Severance is. A mountain may rise because it remains rooted; a person who flies abandons the earth that bears them.",
+    "symbol": "a downward-broken wing",
+    "colors": [
+      "blackened charcoal",
+      "slate",
+      "warm stone",
+      "aged ivory",
+      "oxblood",
+      "tarnished gold"
+    ]
+  },
+  "sites": [
+    {
+      "id": "ashen_gate",
+      "name": "Ashen Gate",
+      "chain": "First Chain — Vigilance",
+      "role": "frontier gate-fort and patrol source",
+      "theme": "vigilance, borders, the first organized defense after the Falling Fire",
+      "archive_title": "Seal I — The Hidden Seat"
+    },
+    {
+      "id": "first_stone_abbey",
+      "name": "First Stone Abbey",
+      "chain": "Second Chain — Memory",
+      "role": "abbey and pilgrimage house",
+      "theme": "creation doctrine, memory, the sacredness of weight and foundations",
+      "archive_title": "Seal II — The Rooted Crown"
+    },
+    {
+      "id": "red_reliquary",
+      "name": "Red Reliquary",
+      "chain": "Third Chain — Mortality",
+      "role": "reliquary, crypt, and burial temple",
+      "theme": "death, burial, returning the body to earth, names of the dead",
+      "archive_title": "Seal III — The City of Steps"
+    },
+    {
+      "id": "low_bell_monastery",
+      "name": "Low Bell Monastery",
+      "chain": "Fourth Chain — Obedience",
+      "role": "monastery built around a deep bell tower",
+      "theme": "silence, discipline, pilgrimage on foot, obedience to the weight of the world",
+      "archive_title": "Seal IV — The Eight Courts"
+    },
+    {
+      "id": "closed_wing_bastion",
+      "name": "Closed Wing Bastion",
+      "chain": "Fifth Chain — Defense",
+      "role": "fortress and anti-air battery",
+      "theme": "military anti-aviation doctrine and defense against the Unmoored",
+      "archive_title": "Seal V — The High Basilica"
+    },
+    {
+      "id": "saint_orun_scriptorium",
+      "name": "Saint Orun Scriptorium",
+      "chain": "Sixth Chain — Doctrine",
+      "role": "scriptorium, archive tower, and doctrinal school",
+      "theme": "the founder's writings, censorship, the history of the Falling Fire, forbidden engines",
+      "archive_title": "Seal VI — The Grand Stair"
+    },
+    {
+      "id": "cairnwatch",
+      "name": "Cairnwatch",
+      "chain": "Seventh Chain — Measure",
+      "role": "survey fortress and road command",
+      "theme": "maps, roads, boundaries, measured travel, the divided-waymark system",
+      "archive_title": "Seal VII — The Palace of Weight"
+    },
+    {
+      "id": "eighth_chain_citadel",
+      "name": "Eighth Chain Citadel",
+      "chain": "Eighth Chain — Unity",
+      "role": "regional citadel and command seat",
+      "theme": "unity of the eight chains, hierarchy, war orders, loyalty to Vespera",
+      "archive_title": "Seal VIII — The Last Chain"
+    }
+  ],
+  "drop_and_coordinate_rules": {
+    "coordinate_fragment_distribution": {
+      "x_only": 0.38,
+      "z_only": 0.38,
+      "x_y": 0.09,
+      "z_y": 0.09,
+      "x_z": 0.045,
+      "x_y_z_full": 0.015
+    },
+    "notes": [
+      "Every dropped lore book includes the target site's printed name.",
+      "Coordinates are rendered at drop time from the production-world site registry.",
+      "A full XYZ in one book is intentionally rare: 1.5%.",
+      "X+Z is also uncommon (4.5%) because it is enough to locate a site horizontally.",
+      "Missing axes are shown as [withheld] rather than omitted, making fragment matching obvious.",
+      "The fiction is that ordinary Covenant couriers carry divided waymarks so capture of one messenger does not reveal a complete strategic route.",
+      "Coordinate mode is rolled independently for every physical copy, so repeated copies of the same title can contain different coordinate fragments."
+    ],
+    "waymark_page_template": [
+      "DIVIDED WAYMARK",
+      "{TARGET_DISPLAY}",
+      "",
+      "X: {X_OR_WITHHELD}",
+      "Y: {Y_OR_WITHHELD}",
+      "Z: {Z_OR_WITHHELD}",
+      "",
+      "Compare copies bearing the same destination seal."
+    ],
+    "recommended_drop_chances_per_mob_kill": {
+      "common_footman_or_ranged": 0.0125,
+      "cleric_or_archivist": 0.04,
+      "prelate_or_specialist": 0.06,
+      "inquisitor_or_heavy_elite": 0.08,
+      "invoker_or_high_inquisitor": 0.12
+    },
+    "field_book_selection": [
+      "If a strategic mob has home_source_id, 75% of field-book drops target its home site.",
+      "The remaining 25% target a random uncleared cult site.",
+      "For mobs without a home source, choose a random uncleared cult site.",
+      "After a site is cleared, reduce its ordinary clue weight to a small historical residue (suggested 5%) so players are not flooded with obsolete coordinates."
+    ],
+    "sealed_archive_selection": [
+      "Each sealed capital fragment belongs to one origin site.",
+      "It may drop only from enemies assigned to that site's bounds/strategic source.",
+      "Give it a very low ordinary elite-drop chance if desired.",
+      "Guarantee first acquisition when that site's Source Core is cleared, implemented by the site's surviving/triggered elite bearer or other enemy drop path.",
+      "Border opening still requires the intended Source Core clears, so an unusually early archive drop cannot skip the campaign."
+    ]
+  }
+}

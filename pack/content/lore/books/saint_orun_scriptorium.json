@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "site_id": "saint_orun_scriptorium",
+  "books": [
+    {
+      "id": "cult_book_26",
+      "title": "Testament of Orun",
+      "author": "Attributed to Saint Orun",
+      "kind": "field_lore",
+      "target_site": "saint_orun_scriptorium",
+      "target_display": "Saint Orun Scriptorium",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "I watched the first machines rise and felt pride before fear. That is the part the later copies omit. We cheered because we believed distance itself had been defeated.",
+        "Then the weather turned. Burning frames crossed above us. One struck the eastern tower. Another vanished into cloud. The sky kept every scream and returned only wreckage.",
+        "I do not command mankind to remain low. I command us to remain borne. Climb by stair, ridge, tower, and mountain. Rise as high as the earth can carry you. Do not sever the bond."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_27",
+      "title": "On the Unmoored",
+      "author": "Scriptorium Commentary",
+      "kind": "field_lore",
+      "target_site": "saint_orun_scriptorium",
+      "target_display": "Saint Orun Scriptorium",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "The Unmoored are not defined by blood, language, or homeland. Anyone who teaches severance can become one. Anyone who renounces it may return.",
+        "This is why their machines are burned but their roads are sometimes preserved. A road can be reclaimed. A runway is a road instructed to betray its purpose.",
+        "Their so-called Spirit of Flight is treated by some scholars as metaphor and by others as an actual deceiving presence. The Covenant requires no agreement on this point."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_28",
+      "title": "Marginalia on the Falling Fire",
+      "author": "Anonymous Scribe",
+      "kind": "field_lore",
+      "target_site": "saint_orun_scriptorium",
+      "target_display": "Saint Orun Scriptorium",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "The oldest records do not say the storm was divine punishment. They say pressure fell rapidly, winds shifted, and the launch proceeded despite warnings from the tower observers.",
+        "This note has been crossed out in three earlier copies. I leave it because faith should not require false weather.",
+        "Even if no god struck the aircraft, the lesson remains: men trusted empty air over measured conditions, and thousands below paid for that arrogance."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_29",
+      "title": "Index of Forbidden Engines",
+      "author": "Sixth Chain Archive",
+      "kind": "field_lore",
+      "target_site": "saint_orun_scriptorium",
+      "target_display": "Saint Orun Scriptorium",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Prohibited: fixed wings, rotary wings, lift envelopes, rocket frames, powered gliders, launch rails, propellers intended for human ascent, and instructional diagrams sufficient to reproduce them.",
+        "Permitted under seal: fragments kept for study, captured instruments used by defense crews, weather devices that do not themselves lift a person.",
+        "Some early engines remain in sealed rooms beneath the Scriptorium. Their existence is not proof of reverence. A physician may keep a diseased bone without worshiping disease."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_30",
+      "title": "Seal VI — The Grand Stair",
+      "author": "Sixth Chain Archive",
+      "kind": "sealed_capital_fragment",
+      "origin_site": "saint_orun_scriptorium",
+      "target_site": "vespera",
+      "target_display": "Vespera, the Rooted Crown",
+      "drop_scope": "cult_mobs_from_origin_site; guaranteed via site-clear/elite rule",
+      "lore_pages": [
+        "Saint Orun never saw Vespera completed. The Grand Stair was built from a sketch in the margin of his last notebook: a line rising without ever leaving the page beneath it.",
+        "Later Hierophants made the drawing into law. The final ascent to the city must remain walkable from the lowest road to the highest door.",
+        "This is why Vespera fears aircraft more than siege engines. A flyer can ignore the argument written into every step."
+      ],
+      "append_coordinate_waymark": true
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "site_id": "red_reliquary",
+  "books": [
+    {
+      "id": "cult_book_11",
+      "title": "Book of Returning",
+      "author": "Reliquary Chapter",
+      "kind": "field_lore",
+      "target_site": "red_reliquary",
+      "target_display": "Red Reliquary",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Every living thing borrows its shape. The debt is paid when bone, ash, and name are returned to the ground. Burial is not disappearance; it is the completion of weight.",
+        "The dead of the Falling Fire were difficult to bury. Many came down in pieces, and many never came down at all. Their absence became the wound from which the Covenant grew.",
+        "At the Red Reliquary we keep stones for the unreturned. Empty graves are still graves. The earth can remember what it was denied."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_12",
+      "title": "Names Beneath the Red Stone",
+      "author": "Keeper of Names",
+      "kind": "field_lore",
+      "target_site": "red_reliquary",
+      "target_display": "Red Reliquary",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "We do not number the dead when we can still speak their names. A number belongs in a ledger. A name belongs in a mouth, a family, and finally a stone.",
+        "The oldest chamber contains the names of those killed below the first flight towers. The pilots are recorded beside the citizens they crushed. Judgment is left to the Foundation.",
+        "Visitors are asked to touch the red lintel before entering. Its color is not blood. It is clay fired dark by the city that burned."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_13",
+      "title": "Procession of Dust",
+      "author": "Reliquary Liturgy",
+      "kind": "field_lore",
+      "target_site": "red_reliquary",
+      "target_display": "Red Reliquary",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Carry the body low. Walk slowly. Let no wheel bear the final distance. At the last gate, remove the dead from cart or litter and take the remaining steps by hand.",
+        "The mourners answer: We are carried, therefore we return. The keeper answers: We are weighted, therefore we are known.",
+        "No banners are raised above the crypt roof. No bells are rung from towers during burial. The dead have finished climbing."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_14",
+      "title": "Reliquary Guard Roll",
+      "author": "Third Watch",
+      "kind": "field_lore",
+      "target_site": "red_reliquary",
+      "target_display": "Red Reliquary",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Two guards at the outer arch, two at the lower stair, one at the sealed vault, four on the wall. Clerics may enter the lower chamber only in pairs.",
+        "Unmoored raiders have begun taking old engine fragments as trophies. Command orders that none remain visible, even broken. Melt them or bury them beneath the ash court.",
+        "The courier code is unchanged: strategic waymarks are copied in pieces. Match destination names before combining measures."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_15",
+      "title": "Seal III — The City of Steps",
+      "author": "Keeper of Names",
+      "kind": "sealed_capital_fragment",
+      "origin_site": "red_reliquary",
+      "target_site": "vespera",
+      "target_display": "Vespera, the Rooted Crown",
+      "drop_scope": "cult_mobs_from_origin_site; guaranteed via site-clear/elite rule",
+      "lore_pages": [
+        "The dead of every Chain are represented in Vespera. Eight courts hold eight stones, each cut from the region it remembers.",
+        "The city is designed as a procession upward: lower walls, courts, stairways, basilica, and finally the Palace of Weight.",
+        "Those who die defending the capital are buried below the lowest terrace so that even the highest offices rest upon ordinary bones."
+      ],
+      "append_coordinate_waymark": true
+    }
+  ]
+}

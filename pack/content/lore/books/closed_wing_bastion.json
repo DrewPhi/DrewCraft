@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "site_id": "closed_wing_bastion",
+  "books": [
+    {
+      "id": "cult_book_21",
+      "title": "Against the False Wing",
+      "author": "Prelate Cael",
+      "kind": "field_lore",
+      "target_site": "closed_wing_bastion",
+      "target_display": "Closed Wing Bastion",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "The heretic says: I have made wings, therefore the sky accepts me. But iron does not become a bird because it is shaped like one, nor does falling become flight because it lasts longer.",
+        "The machine is not hated for its noise, its speed, or even its weaponry. It is hated because it teaches the body to forget dependence.",
+        "Break the false wing and the lesson returns immediately. Weight reasserts itself. The earth does not pursue the flyer. It waits."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_22",
+      "title": "Manual of Sky Denial",
+      "author": "Bastion Artificers",
+      "kind": "field_lore",
+      "target_site": "closed_wing_bastion",
+      "target_display": "Closed Wing Bastion",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Do not waste shot on distant motion. Let the flyer enter the defended sky. Fire ahead of its present course, not at the place where it was seen.",
+        "Straight flight is easiest to punish. A turning machine spends speed and reveals intention. Height reduces certainty; cloud and storm reduce it further.",
+        "A battery exists to deny comfort, not to guarantee a kill. Force the Unmoored to turn away, descend, or land where grounded soldiers can finish the work."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_23",
+      "title": "Sermon to the Gunners",
+      "author": "Bastion Chaplain",
+      "kind": "field_lore",
+      "target_site": "closed_wing_bastion",
+      "target_display": "Closed Wing Bastion",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "You will hear engines before you see them. Do not look up with wonder. Wonder is the first door through which envy enters.",
+        "Remember what you defend: roads, graves, kitchens, children, and every roof that trusts the ground beneath it. The flyer sees only shapes from above. You know their weight.",
+        "When the burst misses, do not curse. The purpose of flak is not pride. Fill the forbidden air with consequence until the machine chooses earth again."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_24",
+      "title": "Battery Roll: Closed Wing",
+      "author": "Fifth Chain Command",
+      "kind": "field_lore",
+      "target_site": "closed_wing_bastion",
+      "target_display": "Closed Wing Bastion",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "North battery: serviceable. Lower battery: two barrels cracked. Inner battery: powder dry. Reserve crews to rotate at dusk.",
+        "Range tables revised after mountain winds carried three bursts wide. Gunners reminded that height and weather reduce certainty. Ammunition is not to be wasted on harmless distant craft.",
+        "Road measures remain divided among patrol leaders. Complete destination marks are restricted to command satchels."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_25",
+      "title": "Seal V — The High Basilica",
+      "author": "Fifth Chain Command",
+      "kind": "sealed_capital_fragment",
+      "origin_site": "closed_wing_bastion",
+      "target_site": "vespera",
+      "target_display": "Vespera, the Rooted Crown",
+      "drop_scope": "cult_mobs_from_origin_site; guaranteed via site-clear/elite rule",
+      "lore_pages": [
+        "The High Basilica is not the capital's highest point. It is deliberately lower than the Palace, because doctrine is meant to restrain power and power is meant to bear responsibility.",
+        "Air defense batteries cover the outer approaches in overlapping fields. Their purpose is denial: force aircraft away from the sacred district and toward ground chosen by defenders.",
+        "Any attacker who assumes height alone defeats Vespera has misunderstood why the city was built on a mountain."
+      ],
+      "append_coordinate_waymark": true
+    }
+  ]
+}

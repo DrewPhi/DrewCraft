@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "site_id": "cairnwatch",
+  "books": [
+    {
+      "id": "cult_book_31",
+      "title": "Measure and Boundary",
+      "author": "Cairnwatch Survey Office",
+      "kind": "field_lore",
+      "target_site": "cairnwatch",
+      "target_display": "Cairnwatch",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "A boundary is not real because a king draws it. It becomes real when roads bend around it, watchmen walk it, bridges serve it, and people remember where responsibility changes hands.",
+        "The Covenant therefore measures before it claims. Surveyors walk every line. No map is sacred if the ground disagrees with it.",
+        "Flight is rejected partly because it encourages maps without contact. From above, ravines disappear into lines and mountains into shading. A road remembers what a map forgets."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_32",
+      "title": "The Surveyor's Prayer",
+      "author": "Seventh Chain Liturgy",
+      "kind": "field_lore",
+      "target_site": "cairnwatch",
+      "target_display": "Cairnwatch",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Let my step be counted. Let my measure be honest. Let the hill remain a hill even when my chart wishes it flat.",
+        "Let me never move a mark merely because the road would be easier elsewhere. Let the map serve the land, not the land the map.",
+        "And if I am tempted by the view from above, remind me that knowledge without contact becomes contempt."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_33",
+      "title": "Roadmaster's Dispatch",
+      "author": "Cairnwatch Roadmaster",
+      "kind": "field_lore",
+      "target_site": "cairnwatch",
+      "target_display": "Cairnwatch",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Bridge crews are to repair the northern span before moving stone to the Citadel road. Two patrols failed to arrive because spring water undercut the old embankment.",
+        "Do not send complete destination measures with ordinary couriers. Divide X and Z between separate copies whenever practical. Elevation marks may accompany either half.",
+        "Senior officers complain this slows movement. That is the point. A captured messenger should reveal a road, not the whole kingdom."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_34",
+      "title": "Watch Register: Cairnwatch",
+      "author": "Seventh Chain Watch",
+      "kind": "field_lore",
+      "target_site": "cairnwatch",
+      "target_display": "Cairnwatch",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "First light: clear. Midmorning: merchant train. Noon: two pilgrims. Afternoon: engine noise beyond cloud, no visual. Dusk: three patrols returned.",
+        "One captured Unmoored map showed distances measured from the air. The survey master called it 'accurate and ignorant.' It ignored every ford, grade, and pass.",
+        "All copied waymarks checked against the stone registry. Missing axes confirmed intentional."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_35",
+      "title": "Seal VII — The Palace of Weight",
+      "author": "Cairnwatch Survey Office",
+      "kind": "sealed_capital_fragment",
+      "origin_site": "cairnwatch",
+      "target_site": "vespera",
+      "target_display": "Vespera, the Rooted Crown",
+      "drop_scope": "cult_mobs_from_origin_site; guaranteed via site-clear/elite rule",
+      "lore_pages": [
+        "The Palace of Weight contains the master road registry, the sealed maps, and the stone from which all official measures of the capital are checked.",
+        "Surveyors joke that the kingdom could survive the death of a Hierophant more easily than the loss of that stone.",
+        "The final approach is intentionally difficult to infer from ordinary regional maps. The capital's true measure is distributed among the Chains."
+      ],
+      "append_coordinate_waymark": true
+    }
+  ]
+}

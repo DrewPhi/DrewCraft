@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "site_id": "ashen_gate",
+  "books": [
+    {
+      "id": "cult_book_01",
+      "title": "The First Chain",
+      "author": "Covenant Press",
+      "kind": "field_lore",
+      "target_site": "ashen_gate",
+      "target_display": "Ashen Gate",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "The first walls were not raised against men. They were raised against forgetting. When the Falling Fire ended, survivors wandered beneath a sky full of ash and called every direction home.",
+        "Saint Orun ordered the roads measured and the passes watched. He named vigilance the First Chain, because a people that cannot hold a boundary cannot preserve a law.",
+        "Ashen Gate keeps that charge. Its wardens are taught that every road has two duties: to carry the faithful inward, and to turn the Unmoored away."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_02",
+      "title": "Watchman's Rule",
+      "author": "Gate Captain's Office",
+      "kind": "field_lore",
+      "target_site": "ashen_gate",
+      "target_display": "Ashen Gate",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Stand where stone meets road. Watch the horizon before you watch the traveler. The heretic announces himself first by haste, noise, smoke, or the unnatural shadow of a wing.",
+        "Do not pursue a sky-machine beyond the range of the guns. Mark its direction. Ring twice for a sighting, three times for descent, and without pause if it turns toward a sacred house.",
+        "Remember: the wall is not cowardice. A wall is the earth made vertical, still rooted, still bearing weight. There is honor in standing behind what cannot fly."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_03",
+      "title": "Letter from Ashen Gate",
+      "author": "Brother Teren",
+      "kind": "field_lore",
+      "target_site": "ashen_gate",
+      "target_display": "Ashen Gate",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Mother, the Gate is colder than the stories said. At dawn the towers are red with light, and the valley below looks so deep that I understand why the old builders feared empty air.",
+        "They tell us the Unmoored worship a spirit that calls them upward. I have never heard it. I only hear the stone beneath my boots and the bell that says we are still here.",
+        "If my service ends before winter, place my name in the family cairn. I would rather return beneath our field than be burned and scattered like the first flyers."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_04",
+      "title": "Ashen Gate Supply Ledger",
+      "author": "Quartermaster's Hand",
+      "kind": "field_lore",
+      "target_site": "ashen_gate",
+      "target_display": "Ashen Gate",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Four carts of grain. Two crates of bolts. Lamp oil, nine jars. Oxblood cloth, six rolls. Brass fittings for the west battery, three bundles.",
+        "The Gate consumes more timber each month because patrols range farther. Orders from the High Seat say no road is to be abandoned while an Unmoored settlement can reach it.",
+        "A note in the margin: courier measures are to remain divided. No common messenger carries all three marks to any strategic house."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_05",
+      "title": "Seal I — The Hidden Seat",
+      "author": "Ashen Gate Command",
+      "kind": "sealed_capital_fragment",
+      "origin_site": "ashen_gate",
+      "target_site": "vespera",
+      "target_display": "Vespera, the Rooted Crown",
+      "drop_scope": "cult_mobs_from_origin_site; guaranteed via site-clear/elite rule",
+      "lore_pages": [
+        "Common charts end where the old frontier once ended, but the Covenant did not. After the road wars, the High Seat was deliberately removed from ordinary maps.",
+        "Vespera is not a myth and not a metaphor. The city exists beyond the marches, built where the mountain itself forms the final wall.",
+        "This sealed copy carries one of the official measures of the Rooted Crown. It was never meant for a common patrol."
+      ],
+      "append_coordinate_waymark": true
+    }
+  ]
+}

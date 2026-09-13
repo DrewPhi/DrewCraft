@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "site_id": "eighth_chain_citadel",
+  "books": [
+    {
+      "id": "cult_book_36",
+      "title": "The Eight Chains",
+      "author": "Citadel Catechism",
+      "kind": "field_lore",
+      "target_site": "eighth_chain_citadel",
+      "target_display": "Eighth Chain Citadel",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Vigilance, Memory, Mortality, Obedience, Defense, Doctrine, Measure, Unity. These are called the Eight Chains, though no iron joins them.",
+        "A chain is a promise that one house will not stand alone. If one wall falls, another sends soldiers. If one archive burns, another keeps the text. If one road breaks, another carries the burden.",
+        "At the center stands the Rooted Crown, not as a ninth chain but as the place where the eight are fastened together."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_37",
+      "title": "Oath of the Citadel",
+      "author": "Eighth Chain Command",
+      "kind": "field_lore",
+      "target_site": "eighth_chain_citadel",
+      "target_display": "Eighth Chain Citadel",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "I will not abandon a road while those behind me depend on it. I will not confuse retreat with severance; the grounded soldier may step back and remain faithful.",
+        "I will defend the Chains without claiming that stone makes me immortal. Every fortress eventually becomes a ruin. The oath concerns what the fortress protects.",
+        "If ordered to Vespera, I will go by the roads appointed and speak of the route to no one without seal."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_38",
+      "title": "Order of the Hierophant",
+      "author": "Office of the High Seat",
+      "kind": "field_lore",
+      "target_site": "eighth_chain_citadel",
+      "target_display": "Eighth Chain Citadel",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "The growth of Unmoored settlements is confirmed. Their aircraft now range beyond the old marches. All Chains are to increase patrols without abandoning ordinary farms, roads, or worship.",
+        "Do not turn every traveler into an enemy. The doctrine condemns severance, not curiosity. Confiscate engines. Destroy military flight. Offer surrender where it can be accepted safely.",
+        "Vespera remains sealed from common charts. Complete measures are to remain in the hands of Chain commanders only."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_39",
+      "title": "Siege Ledger: Eighth Chain",
+      "author": "Citadel Quartermaster",
+      "kind": "field_lore",
+      "target_site": "eighth_chain_citadel",
+      "target_display": "Eighth Chain Citadel",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Stone shot, powder, spare bowstrings, grain, medical cloth, lamp oil, bridge timber, iron fittings. Siege stores are to be rotated before spoilage.",
+        "Reports from the Fifth Chain say the Unmoored now scout from heights beyond reliable gunfire. Command recommends layered defense rather than wasteful pursuit.",
+        "Final note: the eight sealed capital copies are accounted for. Each Chain holds one."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_40",
+      "title": "Seal VIII — The Last Chain",
+      "author": "Office of the High Seat",
+      "kind": "sealed_capital_fragment",
+      "origin_site": "eighth_chain_citadel",
+      "target_site": "vespera",
+      "target_display": "Vespera, the Rooted Crown",
+      "drop_scope": "cult_mobs_from_origin_site; guaranteed via site-clear/elite rule",
+      "lore_pages": [
+        "The eight seals together reveal what no single common chart is permitted to show. This was a military precaution long before the present war.",
+        "Vespera is the fastening point of the Chains. If the outer houses fail, the High Seat must still stand; if the High Seat fails, the Chains are ordered to fight only until civilians can withdraw.",
+        "The last law is often omitted from public sermons: a civilization is not saved by dying in its capital. It is saved by carrying memory beyond it."
+      ],
+      "append_coordinate_waymark": true
+    }
+  ]
+}

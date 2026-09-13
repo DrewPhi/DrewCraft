@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "site_id": "low_bell_monastery",
+  "books": [
+    {
+      "id": "cult_book_16",
+      "title": "The Bell Below",
+      "author": "Low Bell Chapter",
+      "kind": "field_lore",
+      "target_site": "low_bell_monastery",
+      "target_display": "Low Bell Monastery",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "The monastery's bell hangs lower than its chapel floor. Its tower descends into the hill instead of rising above it. The sound travels first through stone, then through air.",
+        "Novices are told that this is how doctrine should travel: through what is solid before it reaches what is empty.",
+        "When the bell sounds at dusk, every voice stops until the last vibration is gone. Silence is kept not because the sky commands it, but because the ground has spoken."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_17",
+      "title": "Rule of Silence",
+      "author": "Prior Edrin",
+      "kind": "field_lore",
+      "target_site": "low_bell_monastery",
+      "target_display": "Low Bell Monastery",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Do not fill every emptiness with speech. Wind can be loud and still say nothing. A faithful answer may be a hand on stone, a completed task, or a road repaired before dawn.",
+        "Pilgrims sleep without conversation on their final night here. In the morning they descend by the same path they climbed. There is no secret exit and no easier road.",
+        "The Unmoored mistake speed for freedom. We practice the opposite lesson: a journey acquires meaning by the weight it asks us to carry."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_18",
+      "title": "Pilgrim's Bell Note",
+      "author": "Sera of the South Road",
+      "kind": "field_lore",
+      "target_site": "low_bell_monastery",
+      "target_display": "Low Bell Monastery",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "I heard the low bell from outside the walls and thought thunder had entered the mountain. The brothers laughed when I said so, then apologized because laughter is forbidden after dusk.",
+        "They asked whether I feared heights. I said no. They asked whether I feared falling. I said everyone does. 'Then you understand more than you think,' one replied.",
+        "I leave tomorrow for another Chain. The route clerk gave me only one measure and told me another pilgrim would carry the rest."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_19",
+      "title": "Bellkeeper's Tally",
+      "author": "Bellkeeper's Office",
+      "kind": "field_lore",
+      "target_site": "low_bell_monastery",
+      "target_display": "Low Bell Monastery",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Dawn: one long toll. Midday: two. Dusk: three. Enemy sighting: five hard strokes. Sky-machine sighting: continuous ringing until the watcher confirms direction.",
+        "Repairs this season: lower axle, two braces, rope, stair lamps. The deep chamber remains dry. No cracks observed in the foundation.",
+        "Courier instruction: never amend a missing measure from memory. Missing marks are deliberate. Senior copies alone may carry a complete road."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_20",
+      "title": "Seal IV — The Eight Courts",
+      "author": "Low Bell Chapter",
+      "kind": "sealed_capital_fragment",
+      "origin_site": "low_bell_monastery",
+      "target_site": "vespera",
+      "target_display": "Vespera, the Rooted Crown",
+      "drop_scope": "cult_mobs_from_origin_site; guaranteed via site-clear/elite rule",
+      "lore_pages": [
+        "Before the High Basilica stand eight courts. Each is silent at a different hour so that one court is always listening while the others speak.",
+        "The fourth court contains a bell sunk beneath the paving in imitation of this monastery. Its sound is said to travel through the whole mountain.",
+        "A pilgrim who reaches that bell has crossed nearly the full city, but the High Seat still stands above."
+      ],
+      "append_coordinate_waymark": true
+    }
+  ]
+}

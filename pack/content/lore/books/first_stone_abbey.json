@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "site_id": "first_stone_abbey",
+  "books": [
+    {
+      "id": "cult_book_06",
+      "title": "The Weight of the World",
+      "author": "Covenant Press",
+      "kind": "field_lore",
+      "target_site": "first_stone_abbey",
+      "target_display": "First Stone Abbey",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Before law, before road, before kingdom, there was weight. The earth bore seed, water, bone, and stone without asking praise. Saint Orun called this the first mercy.",
+        "The sky bears nothing. It promises distance without support and height without foundation. What is lifted by stone remains held. What cuts itself free is abandoned.",
+        "For this reason the faithful may climb any mountain and raise any tower, provided the path remains rooted. Height is not sin. Severance is."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_07",
+      "title": "Homily of Foundation",
+      "author": "Abbess Meret",
+      "kind": "field_lore",
+      "target_site": "first_stone_abbey",
+      "target_display": "First Stone Abbey",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "A house begins below the floor. A road begins beneath the dust. A life begins in a body with weight. The wise honor what carries them before they praise what they can see.",
+        "Children ask why birds are permitted the sky. Because birds were shaped for it and return to earth without denying what they are. The crime is not height. The crime is imitation without belonging.",
+        "At First Stone Abbey, every novice lays one block in the foundation before learning a single prayer. Doctrine that cannot bear weight is only noise."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_08",
+      "title": "Pilgrim's Margin: First Stone",
+      "author": "Unknown Pilgrim",
+      "kind": "field_lore",
+      "target_site": "first_stone_abbey",
+      "target_display": "First Stone Abbey",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "I came here angry that the journey was required on foot. The road climbed for two days and my boots split. At the final bend the Abbey appeared as if it had grown from the ridge.",
+        "The brothers said that fatigue is part of the lesson: distance should be felt in the body. A place reached without effort is too easily forgotten.",
+        "I still do not know whether I believe all of it. But I slept beside the foundation stone and dreamed of falling. I woke grateful for the floor."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_09",
+      "title": "Abbey Provision Book",
+      "author": "Cellarer Oren",
+      "kind": "field_lore",
+      "target_site": "first_stone_abbey",
+      "target_display": "First Stone Abbey",
+      "drop_scope": "cult_mobs",
+      "lore_pages": [
+        "Salt, candles, flour, winter apples, iron nails, parchment. Pilgrims are to be fed regardless of rank. Armed patrols eat after the infirm and before the scribes.",
+        "No flying device, fragment of wing-frame, lift bladder, or propeller mechanism may be stored inside the outer wall. Such things go directly to the furnace pit.",
+        "The old rule remains: copies of road measures are split among travelers. Complete measures are reserved for senior clerks and commanders."
+      ],
+      "append_coordinate_waymark": true
+    },
+    {
+      "id": "cult_book_10",
+      "title": "Seal II — The Rooted Crown",
+      "author": "First Stone Archive",
+      "kind": "sealed_capital_fragment",
+      "origin_site": "first_stone_abbey",
+      "target_site": "vespera",
+      "target_display": "Vespera, the Rooted Crown",
+      "drop_scope": "cult_mobs_from_origin_site; guaranteed via site-clear/elite rule",
+      "lore_pages": [
+        "The capital is called the Rooted Crown because its highest roofs stand above clouds while every street remains joined to the mountain by stone.",
+        "The faithful answer the accusation of hypocrisy simply: the mountain rises without severance. So may we, provided every height can be walked.",
+        "Pilgrims who reach Vespera must ascend the Grand Stair. No lift, crane, or flying contrivance may carry a body across the final approach."
+      ],
+      "append_coordinate_waymark": true
+    }
+  ]
+}
