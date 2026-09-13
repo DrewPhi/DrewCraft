@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/local-dev-release.yml'
       - 'dev-release/**'
+      - 'tools/apply_release_acquisition.py'
   workflow_dispatch:
 
 permissions:
