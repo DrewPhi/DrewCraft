@@ -3,8 +3,10 @@ package dev.drewcraft.strategic.persistence;
 import dev.drewcraft.strategic.model.StrategicGroup;
 import dev.drewcraft.strategic.model.StrategicGroupState;
 import dev.drewcraft.strategic.model.StrategicGroupType;
+import dev.drewcraft.strategic.model.StrategicMission;
 import dev.drewcraft.strategic.model.StrategicPosition;
 import dev.drewcraft.strategic.model.StrategicRoute;
+import dev.drewcraft.strategic.model.StrategicTargetKnowledge;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +33,7 @@ public final class StrategicGroupNbt {
         group.sourceId().ifPresent(id -> tag.putUUID("SourceId", id));
         tag.put("Position", savePosition(group.position()));
         tag.put("Route", saveRoute(group.route()));
+        tag.put("Mission", saveMission(group.mission()));
         tag.putDouble("MovementSpeedBlocksPerSecond", group.movementSpeedBlocksPerSecond());
         tag.putInt("TotalStrength", group.totalStrength());
         tag.putString("State", group.state().name());
@@ -58,6 +61,9 @@ public final class StrategicGroupNbt {
         UUID sourceId = tag.hasUUID("SourceId") ? tag.getUUID("SourceId") : null;
         StrategicPosition position = loadPosition(tag.getCompound("Position"));
         StrategicRoute route = loadRoute(tag.getCompound("Route"), schema);
+        StrategicMission mission = schema >= 3 && tag.contains("Mission", Tag.TAG_COMPOUND)
+                ? loadMission(tag.getCompound("Mission"))
+                : StrategicMission.legacy(route.destination(), tag.getLong("LastSimulatedGameTime"));
         LinkedHashMap<String, Integer> composition = new LinkedHashMap<>();
         ListTag compositionTag = tag.getList("Composition", Tag.TAG_COMPOUND);
         for (int i = 0; i < compositionTag.size(); i++) {
@@ -66,9 +72,29 @@ public final class StrategicGroupNbt {
         }
 
         return new StrategicGroup(groupId, tag.getString("FactionId"), StrategicGroupType.valueOf(tag.getString("GroupType")),
-                sourceId, position, route, tag.getDouble("MovementSpeedBlocksPerSecond"), composition,
+                sourceId, position, route, mission, tag.getDouble("MovementSpeedBlocksPerSecond"), composition,
                 tag.getInt("TotalStrength"), StrategicGroupState.valueOf(tag.getString("State")),
                 tag.getLong("LastSimulatedGameTime"));
+    }
+
+    private static CompoundTag saveMission(StrategicMission mission) {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("TemplateId", mission.templateId());
+        tag.putString("TargetKnowledge", mission.targetKnowledge().name());
+        tag.putString("KnowledgeDetail", mission.knowledgeDetail());
+        tag.put("Target", savePosition(mission.target()));
+        tag.putLong("IssuedGameTime", mission.issuedGameTime());
+        return tag;
+    }
+
+    private static StrategicMission loadMission(CompoundTag tag) {
+        return new StrategicMission(
+                tag.getString("TemplateId"),
+                StrategicTargetKnowledge.valueOf(tag.getString("TargetKnowledge")),
+                tag.getString("KnowledgeDetail"),
+                loadPosition(tag.getCompound("Target")),
+                tag.getLong("IssuedGameTime")
+        );
     }
 
     private static CompoundTag savePosition(StrategicPosition position) {
