@@ -17,6 +17,11 @@ public final class SourceCoreRuntime {
         Optional<SourceRecord> source = data.sourceAtCore(core);
         if (source.isEmpty()) return new ClearResult(false, false, null);
         boolean changed = data.clearSource(source.get().sourceId(), level.getGameTime(), cause, actor);
+        if (changed) {
+            // Core destruction is a rare, irreversible progression event. Persist it immediately
+            // rather than waiting for the next autosave so a crash cannot resurrect the source.
+            level.getServer().overworld().getDataStorage().save();
+        }
         return new ClearResult(true, changed, source.get().sourceId());
     }
 
