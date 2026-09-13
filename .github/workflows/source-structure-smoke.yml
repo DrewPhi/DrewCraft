@@ -1,0 +1,147 @@
+name: Source structure smoke test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/source-structure-smoke.yml"
+      - "mods/drewcraft/**"
+      - "pack/manifest/mob_structure_candidates.yaml"
+      - "pack/manifest/platform.yaml"
+      - "pack/overlays/source_structures_first_spike/**"
+
+permissions:
+  contents: read
+
+jobs:
+  structure-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: "9.2.1"
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install manifest parser
+        run: python -m pip install --disable-pip-version-check -r tools/requirements-pack.txt
+
+      - name: Compile DrewCraft integration mod
+        run: gradle -p mods/drewcraft clean test build --stacktrace --no-daemon
+
+      - name: Download and hash exact structure artifacts and NeoForge
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, urllib.request, yaml
+
+          registry = yaml.safe_load(pathlib.Path('pack/manifest/mob_structure_candidates.yaml').read_text('utf-8'))
+          selected = {}
+          for item in registry['candidate_sets']['hostile_source_structures']['recommended_first_spike']:
+              if item.get('id') in {'towns_and_towers', 'when_dungeons_arise'}:
+                  selected[item['id']] = item
+          selected['cristel_lib'] = registry['libraries']['cristel_lib']
+
+          mods = pathlib.Path('/tmp/drewcraft-structure-smoke/mods')
+          mods.mkdir(parents=True, exist_ok=True)
+          for mod_id, item in selected.items():
+              destination = mods / item['filename']
+              request = urllib.request.Request(item['download_url'], headers={'User-Agent': 'DrewCraft-StructureSmoke/1'})
+              with urllib.request.urlopen(request, timeout=180) as response:
+                  destination.write_bytes(response.read())
+              actual = hashlib.sha256(destination.read_bytes()).hexdigest()
+              if actual != item['sha256']:
+                  raise SystemExit(f'{mod_id}: SHA-256 mismatch expected={item["sha256"]} got={actual}')
+              print(f'{mod_id}: {destination.name} {actual}')
+
+          platform = yaml.safe_load(pathlib.Path('pack/manifest/platform.yaml').read_text('utf-8'))['loader']
+          installer = pathlib.Path('/tmp/neoforge-installer.jar')
+          request = urllib.request.Request(platform['installer_url'], headers={'User-Agent': 'DrewCraft-StructureSmoke/1'})
+          with urllib.request.urlopen(request, timeout=180) as response:
+              installer.write_bytes(response.read())
+          actual = hashlib.sha256(installer.read_bytes()).hexdigest()
+          if actual != platform['installer_sha256']:
+              raise SystemExit(f'NeoForge installer SHA-256 mismatch expected={platform["installer_sha256"]} got={actual}')
+          PY
+
+      - name: Assemble isolated server
+        run: |
+          java -jar /tmp/neoforge-installer.jar --installServer /tmp/drewcraft-structure-smoke
+          python - <<'PY'
+          import pathlib, shutil
+          import sys
+          sys.path.insert(0, 'tools')
+          import inject_drewcraft_mod as inject
+
+          jar = inject.production_jar(pathlib.Path('mods/drewcraft/build/libs'))
+          shutil.copy2(jar, pathlib.Path('/tmp/drewcraft-structure-smoke/mods') / jar.name)
+          PY
+          mkdir -p /tmp/drewcraft-structure-smoke/config
+          cp pack/overlays/source_structures_first_spike/config/fml.toml /tmp/drewcraft-structure-smoke/config/fml.toml
+          printf 'eula=true\n' > /tmp/drewcraft-structure-smoke/eula.txt
+          cat > /tmp/drewcraft-structure-smoke/server.properties <<'EOF'
+          online-mode=false
+          level-type=minecraft:flat
+          max-tick-time=-1
+          view-distance=3
+          simulation-distance=3
+          spawn-protection=0
+          motd=DrewCraft source structure smoke
+          EOF
+          printf '%s\n' '-Xms1G' '-Xmx4G' > /tmp/drewcraft-structure-smoke/user_jvm_args.txt
+          chmod +x /tmp/drewcraft-structure-smoke/run.sh
+
+      - name: Boot, inspect active datapacks, and stop cleanly
+        working-directory: /tmp/drewcraft-structure-smoke
+        run: |
+          set -euo pipefail
+          mkfifo server.stdin
+          exec 3<>server.stdin
+          bash ./run.sh nogui < server.stdin > server.log 2>&1 &
+          PID=$!
+          READY=0
+          for i in $(seq 1 120); do
+            if grep -q 'Done (' server.log 2>/dev/null; then READY=1; break; fi
+            if ! kill -0 "$PID" 2>/dev/null; then
+              echo 'Server exited before readiness'; cat server.log; exit 1
+            fi
+            sleep 5
+          done
+          if [ "$READY" -ne 1 ]; then
+            echo 'Timed out waiting for readiness'; tail -n 300 server.log; kill "$PID" || true; exit 1
+          fi
+          printf 'datapack list enabled\n' >&3
+          sleep 3
+          printf 'stop\n' >&3
+          for i in $(seq 1 60); do
+            if ! kill -0 "$PID" 2>/dev/null; then break; fi
+            sleep 2
+          done
+          if kill -0 "$PID" 2>/dev/null; then
+            echo 'Server did not stop cleanly'; kill "$PID" || true; exit 1
+          fi
+          wait "$PID"
+          grep -q "Dependency overrides for mod 'dungeons_arise'" server.log
+          grep -q 'mod/drewcraft:data/drewcraft/datapacks/source_worldgen' server.log
+          ! grep -Eqi 'Mod loading has failed|Failed to start the minecraft server|Missing or unsupported mandatory dependencies|Failed to load registries' server.log
+
+      - name: Upload runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: source-structure-smoke-evidence
+          if-no-files-found: warn
+          path: |
+            /tmp/drewcraft-structure-smoke/server.log
+            /tmp/drewcraft-structure-smoke/logs/**
+            /tmp/drewcraft-structure-smoke/crash-reports/**
