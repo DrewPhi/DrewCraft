@@ -2,154 +2,101 @@
 
 **Updated:** 2026-09-12  
 **Protocol:** `docs/DEVELOPMENT_BREAKPOINTS.md`  
-**Last completed breakpoint:** **BP7 — Strategic herds + local-spawn coexistence**  
-**Next breakpoint:** **BP8 — Production world + deployment + release/launcher convergence**
+**Last completed breakpoint:** **BP8 — Production world + deployment + release/launcher convergence**  
+**Next breakpoint:** **BP9 — Cross-system scale, failure, recovery, and performance hardening**
 
-## BP7 status — REACHED
+## BP8 status — REACHED
 
-BP7 is complete at implementation/compile/unit/runtime-wiring scope. Detailed contract: `docs/HERDS_ECOLOGY_V1.md`.
+BP8 is complete at implementation/reproducibility/native-build/CI convergence scope. Detailed contract: `docs/BP8_RELEASE_OPERATIONS.md`.
+
+BP8 deliberately does **not** invent production evidence that requires a final visually selected Terrain Diffusion world, a real production host workload, or final signed public binaries. The machinery for collecting and enforcing that evidence is complete; BP9/BP10 own the expensive real-world gates.
 
 ## Implemented
 
-### Explicit strategic wildlife only
+### One immutable release truth
 
-DrewCraft does **not** scan or absorb existing Minecraft animals into strategic herds.
+- `release-manifest.json` is the one client/server application contract.
+- `live.json` is only the stable-channel pointer to an immutable manifest.
+- Client/server layouts derive from one verified source; identical files collapse to `common`.
+- Every managed file has side/path/size/SHA-256/acquisition URL.
+- DrewCraft's own compiled NeoForge mod is explicitly injected and hash-recorded into both verified sides.
+- Exact provider artifacts are matched by locked SHA and use official CurseForge/Modrinth acquisition URLs when available; DrewCraft does not need to rehost them.
+- Public payload packaging omits provider-backed artifacts and includes only DrewCraft/source-built/runtime-owned content, manifest/evidence, and checksums.
 
-`WildHerdDescriptor` explicitly defines one persistent migration population using:
+### Complete server application + safe updater
 
-- dimension;
-- species entity ID;
-- origin and destination;
-- represented count;
-- effective movement speed.
+- The exact SHA-verified NeoForge 21.1.250 installer is used to construct a full immutable server application (`run.sh`, libraries, verified mods/config).
+- Persistent `world` and `logs` are excluded from application releases.
+- Initial 12 GB host policy is `-Xms4G/-Xmx8G`.
+- `infra/serverctl.py` stages and verifies releases, checks world compatibility before activation, makes a checksummed pre-update backup, atomically switches `current`, health-checks, and rolls back application identity on failure.
+- Failed application rollout never blindly restores an older world.
+- Failed first deployment leaves no fake active application; failed upgrades restore matching pointer/health/active-release metadata.
+- Backup restore verifies checksum and refuses non-empty targets; automated acceptance restores to a clean separate root.
 
-Its stable UUID is deterministic from dimension + species + migration endpoints. `WildHerdRegistration` is idempotent and cannot reset an already-moving or casualty-bearing herd if the same descriptor is presented again.
+### Production world pipeline
 
-Strategic herd groups use:
+- `world/production-world.plan.json` owns world identity/revision and `generationPackVersion = drewcraft-worldgen-1`.
+- Final production seed/radius remain intentionally unset until measured and visually reviewed.
+- Approved experiment radii: 4096 / 8192 / 12288 blocks.
+- `tools/evaluate_world_candidates.py` refuses to lock a candidate unless generation/disk/archive/backup/restore/restart measurements, clean restore, archive SHA, terrain-quality review, source distribution, herd-corridor review, and generation-pack identity all pass.
+- `tools/world_seed_index.py` converts an offline generated-structure index into exact strategic source/core/herd seeds.
+- Generic Source Core placement is deterministic: **horizontal center -> nearest accessible interior floor**.
+- Runtime seed import validates world identity, never scans distant structures/animals, handles already-loaded spawn chunks, and never force-loads source chunks.
+- `tools/world_bundle.py` stamps, hashes, archives, validates, and clean-restores world identity.
 
-- `StrategicGroupType.HERD`;
-- faction `drewcraft:wildlife`;
-- `MIGRATION_ROUTE` target knowledge;
-- no hostile `SourceRecord` or Source Core;
-- the existing BP1/BP2/BP3 route, persistence, materialization, casualty, and restart machinery.
+### Production-host contract
 
-This means naturally spawned, bred, named, leashed, tamed/player-owned, penned/farmed, spawner-created, or mod-created ordinary animals are never silently converted into DrewCraft strategic population.
+- First benchmark target is Ubuntu ARM64 / OCI `VM.Standard.A1.Flex` / 2 OCPU / 12 GB, fixed size, no autoscaling.
+- Host bootstrap creates a non-root DrewCraft service, separated app/persistent trees, systemd Minecraft service, and read-only health service.
+- Native ARM64 CI compiles/tests the DrewCraft mod and production jar.
+- If representative BP9 workload misses the target, the required outcome is explicit `MIGRATE`, not silent cloud scaling.
 
-### Lightweight migration
+### One-click Windows + Apple Silicon launcher
 
-A distant herd remains a single strategic record following its cached coarse route. It does not load chunks, run Minecraft animal AI, or create entities while nobody is near it.
+- Exact Java 21 and Prism runtime archives are pinned by URL/size/SHA per platform.
+- Bootstrapper stages/verifies updates atomically and reuses already-valid unchanged files.
+- Real Prism instance metadata is written (`instance.cfg` + `mmc-pack.json`) with exact Minecraft 1.21.1 + NeoForge 21.1.250.
+- Microsoft account state stays in persistent Prism data, outside versioned pack instances.
+- User screenshots/resource packs/shader packs/saves/options are preserved where not pack-managed.
+- Repair validates both the local immutable release cache and the actual Prism instance.
+- Server health/protocol/pack compatibility is checked before launch.
+- Native CI builds `DrewCraft-Windows.exe` and Apple Silicon `DrewCraft-macOS.dmg`.
+- macOS CI proves arm64 + ad-hoc/development signature structure; production Apple signing/notarization remains an RC gate.
 
-Near players it uses the existing bounded tactical encounter system:
+### Reproducible release-candidate workflow
 
-- default active cap remains **64 entities per encounter**;
-- remaining represented animals stay abstract;
-- confirmed deaths decrement the herd exactly once;
-- survivors collapse back into the same herd record;
-- save/restart preserves migration target, route, casualties, and encounter authority.
+`.github/workflows/release-candidate-build.yml` can rebuild the exact external profile plus Terrain Diffusion source build, compile/inject DrewCraft, install exact NeoForge, assemble the complete server application, create one provider-aware release manifest, independently verify both client/server trees, and emit a publishable candidate payload without a developer manually zipping a local Minecraft folder.
 
-### Local ecology isolation
+## BP8 automated acceptance
 
-DrewCraft does not install or replace the normal Minecraft spawn pipeline.
+`.github/workflows/bp8-convergence.yml` runs five independent jobs:
 
-The BP7 architecture guard fails if strategic code begins referencing:
+1. all `test_bp8_*.py` release/world/update/repair/provider/payload invariants + workflow syntax parsing;
+2. real SHA-verified NeoForge `--installServer` + complete server-app assembly;
+3. native ARM64 Java + DrewCraft `test build` + production-jar proof;
+4. real locked Java/Prism + Windows one-click EXE build;
+5. real locked Java/Prism + native Apple Silicon app/DMG build.
 
-- global `MobSpawnEvent` handling;
-- `NaturalSpawner` replacement;
-- `SpawnPlacements` rewriting;
-- `BaseSpawner` manipulation.
+The earlier dedicated-server/full-pack baseline, provider-hash evidence, and manifest graph remain valid because BP8 did not change the locked external dependency set.
 
-The existing `EntityJoinLevelEvent` hook remains validation-only for entities that already carry DrewCraft strategic tags. Untagged entities return before any cancellation path.
+## Intentionally deferred real-world evidence
 
-Therefore strategic caps do not quota ordinary night/cave mobs, livestock, mob farms, or vanilla/modded spawners.
+These are **not** claimed complete by BP8:
 
-### Independent herd kill switch
+- final Terrain Diffusion seed/radius and real production world archive;
+- visual approval of final terrain/source/herd geography;
+- representative OCI A1 Minecraft workload benchmark (`PASS` or `MIGRATE`);
+- actual independent/off-host production backup drill;
+- real friend-machine Windows/macOS install/login/update/join observation;
+- Apple Developer signing/notarization;
+- public stable binaries and `https://drewphi.github.io/DrewCraft/live.json` promotion.
 
-`features.strategicHerds` independently controls strategic wildlife.
+Those are BP9/BP10 acceptance work. The current public Pages repository does not yet contain a live DrewCraft release, so BP8 does not publish a broken pointer merely to claim distribution is live.
 
-When disabled:
+## Next: BP9
 
-- herd records remain persistent;
-- herd coarse movement pauses;
-- new herd materialization is disabled;
-- currently materialized DrewCraft-tagged herd copies reconcile back into their strategic herd;
-- ordinary animals/spawns remain untouched.
+On the next **"go"**, begin BP9 cross-system scale/failure/recovery hardening using the BP8 operational contract.
 
-### Admin/debug surface
+BP9 must generate/select/freeze the real production-world candidate, restore/deploy it with an exact release, benchmark the fixed-size host, exercise the defining systems together under representative multiplayer load, stress crash/restart/backup/recovery behavior, and gather the real client/host performance evidence required before RC freeze.
 
-```text
-/drewcraft herd create-test <species> <count>
-/drewcraft herd list
-/drewcraft herd ecology
-```
-
-`create-test` seeds an explicit 2,048-block diagnostic migration and respects the herd kill switch. Production V1 herd locations/species/counts will be supplied by BP8 production-world tooling rather than player-position discovery.
-
-## BP7 acceptance evidence
-
-The representative automated herd proof uses an **80-cow** strategic herd:
-
-```text
-80 strategic cows
-        |
-abstract migration begins
-        v
-player-near encounter
-        v
-64 active / 16 abstract
-        |
-10 confirmed deaths
-        v
-70 strategic survivors / 54 active
-        |
-next wave = 10 (64-active ceiling)
-        |
-save + restart
-        v
-same HERD + migration mission + 70 survivors + 54 active reservations
-        |
-reconcile/dematerialize
-        v
-70 strategic survivors, TRAVELING again
-```
-
-Additional focused evidence proves:
-
-- deterministic stable herd identity;
-- idempotent herd registration does not reroute/reset a living herd;
-- `MIGRATION_ROUTE` mission persistence;
-- shared BP3 bounded wave/casualty semantics;
-- normal spawn-system classes/events are not intercepted by DrewCraft;
-- untagged entity joins cannot be cancelled by strategic stale-entity validation;
-- herd kill switch gates only HERD strategic movement/materialization and never scans ordinary animals.
-
-### CI
-
-- final BP7 code/test head: **`dfa507d0ac9c330c16897afe19f88467c06784a6`**
-- DrewCraft mod CI: **run `34730837899` — SUCCESS**
-- job `build-and-test` — **SUCCESS**
-- command: `gradle -p mods/drewcraft test build --stacktrace --no-daemon`
-
-The earlier BP7 test run `34730632483` correctly exposed an acceptance-test mistake: after 10 deaths, 54 active survivors leave only 10 slots under the 64-active cap, not 16. The assertion was corrected and the final suite passed.
-
-## Important deferred acceptance
-
-BP8 must choose and seed the actual production-world herd species, counts, and migration corridors.
-
-BP9/BP10 still need representative in-world multiplayer observation of:
-
-- a large herd migrating/materializing in the final Terrain Diffusion world;
-- normal night/cave hostile spawning;
-- a representative mob farm;
-- ordinary vanilla/modded spawners.
-
-Those are final-pack observational acceptance items; the BP7 implementation deliberately does not modify those systems.
-
-Optional richer ownership behavior for an animal that began as a materialized strategic herd member (for example permanently converting it to local livestock when captured/named) is not required for V1 and remains deferred.
-
-## Next: BP8
-
-On the next **"go"**, begin **BP8 — production world + deployment + release/launcher convergence**.
-
-BP8 must converge the production Terrain Diffusion world/pregeneration and real hostile-source/herd seeding, production host decision, immutable client/server release manifest, staged server update/backup/rollback flow, off-host restore proof, and one-click Windows + Apple Silicon macOS install/update/repair paths.
-
-Stop and report again when BP8 passes. Do not begin BP9 scale/failure/recovery hardening until the user says **"go"** after that report.
+Stop and report again when BP9 passes. Do not begin BP10 release-candidate hard acceptance or tag `1.0.0` until the user says **"go"** after BP9.
