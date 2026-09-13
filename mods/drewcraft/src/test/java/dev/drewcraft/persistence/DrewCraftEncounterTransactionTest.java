@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import net.minecraft.nbt.CompoundTag;
 import org.junit.jupiter.api.Test;
 
@@ -69,6 +73,37 @@ class DrewCraftEncounterTransactionTest {
         assertEquals(63, restoredGroup.composition().get("minecraft:zombie"));
         assertEquals(StrategicGroupState.TRAVELING, restoredGroup.state());
         assertTrue(restored.strategicEncounters().isEmpty());
+    }
+
+    @Test
+    void simultaneousApproachesReserveExactlyOneEncounter() throws Exception {
+        DrewCraftSavedData data = emptyData();
+        StrategicGroup group = hundredZombieGroup();
+        data.upsertStrategicGroup(group);
+        CountDownLatch ready = new CountDownLatch(2);
+        CountDownLatch start = new CountDownLatch(1);
+
+        try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+            Future<DrewCraftSavedData.BeginEncounterResult> first = executor.submit(() -> {
+                ready.countDown();
+                start.await();
+                return data.beginStrategicEncounter(group.groupId(), 50L);
+            });
+            Future<DrewCraftSavedData.BeginEncounterResult> second = executor.submit(() -> {
+                ready.countDown();
+                start.await();
+                return data.beginStrategicEncounter(group.groupId(), 50L);
+            });
+            ready.await();
+            start.countDown();
+
+            DrewCraftSavedData.BeginEncounterResult a = first.get();
+            DrewCraftSavedData.BeginEncounterResult b = second.get();
+            assertEquals(a.encounter().encounterId(), b.encounter().encounterId());
+            assertEquals(1, (a.created() ? 1 : 0) + (b.created() ? 1 : 0));
+            assertEquals(1, data.strategicEncounters().size());
+            assertEquals(StrategicGroupState.MATERIALIZED, group.state());
+        }
     }
 
     @Test
