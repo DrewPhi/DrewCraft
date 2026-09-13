@@ -9,12 +9,14 @@ on:
       - 'tools/release_contract.py'
       - 'tools/build_release_manifest.py'
       - 'tools/assemble_release_layout.py'
+      - 'tools/assemble_server_application.py'
       - 'tools/evaluate_world_candidates.py'
       - 'tools/world_seed_index.py'
       - 'tools/world_bundle.py'
       - 'world/**'
-      - 'tests/test_bp8_release_ops.py'
+      - 'tests/test_bp8_*.py'
       - 'pack/manifest/pack.yaml'
+      - 'pack/manifest/platform.yaml'
       - 'mods/drewcraft/**'
       - '.github/workflows/bp8-convergence.yml'
   workflow_dispatch:
@@ -31,12 +33,62 @@ jobs:
         with:
           python-version: '3.12'
       - name: Release/deploy/world proofs
-        run: python -m unittest -v tests/test_bp8_release_ops.py
+        run: python -m unittest -v tests/test_bp8_release_ops.py tests/test_bp8_server_application.py
       - name: Validate JSON locks/plans
         run: |
           python -m json.tool launcher/runtime-lock.json >/dev/null
           python -m json.tool world/production-world.plan.json >/dev/null
           python -m json.tool world/source-mappings.json >/dev/null
+
+  server-application-layout:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install YAML reader
+        run: python -m pip install --disable-pip-version-check PyYAML==6.0.2
+      - name: Download and verify pinned NeoForge installer
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, urllib.request, yaml
+          loader = yaml.safe_load(pathlib.Path('pack/manifest/platform.yaml').read_text('utf-8'))['loader']
+          out = pathlib.Path('/tmp/neoforge-installer.jar')
+          with urllib.request.urlopen(urllib.request.Request(loader['installer_url'], headers={'User-Agent':'DrewCraft-BP8/1'}), timeout=180) as response:
+              out.write_bytes(response.read())
+          got = hashlib.sha256(out.read_bytes()).hexdigest()
+          assert got == loader['installer_sha256'], (got, loader['installer_sha256'])
+          print('installer sha256', got)
+          PY
+      - name: Build exact NeoForge server runtime
+        run: |
+          rm -rf /tmp/neoforge-runtime
+          mkdir -p /tmp/neoforge-runtime
+          java -jar /tmp/neoforge-installer.jar --installServer /tmp/neoforge-runtime
+          test -f /tmp/neoforge-runtime/run.sh
+          test -d /tmp/neoforge-runtime/libraries
+      - name: Assemble immutable DrewCraft server application
+        run: |
+          mkdir -p build/fake-verified-server/mods build/fake-verified-server/config
+          printf 'verified DrewCraft mod\n' > build/fake-verified-server/mods/drewcraft.jar
+          printf 'managed=true\n' > build/fake-verified-server/config/drewcraft.toml
+          printf '{}\n' > build/fake-verified-server/drewcraft-layout.json
+          python tools/assemble_server_application.py \
+            --runtime /tmp/neoforge-runtime \
+            --pack build/fake-verified-server \
+            --output build/server-application
+          test -f build/server-application/run.sh
+          test -d build/server-application/libraries
+          test -f build/server-application/mods/drewcraft.jar
+          test -f build/server-application/eula.txt
+          grep -q -- '-Xmx8G' build/server-application/user_jvm_args.txt
+          test ! -e build/server-application/world
+          test ! -e build/server-application/logs
 
   server-arm64:
     runs-on: ubuntu-24.04-arm
