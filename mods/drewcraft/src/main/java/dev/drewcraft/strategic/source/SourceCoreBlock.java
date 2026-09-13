@@ -1,6 +1,5 @@
 package dev.drewcraft.strategic.source;
 
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +18,7 @@ public final class SourceCoreBlock extends Block {
 
     @Override
     public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state,
-                              @Nullable BlockEntity blockEntity, ItemStack tool) {
+                              BlockEntity blockEntity, ItemStack tool) {
         super.playerDestroy(level, player, pos, state, blockEntity, tool);
         if (level instanceof ServerLevel serverLevel) {
             SourceCoreRuntime.clearAt(serverLevel, pos, "PLAYER_BREAK", player.getGameProfile().getName());
