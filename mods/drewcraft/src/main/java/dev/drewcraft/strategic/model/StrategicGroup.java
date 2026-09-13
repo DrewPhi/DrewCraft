@@ -9,7 +9,7 @@ import java.util.UUID;
 
 /** Persistent authority for an important unloaded population. Contains no Minecraft entities. */
 public final class StrategicGroup {
-    public static final int CURRENT_SCHEMA_VERSION = 2;
+    public static final int CURRENT_SCHEMA_VERSION = 3;
 
     private final UUID groupId;
     private final String factionId;
@@ -18,26 +18,52 @@ public final class StrategicGroup {
     private final LinkedHashMap<String, Integer> composition;
     private StrategicPosition position;
     private StrategicRoute route;
+    private StrategicMission mission;
     private final double movementSpeedBlocksPerSecond;
     private int totalStrength;
     private StrategicGroupState state;
     private long lastSimulatedGameTime;
 
+    /** Backward-compatible constructor for pre-BP5 callers; mission is recorded as legacy route knowledge. */
     public StrategicGroup(UUID groupId, String factionId, StrategicGroupType groupType, UUID sourceId,
                           StrategicPosition position, StrategicRoute route, double movementSpeedBlocksPerSecond,
                           Map<String, Integer> composition, int totalStrength, StrategicGroupState state,
                           long lastSimulatedGameTime) {
+        this(groupId, factionId, groupType, sourceId, position, route,
+                StrategicMission.legacy(route.destination(), lastSimulatedGameTime),
+                movementSpeedBlocksPerSecond, composition, totalStrength, state, lastSimulatedGameTime);
+    }
+
+    public StrategicGroup(UUID groupId, String factionId, StrategicGroupType groupType, UUID sourceId,
+                          StrategicPosition position, StrategicRoute route, StrategicMission mission,
+                          double movementSpeedBlocksPerSecond, Map<String, Integer> composition,
+                          int totalStrength, StrategicGroupState state, long lastSimulatedGameTime) {
         this.groupId = Objects.requireNonNull(groupId, "groupId");
         this.factionId = requireNonBlank(factionId, "factionId");
         this.groupType = Objects.requireNonNull(groupType, "groupType");
         this.sourceId = sourceId;
         this.position = Objects.requireNonNull(position, "position");
         this.route = Objects.requireNonNull(route, "route");
-        if (!position.dimension().equals(route.destination().dimension())) throw new IllegalArgumentException("group position and route must share a dimension");
-        if (!Double.isFinite(movementSpeedBlocksPerSecond) || movementSpeedBlocksPerSecond <= 0.0) throw new IllegalArgumentException("movement speed must be finite and positive");
+        this.mission = Objects.requireNonNull(mission, "mission");
+        if (!position.dimension().equals(route.destination().dimension())) {
+            throw new IllegalArgumentException("group position and route must share a dimension");
+        }
+        if (!mission.target().dimension().equals(position.dimension())) {
+            throw new IllegalArgumentException("mission target dimension must match group dimension");
+        }
+        if (!mission.target().equals(route.destination())) {
+            throw new IllegalArgumentException("mission target must equal route destination");
+        }
+        if (!Double.isFinite(movementSpeedBlocksPerSecond) || movementSpeedBlocksPerSecond <= 0.0) {
+            throw new IllegalArgumentException("movement speed must be finite and positive");
+        }
         this.movementSpeedBlocksPerSecond = movementSpeedBlocksPerSecond;
         this.composition = sanitizeComposition(composition);
         if (totalStrength < 0) throw new IllegalArgumentException("totalStrength must be non-negative");
+        int compositionTotal = this.composition.values().stream().mapToInt(Integer::intValue).sum();
+        if (compositionTotal != totalStrength) {
+            throw new IllegalArgumentException("composition total " + compositionTotal + " != totalStrength " + totalStrength);
+        }
         this.totalStrength = totalStrength;
         this.state = Objects.requireNonNull(state, "state");
         this.lastSimulatedGameTime = Math.max(0L, lastSimulatedGameTime);
@@ -56,6 +82,7 @@ public final class StrategicGroup {
     public StrategicPosition position() { return position; }
     public StrategicPosition destination() { return route.destination(); }
     public StrategicRoute route() { return route; }
+    public StrategicMission mission() { return mission; }
     public double movementSpeedBlocksPerSecond() { return movementSpeedBlocksPerSecond; }
     public Map<String, Integer> composition() { return Collections.unmodifiableMap(new LinkedHashMap<>(composition)); }
     public int totalStrength() { return totalStrength; }
@@ -64,8 +91,11 @@ public final class StrategicGroup {
 
     public void assignRoute(StrategicRoute solvedRoute, long gameTime) {
         Objects.requireNonNull(solvedRoute, "solvedRoute");
-        if (!position.dimension().equals(solvedRoute.destination().dimension())) throw new IllegalArgumentException("new route dimension does not match group position");
+        if (!position.dimension().equals(solvedRoute.destination().dimension())) {
+            throw new IllegalArgumentException("new route dimension does not match group position");
+        }
         route = solvedRoute;
+        mission = StrategicMission.legacy(solvedRoute.destination(), gameTime);
         state = solvedRoute.arrived() ? StrategicGroupState.ARRIVED : StrategicGroupState.TRAVELING;
         lastSimulatedGameTime = Math.max(0L, gameTime);
     }
@@ -92,10 +122,7 @@ public final class StrategicGroup {
         state = resumeState;
     }
 
-    /**
-     * Apply one confirmed tactical death. Returns false if the requested type has no remaining
-     * strategic member, which protects the authoritative count from underflow or duplicate events.
-     */
+    /** Apply one confirmed tactical death exactly once through encounter authority. */
     public boolean applyCasualty(String entityTypeId) {
         String id = requireNonBlank(entityTypeId, "entityTypeId");
         Integer count = composition.get(id);
@@ -112,7 +139,9 @@ public final class StrategicGroup {
     }
 
     public AdvanceResult advanceToGameTime(long currentGameTime, double maxCatchupSeconds) {
-        if (!Double.isFinite(maxCatchupSeconds) || maxCatchupSeconds < 0.0) throw new IllegalArgumentException("maxCatchupSeconds must be finite and non-negative");
+        if (!Double.isFinite(maxCatchupSeconds) || maxCatchupSeconds < 0.0) {
+            throw new IllegalArgumentException("maxCatchupSeconds must be finite and non-negative");
+        }
         if (state != StrategicGroupState.TRAVELING || currentGameTime <= lastSimulatedGameTime) return AdvanceResult.none();
         double rawElapsedSeconds = (currentGameTime - lastSimulatedGameTime) / 20.0;
         double elapsedSeconds = Math.min(rawElapsedSeconds, maxCatchupSeconds);
@@ -122,8 +151,12 @@ public final class StrategicGroup {
     }
 
     public AdvanceResult advanceBySeconds(double elapsedSeconds, double maxCatchupSeconds) {
-        if (!Double.isFinite(elapsedSeconds) || elapsedSeconds < 0.0) throw new IllegalArgumentException("elapsedSeconds must be finite and non-negative");
-        if (!Double.isFinite(maxCatchupSeconds) || maxCatchupSeconds < 0.0) throw new IllegalArgumentException("maxCatchupSeconds must be finite and non-negative");
+        if (!Double.isFinite(elapsedSeconds) || elapsedSeconds < 0.0) {
+            throw new IllegalArgumentException("elapsedSeconds must be finite and non-negative");
+        }
+        if (!Double.isFinite(maxCatchupSeconds) || maxCatchupSeconds < 0.0) {
+            throw new IllegalArgumentException("maxCatchupSeconds must be finite and non-negative");
+        }
         if (state != StrategicGroupState.TRAVELING) return AdvanceResult.none();
         boolean clamped = elapsedSeconds > maxCatchupSeconds;
         return advanceSecondsInternal(Math.min(elapsedSeconds, maxCatchupSeconds), clamped);
