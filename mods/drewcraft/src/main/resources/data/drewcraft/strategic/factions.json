@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "factions": [
+    {
+      "id": "drewcraft:test_hostile",
+      "templates": [
+        {"id":"drewcraft:test_patrol","groupType":"PATROL","sourceClasses":["TEST"],"strengthMultiplier":1,"targetPolicy":"LOCAL_PATROL","minDistanceBlocks":384,"maxDistanceBlocks":640,"composition":{"minecraft:zombie":1.0}},
+        {"id":"drewcraft:test_horde","groupType":"HORDE","sourceClasses":["TEST"],"strengthMultiplier":2,"targetPolicy":"REGIONAL_ROAM","minDistanceBlocks":768,"maxDistanceBlocks":1280,"composition":{"minecraft:zombie":0.75,"minecraft:skeleton":0.25}},
+        {"id":"drewcraft:test_raid","groupType":"RAID","sourceClasses":["TEST"],"strengthMultiplier":3,"targetPolicy":"SCOUTED_EXPEDITION","minDistanceBlocks":1280,"maxDistanceBlocks":2048,"composition":{"minecraft:zombie":0.6,"minecraft:skeleton":0.4}},
+        {"id":"drewcraft:test_army","groupType":"ARMY","sourceClasses":["TEST"],"strengthMultiplier":4,"targetPolicy":"SCOUTED_EXPEDITION","minDistanceBlocks":2048,"maxDistanceBlocks":3072,"composition":{"minecraft:zombie":0.55,"minecraft:skeleton":0.35,"minecraft:witch":0.10}},
+        {"id":"drewcraft:test_reinforcement","groupType":"REINFORCEMENT","sourceClasses":["TEST"],"strengthMultiplier":2,"targetPolicy":"ALLIED_REINFORCEMENT","minDistanceBlocks":512,"maxDistanceBlocks":1024,"composition":{"minecraft:zombie":0.7,"minecraft:skeleton":0.3}}
+      ]
+    },
+    {
+      "id": "drewcraft:undead",
+      "templates": [
+        {"id":"drewcraft:undead_army","groupType":"ARMY","sourceClasses":["CITY","STRONGHOLD"],"strengthMultiplier":8,"targetPolicy":"SCOUTED_EXPEDITION","minDistanceBlocks":3072,"maxDistanceBlocks":6144,"composition":{"minecraft:zombie":0.50,"minecraft:skeleton":0.30,"minecraft:husk":0.10,"minecraft:witch":0.10}},
+        {"id":"drewcraft:undead_patrol","groupType":"PATROL","sourceClasses":["CAMP","FORT","CITY","RUIN","STRONGHOLD"],"strengthMultiplier":1,"targetPolicy":"LOCAL_PATROL","minDistanceBlocks":384,"maxDistanceBlocks":896,"composition":{"minecraft:zombie":0.65,"minecraft:skeleton":0.35}},
+        {"id":"drewcraft:undead_horde","groupType":"HORDE","sourceClasses":["CAMP","FORT","CITY","RUIN","STRONGHOLD"],"strengthMultiplier":2,"targetPolicy":"REGIONAL_ROAM","minDistanceBlocks":1024,"maxDistanceBlocks":2560,"composition":{"minecraft:zombie":0.70,"minecraft:skeleton":0.20,"minecraft:husk":0.10}},
+        {"id":"drewcraft:undead_raid","groupType":"RAID","sourceClasses":["FORT","CITY","RUIN","STRONGHOLD"],"strengthMultiplier":3,"targetPolicy":"SCOUTED_EXPEDITION","minDistanceBlocks":2048,"maxDistanceBlocks":4096,"composition":{"minecraft:zombie":0.55,"minecraft:skeleton":0.30,"minecraft:witch":0.15}},
+        {"id":"drewcraft:undead_reinforcement","groupType":"REINFORCEMENT","sourceClasses":["FORT","CITY","STRONGHOLD"],"strengthMultiplier":2,"targetPolicy":"ALLIED_REINFORCEMENT","minDistanceBlocks":512,"maxDistanceBlocks":1536,"composition":{"minecraft:zombie":0.65,"minecraft:skeleton":0.25,"minecraft:witch":0.10}}
+      ]
+    },
+    {
+      "id": "drewcraft:raiders",
+      "templates": [
+        {"id":"drewcraft:raider_army","groupType":"ARMY","sourceClasses":["CITY","STRONGHOLD"],"strengthMultiplier":8,"targetPolicy":"SCOUTED_EXPEDITION","minDistanceBlocks":3072,"maxDistanceBlocks":6144,"composition":{"minecraft:pillager":0.55,"minecraft:vindicator":0.25,"minecraft:witch":0.10,"minecraft:ravager":0.10}},
+        {"id":"drewcraft:raider_patrol","groupType":"PATROL","sourceClasses":["CAMP","FORT","CITY","STRONGHOLD"],"strengthMultiplier":1,"targetPolicy":"LOCAL_PATROL","minDistanceBlocks":384,"maxDistanceBlocks":896,"composition":{"minecraft:pillager":0.75,"minecraft:vindicator":0.25}},
+        {"id":"drewcraft:raider_horde","groupType":"HORDE","sourceClasses":["CAMP","FORT","CITY","STRONGHOLD"],"strengthMultiplier":2,"targetPolicy":"REGIONAL_ROAM","minDistanceBlocks":1024,"maxDistanceBlocks":2560,"composition":{"minecraft:pillager":0.60,"minecraft:vindicator":0.30,"minecraft:witch":0.10}},
+        {"id":"drewcraft:raider_raid","groupType":"RAID","sourceClasses":["FORT","CITY","STRONGHOLD"],"strengthMultiplier":3,"targetPolicy":"SCOUTED_EXPEDITION","minDistanceBlocks":2048,"maxDistanceBlocks":4096,"composition":{"minecraft:pillager":0.50,"minecraft:vindicator":0.30,"minecraft:witch":0.10,"minecraft:ravager":0.10}},
+        {"id":"drewcraft:raider_reinforcement","groupType":"REINFORCEMENT","sourceClasses":["FORT","CITY","STRONGHOLD"],"strengthMultiplier":2,"targetPolicy":"ALLIED_REINFORCEMENT","minDistanceBlocks":512,"maxDistanceBlocks":1536,"composition":{"minecraft:pillager":0.60,"minecraft:vindicator":0.30,"minecraft:witch":0.10}}
+      ]
+    }
+  ]
+}
