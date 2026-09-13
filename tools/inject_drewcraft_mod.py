@@ -13,6 +13,14 @@ import json
 import pathlib
 import shutil
 
+NON_PRODUCTION_SUFFIXES = (
+    "-sources.jar",
+    "-source.jar",
+    "-javadoc.jar",
+    "-tests.jar",
+    "-test.jar",
+)
+
 
 def sha256(path: pathlib.Path) -> str:
     h = hashlib.sha256()
@@ -58,7 +66,7 @@ def inject(pack_root: pathlib.Path, jar: pathlib.Path) -> dict:
 def production_jar(libs: pathlib.Path) -> pathlib.Path:
     jars = [
         path for path in sorted(libs.glob("*.jar"))
-        if not any(token in path.name.lower() for token in ("-sources", "-javadoc", "-dev", "-test", "-tests"))
+        if not path.name.lower().endswith(NON_PRODUCTION_SUFFIXES)
     ]
     if len(jars) != 1:
         raise RuntimeError(f"expected exactly one DrewCraft production jar, got {[p.name for p in jars]}")
