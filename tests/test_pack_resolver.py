@@ -26,7 +26,7 @@ def fixture_repo(root: Path) -> Path:
         "registries": {"foundation": "pack/manifest/upstreams.yaml", "performance": "pack/manifest/performance_candidates.yaml", "gameplay_spikes": "pack/manifest/mob_structure_candidates.yaml"},
         "profiles": {
             "base": {"foundation": ["a"], "performance_baseline": ["b"]},
-            "hostile_a": {"extends": ["base"], "gameplay_components": ["c"], "incompatible_profiles": ["hostile_b"]},
+            "hostile_a": {"extends": ["base"], "gameplay_components": ["c"], "incompatible_profiles": ["hostile_b"], "overlays": ["pack/overlays/hostile_a"]},
             "hostile_b": {"extends": ["base"], "gameplay_components": ["d"], "incompatible_profiles": ["hostile_a"]},
         },
     })
@@ -80,6 +80,42 @@ def test_layout_hash_verification(tmp_path: Path):
     jar.write_bytes(b"changed")
     with pytest.raises(pack.PackError, match="bad_hash"):
         pack.verify(root)
+
+
+def test_profile_overlay_is_resolved_built_and_hash_verified(tmp_path: Path):
+    root = fixture_repo(tmp_path)
+    overlay = root / "pack/overlays/hostile_a/config/fml.toml"
+    overlay.parent.mkdir(parents=True)
+    overlay.write_text('dependencyOverrides.c = ["-minecraft"]\n', encoding="utf-8")
+    profiles, catalog = loaded(root)
+    resolved = pack.resolve(["hostile_a"], profiles, catalog)
+    plan = pack.make_plan(resolved, catalog)
+    assert plan["overlays"] == ["pack/overlays/hostile_a"]
+    for dep in plan["dependencies"]:
+        artifact = tmp_path / f"{dep['id']}.jar"
+        artifact.write_bytes(dep["id"].encode())
+        dep["fetch"] = {
+            "status": "ok", "path": str(artifact), "filename": artifact.name,
+            "sha256": pack.sha256(artifact),
+        }
+    output = tmp_path / "output"
+    pack.build(plan, output, "client", root)
+    assert (output / "client/config/fml.toml").read_text(encoding="utf-8") == overlay.read_text(encoding="utf-8")
+    pack.verify(output / "client")
+    (output / "client/config/fml.toml").write_text("changed\n", encoding="utf-8")
+    with pytest.raises(pack.PackError, match="bad_hash"):
+        pack.verify(output / "client")
+
+
+def test_source_structure_profile_has_exact_worldgen_policy():
+    root = MODULE.parents[1]
+    profiles = pack.load_yaml(root / "pack/manifest/profiles.yaml")
+    catalog = pack.collect_catalog(root, profiles)
+    resolved = pack.resolve(["source_structures_first_spike"], profiles, catalog)
+    plan = pack.make_plan(resolved, catalog)
+    ids = {dep["id"] for dep in plan["dependencies"]}
+    assert {"towns_and_towers", "cristel_lib", "when_dungeons_arise"} <= ids
+    assert plan["overlays"] == ["pack/overlays/source_structures_first_spike"]
 
 
 def test_production_profile_resolves_moreculling_cloth_config_dependency():

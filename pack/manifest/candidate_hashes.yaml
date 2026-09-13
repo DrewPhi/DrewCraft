@@ -6,6 +6,27 @@ evidence:
   head_sha: d55c7458fba86fa55ac9cb07c5ebcea2679568fd
   generated_at: '2026-09-12'
 artifacts:
+  cristel_lib:
+    provider: modrinth
+    project_id: cl223EMc
+    version_id: Sduz0AWP
+    filename: cristellib-neoforge-1.21.1-3.1.7.jar
+    sha256: 11e05dbc97bd3fe1790bd6361747240e314c1dbf40b590ea20cc691dc8396c38
+    size: 583525
+  towns_and_towers:
+    provider: modrinth
+    project_id: DjLobEOy
+    version_id: DZxwgj6V
+    filename: t_and_t-fabric-neoforge-1.13.11.jar
+    sha256: 270fc0d1c99e54bc15f43d64bdaac60a90cb896efc357af624988e677136440f
+    size: 3553006
+  when_dungeons_arise:
+    provider: modrinth
+    project_id: 8DfbfASn
+    version_id: XIRJSFQ0
+    filename: DungeonsArise-1.21.1-2.1.68-release.jar
+    sha256: 7eee1eca7e3b2c6c1bede055934f391ae2e8349ffe33e106f451176d2cfcf0e4
+    size: 11842679
   alltheleaks:
     provider: curseforge
     project_id: 1091339

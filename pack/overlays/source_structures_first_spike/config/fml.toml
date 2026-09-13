@@ -1,0 +1,3 @@
+# WDA 2.1.68 is published for 1.21.1 but its embedded metadata accidentally
+# declares [1.21,1.21.1). FML 4.0.34+ supports scoped dependency softening.
+dependencyOverrides.dungeons_arise = ["-minecraft"]

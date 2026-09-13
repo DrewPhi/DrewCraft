@@ -203,7 +203,7 @@ def main() -> int:
 
         output = args.output_dir if args.output_dir.is_absolute() else root / args.output_dir
         for target in ("client", "server"):
-            pack.build(plan, output, target)
+            pack.build(plan, output, target, root)
             pack.verify(output / target)
 
         layouts = {}

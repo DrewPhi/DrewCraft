@@ -18,6 +18,191 @@
       "sourceClass": "CITY",
       "factionId": "drewcraft:undead",
       "notes": "Rare underground hostile city source; core placement still uses nearest accessible interior floor candidate."
+    },
+    {
+      "structureId": "dungeons_arise:illager_campsite",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders",
+      "notes": "Allow-listed WDA dungeon and low-tier raider source."
+    },
+    {
+      "structureId": "dungeons_arise:illager_fort",
+      "sourceClass": "FORT",
+      "factionId": "drewcraft:raiders",
+      "notes": "Allow-listed WDA dungeon and raider fort source."
+    },
+    {
+      "structureId": "dungeons_arise:bandit_towers",
+      "sourceClass": "FORT",
+      "factionId": "drewcraft:raiders",
+      "notes": "Allow-listed WDA dungeon and raider fort source."
+    },
+    {
+      "structureId": "dungeons_arise:plague_asylum",
+      "sourceClass": "RUIN",
+      "factionId": "drewcraft:undead",
+      "notes": "Allow-listed WDA dungeon and major undead ruin source."
+    },
+    {
+      "structureId": "dungeons_arise:shiraz_palace",
+      "sourceClass": "CITY",
+      "factionId": "drewcraft:undead",
+      "notes": "Allow-listed WDA dungeon and major undead city source."
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_badlands",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_beach",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_birch_forest",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_desert",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_flower_forest",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_forest",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_grove",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_jungle",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_meadow",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_mushroom_fields",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_ocean",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_old_growth_taiga",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_savanna",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_savanna_plateau",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_snowy_beach",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_snowy_plains",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_snowy_slopes",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_sparse_jungle",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_sunflower_plains",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_swamp",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_taiga",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_snowy_taiga",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:pillager_outpost_wooded_badlands",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:exclusives/pillager_outpost_mediterranean",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:exclusives/pillager_outpost_tudor",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:exclusives/pillager_outpost_classic",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:exclusives/pillager_outpost_oriental",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:exclusives/pillager_outpost_swedish",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:exclusives/pillager_outpost_iberian",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:exclusives/pillager_outpost_rustic",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
+    },
+    {
+      "structureId": "towns_and_towers:exclusives/pillager_outpost_nilotic",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders"
     }
   ]
 }

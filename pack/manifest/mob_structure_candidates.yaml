@@ -103,11 +103,13 @@ candidate_sets:
         verdict: control_source
         source_mapping: CAMP
       - id: towns_and_towers
-        provider: curseforge
-        project_id: 626761
+        provider: modrinth
+        project_id: "DjLobEOy"
+        version_id: "DZxwgj6V"
         candidate_version: "1.13.11"
         filename: "t_and_t-fabric-neoforge-1.13.11.jar"
-        file_id: 8657120
+        download_url: "https://cdn.modrinth.com/data/DjLobEOy/versions/DZxwgj6V/t_and_t-fabric-neoforge-1.13.11.jar"
+        sha256: "270fc0d1c99e54bc15f43d64bdaac60a90cb896efc357af624988e677136440f"
         release_status: release
         license: "Creative Commons 4.0 project listing; verify exact packaged terms during lock"
         verdict: high_priority_spike
@@ -118,11 +120,13 @@ candidate_sets:
           - "Do not treat every village as a hostile source."
           - "Evaluate as an alternative to CTOV unless non-overlap is demonstrated."
       - id: when_dungeons_arise
-        provider: curseforge
-        project_id: 442508
+        provider: modrinth
+        project_id: "8DfbfASn"
+        version_id: "XIRJSFQ0"
         candidate_version: "2.1.68"
         filename: "DungeonsArise-1.21.1-2.1.68-release.jar"
-        file_id: null
+        download_url: "https://cdn.modrinth.com/data/8DfbfASn/versions/XIRJSFQ0/DungeonsArise-1.21.1-2.1.68-release.jar"
+        sha256: "7eee1eca7e3b2c6c1bede055934f391ae2e8349ffe33e106f451176d2cfcf0e4"
         release_status: release
         license: "All Rights Reserved"
         verdict: top_major_source_spike
@@ -134,7 +138,8 @@ candidate_sets:
           - plague_asylum
           - shiraz_palace
         notes:
-          - "Exact 1.21.1 file ID/hash must be provider-verified before lock."
+          - "Exact Modrinth version and SHA-256 verified 2026-09-13."
+          - "The jar declares Minecraft [1.21,1.21.1), so the spike uses FML's dependency override; a real 1.21.1 runtime boot remains mandatory."
           - "Enable only the approved generation allow-list and disable every other WDA structure."
           - "Each enabled structure keeps its intended dungeon mobs and loot while also serving as a DrewCraft strategic source."
           - "Increase spacing aggressively."
@@ -198,11 +203,12 @@ candidate_sets:
 libraries:
   cristel_lib:
     display_name: "Cristel Lib"
-    provider: curseforge
-    project_id: 856996
-    file_id: 8241767
+    provider: modrinth
+    project_id: "cl223EMc"
+    version_id: "Sduz0AWP"
     candidate_version: "3.1.7"
     filename: "cristellib-neoforge-1.21.1-3.1.7.jar"
+    download_url: "https://cdn.modrinth.com/data/cl223EMc/versions/Sduz0AWP/cristellib-neoforge-1.21.1-3.1.7.jar"
     release_status: release
     side: common
     source_repository: "Cristelknight/Cristel-Lib"
@@ -212,7 +218,7 @@ libraries:
     notes:
       - "Library for structure configuration/runtime datapacks."
       - "Current 1.21.1 NeoForge candidate as of research snapshot."
-    sha256: null
+    sha256: "11e05dbc97bd3fe1790bd6361747240e314c1dbf40b590ea20cc691dc8396c38"
 
   lithostitched:
     display_name: "Lithostitched"

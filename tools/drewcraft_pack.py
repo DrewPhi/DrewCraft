@@ -127,6 +127,7 @@ def resolve(names: list[str], profiles_doc: dict[str, Any], catalog: dict[str, d
 
     roots: list[str] = []
     policies: list[str] = []
+    overlays: list[str] = []
     for name in expanded:
         p = profiles[name]
         for key in DEP_KEYS:
@@ -138,6 +139,10 @@ def resolve(names: list[str], profiles_doc: dict[str, Any], catalog: dict[str, d
             values = p.get(key) or []
             if isinstance(values, list):
                 policies += [str(x) for x in values]
+        profile_overlays = p.get("overlays") or []
+        if not isinstance(profile_overlays, list):
+            raise PackError(f"profile {name}: overlays must be a list")
+        overlays += [str(x) for x in profile_overlays]
 
     ordered: list[str] = []
     active: set[str] = set()
@@ -160,7 +165,12 @@ def resolve(names: list[str], profiles_doc: dict[str, Any], catalog: dict[str, d
         ordered.append(cid)
     for cid in dict.fromkeys(roots):
         visit(cid)
-    return {"profiles": expanded, "ordered_ids": ordered, "policies": policies}
+    return {
+        "profiles": expanded,
+        "ordered_ids": ordered,
+        "policies": policies,
+        "overlays": list(dict.fromkeys(overlays)),
+    }
 
 
 def exactness(a: dict[str, Any]) -> list[str]:
@@ -202,7 +212,8 @@ def make_plan(resolved: dict[str, Any], catalog: dict[str, dict[str, Any]]) -> d
     return {
         "schema_version": 1, "profiles": resolved["profiles"],
         "dependency_count": len(deps), "unresolved_identity_count": unresolved,
-        "policies": resolved["policies"], "dependencies": deps,
+        "policies": resolved["policies"], "overlays": resolved.get("overlays") or [],
+        "dependencies": deps,
     }
 
 
@@ -332,7 +343,7 @@ def side_allowed(side: str, target: str) -> bool:
     raise PackError(f"unknown target: {target}")
 
 
-def build(lock: dict[str, Any], output: Path, target: str) -> None:
+def build(lock: dict[str, Any], output: Path, target: str, repo_root: Path | None = None) -> None:
     root = output / target
     if root.exists():
         shutil.rmtree(root)
@@ -349,6 +360,26 @@ def build(lock: dict[str, Any], output: Path, target: str) -> None:
         dst = mods / f["filename"]
         shutil.copy2(src, dst)
         files.append({"id": dep["id"], "path": str(dst.relative_to(root)), "sha256": f["sha256"]})
+
+    repository = (repo_root or Path(__file__).resolve().parents[1]).resolve()
+    for overlay_value in lock.get("overlays") or []:
+        overlay = (repository / str(overlay_value)).resolve()
+        if repository not in overlay.parents or not overlay.is_dir():
+            raise PackError(f"invalid or missing profile overlay: {overlay_value}")
+        for src in sorted(p for p in overlay.rglob("*") if p.is_file()):
+            rel = src.relative_to(overlay)
+            if rel.parts[0] == "mods" or rel.as_posix() == "drewcraft-layout.json":
+                raise PackError(f"profile overlay cannot manage reserved path: {rel}")
+            dst = root / rel
+            if dst.exists():
+                raise PackError(f"profile overlays collide at: {rel}")
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            files.append({
+                "id": f"overlay:{overlay_value}",
+                "path": rel.as_posix(),
+                "sha256": sha256(dst),
+            })
     manifest = {"schema_version": 1, "target": target, "profiles": lock.get("profiles") or [], "files": files}
     (root / "drewcraft-layout.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -356,7 +387,11 @@ def build(lock: dict[str, Any], output: Path, target: str) -> None:
 def verify(root: Path) -> None:
     data = json.loads((root / "drewcraft-layout.json").read_text(encoding="utf-8"))
     expected = {f["path"]: f for f in data.get("files") or []}
-    actual = {str(p.relative_to(root)) for p in (root / "mods").iterdir() if p.is_file()}
+    actual = {
+        p.relative_to(root).as_posix()
+        for p in root.rglob("*")
+        if p.is_file() and p.name != "drewcraft-layout.json"
+    }
     missing = sorted(set(expected) - actual)
     unexpected = sorted(actual - set(expected))
     bad = [rel for rel, item in expected.items() if (root / rel).exists() and sha256(root / rel) != item["sha256"]]
@@ -404,7 +439,7 @@ def main() -> int:
             result = fetch(plan, cache, hydrated); write_json(result, args.output); return 2 if result["fetch_failures"] else 0
         if args.cmd == "build":
             lock = json.loads(args.lock.read_text()); out = args.output_dir if args.output_dir.is_absolute() else root / args.output_dir
-            build(lock, out, args.target); return 0
+            build(lock, out, args.target, root); return 0
         raise PackError(f"unhandled command: {args.cmd}")
     except PackError as exc:
         print(f"error: {exc}", file=sys.stderr); return 2
