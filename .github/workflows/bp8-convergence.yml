@@ -269,6 +269,7 @@ jobs:
       - name: Publish launcher version 0.1.2
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           if ! gh release view launcher-v0.1.2 >/dev/null 2>&1; then
             gh release create launcher-v0.1.2 \
