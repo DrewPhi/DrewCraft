@@ -19,13 +19,23 @@ class DrewCraftSavedDataTest {
         DrewCraftSavedData migrated = DrewCraftSavedData.load(old, null);
         assertEquals(1234L, migrated.lastTouchedGameTime());
         assertTrue(migrated.strategicGroups().isEmpty());
+        assertTrue(migrated.strategicEncounters().isEmpty());
+    }
+
+    @Test
+    void migratesSchemaTwoWithNoEncounterRegistry() {
+        CompoundTag old = new CompoundTag();
+        old.putInt("SchemaVersion", 2);
+        DrewCraftSavedData migrated = DrewCraftSavedData.load(old, null);
+        assertTrue(migrated.strategicGroups().isEmpty());
+        assertTrue(migrated.strategicEncounters().isEmpty());
     }
 
     @Test
     void strategicGroupsRoundTripThroughWorldState() {
-        CompoundTag emptyV2 = new CompoundTag();
-        emptyV2.putInt("SchemaVersion", DrewCraftSavedData.CURRENT_SCHEMA_VERSION);
-        DrewCraftSavedData data = DrewCraftSavedData.load(emptyV2, null);
+        CompoundTag emptyCurrent = new CompoundTag();
+        emptyCurrent.putInt("SchemaVersion", DrewCraftSavedData.CURRENT_SCHEMA_VERSION);
+        DrewCraftSavedData data = DrewCraftSavedData.load(emptyCurrent, null);
 
         StrategicGroup group = StrategicGroup.testGroup(
                 new StrategicPosition("minecraft:overworld", 0.0, 0.0),
@@ -43,6 +53,7 @@ class DrewCraftSavedDataTest {
         assertEquals(group.position(), restoredGroup.position());
         assertEquals(group.route().cursor(), restoredGroup.route().cursor());
         assertEquals(group.totalStrength(), restoredGroup.totalStrength());
+        assertTrue(restored.strategicEncounters().isEmpty());
     }
 
     @Test
