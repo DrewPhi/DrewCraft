@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "worldId": "drewcraft-production",
   "worldRevision": 1,
+  "generationPackVersion": "drewcraft-worldgen-1",
   "status": "candidate_selection_required",
   "minecraftVersion": "1.21.1",
   "neoforgeVersion": "21.1.250",
