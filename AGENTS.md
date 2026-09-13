@@ -14,14 +14,15 @@ Before making architectural or implementation changes, read these in order:
 6. `docs/V1_REMAINING_EXECUTION_PLAN.md` — detailed post-8B implementation plan through `1.0.0`
 7. `docs/STRATEGIC_WORLD_MODEL.md` — strategic hostile-source / roaming-force / herd behavior contract
 8. `docs/STRATEGIC_MATERIALIZATION.md` — strategic ↔ tactical transaction, wave, casualty, and restart contract
-9. `docs/SOURCE_CORE_SPEC.md` — exact hostile-source clearing/persistence semantics
-10. `docs/RADAR_V1.md` — current V1 radar scope and acceptance contract
-11. `docs/PERFORMANCE_STACK.md` — performance/optimization architecture
-12. `docs/MOD_STACK.md` — subsystem ownership / anti-redundancy policy
-13. `docs/UPSTREAM_DEPENDENCIES.md` — source, fork, licensing, and redistribution policy
-14. `pack/manifest/README.md` plus the machine-readable manifests under `pack/manifest/`
-15. `docs/PROJECT_SPEC.md`, `docs/SYSTEMS.md`, `docs/REPO_ARCHITECTURE.md`, and `docs/LAUNCHER_HOSTING.md`
-16. `docs/ROADMAP.md` — high-level roadmap only; current execution documents above win on conflicts
+9. `docs/STRATEGIC_SOURCES.md` — implemented hostile-source identity/production/clear contract
+10. `docs/SOURCE_CORE_SPEC.md` — product-level hostile-source clearing/persistence semantics
+11. `docs/RADAR_V1.md` — current V1 radar scope and acceptance contract
+12. `docs/PERFORMANCE_STACK.md` — performance/optimization architecture
+13. `docs/MOD_STACK.md` — subsystem ownership / anti-redundancy policy
+14. `docs/UPSTREAM_DEPENDENCIES.md` — source, fork, licensing, and redistribution policy
+15. `pack/manifest/README.md` plus the machine-readable manifests under `pack/manifest/`
+16. `docs/PROJECT_SPEC.md`, `docs/SYSTEMS.md`, `docs/REPO_ARCHITECTURE.md`, and `docs/LAUNCHER_HOSTING.md`
+17. `docs/ROADMAP.md` — high-level roadmap only; current execution documents above win on conflicts
 
 ## Breakpoint execution protocol
 
@@ -49,11 +50,12 @@ Strategic development has now completed:
 
 - **BP1** — persistent strategic groups + bounded coarse elapsed-time scheduler;
 - **BP2** — coarse terrain-cost routing, cached A*, ETA, and 10,000-block unloaded/restart proof;
-- **BP3** — transactional materialization/dematerialization, bounded waves, durable entity tags, idempotent casualties, restart recovery, and `100 → 63` proof.
+- **BP3** — transactional materialization/dematerialization, bounded waves, durable entity tags, idempotent casualties, restart recovery, and `100 → 63` proof;
+- **BP4** — persistent hostile sources, deterministic generated-geography identity, Source Core clearing, bounded source production, launch/clear race safety, and restart-permanent clearing.
 
-BP3 final code/test head is `974e2d25cdede7a5679340445bfc3d5471e36cd8`; DrewCraft mod CI run `34727614866` passed `test + build`. The simultaneous two-caller reservation proof also passed in run `34727505486`.
+BP4 final code/test head is `188fff9583d917aeb44fd8802987f0b51604b178`; DrewCraft mod CI run `34728862438` passed `test + build`.
 
-The next implementation breakpoint is **BP4 — hostile sources + permanent clearing**. Follow `docs/CURRENT_BREAKPOINT.md`, `docs/SOURCE_CORE_SPEC.md`, and the Stage 13/source sections of the remaining V1 plan. Do not begin BP5 faction/horde/army breadth until BP4 is reported and the user says **"go"** again.
+The next implementation breakpoint is **BP5 — factions, patrols, hordes, raids, and large armies**. Follow `docs/CURRENT_BREAKPOINT.md` and the BP5 section of `docs/DEVELOPMENT_BREAKPOINTS.md`. Do not begin BP6 siege planning until BP5 is reported and the user says **"go"** again.
 
 ## CI policy after baseline certification
 
@@ -93,10 +95,12 @@ During normal V1 development:
 - Materialized encounters have both per-encounter active caps and a global per-cycle spawn cap.
 - Siege planning only occurs for loaded encounters after ordinary navigation fails; it is bounded/cached and never a distant global simulation.
 - Important hostile groups occupy real strategic positions while unloaded. Do not implement attacks as arbitrary timed spawn events near players.
-- Hostile strategic sources are tied to real generated geography and persistent `SourceRecord`s.
-- The player-facing Source Core block is not itself authoritative state.
+- Hostile strategic sources are tied to deterministic generated geography and persistent `SourceRecord`s.
+- Source discovery/production must operate over explicit records/structure hooks; never add a recurring global chunk/structure scan.
+- The player-facing Source Core block is not itself authoritative state and has no portable BlockItem.
 - Legitimate Source Core destruction atomically persists `CLEARED`; replacing/moving/duplicating the block cannot reactivate or duplicate source authority.
 - Groups committed before source clearing remain real populations; no new group may commit after `CLEARED` becomes authoritative.
+- The source clear-versus-launch race is resolved through the source generation counter; do not bypass `commitSourceLaunch`.
 - Wild herds may use persistent strategic records, but named/domesticated/leashed/penned/player-owned animals must not be silently absorbed.
 - Sieges path normally first. Breaching is constrained to useful corridors; never implement indiscriminate nearest-block griefing.
 - Friends must not manually manage Java, NeoForge, or mod folders.
@@ -106,22 +110,21 @@ During normal V1 development:
 
 ## Development order from the current state
 
-`docs/V1_REMAINING_EXECUTION_PLAN.md` is the detailed execution contract. The shared strategic substrate through materialization is now complete. The remaining critical path is:
+`docs/V1_REMAINING_EXECUTION_PLAN.md` is the detailed execution contract. The strategic substrate through persistent source lifecycle is now complete. The remaining critical path is:
 
-1. **NEXT:** hostile-source registry + Source Core lifecycle/permanent clearing;
-2. data-driven patrols/hordes/raids/armies and bounded wave materialization;
-3. bounded path-first siege planner;
-4. strategic wild herds;
-5. normal local-spawn coexistence;
-6. cross-system gameplay scenarios;
-7. performance hardening;
-8. crash/persistence/backup/recovery hardening;
-9. V1 RC freeze;
-10. hard acceptance and `1.0.0`.
+1. **NEXT:** data-driven factions, patrols/hordes/raids/armies/reinforcements, explainable targets, large-army proof;
+2. bounded path-first siege planner;
+3. strategic wild herds;
+4. normal local-spawn coexistence;
+5. cross-system gameplay scenarios;
+6. performance hardening;
+7. crash/persistence/backup/recovery hardening;
+8. V1 RC freeze;
+9. hard acceptance and `1.0.0`.
 
-In parallel, advance production-world/pregeneration, production host/ARM benchmarking, immutable release artifacts, server update/backup tooling, and the Windows/Apple Silicon launcher. These converge at the RC freeze.
+In parallel, advance production-world/pregeneration including real source-template binding, production host/ARM benchmarking, immutable release artifacts, server update/backup tooling, and the Windows/Apple Silicon launcher. These converge at the RC freeze.
 
-Do not jump to army breadth, siege AI, or herds before BP4 source identity/clearing semantics pass.
+Do not jump to siege AI or herds before BP5 hostile-population breadth passes.
 
 ## Custom mod architecture
 
@@ -139,9 +142,9 @@ Every major custom subsystem should have:
 
 ## Strategic world contract
 
-`docs/STRATEGIC_WORLD_MODEL.md`, `docs/STRATEGIC_MATERIALIZATION.md`, `docs/SOURCE_CORE_SPEC.md`, and Stages 11-17 of `docs/V1_REMAINING_EXECUTION_PLAN.md` are authoritative.
+`docs/STRATEGIC_WORLD_MODEL.md`, `docs/STRATEGIC_MATERIALIZATION.md`, `docs/STRATEGIC_SOURCES.md`, `docs/SOURCE_CORE_SPEC.md`, and Stages 11-17 of `docs/V1_REMAINING_EXECUTION_PLAN.md` are authoritative.
 
-The strategic kernel provides stable IDs, coarse elapsed-time simulation, cached route/ETA state, persistent groups, transactional materialization/dematerialization, and casualty reconciliation. Loaded tactical behavior is replaceable; strategic identity and persistence are not.
+The strategic kernel provides stable IDs, coarse elapsed-time simulation, cached route/ETA state, persistent sources/groups, transactional materialization/dematerialization, source production/clearing, and casualty reconciliation. Loaded tactical behavior is replaceable; strategic identity and persistence are not.
 
 The central performance rule is:
 
@@ -160,10 +163,11 @@ The performance stack owns performance only; it never owns gameplay state or str
 - offline pregeneration remains the primary defense against live Terrain Diffusion worldgen cost;
 - strategic records remain the primary defense against ticking thousands of distant entities;
 - route caches and event-driven invalidation prevent constant distant pathfinding;
+- source scheduling processes bounded persistent records, not world scans;
 - materialized encounters have explicit active-entity/wave/global-spawn budgets;
 - cache radar products and terrain masks;
 - cap expensive siege planners and run them only for loaded blocked encounters;
-- measure p50/p95/p99 MSPT, memory/GC, route/scheduler/materialization/siege/radar timings, network, and representative client frame behavior;
+- measure p50/p95/p99 MSPT, memory/GC, route/scheduler/source/materialization/siege/radar timings, network, and representative client frame behavior;
 - use `spark` for profiling;
 - behavior-changing optimizers require separate evidence before promotion;
 - C2ME remains an isolated experiment unless correctness and speed are both proven.
