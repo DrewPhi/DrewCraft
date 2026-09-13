@@ -5,6 +5,7 @@ import dev.drewcraft.command.DrewCraftCommands;
 import dev.drewcraft.config.DrewCraftConfig;
 import dev.drewcraft.net.DrewCraftProtocol;
 import dev.drewcraft.persistence.DrewCraftSavedData;
+import dev.drewcraft.strategic.encounter.StrategicMaterializationRuntime;
 import dev.drewcraft.strategic.simulation.StrategicScheduler;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -25,6 +26,9 @@ public final class DrewCraft {
         modContainer.registerConfig(ModConfig.Type.SERVER, DrewCraftConfig.SPEC);
         NeoForge.EVENT_BUS.addListener(DrewCraftCommands::register);
         NeoForge.EVENT_BUS.addListener(StrategicScheduler::onServerTick);
+        NeoForge.EVENT_BUS.addListener(StrategicMaterializationRuntime::onServerTick);
+        NeoForge.EVENT_BUS.addListener(StrategicMaterializationRuntime::onLivingDeath);
+        NeoForge.EVENT_BUS.addListener(StrategicMaterializationRuntime::onEntityJoinLevel);
 
         LOGGER.info(
                 "DrewCraft integration platform {} loaded (protocol {}, persistence schema {})",
