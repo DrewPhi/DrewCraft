@@ -10,6 +10,7 @@ import queue
 import subprocess
 import sys
 import threading
+import time
 
 from drewcraft_bootstrap import converge, default_app_dir, launch
 
@@ -158,20 +159,28 @@ def _converge_with_progress(live_url: str, app_dir: pathlib.Path) -> dict:
     return result["state"]
 
 
+def _authenticate_and_launch(state: dict, app_dir: pathlib.Path, poll_interval: float = 0.5) -> int:
+    prism = state.get("prismExecutable")
+    if not prism:
+        raise RuntimeError("Prism runtime is not configured")
+    _message(
+        "DrewCraft Microsoft sign-in",
+        "Prism Launcher will open for secure Microsoft sign-in. DrewCraft will launch Minecraft automatically when sign-in finishes; you do not need to click the modpack.",
+    )
+    authentication = subprocess.Popen([prism, "--dir", state["prismRoot"]])
+    while _needs_login(state):
+        if authentication.poll() is not None:
+            raise RuntimeError("Microsoft sign-in was not completed. Open DrewCraft to try again.")
+        time.sleep(poll_interval)
+    return launch(app_dir)
+
+
 def main() -> int:
     app_dir = default_app_dir()
     with _single_instance(app_dir):
         state = _converge_with_progress(LIVE_URL, app_dir)
         if _needs_login(state):
-            _message(
-                "DrewCraft",
-                "DrewCraft is installed and up to date. Prism Launcher will open for the one-time Microsoft sign-in. After signing in, close Prism and open DrewCraft again.",
-            )
-            prism = state.get("prismExecutable")
-            if not prism:
-                raise RuntimeError("Prism runtime is not configured")
-            subprocess.Popen([prism, "--dir", state["prismRoot"]])
-            return 0
+            return _authenticate_and_launch(state, app_dir)
         return launch(app_dir)
 
 

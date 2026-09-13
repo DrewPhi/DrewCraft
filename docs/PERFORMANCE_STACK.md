@@ -45,7 +45,7 @@ These mods should enter the **Stage 2 compatibility stack** unless a concrete in
 - **Embeddium** — primary NeoForge client renderer optimization.
 - **ImmediatelyFast** — immediate-mode/entity/UI/particle rendering optimization.
 - **Entity Culling** — client-side occlusion culling for hidden entities and block entities.
-- **MoreCulling** — additional block/face/item culling. This complements Entity Culling rather than owning the same exact visibility mechanism, but the pair must still be visually tested with Create, MTS, Simple Clouds and Distant Horizons.
+- **MoreCulling** — additional block/face/item culling. This complements Entity Culling rather than owning the same exact visibility mechanism, but the pair must still be visually tested with Create, MTS, Simple Clouds and Distant Horizons. Its required Cloth Config API dependency is explicitly pinned in the production profile.
 
 ### Required libraries introduced by this suite
 

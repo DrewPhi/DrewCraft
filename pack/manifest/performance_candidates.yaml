@@ -278,9 +278,25 @@ baseline:
     source_repository: "FxMorin/MoreCulling"
     license: GPL-3.0
     role: "Additional block/face/item culling."
+    required_dependencies:
+      - cloth_config
     sha256: null
 
 libraries:
+  cloth_config:
+    display_name: "Cloth Config API"
+    provider: curseforge
+    project_id: 348521
+    file_id: 5729127
+    candidate_version: "15.0.140"
+    filename: "cloth-config-15.0.140-neoforge.jar"
+    release_status: release
+    side: client
+    source_repository: "shedaniel/cloth-config"
+    license: LGPL-3.0
+    role: "Required configuration API for MoreCulling."
+    sha256: null
+
   placebo:
     display_name: "Placebo"
     provider: curseforge

@@ -27,7 +27,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   release-contract:
@@ -250,3 +250,35 @@ jobs:
           name: DrewCraft-Linux-x86_64
           path: dist/DrewCraft-Linux.deb
           if-no-files-found: error
+
+  publish-launchers:
+    if: github.ref == 'refs/heads/main'
+    needs: [launcher-windows, launcher-macos-arm64, launcher-linux-x86_64]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: DrewCraft-*
+          path: dist
+          merge-multiple: true
+      - name: Verify public launcher filenames
+        run: |
+          test -f dist/DrewCraft-Windows.exe
+          test -f dist/DrewCraft-macOS.dmg
+          test -f dist/DrewCraft-Linux.deb
+      - name: Publish launcher version 0.1.2
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view launcher-v0.1.2 >/dev/null 2>&1; then
+            gh release create launcher-v0.1.2 \
+              --target "$GITHUB_SHA" \
+              --title "DrewCraft Launcher 0.1.2" \
+              --notes "Development launcher with one-click post-authentication launch, visible download progress, resumable installs, and Windows/macOS/Linux support." \
+              --prerelease
+          fi
+          gh release upload launcher-v0.1.2 \
+            dist/DrewCraft-Windows.exe \
+            dist/DrewCraft-macOS.dmg \
+            dist/DrewCraft-Linux.deb \
+            --clobber

@@ -12,7 +12,7 @@ This is the live execution overlay for DrewCraft V1. `docs/CURRENT_BREAKPOINT.md
 - Minecraft **1.21.1**
 - NeoForge **21.1.250**
 - Java **21**
-- external candidate stack: **34 dependencies = 33 exact provider artifacts + one exact Terrain Diffusion Plus source build**
+- external candidate stack: **35 dependencies = 34 exact provider artifacts + one exact Terrain Diffusion Plus source build**
 - provider hashes: **34724313143**
 - manifest graph: **34724313201**
 - dedicated-server baseline: **34704011609**

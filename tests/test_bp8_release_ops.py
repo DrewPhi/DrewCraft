@@ -21,6 +21,7 @@ def load_module(name, path):
 release_contract = load_module("release_contract", "tools/release_contract.py")
 serverctl = load_module("serverctl", "infra/serverctl.py")
 launcher = load_module("drewcraft_bootstrap", "launcher/drewcraft_bootstrap.py")
+launcher_entry = load_module("drewcraft_entry", "launcher/drewcraft_entry.py")
 world_index = load_module("world_seed_index", "tools/world_seed_index.py")
 world_bundle = load_module("world_bundle", "tools/world_bundle.py")
 release_layout = load_module("assemble_release_layout", "tools/assemble_release_layout.py")
@@ -192,6 +193,19 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         with mock.patch.object(launcher.platform, "system", return_value="Linux"), \
                 mock.patch.object(launcher.platform, "machine", return_value="x86_64"):
             self.assertEqual("linux-x86_64", launcher.platform_key())
+
+    def test_first_login_automatically_continues_into_drewcraft_instance(self):
+        state = {"prismExecutable": "/managed/prism", "prismRoot": "/managed/data"}
+        process = mock.Mock()
+        process.poll.return_value = None
+        with mock.patch.object(launcher_entry, "_message"), \
+                mock.patch.object(launcher_entry, "_needs_login", side_effect=[True, False]), \
+                mock.patch.object(launcher_entry.subprocess, "Popen", return_value=process) as popen, \
+                mock.patch.object(launcher_entry.time, "sleep"), \
+                mock.patch.object(launcher_entry, "launch", return_value=0) as launch_instance:
+            self.assertEqual(0, launcher_entry._authenticate_and_launch(state, self.tmp, poll_interval=0))
+        popen.assert_called_once_with(["/managed/prism", "--dir", "/managed/data"])
+        launch_instance.assert_called_once_with(self.tmp)
 
     def test_backup_checksum_clean_offhost_restore_and_world_bundle(self):
         manifest, _, _ = self.build_release()

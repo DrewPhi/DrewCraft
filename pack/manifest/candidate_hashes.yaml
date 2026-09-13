@@ -174,6 +174,13 @@ artifacts:
     filename: moreculling-neoforge-1.21.1-1.0.10.jar
     sha256: 008068af65deec86382b4fdde61e7f495e54861cc28d5a5b000c32b435213ed3
     size: 335699
+  cloth_config:
+    provider: curseforge
+    project_id: 348521
+    file_id: 5729127
+    filename: cloth-config-15.0.140-neoforge.jar
+    sha256: 65e722e0d98431a07c45f8bdd8d529a217cc8c175fde1740248bd5c1b4f3c0d4
+    size: 1163890
   mts_official_pack:
     provider: curseforge
     project_id: 292217

@@ -80,3 +80,14 @@ def test_layout_hash_verification(tmp_path: Path):
     jar.write_bytes(b"changed")
     with pytest.raises(pack.PackError, match="bad_hash"):
         pack.verify(root)
+
+
+def test_production_profile_resolves_moreculling_cloth_config_dependency():
+    root = MODULE.parents[1]
+    profiles = pack.load_yaml(root / "pack/manifest/profiles.yaml")
+    catalog = pack.collect_catalog(root, profiles)
+    resolved = pack.resolve(["stage2_base_performance"], profiles, catalog)
+    moreculling = resolved["ordered_ids"].index("moreculling")
+    cloth = resolved["ordered_ids"].index("cloth_config")
+    assert cloth < moreculling
+    assert catalog["cloth_config"]["side"] == "client"

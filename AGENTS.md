@@ -36,14 +36,14 @@ When the user says **"go"**, continue through the next unfinished breakpoint wit
 
 At a breakpoint, update `docs/CURRENT_BREAKPOINT.md`, report implementation/evidence/CI/current head/known deferrals, and **do not start the next breakpoint until the user says "go" again**.
 
-## Current execution state — 2026-09-12
+## Current execution state — 2026-09-13
 
 Platform:
 
 - Minecraft **1.21.1**
 - NeoForge **21.1.250**
 - Java **21**
-- external candidate profile: **34 dependencies = 33 exact provider artifacts + one exact Terrain Diffusion Plus source build**
+- external candidate profile: **35 dependencies = 34 exact provider artifacts + one exact Terrain Diffusion Plus source build**
 - provider hashes **34724313143**
 - manifest graph **34724313201**
 - dedicated-server baseline **34704011609**.
