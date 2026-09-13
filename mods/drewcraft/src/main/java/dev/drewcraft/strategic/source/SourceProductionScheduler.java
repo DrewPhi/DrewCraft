@@ -10,6 +10,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 public final class SourceProductionScheduler {
     private static long nextDueGameTime = Long.MIN_VALUE;
     private static long lastObservedGameTime = Long.MIN_VALUE;
+    private static int sourceCursor;
     private static volatile CycleStats lastStats = CycleStats.empty();
 
     private SourceProductionScheduler() {
@@ -19,34 +20,48 @@ public final class SourceProductionScheduler {
         if (!DrewCraftConfig.STRATEGIC_KERNEL.get()) return;
         MinecraftServer server = event.getServer();
         long now = server.overworld().getGameTime();
-        if (lastObservedGameTime != Long.MIN_VALUE && now < lastObservedGameTime) nextDueGameTime = Long.MIN_VALUE;
+        if (lastObservedGameTime != Long.MIN_VALUE && now < lastObservedGameTime) {
+            nextDueGameTime = Long.MIN_VALUE;
+            sourceCursor = 0;
+        }
         lastObservedGameTime = now;
         if (nextDueGameTime != Long.MIN_VALUE && now < nextDueGameTime) return;
         nextDueGameTime = now + DrewCraftConfig.STRATEGIC_SOURCE_INTERVAL_TICKS.get();
 
-        lastStats = runCycle(
+        lastStats = runCycleFromIndex(
                 DrewCraftSavedData.get(server),
                 now,
                 DrewCraftConfig.STRATEGIC_MAX_SOURCES_PER_CYCLE.get(),
                 DrewCraftConfig.STRATEGIC_MAX_LAUNCHES_PER_CYCLE.get(),
                 DrewCraftConfig.STRATEGIC_SOURCE_ROUTE_RETRY_TICKS.get(),
+                sourceCursor,
                 SourceLaunchPlanner::plan
         );
+        sourceCursor = lastStats.nextCursor();
     }
 
+    /** Deterministic zero-cursor harness used by focused tests/admin tooling. */
     public static CycleStats runCycle(DrewCraftSavedData data, long gameTime,
                                       int maxSources, int maxLaunches, long retryTicks,
                                       Planner planner) {
+        return runCycleFromIndex(data, gameTime, maxSources, maxLaunches, retryTicks, 0, planner);
+    }
+
+    public static CycleStats runCycleFromIndex(DrewCraftSavedData data, long gameTime,
+                                               int maxSources, int maxLaunches, long retryTicks,
+                                               int startIndex, Planner planner) {
         long started = System.nanoTime();
         List<SourceRecord> sources = data.sourceRecords();
+        int total = sources.size();
         int seen = 0;
         int due = 0;
         int launched = 0;
         int routeFailures = 0;
         int rejectedCommits = 0;
+        int normalizedStart = total == 0 ? 0 : Math.floorMod(startIndex, total);
 
-        for (SourceRecord source : sources) {
-            if (seen >= maxSources || launched >= maxLaunches) break;
+        while (seen < Math.min(maxSources, total) && launched < maxLaunches) {
+            SourceRecord source = sources.get((normalizedStart + seen) % total);
             seen++;
             if (!source.canLaunch(gameTime)) continue;
             due++;
@@ -64,8 +79,9 @@ public final class SourceProductionScheduler {
             }
         }
 
+        int nextCursor = total == 0 ? 0 : (normalizedStart + Math.max(1, seen)) % total;
         return new CycleStats(
-                sources.size(), seen, due, launched, routeFailures, rejectedCommits,
+                total, seen, due, launched, routeFailures, rejectedCommits, nextCursor,
                 (System.nanoTime() - started) / 1_000_000.0
         );
     }
@@ -78,7 +94,7 @@ public final class SourceProductionScheduler {
     }
 
     public record CycleStats(int totalSources, int sourcesSeen, int sourcesDue, int groupsLaunched,
-                             int routeFailures, int rejectedCommits, double elapsedMillis) {
-        static CycleStats empty() { return new CycleStats(0, 0, 0, 0, 0, 0, 0.0); }
+                             int routeFailures, int rejectedCommits, int nextCursor, double elapsedMillis) {
+        static CycleStats empty() { return new CycleStats(0, 0, 0, 0, 0, 0, 0, 0.0); }
     }
 }
