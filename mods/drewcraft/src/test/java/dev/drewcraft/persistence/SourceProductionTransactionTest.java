@@ -2,6 +2,7 @@ package dev.drewcraft.persistence;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dev.drewcraft.strategic.model.StrategicGroup;
@@ -44,7 +45,28 @@ class SourceProductionTransactionTest {
     }
 
     @Test
-    void committedGroupSurvivesClearButNoPostClearCommitCanSucceed() {
+    void conflictingRediscoveryAndDuplicateCoreBindingsFailClosed() {
+        DrewCraftSavedData data = emptyData();
+        SourceDescriptor original = descriptor(0);
+        data.discoverSource(original, 0L);
+
+        SourceDescriptor sameStableIdDifferentCore = new SourceDescriptor(
+                original.dimension(), original.structureId(), original.anchorX(), original.anchorY(), original.anchorZ(),
+                new SourceCorePosition(original.dimension(), 99, 65, 99),
+                original.sourceClass(), original.factionId()
+        );
+        assertThrows(IllegalStateException.class, () -> data.discoverSource(sameStableIdDifferentCore, 1L));
+
+        SourceDescriptor differentSourceSameCore = new SourceDescriptor(
+                original.dimension(), original.structureId(), original.anchorX() + 100, original.anchorY(), original.anchorZ(),
+                original.corePosition(), original.sourceClass(), original.factionId()
+        );
+        assertThrows(IllegalStateException.class, () -> data.discoverSource(differentSourceSameCore, 1L));
+        assertEquals(1, data.sourceRecords().size());
+    }
+
+    @Test
+    void committedGroupSurvivesClearRestartButNoPostClearCommitCanSucceed() {
         DrewCraftSavedData data = emptyData();
         SourceRecord source = data.discoverSource(descriptor(0), 0L).source();
         long dueTime = source.nextActionGameTime();
@@ -58,9 +80,18 @@ class SourceProductionTransactionTest {
         assertEquals(1, data.strategicGroups().size());
         assertEquals(source.sourceId(), data.strategicGroups().getFirst().sourceId().orElseThrow());
 
-        StrategicGroup rejected = groupFor(source, 1, dueTime + 100000L);
-        assertFalse(data.commitSourceLaunch(source.sourceId(), source.generation(), rejected, dueTime + 100000L));
-        assertEquals(1, data.strategicGroups().size());
+        DrewCraftSavedData restored = DrewCraftSavedData.load(data.save(new CompoundTag(), null), null);
+        SourceRecord restoredSource = restored.sourceRecord(source.sourceId()).orElseThrow();
+        assertEquals(SourceState.CLEARED, restoredSource.state());
+        assertEquals(1, restored.strategicGroups().size());
+        assertEquals(committed.groupId(), restored.strategicGroups().getFirst().groupId());
+        assertEquals(source.sourceId(), restored.strategicGroups().getFirst().sourceId().orElseThrow());
+
+        StrategicGroup rejected = groupFor(restoredSource, 1, dueTime + 100000L);
+        assertFalse(restored.commitSourceLaunch(
+                restoredSource.sourceId(), restoredSource.generation(), rejected, dueTime + 100000L
+        ));
+        assertEquals(1, restored.strategicGroups().size());
     }
 
     @Test
