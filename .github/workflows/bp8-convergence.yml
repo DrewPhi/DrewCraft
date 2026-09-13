@@ -9,6 +9,7 @@ on:
       - 'tools/release_contract.py'
       - 'tools/build_release_manifest.py'
       - 'tools/apply_release_acquisition.py'
+      - 'tools/package_release_payload.py'
       - 'tools/assemble_release_layout.py'
       - 'tools/assemble_server_application.py'
       - 'tools/inject_drewcraft_mod.py'
@@ -22,6 +23,7 @@ on:
       - 'pack/manifest/candidate_hashes.yaml'
       - 'mods/drewcraft/**'
       - '.github/workflows/bp8-convergence.yml'
+      - '.github/workflows/release-candidate-build.yml'
   workflow_dispatch:
 
 permissions:
@@ -39,11 +41,18 @@ jobs:
         run: python -m pip install --disable-pip-version-check PyYAML==6.0.2
       - name: Release/deploy/world proofs
         run: python -m unittest discover -s tests -p 'test_bp8_*.py' -v
-      - name: Validate JSON locks/plans
+      - name: Validate JSON locks/plans and workflow syntax
         run: |
           python -m json.tool launcher/runtime-lock.json >/dev/null
           python -m json.tool world/production-world.plan.json >/dev/null
           python -m json.tool world/source-mappings.json >/dev/null
+          python - <<'PY'
+          import yaml
+          for path in ('.github/workflows/bp8-convergence.yml', '.github/workflows/release-candidate-build.yml'):
+              with open(path, encoding='utf-8') as fh:
+                  yaml.safe_load(fh)
+              print('parsed', path)
+          PY
 
   server-application-layout:
     runs-on: ubuntu-24.04
