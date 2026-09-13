@@ -52,6 +52,20 @@ Herds reuse BP1-BP3 unchanged:
 
 This means a herd of 200 animals can cross the strategic world without 200 continuously ticking entities.
 
+### Independent herd kill switch
+
+`features.strategicHerds` controls only DrewCraft's strategic wildlife runtime.
+
+When disabled:
+
+- existing herd records remain persisted and are not deleted or rewritten;
+- herd coarse movement pauses;
+- no new herd encounter can materialize;
+- any currently materialized herd encounter safely collapses its DrewCraft-tagged tactical copies back into the persistent herd record;
+- ordinary local animals are not scanned, removed, counted, or changed.
+
+This is intended as a safe operational/performance kill switch rather than a world-state reset.
+
 ## Local-spawn coexistence
 
 Normal Minecraft ecology remains independent of strategic wildlife.
@@ -67,7 +81,7 @@ DrewCraft does **not**:
 - disable vanilla or modded spawners;
 - convert nearby livestock into strategic population when a herd unloads.
 
-The BP7 architecture test deliberately fails if strategic code begins referencing global natural-spawn events, vanilla natural-spawner replacement, spawn-placement rewrites, or ordinary spawner internals.
+The BP7 architecture test deliberately fails if strategic code begins referencing global natural-spawn events, vanilla natural-spawner replacement, spawn-placement rewrites, or ordinary spawner internals. It also verifies the herd kill switch is applied only to `HERD` strategic records and DrewCraft-owned tactical copies.
 
 ## Admin diagnostics
 
@@ -77,15 +91,16 @@ The BP7 architecture test deliberately fails if strategic code begins referencin
 /drewcraft herd ecology
 ```
 
-`create-test` explicitly seeds a 2,048-block migration from the admin's current position using the normal BP2 strategic route service. It is a diagnostic and does not imply production V1 herds originate from player positions.
+`create-test` explicitly seeds a 2,048-block migration from the admin's current position using the normal BP2 strategic route service. It refuses to create new test herds while `features.strategicHerds` is disabled. It is a diagnostic and does not imply production V1 herds originate from player positions.
 
 ## V1 boundaries
 
-BP7 establishes herd identity, explicit registration, unloaded movement, bounded materialization, casualties, restart safety, and architectural coexistence with vanilla spawning.
+BP7 establishes herd identity, explicit registration, unloaded movement, bounded materialization, casualties, restart safety, an independent safe kill switch, and architectural coexistence with vanilla spawning.
 
 Still deferred to later full-stack acceptance:
 
 - final production-world species/count/corridor selection (BP8);
 - visual observation of a large migrating herd in the final Terrain Diffusion world (BP9/BP10);
+- representative night/cave, mob-farm, and vanilla/modded spawner observation in the final multiplayer pack (BP9/BP10);
 - balance tuning of herd density and migration frequency;
 - optional richer animal capture/ownership interactions beyond the core rule that existing local animals are never absorbed.
