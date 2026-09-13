@@ -5,6 +5,7 @@ import dev.drewcraft.config.DrewCraftConfig;
 import dev.drewcraft.persistence.DrewCraftSavedData;
 import dev.drewcraft.strategic.model.StrategicGroup;
 import dev.drewcraft.strategic.model.StrategicGroupState;
+import dev.drewcraft.strategic.model.StrategicGroupType;
 import dev.drewcraft.strategic.model.StrategicPosition;
 import java.util.List;
 import java.util.Optional;
@@ -104,6 +105,14 @@ public final class StrategicMaterializationRuntime {
             if (group == null) continue;
             ServerLevel level = levelFor(server, group.position().dimension());
 
+            // The herd feature switch is fail-safe: preserve the strategic herd record, remove only
+            // DrewCraft-owned tactical copies, and never inspect/mutate ordinary local animals.
+            if (group.groupType() == StrategicGroupType.HERD && !DrewCraftConfig.STRATEGIC_HERDS.get()) {
+                discardLoadedEntities(level, encounter);
+                data.completeStrategicEncounter(encounter.encounterId());
+                continue;
+            }
+
             if (encounter.state() == StrategicEncounterState.PREPARING
                     || encounter.state() == StrategicEncounterState.RECONCILING) {
                 // PREPARING/RECONCILING surviving a restart means the transaction was interrupted.
@@ -148,6 +157,7 @@ public final class StrategicMaterializationRuntime {
         int radius = DrewCraftConfig.STRATEGIC_MATERIALIZATION_RADIUS_BLOCKS.get();
         for (StrategicGroup group : data.strategicGroups()) {
             if (processed >= budget || spawnBudget.exhausted()) break;
+            if (group.groupType() == StrategicGroupType.HERD && !DrewCraftConfig.STRATEGIC_HERDS.get()) continue;
             if (group.totalStrength() <= 0
                     || group.state() == StrategicGroupState.DESTROYED
                     || group.state() == StrategicGroupState.MATERIALIZED
