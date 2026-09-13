@@ -7,6 +7,7 @@ on:
       - 'launcher/**'
       - 'infra/**'
       - 'tools/release_contract.py'
+      - 'tools/build_release_manifest.py'
       - 'tools/world_seed_index.py'
       - 'tools/world_bundle.py'
       - 'world/**'
@@ -60,6 +61,19 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Verify pinned Java and Prism archives
+        shell: pwsh
+        run: |
+          @'
+          import json, pathlib, subprocess, sys
+          sys.path.insert(0, 'launcher')
+          import drewcraft_bootstrap as b
+          lock = json.loads(pathlib.Path('launcher/runtime-lock.json').read_text('utf-8'))
+          runtime = b.ensure_runtime({'runtime': lock['platforms']}, pathlib.Path('.runtime-proof'))
+          subprocess.run([runtime['java'], '-version'], check=True)
+          subprocess.run([runtime['prism'], '--version'], check=True)
+          print(runtime)
+          '@ | python -
       - name: Build Windows one-click executable
         shell: pwsh
         run: |
@@ -84,6 +98,18 @@ jobs:
         run: |
           test "$(uname -m)" = "arm64"
           sw_vers
+      - name: Verify pinned Java and Prism archives
+        run: |
+          python - <<'PY'
+          import json, pathlib, subprocess, sys
+          sys.path.insert(0, 'launcher')
+          import drewcraft_bootstrap as b
+          lock = json.loads(pathlib.Path('launcher/runtime-lock.json').read_text('utf-8'))
+          runtime = b.ensure_runtime({'runtime': lock['platforms']}, pathlib.Path('.runtime-proof'))
+          subprocess.run([runtime['java'], '-version'], check=True)
+          subprocess.run([runtime['prism'], '--version'], check=True)
+          print(runtime)
+          PY
       - name: Build Apple Silicon app and DMG
         run: |
           python -m pip install --disable-pip-version-check pyinstaller==6.16.0
