@@ -54,6 +54,8 @@ def platform_key() -> str:
         return "windows-x86_64"
     if system == "darwin" and machine in ("arm64", "aarch64"):
         return "macos-arm64"
+    if system == "linux" and machine in ("amd64", "x86_64"):
+        return "linux-x86_64"
     raise RuntimeError(f"Unsupported DrewCraft launcher platform: {system}/{machine}")
 
 

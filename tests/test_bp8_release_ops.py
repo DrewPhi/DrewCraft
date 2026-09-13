@@ -5,6 +5,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -171,6 +172,11 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         manifest["minimumLauncherVersion"] = "999.0.0"
         with self.assertRaisesRegex(RuntimeError, "launcher is too old"):
             launcher.validate_manifest(manifest)
+
+    def test_launcher_selects_supported_linux_desktop_platform(self):
+        with mock.patch.object(launcher.platform, "system", return_value="Linux"), \
+                mock.patch.object(launcher.platform, "machine", return_value="x86_64"):
+            self.assertEqual("linux-x86_64", launcher.platform_key())
 
     def test_backup_checksum_clean_offhost_restore_and_world_bundle(self):
         manifest, _, _ = self.build_release()

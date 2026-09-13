@@ -15,7 +15,7 @@ The manifest contains:
 - Minecraft, NeoForge, and Java requirements;
 - minimum DrewCraft launcher version;
 - exact managed file paths, sides, sizes, SHA-256 values, and acquisition URLs;
-- exact managed runtime lock for Windows x86-64 and Apple Silicon macOS;
+- exact managed runtime lock for Windows x86-64, Apple Silicon macOS, and Ubuntu/Linux x86-64;
 - server address/health metadata when configured;
 - required `worldId`, `worldRevision`, and `generationPackVersion`.
 
@@ -139,7 +139,7 @@ BP8 automated acceptance restores into a separate clean root and verifies world 
 
 Prism remains the Microsoft-authentication/Minecraft-launch engine; the DrewCraft bootstrapper owns exact installation, update, validation, and repair.
 
-`launcher/runtime-lock.json` pins exact Java 21 and Prism archives per supported architecture. V1 native targets are Windows x86-64 and Apple Silicon macOS.
+`launcher/runtime-lock.json` pins exact Java 21 and Prism archives per supported architecture. Native client targets are Windows x86-64, Apple Silicon macOS, and Linux x86-64 (packaged for Ubuntu/Debian).
 
 Every converge/update:
 
@@ -156,7 +156,7 @@ Every converge/update:
 
 Microsoft account state lives in the persistent managed Prism root rather than versioned pack instances. Running DrewCraft again is also the repair path for corrupted/missing managed content.
 
-CI builds `DrewCraft-Windows.exe` and `DrewCraft-macOS.dmg`. macOS CI proves a native arm64 app and ad-hoc/development signature structure; final Apple Developer signing/notarization is deliberately an RC distribution gate.
+CI builds `DrewCraft-Windows.exe`, `DrewCraft-macOS.dmg`, and `DrewCraft-Linux.deb`. macOS CI proves a native arm64 app and ad-hoc/development signature structure; final Apple Developer signing/notarization is deliberately an RC distribution gate.
 
 ## Reproducible release-candidate builder
 
@@ -186,6 +186,7 @@ CI builds `DrewCraft-Windows.exe` and `DrewCraft-macOS.dmg`. macOS CI proves a n
 3. **server-arm64** — native ARM64 Java + full DrewCraft `test build` + production jar existence;
 4. **launcher-windows** — verifies real locked Java/Prism and builds the Windows EXE;
 5. **launcher-macos-arm64** — verifies real locked Java/Prism and builds/verifies the native arm64 app/DMG.
+6. **launcher-linux-x86_64** — verifies real locked Java/Prism and builds an Ubuntu/Debian x86-64 package.
 
 The earlier dedicated-server/full-pack compatibility baseline remains valid dependency evidence unless the locked dependency/platform set changes.
 
@@ -201,7 +202,7 @@ BP9 owns the expensive real-world convergence evidence:
 - benchmark OCI A1 2/12 under representative DrewCraft load and choose `PASS` or `MIGRATE`;
 - run multiplayer cross-system scenarios and performance/crash/recovery stress;
 - prove an actual independent off-host backup/restore path;
-- observe real Windows + Apple Silicon friend-machine install/login/update/join behavior;
+- observe real Windows + Apple Silicon + Ubuntu/Linux friend-machine install/login/update/join behavior;
 - finish Apple production signing/notarization and public stable publication before final RC distribution.
 
 No BP9 gameplay feature should fork the release/world ownership model established here.

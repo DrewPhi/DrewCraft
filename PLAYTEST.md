@@ -9,6 +9,7 @@ This is the **fast path for the current local single-player development build**.
 - [ ] Open `https://drewphi.github.io/DrewCraft/` and click your OS.
 - [ ] Windows: run `DrewCraft-Windows.exe`. This is a development binary, so SmartScreen may identify it as an unrecognized app.
 - [ ] Apple Silicon Mac: open `DrewCraft-macOS.dmg`, then DrewCraft. The dev app is not Apple-notarized yet; if Gatekeeper blocks it, Control-click **Open** (or use Privacy & Security → Open Anyway).
+- [ ] Ubuntu/Linux x86-64: install `DrewCraft-Linux.deb`, then open DrewCraft from the applications menu.
 - [ ] First DrewCraft launch installs/repairs the exact pack, managed Java 21, and Prism Launcher automatically.
 - [ ] If Prism opens for Microsoft authentication, sign in once, close Prism, then open DrewCraft again.
 - [ ] In Minecraft choose **Singleplayer** and make a fresh disposable test world. Use the Terrain Diffusion Plus worldgen/config with **World Scale 2** for the V1-style terrain if that option is shown.

@@ -73,12 +73,12 @@ Detailed contract: `docs/BP8_RELEASE_OPERATIONS.md`.
 
 ### Friend launcher
 
-- exact Java 21 + Prism archives pinned by URL/size/SHA for Windows x86-64 and Apple Silicon;
+- exact Java 21 + Prism archives pinned by URL/size/SHA for Windows x86-64, Apple Silicon, and Ubuntu/Linux x86-64;
 - real Prism instance metadata declares exact MC 1.21.1 + NeoForge 21.1.250;
 - staged/hash-verified updates and repair;
 - preserves explicitly user-owned screenshots/resourcepacks/shaderpacks/saves/options;
 - server pack/protocol/health check before launch;
-- native CI produces **`DrewCraft-Windows.exe`** and **`DrewCraft-macOS.dmg`**;
+- native CI produces **`DrewCraft-Windows.exe`**, **`DrewCraft-macOS.dmg`**, and **`DrewCraft-Linux.deb`**;
 - Apple production signing/notarization remains a final RC distribution gate.
 
 ### Reproducible release candidate
@@ -94,6 +94,7 @@ Detailed contract: `docs/BP8_RELEASE_OPERATIONS.md`.
 3. native ARM64 DrewCraft build/test + production JAR;
 4. real locked Java/Prism + Windows EXE;
 5. real locked Java/Prism + Apple Silicon app/DMG.
+6. real locked Java/Prism + Ubuntu/Linux x86-64 `.deb`.
 
 The exact final run/head is recorded in `docs/CURRENT_BREAKPOINT.md` after the BP8 branch gate finishes.
 
@@ -105,7 +106,7 @@ BP8 does **not** claim the following real-world facts yet:
 - final visual world/source/herd geography approval;
 - a representative A1 server workload benchmark;
 - an actual independent/off-host production backup copy/recovery drill;
-- real nontechnical friend-machine Windows/macOS install/login/update/join observation;
+- real nontechnical friend-machine Windows/macOS/Linux install/login/update/join observation;
 - Apple Developer notarization;
 - public stable release binaries/live pointer.
 
@@ -139,7 +140,7 @@ DONE BP8 production/deployment/release/launcher convergence
 | Final production world | **BP9 HARD EVIDENCE** | candidate generation/visual lock/archive/restore |
 | Production host performance | **BP9 HARD EVIDENCE** | A1 PASS or documented MIGRATE |
 | Independent off-host recovery | **BP9 HARD EVIDENCE** | real storage/recovery drill |
-| Real friend-machine client acceptance | **BP9/BP10** | Windows + Apple Silicon |
+| Real friend-machine client acceptance | **BP9/BP10** | Windows + Apple Silicon + Ubuntu/Linux x86-64 |
 | Public signed stable release | **BP10** | notarization/promotion/RC freeze |
 
 ## Immediate next sequence — BP9

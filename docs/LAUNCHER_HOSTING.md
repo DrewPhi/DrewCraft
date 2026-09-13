@@ -11,7 +11,7 @@ This document describes how to make that true without placing cloud credentials 
 ### First install
 
 1. Visit the ServerMc download page / GitHub Release page.
-2. Click **Windows** or **macOS**.
+2. Click **Windows**, **macOS**, or **Linux**.
 3. Run the ServerMc bootstrapper.
 4. Bootstrapper installs/locates the managed runtime pieces.
 5. It creates the managed ServerMc Prism instance.
@@ -50,12 +50,13 @@ The ServerMc app is the friendly orchestration/update layer. Prism is the underl
 
 ## 3. Platform packaging
 
-A literally identical executable cannot be the correct native installer for Windows and macOS. The seamless design is one download page with platform-specific artifacts.
+A literally identical executable cannot be the correct native installer for Windows, macOS, and Linux. The seamless design is one download page with platform-specific artifacts.
 
 Target outputs:
 
 - Windows x86-64 installer/bootstrapper
 - macOS universal app if tooling permits (Apple Silicon + Intel), otherwise architecture-specific artifacts hidden behind platform detection
+- Ubuntu/Linux x86-64 `.deb` installer/bootstrapper
 
 The friend-facing branding and workflow should be the same on both platforms.
 

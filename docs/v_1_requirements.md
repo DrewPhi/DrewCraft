@@ -94,6 +94,7 @@ It MUST be tested on:
 
 - Windows
 - Apple Silicon macOS
+- Ubuntu/Linux x86-64
 - the final weather/cloud rendering stack
 
 Pack defaults SHOULD provide a usable experience without expecting every friend to tune advanced graphics settings manually.
@@ -554,7 +555,7 @@ A one-click friend-facing launcher is a hard V1 requirement.
 The public-facing experience MUST be approximately:
 
 1. open the DrewCraft page;
-2. click **Download for Windows** or **Download for Mac**;
+2. click **Download for Windows**, **Download for Mac**, or **Download for Linux**;
 3. install/run DrewCraft;
 4. sign into Microsoft/Minecraft through the normal Prism flow if required;
 5. click Play.
@@ -587,12 +588,13 @@ Microsoft account authentication SHOULD remain delegated to Prism rather than be
 
 ---
 
-# 23. Windows and macOS support
+# 23. Windows, macOS, and Linux support
 
 V1 MUST support:
 
 - Windows x86-64
 - Apple Silicon macOS
+- Ubuntu/Linux x86-64
 
 A polished macOS V1 SHOULD be packaged as a normal `.app`/installer experience and SHOULD avoid requiring friends to disable Gatekeeper.
 
@@ -610,6 +612,7 @@ The friend-facing page SHOULD remain minimal:
 - one short description
 - **Download for Windows**
 - **Download for Mac**
+- **Download for Linux**
 
 It SHOULD NOT become a complicated mod-installation tutorial.
 
@@ -738,6 +741,7 @@ Before V1 release, the project MUST demonstrate at least the following end-to-en
 
 - clean Windows install from DrewCraft download page
 - clean Apple Silicon macOS install from DrewCraft download page
+- clean Ubuntu/Linux x86-64 install from DrewCraft download page
 - Java provisioned automatically
 - Prism/instance provisioned automatically
 - successful Minecraft authentication flow

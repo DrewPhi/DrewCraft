@@ -40,6 +40,7 @@ We intentionally will **not** keep rerunning the expensive full Terrain Diffusio
 - **Java 21**
 - Windows x86-64 clients
 - Apple Silicon macOS as a hard V1 client target
+- Ubuntu/Linux x86-64 as a hard V1 client target
 - Linux server; Oracle Ampere A1 remains the first low-cost benchmark target, not a V1 requirement
 
 ## V1 scope
@@ -139,7 +140,7 @@ Friends should not manually manage Java, NeoForge, Prism, mods, or configs.
 The intended experience is:
 
 1. visit the DrewCraft page;
-2. click **Windows** or **Mac**;
+2. click **Windows**, **Mac**, or **Linux**;
 3. run the DrewCraft bootstrapper;
 4. authenticate through Prism/Microsoft once;
 5. thereafter launch/update through DrewCraft.
@@ -192,7 +193,7 @@ Third-party binaries, generated worlds, Java runtimes, model assets, backups, cr
 
 A V1 release candidate must demonstrate the complete system together:
 
-- one-click Windows and Apple Silicon installation/update;
+- one-click Windows, Apple Silicon, and Ubuntu/Linux installation/update;
 - reliable large pregenerated Terrain Diffusion Plus world;
 - representative multiplayer performance and restart safety;
 - Distant Horizons;

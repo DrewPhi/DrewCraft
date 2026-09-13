@@ -208,3 +208,45 @@ jobs:
           name: DrewCraft-macOS-arm64
           path: dist/DrewCraft-macOS.dmg
           if-no-files-found: error
+
+  launcher-linux-x86_64:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Prove x86-64 Linux runner
+        run: |
+          test "$(uname -m)" = "x86_64"
+          ldd --version
+      - name: Verify pinned Java and Prism archives
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, subprocess, sys
+          sys.path.insert(0, 'launcher')
+          import drewcraft_bootstrap as b
+          lock = json.loads(pathlib.Path('launcher/runtime-lock.json').read_text('utf-8'))
+          runtime = b.ensure_runtime({'runtime': lock['platforms']}, pathlib.Path('.runtime-proof'))
+          subprocess.run([runtime['java'], '-version'], check=True)
+          env = {**os.environ, 'QT_QPA_PLATFORM': 'offscreen'}
+          subprocess.run([runtime['prism'], '--version'], check=True, env=env)
+          print(runtime)
+          PY
+      - name: Build Ubuntu/Debian launcher package
+        run: |
+          python -m pip install --disable-pip-version-check pyinstaller==6.16.0
+          pyinstaller --noconfirm --clean --onefile --name DrewCraft --paths launcher launcher/drewcraft_entry.py
+          test -x dist/DrewCraft
+          mkdir -p build/deb/DEBIAN build/deb/usr/bin build/deb/usr/share/applications
+          install -m 0755 dist/DrewCraft build/deb/usr/bin/drewcraft
+          install -m 0644 launcher/linux/control build/deb/DEBIAN/control
+          install -m 0644 launcher/linux/drewcraft.desktop build/deb/usr/share/applications/drewcraft.desktop
+          dpkg-deb --build --root-owner-group build/deb dist/DrewCraft-Linux.deb
+          dpkg-deb --info dist/DrewCraft-Linux.deb
+      - name: Upload Linux bootstrap
+        uses: actions/upload-artifact@v6
+        with:
+          name: DrewCraft-Linux-x86_64
+          path: dist/DrewCraft-Linux.deb
+          if-no-files-found: error

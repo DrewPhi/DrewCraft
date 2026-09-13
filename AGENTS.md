@@ -187,6 +187,7 @@ Central rule:
 - Client checks safe server pack/protocol/health metadata before launch.
 - Windows public artifact filename: `DrewCraft-Windows.exe`.
 - Apple Silicon public artifact filename: `DrewCraft-macOS.dmg`.
+- Ubuntu/Linux x86-64 public artifact filename: `DrewCraft-Linux.deb`.
 - Do not claim production macOS distribution complete until Apple Developer signing/notarization passes.
 - Do not publish a stable `live.json` pointing at unavailable private artifacts.
 
@@ -205,10 +206,10 @@ Prefer **one NeoForge integration mod with internal modules/adapters**. Core log
 
 Measure representative worst-normal-case workload, including multiple players, Atmosphere/Simple Clouds, Distant Horizons clients, Create machinery/train, MTS road+aircraft, multiple distant strategic groups/herds, one materialized army, siege, Create radar, and ordinary local mobs/spawners.
 
-Capture at minimum server MSPT p50/p95/p99, long ticks, CPU, heap/native memory, GC, disk I/O, network, save/backup duration, entity counts, strategic scheduler/routing/materialization/siege/radar costs, plus representative Windows/macOS client frame-time/FPS/memory.
+Capture at minimum server MSPT p50/p95/p99, long ticks, CPU, heap/native memory, GC, disk I/O, network, save/backup duration, entity counts, strategic scheduler/routing/materialization/siege/radar costs, plus representative Windows/macOS/Linux client frame-time/FPS/memory.
 
 Optimize caching/cadence/budgets before cutting gameplay. Never silently trade away strategic correctness to make benchmarks look good.
 
 ## User experience
 
-The public-facing name is **DrewCraft**. The download site remains deliberately simple: one Windows button and one Mac button. Complexity belongs in the bootstrapper/updater, not in instructions to friends.
+The public-facing name is **DrewCraft**. The download site remains deliberately simple: Windows, Mac, and Linux buttons. Complexity belongs in the bootstrapper/updater, not in instructions to friends.

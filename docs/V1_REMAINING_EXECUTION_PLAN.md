@@ -129,7 +129,7 @@ A. production world / pregeneration / restore
 B. production host / ARM benchmark
 C. immutable release artifact contract
 D. server deploy/update/backup system
-E. Windows + Apple Silicon launcher/install/update experience
+E. Windows + Apple Silicon + Ubuntu/Linux launcher/install/update experience
 ```
 
 The strategic critical path and these operational tracks converge at Stage 21.
@@ -940,7 +940,7 @@ A release upgrade, failed application rollout, backup, and clean restore have al
 
 ---
 
-# 14. Parallel Track E — One-click Windows/macOS launcher
+# 14. Parallel Track E — One-click Windows/macOS/Linux launcher
 
 ## Goal
 
@@ -952,6 +952,7 @@ Use Prism as launch/auth engine; DrewCraft bootstrapper manages installation/upd
 
 - native Windows installer/bootstrap executable;
 - Apple Silicon macOS installer/app/dmg path;
+- Ubuntu/Linux x86-64 `.deb` installer/bootstrap path;
 - detect OS/architecture;
 - create managed DrewCraft application-data location;
 - discover or acquire pinned Java 21 and verify hash;
@@ -997,6 +998,7 @@ On clean machines/accounts:
 
 - Windows installation;
 - Apple Silicon installation;
+- Ubuntu/Linux x86-64 installation;
 - Java handled automatically;
 - Microsoft login through Prism;
 - launch;
@@ -1118,7 +1120,7 @@ Server:
 
 Client:
 
-- representative FPS/frame-time behavior on Windows and Apple Silicon;
+- representative FPS/frame-time behavior on Windows, Apple Silicon, and Ubuntu/Linux;
 - Distant Horizons/weather/radar rendering interactions;
 - memory use.
 
@@ -1204,6 +1206,7 @@ At RC freeze:
 - server updater tested;
 - Windows clean install tested;
 - Apple Silicon clean install tested;
+- Ubuntu/Linux x86-64 clean install tested;
 - client update/repair tested;
 - radar visual acceptance from `RADAR_V1.md` completed;
 - aviation weather observed in real multiplayer;
@@ -1250,6 +1253,7 @@ The exact RC must demonstrate, end-to-end:
 - server update/backup/restore;
 - Windows one-click install/update/repair;
 - Apple Silicon one-click install/update/repair;
+- Ubuntu/Linux x86-64 one-click install/update/repair;
 - acceptable measured production performance.
 
 If every hard requirement passes on the exact candidate:

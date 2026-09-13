@@ -1,0 +1,7 @@
+Package: drewcraft
+Version: 0.1.0
+Section: games
+Priority: optional
+Architecture: amd64
+Maintainer: DrewCraft
+Description: DrewCraft one-click Minecraft installer and launcher

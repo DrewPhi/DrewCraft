@@ -13,7 +13,7 @@ def runtime_from_lock(lock: dict) -> dict:
     if lock.get("schemaVersion") != 1:
         raise ValueError("unsupported runtime lock schema")
     result = {}
-    for platform in ("windows-x86_64", "macos-arm64"):
+    for platform in ("windows-x86_64", "macos-arm64", "linux-x86_64"):
         spec = lock.get("platforms", {}).get(platform)
         if not spec or "java" not in spec or "prism" not in spec:
             raise ValueError(f"runtime lock missing {platform}")

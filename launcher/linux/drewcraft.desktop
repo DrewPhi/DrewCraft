@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=DrewCraft
+Comment=Install, update, repair, and launch DrewCraft
+Exec=/usr/bin/drewcraft
+Terminal=false
+Categories=Game;

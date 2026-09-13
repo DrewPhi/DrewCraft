@@ -39,6 +39,24 @@
         "sha256": "b6ae145a02dd9bbc7c44ce3fa42ec942daca8c829584e21c66290a8e6ca89af8"
       }
     },
+    "linux-x86_64": {
+      "java": {
+        "version": "21.0.12.1+1",
+        "archive": "tar.gz",
+        "executableBasename": "java",
+        "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jre_x64_linux_hotspot_21.0.12.1_1.tar.gz",
+        "size": 52059408,
+        "sha256": "2413149700df0f7d440500a84a8f764c535f21e5a5e87d38328b64eec2c5b500"
+      },
+      "prism": {
+        "version": "11.1.0",
+        "archive": "tar.gz",
+        "executable": "PrismLauncher",
+        "url": "https://github.com/PrismLauncher/PrismLauncher/releases/download/11.1.0/PrismLauncher-Linux-Qt6-Portable-11.1.0.tar.gz",
+        "size": 63950612,
+        "sha256": "8218067587a9bb355e9ed8817091ef9bf44bcf27c2cdec59a7525621f61a3392"
+      }
+    },
     "linux-arm64-server": {
       "java": {
         "version": "21.0.12.1+1",
