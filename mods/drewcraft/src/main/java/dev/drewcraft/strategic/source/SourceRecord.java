@@ -118,10 +118,17 @@ public final class SourceRecord {
                 && factionId.equals(descriptor.factionId());
     }
 
-    /** Commit one production event after the caller has planned the route against this generation. */
+    /** Backward-compatible base-strength production event. */
     public boolean commitLaunch(long expectedGeneration, long gameTime) {
-        if (generation != expectedGeneration || !canLaunch(gameTime)) return false;
-        populationBudget -= launchStrength;
+        return commitLaunch(expectedGeneration, gameTime, launchStrength);
+    }
+
+    /** Commit one production event after route planning against this exact generation. */
+    public boolean commitLaunch(long expectedGeneration, long gameTime, int producedStrength) {
+        if (producedStrength <= 0) throw new IllegalArgumentException("producedStrength must be positive");
+        if (generation != expectedGeneration || state == SourceState.CLEARED || gameTime < nextActionGameTime) return false;
+        if (populationBudget < producedStrength) return false;
+        populationBudget -= producedStrength;
         launchSerial++;
         nextActionGameTime = Math.max(0L, gameTime) + launchCooldownTicks;
         generation++;
@@ -139,7 +146,7 @@ public final class SourceRecord {
         return true;
     }
 
-    /** Back off a failed route attempt without consuming population. */
+    /** Back off a failed route/template attempt without consuming population. */
     public void postpone(long gameTime, long delayTicks) {
         if (state == SourceState.CLEARED) return;
         nextActionGameTime = Math.max(nextActionGameTime, Math.max(0L, gameTime) + Math.max(1L, delayTicks));
