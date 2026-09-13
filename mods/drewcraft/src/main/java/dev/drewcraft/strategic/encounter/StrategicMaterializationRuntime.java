@@ -46,10 +46,13 @@ public final class StrategicMaterializationRuntime {
         nextDueGameTime = now + interval;
 
         DrewCraftSavedData data = DrewCraftSavedData.get(server);
-        int budget = DrewCraftConfig.STRATEGIC_MAX_ENCOUNTERS_PROCESSED_PER_CYCLE.get();
-        int processed = processExistingEncounters(server, data, now, budget);
-        if (processed < budget) {
-            createNearbyEncounters(server, data, now, budget - processed);
+        int encounterBudget = DrewCraftConfig.STRATEGIC_MAX_ENCOUNTERS_PROCESSED_PER_CYCLE.get();
+        StrategicSpawnBudget spawnBudget = new StrategicSpawnBudget(
+                DrewCraftConfig.STRATEGIC_MAX_NEW_ENTITIES_PER_CYCLE.get()
+        );
+        int processed = processExistingEncounters(server, data, now, encounterBudget, spawnBudget);
+        if (processed < encounterBudget && !spawnBudget.exhausted()) {
+            createNearbyEncounters(server, data, now, encounterBudget - processed, spawnBudget);
         }
     }
 
@@ -91,7 +94,8 @@ public final class StrategicMaterializationRuntime {
     }
 
     private static int processExistingEncounters(MinecraftServer server, DrewCraftSavedData data,
-                                                 long now, int budget) {
+                                                 long now, int budget,
+                                                 StrategicSpawnBudget spawnBudget) {
         int processed = 0;
         for (StrategicEncounter encounter : data.strategicEncounters()) {
             if (processed >= budget) break;
@@ -119,12 +123,12 @@ public final class StrategicMaterializationRuntime {
             boolean playerNearby = level != null && hasPlayerWithin(
                     level,
                     group.position(),
-                    DrewCraftConfig.STRATEGIC_DEMATERIALIZATION_RADIUS_BLOCKS.get()
+                    effectiveDematerializationRadius()
             );
             if (playerNearby) {
                 data.touchEncounterPlayerSeen(encounter.encounterId(), now);
                 releaseMissingReservations(level, data, encounter);
-                fillWave(level, data, group, encounter);
+                if (!spawnBudget.exhausted()) fillWave(level, data, group, encounter, spawnBudget);
                 continue;
             }
 
@@ -138,11 +142,12 @@ public final class StrategicMaterializationRuntime {
     }
 
     private static void createNearbyEncounters(MinecraftServer server, DrewCraftSavedData data,
-                                               long now, int budget) {
+                                               long now, int budget,
+                                               StrategicSpawnBudget spawnBudget) {
         int processed = 0;
         int radius = DrewCraftConfig.STRATEGIC_MATERIALIZATION_RADIUS_BLOCKS.get();
         for (StrategicGroup group : data.strategicGroups()) {
-            if (processed >= budget) break;
+            if (processed >= budget || spawnBudget.exhausted()) break;
             if (group.totalStrength() <= 0
                     || group.state() == StrategicGroupState.DESTROYED
                     || group.state() == StrategicGroupState.MATERIALIZED
@@ -157,7 +162,7 @@ public final class StrategicMaterializationRuntime {
             DrewCraftSavedData.BeginEncounterResult result = data.beginStrategicEncounter(group.groupId(), now);
             if (!result.created()) continue;
             StrategicEncounter encounter = result.encounter();
-            fillWave(level, data, group, encounter);
+            fillWave(level, data, group, encounter, spawnBudget);
             if (encounter.activeEntityCount() > 0) {
                 data.markEncounterMaterialized(encounter.encounterId());
             } else {
@@ -167,11 +172,13 @@ public final class StrategicMaterializationRuntime {
     }
 
     private static void fillWave(ServerLevel level, DrewCraftSavedData data,
-                                 StrategicGroup group, StrategicEncounter encounter) {
+                                 StrategicGroup group, StrategicEncounter encounter,
+                                 StrategicSpawnBudget spawnBudget) {
         int cap = DrewCraftConfig.STRATEGIC_MAX_ACTIVE_ENTITIES_PER_ENCOUNTER.get();
         List<String> wave = StrategicEncounterPlanner.nextWave(group, encounter, cap);
         int ordinal = encounter.activeEntityCount();
         for (String entityTypeId : wave) {
+            if (spawnBudget.exhausted()) break;
             BlockPos spawnPos = findLoadedSpawnPosition(level, group.position(), ordinal++);
             if (spawnPos == null) break;
             EntityType<?> rawType = EntityType.byString(entityTypeId).orElse(null);
@@ -187,7 +194,9 @@ public final class StrategicMaterializationRuntime {
 
             // Register authority before addFreshEntity triggers EntityJoinLevelEvent.
             data.registerEncounterEntity(encounter.encounterId(), entity.getUUID(), entityTypeId);
-            if (!level.addFreshEntity(entity)) {
+            if (level.addFreshEntity(entity)) {
+                spawnBudget.tryConsume();
+            } else {
                 encounter.detachSurvivor(entity.getUUID());
                 data.markStrategicDirty();
             }
@@ -241,6 +250,13 @@ public final class StrategicMaterializationRuntime {
             if (dx * dx + dz * dz <= radiusSquared) return true;
         }
         return false;
+    }
+
+    private static int effectiveDematerializationRadius() {
+        return Math.max(
+                DrewCraftConfig.STRATEGIC_MATERIALIZATION_RADIUS_BLOCKS.get(),
+                DrewCraftConfig.STRATEGIC_DEMATERIALIZATION_RADIUS_BLOCKS.get()
+        );
     }
 
     /**
