@@ -3,6 +3,7 @@ package dev.drewcraft.command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.drewcraft.config.DrewCraftConfig;
 import dev.drewcraft.persistence.DrewCraftSavedData;
 import dev.drewcraft.strategic.herd.WildHerdDescriptor;
 import dev.drewcraft.strategic.herd.WildHerdRegistration;
@@ -34,6 +35,10 @@ final class HerdCommands {
     }
 
     private static int createTest(CommandSourceStack source, String species, int count) {
+        if (!DrewCraftConfig.STRATEGIC_HERDS.get()) {
+            source.sendFailure(Component.literal("Strategic herds are disabled; existing herd records are preserved and ordinary animals are unaffected."));
+            return 0;
+        }
         if (EntityType.byString(species).isEmpty()) {
             source.sendFailure(Component.literal("Unknown entity type: " + species));
             return 0;
@@ -66,7 +71,8 @@ final class HerdCommands {
         List<StrategicGroup> herds = DrewCraftSavedData.get(source.getServer()).strategicGroups().stream()
                 .filter(group -> group.groupType() == StrategicGroupType.HERD)
                 .toList();
-        source.sendSuccess(() -> Component.literal("Strategic wild herds: " + herds.size()), false);
+        source.sendSuccess(() -> Component.literal("Strategic wild herds: " + herds.size()
+                + " | runtime=" + (DrewCraftConfig.STRATEGIC_HERDS.get() ? "enabled" : "disabled/preserved")), false);
         for (StrategicGroup herd : herds.stream().limit(20).toList()) {
             source.sendSuccess(() -> Component.literal(
                     herd.groupId() + " strength=" + herd.totalStrength()
@@ -81,7 +87,8 @@ final class HerdCommands {
 
     private static int ecology(CommandSourceStack source) {
         source.sendSuccess(() -> Component.literal(
-                "BP7 ecology isolation: explicit strategic herds only; existing/natural/bred/named/leashed/tamed/penned/spawner animals are never absorbed; vanilla spawning and spawners are not quota-managed by DrewCraft."
+                "BP7 ecology isolation: strategicHerds=" + DrewCraftConfig.STRATEGIC_HERDS.get()
+                        + "; explicit strategic herds only; existing/natural/bred/named/leashed/tamed/penned/spawner animals are never absorbed; vanilla spawning and spawners are not quota-managed by DrewCraft."
         ), false);
         return 1;
     }
