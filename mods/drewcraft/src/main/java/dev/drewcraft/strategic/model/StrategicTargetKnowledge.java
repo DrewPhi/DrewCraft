@@ -9,5 +9,7 @@ public enum StrategicTargetKnowledge {
     /** Objective is a deterministic regional scouting waypoint; no player position is queried. */
     SCOUTED_REGION,
     /** Objective is the known position of another persistent allied source. */
-    ALLIED_SOURCE_LOCATION
+    ALLIED_SOURCE_LOCATION,
+    /** Explicit wildlife migration corridor supplied by world-build/offline herd seeding. */
+    MIGRATION_ROUTE
 }
