@@ -23,11 +23,23 @@ Client and server layouts are derived from the same verified inputs. Files ident
 
 DrewCraft's own compiled integration jar is injected explicitly into both verified layouts and hash-recorded before release assembly. The external dependency count does not silently stand in for the custom mod.
 
+### Acquisition / redistribution policy
+
+Exact provider artifacts are matched to the release by their already-locked SHA-256. Where an official provider acquisition identity exists, `tools/apply_release_acquisition.py` rewrites that file's manifest URL to the official provider instead of assuming DrewCraft should rehost it:
+
+- CurseForge uses the exact project/file ID download endpoint;
+- Modrinth resolves the exact locked version ID and filename to its official CDN URL;
+- DrewCraft-built, source-built, config, and server-runtime files continue to use the immutable DrewCraft release base.
+
+`tools/package_release_payload.py` then excludes provider-backed files from the DrewCraft-hosted payload. Friends still get one-click installation because launcher/server updater verifies the same exact SHA-256 regardless of acquisition origin.
+
 ## Production world contract
 
 `world/production-world.plan.json` is intentionally **not** allowed to claim a final production seed/radius before a real candidate has been generated and reviewed.
 
-The current process is:
+The current world-generation compatibility identity is `drewcraft-worldgen-1`. A candidate report must carry that identity; a world generated under a different compatibility set cannot be silently promoted.
+
+The process is:
 
 1. generate representative Terrain Diffusion Plus / World Scale 2 candidates on suitable generation hardware;
 2. pregenerate one of the approved experimental radii;
@@ -39,7 +51,7 @@ The current process is:
 8. submit the measured candidate report to `tools/evaluate_world_candidates.py`;
 9. only a fully passing report may freeze `seed` and `pregenRadiusBlocks` into a locked production plan.
 
-The candidate lock fails closed if clean restore is unverified, an archive hash is missing, a radius is outside the experiment set, or any required human/geographic review has not passed.
+The candidate lock fails closed if clean restore is unverified, an archive hash is missing, the generation-pack identity differs, a radius is outside the experiment set, or any required human/geographic review has not passed.
 
 ### Strategic source and herd indexing
 
@@ -52,25 +64,13 @@ During world-build/indexing:
 - generic Source Core placement is deterministic: **horizontal structure center -> nearest accessible interior floor candidate**;
 - the resulting exact source/core records plus explicit herd corridors are written to `drewcraft-strategic-seeds.json`.
 
-At runtime `ProductionStrategicSeedRuntime`:
-
-- validates the strategic-seed file against `drewcraft-world.json` world ID/revision;
-- registers source authority without searching chunks;
-- registers persistent herd records;
-- places a Source Core only if its exact chunk is already loaded or naturally loads later;
-- handles spawn-area chunks that were already loaded before the server-start event;
-- never force-loads a source chunk.
+At runtime `ProductionStrategicSeedRuntime` validates the seed file against `drewcraft-world.json`, registers source/herd authority without searching chunks, places Source Cores only in already-loaded/naturally loaded chunks (including spawn chunks that loaded before `ServerStartedEvent`), and never force-loads a source chunk.
 
 ## World archive identity
 
-A production archive contains at minimum:
+A production archive contains at minimum Minecraft world state including `level.dat`, `drewcraft-world.json`, `drewcraft-strategic-seeds.json`, and DrewCraft/NeoForge/mod SavedData contained in the world tree.
 
-- Minecraft world state including `level.dat`;
-- `drewcraft-world.json`;
-- `drewcraft-strategic-seeds.json`;
-- DrewCraft/NeoForge/mod SavedData contained in the world tree.
-
-`tools/world_bundle.py` stamps, validates, archives, hashes, and clean-restores this world identity. An archive is not accepted merely because it was created; its checksum and clean restore must pass.
+`tools/world_bundle.py` stamps, validates, archives, hashes, and clean-restores this identity. An archive is not accepted merely because it was created; checksum and clean restore must pass.
 
 ## Production host contract
 
@@ -89,37 +89,28 @@ Initial benchmark target:
 
 Native ARM64 CI compiles/tests the DrewCraft NeoForge mod. That proves architecture/toolchain compatibility of the custom mod; it is **not** substituted for BP9's representative Minecraft workload benchmark.
 
-The application architecture is host-portable. If A1 misses BP9 performance or native-dependency gates, record `MIGRATE` and move the same release/persistent layout to a deliberately chosen fixed-size replacement host rather than silently scaling cloud resources.
+If A1 misses BP9 performance or native-dependency gates, record `MIGRATE` and move the same release/persistent layout to a deliberately chosen fixed-size replacement host rather than silently scaling cloud resources.
 
 ## Complete immutable server application
 
-A verified mod tree alone is not a deployable Minecraft server.
+`tools/assemble_server_application.py` combines the exact hash-verified NeoForge 21.1.250 server installer output (`run.sh`, libraries, launcher metadata), the verified server mod/config tree, the compiled DrewCraft integration jar, JVM policy, and EULA acceptance. It explicitly excludes `world` and `logs`, which are reserved persistent paths.
 
-`tools/assemble_server_application.py` combines:
-
-- the exact hash-verified NeoForge 21.1.250 server installer output (`run.sh`, libraries, launcher metadata);
-- the verified DrewCraft server mod/config tree;
-- the compiled DrewCraft integration jar;
-- server JVM policy and EULA acceptance.
-
-It explicitly excludes `world` and `logs`, which are reserved persistent paths wired by the production host.
-
-Initial 12 GB host policy uses `-Xms4G` / `-Xmx8G` rather than consuming all machine memory; BP9 measurements may tune this.
+Initial 12 GB host policy uses `-Xms4G` / `-Xmx8G`; BP9 measurements may tune it.
 
 ## Server deployment/update transaction
 
 `infra/serverctl.py` provides the application transaction:
 
 1. validate release manifest;
-2. verify world ID/revision/generation compatibility **before activation**;
+2. verify world ID/revision/generation compatibility before activation;
 3. stage common+server files outside the live tree;
 4. verify size + SHA-256 for every managed file;
-5. create a checksummed pre-update backup of persistent state;
+5. create a checksummed pre-update backup;
 6. stop Minecraft cleanly when an operator/service command is supplied;
 7. atomically switch `current` to the staged immutable application release;
 8. start and health-check;
 9. publish `ready` only after success;
-10. if rollout fails, restore the previous application pointer and matching health/active-release metadata;
+10. on failure, restore the previous application pointer and matching health/active-release metadata;
 11. never automatically restore an older world merely because application startup failed.
 
 A failed first deployment leaves no fake active release. A failed upgrade restores application identity while preserving the authoritative current world.
@@ -146,58 +137,55 @@ BP8 automated acceptance restores into a separate clean root and verifies world 
 
 ## Friend launcher contract
 
-The friend-facing bootstrapper owns DrewCraft convergence; Prism owns Microsoft authentication and Minecraft launching.
+Prism remains the Microsoft-authentication/Minecraft-launch engine; the DrewCraft bootstrapper owns exact installation, update, validation, and repair.
 
-### Exact managed runtime
+`launcher/runtime-lock.json` pins exact Java 21 and Prism archives per supported architecture. V1 native targets are Windows x86-64 and Apple Silicon macOS.
 
-`launcher/runtime-lock.json` pins exact:
+Every converge/update:
 
-- Java 21 runtime;
-- Prism Launcher;
-- platform/architecture URL;
-- archive type;
-- size;
-- SHA-256;
-- expected executable.
+1. reads `live.json` and verifies its immutable manifest SHA;
+2. rejects an unsupported minimum launcher version;
+3. stages exact common+client content, downloading/reusing only verified files;
+4. acquires/verifies pinned Java + Prism if absent;
+5. creates a real Prism instance with `instance.cfg` and `mmc-pack.json` declaring exact Minecraft + NeoForge versions;
+6. atomically promotes the versioned instance;
+7. preserves explicitly user-owned screenshots/resource packs/shader packs/saves/options where not pack-managed;
+8. verifies both the immutable local release cache and the actual Prism instance;
+9. checks safe server health/version information;
+10. launches the exact Prism instance and server address.
 
-V1 native bootstrap targets:
+Microsoft account state lives in the persistent managed Prism root rather than versioned pack instances. Running DrewCraft again is also the repair path for corrupted/missing managed content.
 
-- Windows x86-64;
-- Apple Silicon macOS.
+CI builds `DrewCraft-Windows.exe` and `DrewCraft-macOS.dmg`. macOS CI proves a native arm64 app and ad-hoc/development signature structure; final Apple Developer signing/notarization is deliberately an RC distribution gate.
 
-CI downloads and verifies the real pinned runtime archives on each native OS. Windows produces a PyInstaller one-click `.exe`; macOS produces an arm64 `.app` and DMG with development/ad-hoc code signing. Final Apple Developer signing/notarization is an RC distribution gate, not falsely claimed by BP8.
+## Reproducible release-candidate builder
 
-### Every launch/update
+`.github/workflows/release-candidate-build.yml` removes the remaining developer-local ZIP step. A manual candidate build:
 
-The bootstrapper:
+1. compiles/tests the repository DrewCraft mod;
+2. checks out and builds the exact Terrain Diffusion source ref;
+3. rebuilds the exact verified external client/server dependency trees;
+4. injects/hash-records DrewCraft itself;
+5. downloads and SHA-verifies the exact NeoForge installer;
+6. installs the full NeoForge server runtime;
+7. assembles the complete immutable server application;
+8. derives one common/client/server release layout;
+9. generates the immutable release manifest;
+10. applies official provider acquisition URLs by exact artifact hash;
+11. independently reconstructs/verifies both client and server views;
+12. creates a publishable payload containing only DrewCraft-owned files plus manifest/evidence/checksums.
 
-1. reads `live.json`;
-2. verifies the immutable release-manifest SHA-256;
-3. rejects an unsupported/newer launcher minimum version;
-4. stages the exact client/common managed tree;
-5. reuses already-valid unchanged local files and downloads changed/missing files;
-6. verifies every staged hash;
-7. acquires/verifies pinned Java + Prism if absent;
-8. creates a real Prism instance with `instance.cfg` and `mmc-pack.json` declaring exact Minecraft + NeoForge versions;
-9. atomically promotes the per-version instance;
-10. preserves explicitly user-owned screenshots/resource packs/shader packs/saves/options where they are not pack-managed;
-11. verifies both the immutable local release cache and the actual Prism instance;
-12. compares safe server health/version data before launch;
-13. launches the exact instance and server address using Prism CLI.
-
-Microsoft account state lives in the persistent managed Prism root, not inside versioned pack instances.
-
-Opening DrewCraft again is also the repair path: corrupted/missing managed content is reconstructed from the release truth rather than asking friends to edit a mods folder.
+`live.json` produced by this workflow is a **candidate pointer** until later promotion; public publication is not automatic merely because a build succeeded.
 
 ## BP8 automated evidence contract
 
 `.github/workflows/bp8-convergence.yml` exercises five independent jobs:
 
-1. **release-contract** — every `test_bp8_*.py` release/world/update/repair/restore invariant;
-2. **server-application-layout** — downloads and SHA-verifies the exact NeoForge installer, performs a real `--installServer`, then proves a complete immutable application layout;
+1. **release-contract** — discovers every `test_bp8_*.py`, including update/repair/rollback/world/provider/payload invariants, and parses both BP8 workflow files;
+2. **server-application-layout** — SHA-verifies the exact NeoForge installer, performs a real `--installServer`, then proves a complete immutable application layout;
 3. **server-arm64** — native ARM64 Java + full DrewCraft `test build` + production jar existence;
-4. **launcher-windows** — verifies real locked Java/Prism, builds Windows one-click EXE;
-5. **launcher-macos-arm64** — verifies real locked Java/Prism, builds native arm64 app/DMG and verifies code signature structure.
+4. **launcher-windows** — verifies real locked Java/Prism and builds the Windows EXE;
+5. **launcher-macos-arm64** — verifies real locked Java/Prism and builds/verifies the native arm64 app/DMG.
 
 The earlier dedicated-server/full-pack compatibility baseline remains valid dependency evidence unless the locked dependency/platform set changes.
 
@@ -214,6 +202,6 @@ BP9 owns the expensive real-world convergence evidence:
 - run multiplayer cross-system scenarios and performance/crash/recovery stress;
 - prove an actual independent off-host backup/restore path;
 - observe real Windows + Apple Silicon friend-machine install/login/update/join behavior;
-- finish Apple production signing/notarization before public RC distribution.
+- finish Apple production signing/notarization and public stable publication before final RC distribution.
 
 No BP9 gameplay feature should fork the release/world ownership model established here.
