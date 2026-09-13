@@ -56,6 +56,15 @@ class DrewCraftModInjectionTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "already represented"):
             injector.inject(root, jar)
 
+    def test_development_version_name_is_a_real_production_jar_not_a_dev_classifier(self):
+        libs = self.tmp / "libs"
+        libs.mkdir()
+        production = libs / "drewcraft-0.1.0-dev.1.jar"
+        production.write_bytes(b"production")
+        (libs / "drewcraft-0.1.0-dev.1-sources.jar").write_bytes(b"sources")
+        (libs / "drewcraft-0.1.0-dev.1-javadoc.jar").write_bytes(b"docs")
+        self.assertEqual(production, injector.production_jar(libs))
+
 
 if __name__ == "__main__":
     unittest.main()
