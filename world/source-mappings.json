@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "structureId": "minecraft:pillager_outpost",
+      "sourceClass": "CAMP",
+      "factionId": "drewcraft:raiders",
+      "notes": "Common raider source and production-world distribution sanity check."
+    },
+    {
+      "structureId": "minecraft:woodland_mansion",
+      "sourceClass": "STRONGHOLD",
+      "factionId": "drewcraft:raiders",
+      "notes": "Rare high-capacity raider source."
+    },
+    {
+      "structureId": "minecraft:ancient_city",
+      "sourceClass": "CITY",
+      "factionId": "drewcraft:undead",
+      "notes": "Rare underground hostile city source; core placement still uses nearest accessible interior floor candidate."
+    }
+  ]
+}
