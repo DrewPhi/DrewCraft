@@ -63,8 +63,13 @@ public final class SourceLaunchPlanner {
         return new PlanResult(group, "ok:" + template.id());
     }
 
-    private static TargetSelection chooseTarget(DrewCraftSavedData data, SourceRecord source,
-                                                StrategicForceTemplate template) {
+    /**
+     * Pure strategic target-knowledge decision. Deliberately separate from route planning so the
+     * knowledge policy can be tested without a Minecraft server/config runtime. No player query is
+     * available to this method by construction.
+     */
+    static TargetSelection chooseTarget(DrewCraftSavedData data, SourceRecord source,
+                                        StrategicForceTemplate template) {
         if (template.targetPolicy() == StrategicTargetPolicy.ALLIED_REINFORCEMENT && data != null) {
             SourceRecord allied = data.sourceRecords().stream()
                     .filter(candidate -> !candidate.sourceId().equals(source.sourceId()))
@@ -132,6 +137,6 @@ public final class SourceLaunchPlanner {
         public boolean success() { return group != null; }
     }
 
-    private record TargetSelection(StrategicPosition position, StrategicTargetKnowledge knowledge, String detail) {
+    record TargetSelection(StrategicPosition position, StrategicTargetKnowledge knowledge, String detail) {
     }
 }
