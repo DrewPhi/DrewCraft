@@ -10,6 +10,7 @@ on:
       - 'tools/build_release_manifest.py'
       - 'tools/assemble_release_layout.py'
       - 'tools/assemble_server_application.py'
+      - 'tools/inject_drewcraft_mod.py'
       - 'tools/evaluate_world_candidates.py'
       - 'tools/world_seed_index.py'
       - 'tools/world_bundle.py'
@@ -33,7 +34,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Release/deploy/world proofs
-        run: python -m unittest -v tests/test_bp8_release_ops.py tests/test_bp8_server_application.py
+        run: python -m unittest discover -s tests -p 'test_bp8_*.py' -v
       - name: Validate JSON locks/plans
         run: |
           python -m json.tool launcher/runtime-lock.json >/dev/null
@@ -108,6 +109,16 @@ jobs:
           java -version
       - name: Compile and test DrewCraft on ARM64
         run: gradle -p mods/drewcraft test build --stacktrace --no-daemon
+      - name: Prove DrewCraft production jar exists
+        run: |
+          python - <<'PY'
+          import pathlib, sys
+          sys.path.insert(0, 'tools')
+          import inject_drewcraft_mod as inject
+          jar = inject.production_jar(pathlib.Path('mods/drewcraft/build/libs'))
+          print(jar)
+          assert jar.is_file()
+          PY
 
   launcher-windows:
     runs-on: windows-2025
