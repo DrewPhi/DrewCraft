@@ -30,6 +30,7 @@ onnx/
 .env.*
 !.env.example
 secrets/
+LOCAL_SERVER_ACCESS.md
 
 # Python tooling
 __pycache__/
