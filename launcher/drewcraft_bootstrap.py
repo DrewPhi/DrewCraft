@@ -146,6 +146,11 @@ def _extract_archive(archive: pathlib.Path, destination: pathlib.Path, kind: str
     destination.mkdir(parents=True)
     if kind == "zip":
         with zipfile.ZipFile(archive) as zf:
+            target = destination.resolve()
+            for info in zf.infolist():
+                resolved = (destination / info.filename).resolve()
+                if target not in resolved.parents and resolved != target:
+                    raise RuntimeError("unsafe runtime ZIP path")
             zf.extractall(destination)
     elif kind in ("tar.gz", "tgz"):
         with tarfile.open(archive, "r:gz") as tf:
@@ -159,21 +164,42 @@ def _extract_archive(archive: pathlib.Path, destination: pathlib.Path, kind: str
         raise RuntimeError(f"unsupported runtime archive: {kind}")
 
 
+def _find_runtime_executable(root: pathlib.Path, spec: dict) -> pathlib.Path:
+    exact = spec.get("executable")
+    if exact:
+        candidate = root / pathlib.Path(*_safe_rel(exact).parts)
+        if candidate.is_file():
+            return candidate
+    basename = spec.get("executableBasename")
+    if not basename or pathlib.PurePath(basename).name != basename:
+        raise RuntimeError("runtime spec requires executable or a safe executableBasename")
+    matches = sorted(p for p in root.rglob(basename) if p.is_file())
+    if len(matches) != 1:
+        raise RuntimeError(f"runtime executable {basename!r} resolved to {len(matches)} files under {root}")
+    return matches[0]
+
+
 def ensure_runtime_component(app_dir: pathlib.Path, name: str, spec: dict) -> pathlib.Path:
     version = str(spec["version"])
     root = app_dir / "runtime" / name / version
-    executable = root / pathlib.Path(*_safe_rel(spec["executable"]).parts)
-    if executable.exists():
+    marker = root / ".drewcraft-runtime.json"
+    if marker.is_file():
+        executable = _find_runtime_executable(root, spec)
         return executable
     downloads = app_dir / "downloads"
     downloads.mkdir(parents=True, exist_ok=True)
     archive = downloads / f"{name}-{version}.{spec['archive'].replace('.', '-')}"
     download_verified(spec["url"], spec["sha256"], archive, spec.get("size"))
     _extract_archive(archive, root, spec["archive"])
-    if not executable.exists():
-        raise RuntimeError(f"{name} archive did not contain expected executable {spec['executable']}")
+    executable = _find_runtime_executable(root, spec)
     if platform.system() != "Windows":
         executable.chmod(executable.stat().st_mode | 0o111)
+    atomic_json(marker, {
+        "name": name,
+        "version": version,
+        "archiveSha256": spec["sha256"],
+        "executable": str(executable.relative_to(root)),
+    })
     return executable
 
 
