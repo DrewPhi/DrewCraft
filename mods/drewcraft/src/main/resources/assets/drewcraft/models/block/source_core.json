@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "minecraft:block/crying_obsidian"
+    "all": "drewcraft:block/source_core"
   }
 }
