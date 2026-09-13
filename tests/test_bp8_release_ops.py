@@ -105,7 +105,7 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertTrue((output / "server" / "server-only.txt").is_file())
         self.assertEqual({"common": 1, "client": 2, "server": 2}, counts)
 
-    def test_one_manifest_drives_client_and_server_and_repairs_drift(self):
+    def test_one_manifest_drives_client_server_real_prism_instance_and_repairs_drift(self):
         manifest, _, live_path = self.build_release()
         app = self.tmp / "client-app"
         state = launcher.converge(live_path.as_uri(), app)
@@ -114,9 +114,24 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertTrue((client_root / "mods" / "shared.jar").is_file())
         self.assertTrue((client_root / "config" / "client.txt").is_file())
         self.assertFalse((client_root / "config" / "server.txt").exists())
+
+        prism_instance = pathlib.Path(state["prismRoot"]) / "instances" / state["instanceId"]
+        mmc = json.loads((prism_instance / "mmc-pack.json").read_text("utf-8"))
+        self.assertEqual("1.21.1", mmc["components"][0]["version"])
+        self.assertEqual("net.neoforged", mmc["components"][1]["uid"])
+        self.assertEqual("21.1.250", mmc["components"][1]["version"])
+        self.assertTrue((prism_instance / "instance.cfg").is_file())
         self.assertEqual([], launcher.verify_local(app))
 
+        # Corruption in either the immutable local release cache or the actual Prism
+        # instance must be detected and a normal converge/repair must restore it.
         (client_root / "mods" / "shared.jar").write_bytes(b"corrupt")
+        self.assertEqual(["mods/shared.jar"], launcher.verify_local(app))
+        launcher.converge(live_path.as_uri(), app)
+        self.assertEqual([], launcher.verify_local(app))
+        state = json.loads((app / "state.json").read_text("utf-8"))
+        prism_instance = pathlib.Path(state["prismRoot"]) / "instances" / state["instanceId"]
+        (prism_instance / "minecraft" / "mods" / "shared.jar").write_bytes(b"corrupt-prism")
         self.assertEqual(["mods/shared.jar"], launcher.verify_local(app))
         launcher.converge(live_path.as_uri(), app)
         self.assertEqual([], launcher.verify_local(app))
@@ -130,6 +145,32 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertFalse((active / "config" / "client.txt").exists())
         self.assertEqual([], release_contract.verify_tree(active, manifest, "server"))
         self.assertEqual(b"world-state", (server_root / "persistent" / "world" / "level.dat").read_bytes())
+
+    def test_client_update_preserves_user_owned_data_between_atomic_version_instances(self):
+        _, _, live_a = self.build_release("0.8.0-a")
+        app = self.tmp / "client-app"
+        state_a = launcher.converge(live_a.as_uri(), app)
+        old_mc = pathlib.Path(state_a["prismRoot"]) / "instances" / state_a["instanceId"] / "minecraft"
+        (old_mc / "screenshots").mkdir(parents=True)
+        (old_mc / "screenshots" / "castle.png").write_bytes(b"player screenshot")
+        (old_mc / "resourcepacks").mkdir(parents=True)
+        (old_mc / "resourcepacks" / "mine.zip").write_bytes(b"resourcepack")
+        (old_mc / "options.txt").write_text("fov:0.5\n", encoding="utf-8")
+
+        _, _, live_b = self.build_release("0.8.0-b")
+        state_b = launcher.converge(live_b.as_uri(), app)
+        self.assertNotEqual(state_a["instanceId"], state_b["instanceId"])
+        new_mc = pathlib.Path(state_b["prismRoot"]) / "instances" / state_b["instanceId"] / "minecraft"
+        self.assertEqual(b"player screenshot", (new_mc / "screenshots" / "castle.png").read_bytes())
+        self.assertEqual(b"resourcepack", (new_mc / "resourcepacks" / "mine.zip").read_bytes())
+        self.assertEqual("fov:0.5\n", (new_mc / "options.txt").read_text("utf-8"))
+        self.assertEqual([], launcher.verify_local(app))
+
+    def test_launcher_minimum_version_is_enforced(self):
+        manifest, _, _ = self.build_release()
+        manifest["minimumLauncherVersion"] = "999.0.0"
+        with self.assertRaisesRegex(RuntimeError, "launcher is too old"):
+            launcher.validate_manifest(manifest)
 
     def test_backup_checksum_clean_offhost_restore_and_world_bundle(self):
         manifest, _, _ = self.build_release()
