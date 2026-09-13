@@ -31,8 +31,8 @@ public final class WildHerdRegistration {
         });
     }
 
-    static RegistrationResult register(DrewCraftSavedData data, WildHerdDescriptor descriptor,
-                                       long gameTime, RoutePlanner planner) {
+    public static RegistrationResult register(DrewCraftSavedData data, WildHerdDescriptor descriptor,
+                                              long gameTime, RoutePlanner planner) {
         Objects.requireNonNull(data, "data");
         Objects.requireNonNull(descriptor, "descriptor");
         Objects.requireNonNull(planner, "planner");
@@ -97,7 +97,7 @@ public final class WildHerdRegistration {
     }
 
     @FunctionalInterface
-    interface RoutePlanner {
+    public interface RoutePlanner {
         Optional<StrategicRoute> plan(StrategicPosition start, StrategicPosition destination);
     }
 
