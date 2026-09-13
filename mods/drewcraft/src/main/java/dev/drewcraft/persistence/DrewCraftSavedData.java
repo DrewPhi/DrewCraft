@@ -9,9 +9,11 @@ import dev.drewcraft.strategic.persistence.StrategicGroupNbt;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -259,12 +261,31 @@ public final class DrewCraftSavedData extends SavedData {
         LinkedHashMap<UUID, UUID> groupToEncounter = new LinkedHashMap<>();
         for (StrategicEncounter encounter : strategicEncounters.values()) {
             if (encounter.state() == StrategicEncounterState.COMPLETE) continue;
-            if (!strategicGroups.containsKey(encounter.groupId())) {
+            StrategicGroup group = strategicGroups.get(encounter.groupId());
+            if (group == null) {
                 throw new IllegalStateException("encounter references missing group: " + encounter.groupId());
+            }
+            if (group.state() != StrategicGroupState.MATERIALIZED) {
+                throw new IllegalStateException("active encounter references non-materialized group: " + group.groupId());
+            }
+            if (encounter.activeEntityCount() > group.totalStrength()) {
+                throw new IllegalStateException("encounter active count exceeds strategic strength: " + group.groupId());
+            }
+            for (Map.Entry<String, Integer> entry : group.composition().entrySet()) {
+                if (encounter.activeCountForType(entry.getKey()) > entry.getValue()) {
+                    throw new IllegalStateException("encounter active type count exceeds strategic composition: " + entry.getKey());
+                }
             }
             UUID previous = groupToEncounter.put(encounter.groupId(), encounter.encounterId());
             if (previous != null) {
                 throw new IllegalStateException("multiple active encounters for group " + encounter.groupId());
+            }
+        }
+
+        Set<UUID> encounteredGroups = new LinkedHashSet<>(groupToEncounter.keySet());
+        for (StrategicGroup group : strategicGroups.values()) {
+            if (group.state() == StrategicGroupState.MATERIALIZED && !encounteredGroups.contains(group.groupId())) {
+                throw new IllegalStateException("materialized group is missing its durable encounter: " + group.groupId());
             }
         }
     }
