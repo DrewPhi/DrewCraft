@@ -1,0 +1,212 @@
+name: Build DrewCraft release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      pack_version:
+        description: Immutable DrewCraft pack version, e.g. 1.0.0-rc.1
+        required: true
+        type: string
+      generation_pack_version:
+        description: World-generation compatibility identity
+        required: true
+        type: string
+      world_revision:
+        description: Required production world revision
+        required: true
+        default: '1'
+        type: string
+      base_url:
+        description: Public immutable release root (without pack version)
+        required: true
+        default: https://drewphi.github.io/DrewCraft/releases
+        type: string
+      server_address:
+        description: Friend-facing Minecraft host:port
+        required: false
+        type: string
+      health_url:
+        description: Public read-only DrewCraft health URL
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '9.2.1'
+      - name: Install pack tooling
+        run: python -m pip install --disable-pip-version-check -r tools/requirements-pack.txt
+
+      - name: Build repository DrewCraft integration mod
+        run: gradle -p mods/drewcraft clean test build --stacktrace --no-daemon
+
+      - name: Read pinned Terrain Diffusion source identity
+        id: terrain
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import yaml
+          item = yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
+          print('repository=' + item['source']['repository'])
+          print('ref=' + item['source']['ref'])
+          PY
+
+      - name: Build exact Terrain Diffusion Plus source artifact
+        run: |
+          rm -rf /tmp/terrain-diffusion-plus
+          git clone "https://github.com/${{ steps.terrain.outputs.repository }}.git" /tmp/terrain-diffusion-plus
+          cd /tmp/terrain-diffusion-plus
+          git checkout --detach "${{ steps.terrain.outputs.ref }}"
+          test "$(git rev-parse HEAD)" = "${{ steps.terrain.outputs.ref }}"
+          ./gradlew -p versions/1.21.1 buildNeoForgeCpu --no-daemon
+
+      - name: Locate Terrain Diffusion production jar
+        id: tdjar
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import pathlib, yaml
+          item = yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
+          libs = pathlib.Path('/tmp/terrain-diffusion-plus') / item['build']['output_directory']
+          jars = [p for p in sorted(libs.glob('*.jar')) if not p.name.lower().endswith(('-sources.jar','-source.jar','-javadoc.jar','-test.jar','-tests.jar'))]
+          if len(jars) != 1:
+              raise SystemExit(f'expected one Terrain Diffusion production jar, got {[p.name for p in jars]}')
+          print('path=' + str(jars[0]))
+          PY
+
+      - name: Rebuild exact verified upstream client/server profile
+        run: |
+          python tools/build_verified_profile.py \
+            --profile stage2_base_performance \
+            --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
+            --output-dir build/verified-pack \
+            --evidence-output build/verified-pack-evidence.json
+
+      - name: Inject compiled DrewCraft mod into both verified trees
+        run: |
+          python tools/inject_drewcraft_mod.py \
+            --client build/verified-pack/client \
+            --server build/verified-pack/server
+          python tools/drewcraft_pack.py verify build/verified-pack/client
+          python tools/drewcraft_pack.py verify build/verified-pack/server
+
+      - name: Download and verify exact NeoForge installer
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, urllib.request, yaml
+          loader = yaml.safe_load(pathlib.Path('pack/manifest/platform.yaml').read_text('utf-8'))['loader']
+          out = pathlib.Path('/tmp/neoforge-installer.jar')
+          with urllib.request.urlopen(urllib.request.Request(loader['installer_url'], headers={'User-Agent':'DrewCraft-ReleaseCandidate/1'}), timeout=180) as response:
+              out.write_bytes(response.read())
+          got = hashlib.sha256(out.read_bytes()).hexdigest()
+          if got != loader['installer_sha256']:
+              raise SystemExit(f'NeoForge installer hash mismatch expected={loader["installer_sha256"]} got={got}')
+          print('NeoForge installer SHA-256', got)
+          PY
+
+      - name: Install exact NeoForge server runtime
+        run: |
+          rm -rf build/neoforge-runtime
+          mkdir -p build/neoforge-runtime
+          java -jar /tmp/neoforge-installer.jar --installServer build/neoforge-runtime
+          test -f build/neoforge-runtime/run.sh
+          test -d build/neoforge-runtime/libraries
+
+      - name: Assemble complete immutable server application
+        run: |
+          python tools/assemble_server_application.py \
+            --runtime build/neoforge-runtime \
+            --pack build/verified-pack/server \
+            --output build/server-application
+
+      - name: Assemble one common/client/server release layout
+        run: |
+          python tools/assemble_release_layout.py \
+            --client build/verified-pack/client \
+            --server build/server-application \
+            --output build/release-layout
+
+      - name: Build immutable release manifest and stable-pointer candidate
+        env:
+          PACK_VERSION: ${{ inputs.pack_version }}
+          GENERATION_PACK_VERSION: ${{ inputs.generation_pack_version }}
+          WORLD_REVISION: ${{ inputs.world_revision }}
+          BASE_URL: ${{ inputs.base_url }}
+          SERVER_ADDRESS: ${{ inputs.server_address }}
+          HEALTH_URL: ${{ inputs.health_url }}
+        run: |
+          args=(
+            --layout build/release-layout
+            --output build/release-manifest.json
+            --base-url "$BASE_URL"
+            --pack-version "$PACK_VERSION"
+            --protocol-version 1
+            --world-id drewcraft-production
+            --world-revision "$WORLD_REVISION"
+            --generation-pack-version "$GENERATION_PACK_VERSION"
+            --minecraft-version 1.21.1
+            --neoforge-version 21.1.250
+            --minimum-launcher-version 0.1.0
+            --runtime-lock launcher/runtime-lock.json
+          )
+          if [[ -n "$SERVER_ADDRESS" ]]; then args+=(--server-address "$SERVER_ADDRESS"); fi
+          if [[ -n "$HEALTH_URL" ]]; then args+=(--health-url "$HEALTH_URL"); fi
+          python tools/build_release_manifest.py "${args[@]}"
+          python tools/release_contract.py validate build/release-manifest.json
+          manifest_url="$BASE_URL/$PACK_VERSION/release-manifest.json"
+          python tools/release_contract.py promote build/release-manifest.json \
+            --manifest-url "$manifest_url" \
+            --channel stable \
+            --output build/live.json
+
+      - name: Independently verify client and server trees from the one manifest
+        run: |
+          mkdir -p build/verify-client build/verify-server
+          python - <<'PY'
+          import json, pathlib, shutil
+          manifest = json.loads(pathlib.Path('build/release-manifest.json').read_text('utf-8'))
+          layout = pathlib.Path('build/release-layout')
+          for side in ('client','server'):
+              target = pathlib.Path('build/verify-' + side)
+              for entry in manifest['files']:
+                  if entry['side'] not in ('common', side):
+                      continue
+                  source = layout / entry['side'] / entry['path']
+                  dest = target / entry['path']
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copy2(source, dest)
+          PY
+          python tools/release_contract.py verify build/release-manifest.json --root build/verify-client --side client
+          python tools/release_contract.py verify build/release-manifest.json --root build/verify-server --side server
+
+      - name: Package immutable candidate payload
+        run: |
+          mkdir -p build/publish/${{ inputs.pack_version }}
+          cp -a build/release-layout/common build/publish/${{ inputs.pack_version }}/common
+          cp -a build/release-layout/client build/publish/${{ inputs.pack_version }}/client
+          cp -a build/release-layout/server build/publish/${{ inputs.pack_version }}/server
+          cp build/release-manifest.json build/publish/${{ inputs.pack_version }}/release-manifest.json
+          cp build/live.json build/publish/live.json
+          cp build/verified-pack-evidence.json build/publish/${{ inputs.pack_version }}/verified-pack-evidence.json
+          find build/publish -type f -print0 | sort -z | xargs -0 sha256sum > build/publish/SHA256SUMS
+
+      - name: Upload release-candidate payload
+        uses: actions/upload-artifact@v6
+        with:
+          name: DrewCraft-release-${{ inputs.pack_version }}
+          path: build/publish
+          if-no-files-found: error
+          compression-level: 0
