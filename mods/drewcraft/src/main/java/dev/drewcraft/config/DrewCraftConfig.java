@@ -33,6 +33,10 @@ public final class DrewCraftConfig {
             .comment("Enable the lightweight DrewCraft strategic-world persistence/simulation kernel.")
             .define("features.strategicKernel", true);
 
+    public static final ModConfigSpec.BooleanValue STRATEGIC_HERDS = BUILDER
+            .comment("Enable movement/materialization of explicitly registered strategic wild herds. Disabling preserves herd records and does not affect ordinary Minecraft animals/spawns.")
+            .define("features.strategicHerds", true);
+
     public static final ModConfigSpec.IntValue STRATEGIC_SCHEDULER_INTERVAL_TICKS = BUILDER
             .comment("Ticks between coarse strategic simulation cycles. No strategic pathfinding or entity AI runs here.")
             .defineInRange("strategic.schedulerIntervalTicks", 100, 20, 1200);
@@ -158,6 +162,7 @@ public final class DrewCraftConfig {
                 + ", mts=" + MTS_VEHICLE_ADAPTER.get()
                 + ", aviationWeather=" + AVIATION_WEATHER.get()
                 + ", strategic=" + STRATEGIC_KERNEL.get()
+                + ", herds=" + STRATEGIC_HERDS.get()
                 + ", siege=" + STRATEGIC_SIEGE.get()
                 + ", radar=" + RADAR.get();
     }
