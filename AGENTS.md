@@ -16,14 +16,15 @@ Before architectural or implementation changes, read these in order:
 8. `docs/STRATEGIC_MATERIALIZATION.md` — strategic ↔ tactical transaction contract
 9. `docs/STRATEGIC_SOURCES.md` — hostile source lifecycle/production contract
 10. `docs/HOSTILE_FORCES_V1.md` — faction/role/mission/large-army BP5 contract
-11. `docs/SOURCE_CORE_SPEC.md` — player-facing source clearing semantics
-12. `docs/RADAR_V1.md` — V1 radar scope
-13. `docs/PERFORMANCE_STACK.md`
-14. `docs/MOD_STACK.md`
-15. `docs/UPSTREAM_DEPENDENCIES.md`
-16. `pack/manifest/README.md` and machine-readable manifests under `pack/manifest/`
-17. `docs/PROJECT_SPEC.md`, `docs/SYSTEMS.md`, `docs/REPO_ARCHITECTURE.md`, `docs/LAUNCHER_HOSTING.md`
-18. `docs/ROADMAP.md` — high-level only; current execution documents above win on conflicts
+11. `docs/SIEGE_V1.md` — path-first bounded BP6 siege contract
+12. `docs/SOURCE_CORE_SPEC.md` — player-facing source clearing semantics
+13. `docs/RADAR_V1.md` — V1 radar scope
+14. `docs/PERFORMANCE_STACK.md`
+15. `docs/MOD_STACK.md`
+16. `docs/UPSTREAM_DEPENDENCIES.md`
+17. `pack/manifest/README.md` and machine-readable manifests under `pack/manifest/`
+18. `docs/PROJECT_SPEC.md`, `docs/SYSTEMS.md`, `docs/REPO_ARCHITECTURE.md`, `docs/LAUNCHER_HOSTING.md`
+19. `docs/ROADMAP.md` — high-level only; current execution documents above win on conflicts
 
 ## Breakpoint execution protocol
 
@@ -52,11 +53,12 @@ Strategic breakpoints completed:
 - **BP2** — coarse terrain-cost routing, cached A*, ETA, 10,000-block unloaded/restart proof;
 - **BP3** — transactional materialization/dematerialization, bounded waves, durable tags, idempotent casualties, restart recovery, `100 → 63` proof;
 - **BP4** — persistent hostile sources, generated-geography identity, Source Core clearing, bounded source production, launch/clear race safety, restart-permanent clearing;
-- **BP5** — JSON-driven factions/force roles, exact variable-size source population accounting, persistent mission/target knowledge, non-omniscient targeting, and bounded large-army/restart proof.
+- **BP5** — JSON-driven factions/force roles, exact variable-size source population accounting, persistent mission/target knowledge, non-omniscient targeting, and bounded large-army/restart proof;
+- **BP6** — path-first loaded-only siege runtime, bounded/cached local breach planning, gates/doors/hardness/protection scoring, constrained corridors, and anti-grief safety.
 
-BP5 final code/test head: `c8bb18e8e6af986b614db08235c0d8b4202926a9`. DrewCraft mod CI run `34729884759` passed `test + build`. Large-army proof run `34729684064` also passed.
+BP6 final code/test head: `1bab32c0c6028e57f99f8684d7097c9c33ed02fa`. DrewCraft mod CI run `34730303373` passed `test + build`; runtime compile run `34730277755` also passed.
 
-The next implementation breakpoint is **BP6 — path-first bounded siege planner**. Follow `docs/CURRENT_BREAKPOINT.md` and the BP6 section of `docs/DEVELOPMENT_BREAKPOINTS.md`. Do not begin BP7 herds/local-spawn coexistence until BP6 is reported and the user says **"go"** again.
+The next implementation breakpoint is **BP7 — strategic herds + local-spawn coexistence**. Follow `docs/CURRENT_BREAKPOINT.md` and the BP7 section of `docs/DEVELOPMENT_BREAKPOINTS.md`. Do not begin BP8 production/release convergence until BP7 is reported and the user says **"go"** again.
 
 ## CI policy after baseline certification
 
@@ -105,20 +107,28 @@ During normal V1 development:
 - The Source Core block is not authoritative state and has no portable BlockItem.
 - Legitimate Source Core destruction atomically persists `CLEARED`; replacing/moving/duplicating the block cannot reactivate source authority.
 - Groups committed before clearing remain real; no group may commit after `CLEARED` becomes authoritative.
-- Variable-size production must charge the source's **exact represented group strength** under the same SavedData transaction/lock as clearing. Production code should use the BP5 planned-launch commit path rather than bypassing source-generation checks.
-- Hostile faction/group content belongs in the versioned JSON catalog unless a behavior genuinely requires code. Do not hardcode a new scheduler branch merely to add a new composition.
+- Variable-size production must charge the source's **exact represented group strength** under the same SavedData transaction/lock as clearing.
+- Hostile faction/group content belongs in the versioned JSON catalog unless behavior genuinely requires code.
 - Strategic group composition counts must equal `totalStrength` exactly.
-- Every BP5 hostile force carries persistent mission metadata: template ID, target position, issue time, target-knowledge category, and explanation.
-- **Do not target the nearest player or hidden player base through a global lookup.** Legitimate future intelligence (scouting/contact/alarm/etc.) must enter the explicit target-knowledge model.
-- Represented army strength and loaded entity count are separate concepts. Do not increase tactical caps merely because a strategic army is large.
+- Every hostile force carries persistent mission metadata: template ID, target position, issue time, target-knowledge category, and explanation.
+- **Do not target the nearest player or hidden player base through a global lookup.** Future intelligence must enter the explicit target-knowledge model.
+- Represented army strength and loaded entity count are separate concepts. Do not raise tactical caps because a strategic army is large.
 
 ### Siege and ecology
 
-- Siege planning begins only in BP6.
-- Ordinary navigation is always attempted before breaching.
-- Siege planning only occurs for loaded, genuinely blocked encounters and must be bounded/cached.
-- Breaching must select useful constrained corridors; never implement indiscriminate nearest-block griefing.
-- Gates/doors/weaker barriers should be preferred when useful; protected/decorative blocks should be avoided.
+- `docs/SIEGE_V1.md` is authoritative for V1 siege behavior.
+- Ordinary Minecraft navigation is always attempted before breaching.
+- Siege logic exists only for already-materialized, loaded `RAID`/`ARMY` encounters.
+- Only designated breaker entity types may deliberately break blocks.
+- Siege planning is local, bounded, and cached; never run it for remote strategic groups.
+- Do not force-load chunks for siege snapshots. Unloaded cells are protected/impassable.
+- Breaches are constrained useful corridors, never nearest-block griefing.
+- Gates/doors/weaker barriers should be preferred when useful; hardness affects cost.
+- `#drewcraft:siege_protected` is unbreachable. Block entities are protected by default.
+- `#drewcraft:siege_decorative` is high-cost and data-pack extensible.
+- Revalidate the exact breach block immediately before destruction.
+- Every successful breach invalidates the cached plan so the next destruction requires a fresh world snapshot.
+- Keep the BP6 hard work bounds and independent `features.strategicSiege` kill switch.
 - Wild herds may use persistent strategic records, but named/domesticated/leashed/penned/player-owned animals must never be silently absorbed.
 
 ### Release / user experience
@@ -132,15 +142,14 @@ During normal V1 development:
 
 `docs/V1_REMAINING_EXECUTION_PLAN.md` is the detailed contract. Remaining critical path:
 
-1. **NEXT: BP6** — bounded path-first siege planner;
-2. **BP7** — strategic wild herds + normal local-spawn coexistence;
-3. **BP8** — production world / hosting / immutable releases / updater / Windows + Apple Silicon launcher convergence;
-4. **BP9** — cross-system scale, crash, restart, persistence, backup, and performance hardening;
-5. **BP10** — exact release candidate + hard acceptance → `1.0.0`.
+1. **NEXT: BP7** — strategic wild herds + normal local-spawn coexistence;
+2. **BP8** — production world / hosting / immutable releases / updater / Windows + Apple Silicon launcher convergence;
+3. **BP9** — cross-system scale, crash, restart, persistence, backup, and performance hardening;
+4. **BP10** — exact release candidate + hard acceptance → `1.0.0`.
 
 In parallel, advance production-world/pregeneration including real source-template/core/faction binding, production host/ARM benchmarking, immutable release artifacts, server update/backup tooling, and Windows/Apple Silicon launchers. These converge before the RC freeze.
 
-Do not start herds/BP7 before BP6 is reported and the user says **"go"** again.
+Do not start BP8 before BP7 is reported and the user says **"go"** again.
 
 ## Custom mod architecture
 
@@ -158,9 +167,9 @@ Every major custom subsystem should have:
 
 ## Strategic world contract
 
-`docs/STRATEGIC_WORLD_MODEL.md`, `docs/STRATEGIC_MATERIALIZATION.md`, `docs/STRATEGIC_SOURCES.md`, `docs/HOSTILE_FORCES_V1.md`, `docs/SOURCE_CORE_SPEC.md`, and Stages 11-17 of `docs/V1_REMAINING_EXECUTION_PLAN.md` are authoritative.
+`docs/STRATEGIC_WORLD_MODEL.md`, `docs/STRATEGIC_MATERIALIZATION.md`, `docs/STRATEGIC_SOURCES.md`, `docs/HOSTILE_FORCES_V1.md`, `docs/SIEGE_V1.md`, `docs/SOURCE_CORE_SPEC.md`, and Stages 11-17 of `docs/V1_REMAINING_EXECUTION_PLAN.md` are authoritative.
 
-The strategic kernel now provides stable IDs, coarse elapsed-time simulation, cached route/ETA state, persistent sources/groups/missions, transactional materialization/dematerialization, exact source production/clearing, data-driven hostile-force composition, explicit target knowledge, and casualty reconciliation. Loaded tactical behavior is replaceable; strategic identity and persistence are not.
+The strategic kernel now provides stable IDs, coarse elapsed-time simulation, cached route/ETA state, persistent sources/groups/missions, transactional materialization/dematerialization, exact source production/clearing, data-driven hostile-force composition, explicit target knowledge, casualty reconciliation, and bounded loaded-world siege fallback. Loaded tactical behavior is replaceable; strategic identity and persistence are not.
 
 Central rule:
 
@@ -179,8 +188,8 @@ V1 ground radar uses official Create: Radars unmodified. DrewCraft contributes c
 - route caches/event-driven invalidation prevent constant distant pathfinding;
 - source scheduling processes bounded persistent records, not world scans;
 - loaded materialization retains explicit encounter/entity/global-spawn budgets;
+- siege planning is bounded, cached, and loaded-only;
 - cache radar products and terrain masks;
-- siege planning must be bounded and loaded-only;
 - measure p50/p95/p99 MSPT, memory/GC, route/scheduler/source/materialization/siege/radar timings, network, and representative client frame behavior;
 - use `spark` for profiling;
 - behavior-changing optimizers require evidence before promotion;
