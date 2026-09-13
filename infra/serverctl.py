@@ -18,6 +18,8 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 from release_contract import load_json, selected_files, sha256_file, validate_manifest, verify_tree  # noqa: E402
 
+WORLD_INFO = "drewcraft-world.json"
+
 
 def _download(url: str, target: pathlib.Path) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -42,6 +44,27 @@ def _atomic_json(path: pathlib.Path, value: dict) -> None:
 def ensure_layout(root: pathlib.Path) -> None:
     for rel in ("releases", "staging", "persistent/world", "backups", "logs", "state"):
         (root / rel).mkdir(parents=True, exist_ok=True)
+
+
+def read_world_identity(root: pathlib.Path) -> dict:
+    path = root / "persistent" / "world" / WORLD_INFO
+    if not path.is_file():
+        raise RuntimeError(f"persistent world is missing {WORLD_INFO}")
+    identity = json.loads(path.read_text("utf-8"))
+    if identity.get("schemaVersion") != 1:
+        raise RuntimeError("unsupported DrewCraft world identity schema")
+    return identity
+
+
+def require_world_identity(root: pathlib.Path, manifest: dict) -> dict:
+    identity = read_world_identity(root)
+    expected = manifest["world"]
+    for key in ("worldId", "worldRevision", "generationPackVersion"):
+        if identity.get(key) != expected.get(key):
+            raise RuntimeError(
+                f"world/release mismatch for {key}: world={identity.get(key)!r} release={expected.get(key)!r}"
+            )
+    return identity
 
 
 def stage_release(root: pathlib.Path, manifest: dict) -> pathlib.Path:
@@ -81,8 +104,20 @@ def _current_target(root: pathlib.Path) -> pathlib.Path | None:
     return current.resolve()
 
 
+def _wire_persistent_paths(root: pathlib.Path, release: pathlib.Path) -> None:
+    for name, target in (("world", root / "persistent" / "world"), ("logs", root / "logs")):
+        link = release / name
+        if link.exists() or link.is_symlink():
+            if link.is_symlink() and link.resolve() == target.resolve():
+                continue
+            raise RuntimeError(f"release contains reserved persistent path {name!r}")
+        os.symlink(target.resolve(), link, target_is_directory=True)
+
+
 def activate(root: pathlib.Path, release: pathlib.Path, manifest: dict) -> pathlib.Path | None:
     ensure_layout(root)
+    require_world_identity(root, manifest)
+    _wire_persistent_paths(root, release)
     previous = _current_target(root)
     link = root / "current"
     temp_link = root / ".current.next"
@@ -115,10 +150,8 @@ def rollback_application(root: pathlib.Path, previous: pathlib.Path | None) -> N
 
 def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual") -> pathlib.Path:
     ensure_layout(root)
+    identity = require_world_identity(root, manifest)
     persistent = root / "persistent"
-    world = persistent / "world"
-    if not world.exists():
-        raise RuntimeError("persistent/world does not exist")
     stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     archive = root / "backups" / f"{stamp}-{label}.tar.gz"
     meta = {
@@ -126,10 +159,9 @@ def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual") -> path
         "createdUtc": stamp,
         "packVersion": manifest["packVersion"],
         "protocolVersion": manifest["protocolVersion"],
-        "world": manifest["world"],
+        "world": identity,
     }
-    metadata_file = persistent / ".drewcraft-backup-metadata.json"
-    _atomic_json(metadata_file, meta)
+    _atomic_json(persistent / ".drewcraft-backup-metadata.json", meta)
     with tarfile.open(archive, "w:gz") as tf:
         tf.add(persistent, arcname="persistent")
     digest = sha256_file(archive)
@@ -140,11 +172,12 @@ def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual") -> path
 
 def restore_backup(archive: pathlib.Path, target_root: pathlib.Path) -> pathlib.Path:
     expected_file = archive.with_suffix(archive.suffix + ".sha256")
-    if expected_file.exists():
-        expected = expected_file.read_text("ascii").strip()
-        got = sha256_file(archive)
-        if got != expected:
-            raise RuntimeError(f"backup hash mismatch expected={expected} got={got}")
+    if not expected_file.is_file():
+        raise RuntimeError("backup checksum is missing")
+    expected = expected_file.read_text("ascii").strip()
+    got = sha256_file(archive)
+    if got != expected:
+        raise RuntimeError(f"backup hash mismatch expected={expected} got={got}")
     target = target_root / "persistent"
     if target.exists() and any(target.iterdir()):
         raise RuntimeError("restore target persistent directory is not empty")
@@ -156,8 +189,8 @@ def restore_backup(archive: pathlib.Path, target_root: pathlib.Path) -> pathlib.
             if base not in resolved.parents and resolved != base:
                 raise RuntimeError("unsafe path in backup archive")
         tf.extractall(target_root)
-    if not (target / "world").exists():
-        raise RuntimeError("restored backup is missing persistent/world")
+    if not (target / "world" / WORLD_INFO).is_file():
+        raise RuntimeError("restored backup is missing DrewCraft world identity")
     return target
 
 
@@ -180,14 +213,9 @@ def write_health(root: pathlib.Path, status: str, manifest: dict, message: str =
     return payload
 
 
-def update_transaction(
-    root: pathlib.Path,
-    manifest: dict,
-    *,
-    stop_command: str | None = None,
-    start_command: str | None = None,
-    health_command: str | None = None,
-) -> dict:
+def update_transaction(root: pathlib.Path, manifest: dict, *, stop_command: str | None = None,
+                       start_command: str | None = None, health_command: str | None = None) -> dict:
+    require_world_identity(root, manifest)
     release = stage_release(root, manifest)
     write_health(root, "updating", manifest)
     archive = backup(root, manifest, label="pre-update")
@@ -199,10 +227,8 @@ def update_transaction(
     except Exception:
         rollback_application(root, previous)
         write_health(root, "rollback", manifest, "application rollout failed; persistent world was not rolled back")
-        try:
+        if start_command and previous is not None:
             run_cmd(start_command)
-        finally:
-            pass
         raise
     write_health(root, "ready", manifest)
     return {"release": str(release), "backup": str(archive), "previous": str(previous) if previous else None}
@@ -212,42 +238,23 @@ def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--root", default="/srv/drewcraft")
     sub = p.add_subparsers(dest="command", required=True)
-    s = sub.add_parser("stage")
-    s.add_argument("manifest")
-    a = sub.add_parser("activate")
-    a.add_argument("manifest")
-    b = sub.add_parser("backup")
-    b.add_argument("manifest")
-    b.add_argument("--label", default="manual")
-    r = sub.add_parser("restore")
-    r.add_argument("archive")
-    r.add_argument("--target-root", required=True)
-    u = sub.add_parser("update")
-    u.add_argument("manifest")
-    u.add_argument("--stop-command")
-    u.add_argument("--start-command")
-    u.add_argument("--health-command")
+    s = sub.add_parser("stage"); s.add_argument("manifest")
+    a = sub.add_parser("activate"); a.add_argument("manifest")
+    b = sub.add_parser("backup"); b.add_argument("manifest"); b.add_argument("--label", default="manual")
+    r = sub.add_parser("restore"); r.add_argument("archive"); r.add_argument("--target-root", required=True)
+    u = sub.add_parser("update"); u.add_argument("manifest"); u.add_argument("--stop-command"); u.add_argument("--start-command"); u.add_argument("--health-command")
     args = p.parse_args()
     root = pathlib.Path(args.root)
-
     if args.command == "restore":
         print(restore_backup(pathlib.Path(args.archive), pathlib.Path(args.target_root)))
         return 0
-
     manifest = validate_manifest(load_json(args.manifest))
-    if args.command == "stage":
-        print(stage_release(root, manifest))
-    elif args.command == "activate":
-        print(activate(root, stage_release(root, manifest), manifest))
-    elif args.command == "backup":
-        print(backup(root, manifest, label=args.label))
+    if args.command == "stage": print(stage_release(root, manifest))
+    elif args.command == "activate": print(activate(root, stage_release(root, manifest), manifest))
+    elif args.command == "backup": print(backup(root, manifest, label=args.label))
     elif args.command == "update":
-        print(json.dumps(update_transaction(
-            root, manifest,
-            stop_command=args.stop_command,
-            start_command=args.start_command,
-            health_command=args.health_command,
-        ), sort_keys=True))
+        print(json.dumps(update_transaction(root, manifest, stop_command=args.stop_command,
+                                            start_command=args.start_command, health_command=args.health_command), sort_keys=True))
     return 0
 
 
