@@ -15,7 +15,7 @@ public final class StrategicGroup {
     private final String factionId;
     private final StrategicGroupType groupType;
     private final UUID sourceId;
-    private final Map<String, Integer> composition;
+    private final LinkedHashMap<String, Integer> composition;
     private StrategicPosition position;
     private StrategicRoute route;
     private final double movementSpeedBlocksPerSecond;
@@ -57,7 +57,7 @@ public final class StrategicGroup {
     public StrategicPosition destination() { return route.destination(); }
     public StrategicRoute route() { return route; }
     public double movementSpeedBlocksPerSecond() { return movementSpeedBlocksPerSecond; }
-    public Map<String, Integer> composition() { return composition; }
+    public Map<String, Integer> composition() { return Collections.unmodifiableMap(new LinkedHashMap<>(composition)); }
     public int totalStrength() { return totalStrength; }
     public StrategicGroupState state() { return state; }
     public long lastSimulatedGameTime() { return lastSimulatedGameTime; }
@@ -68,6 +68,42 @@ public final class StrategicGroup {
         route = solvedRoute;
         state = solvedRoute.arrived() ? StrategicGroupState.ARRIVED : StrategicGroupState.TRAVELING;
         lastSimulatedGameTime = Math.max(0L, gameTime);
+    }
+
+    /** Freeze strategic movement before any tactical entities are created. */
+    public StrategicGroupState suspendForEncounter() {
+        if (state == StrategicGroupState.DESTROYED) throw new IllegalStateException("destroyed group cannot materialize");
+        if (state == StrategicGroupState.MATERIALIZED) throw new IllegalStateException("group is already materialized");
+        StrategicGroupState resumeState = state;
+        state = StrategicGroupState.MATERIALIZED;
+        return resumeState;
+    }
+
+    /** Return a surviving encounter to its prior strategic state. */
+    public void resumeAfterEncounter(StrategicGroupState resumeState) {
+        Objects.requireNonNull(resumeState, "resumeState");
+        if (totalStrength == 0) {
+            state = StrategicGroupState.DESTROYED;
+            return;
+        }
+        if (resumeState == StrategicGroupState.MATERIALIZED || resumeState == StrategicGroupState.DESTROYED) {
+            throw new IllegalArgumentException("invalid encounter resume state: " + resumeState);
+        }
+        state = resumeState;
+    }
+
+    /**
+     * Apply one confirmed tactical death. Returns false if the requested type has no remaining
+     * strategic member, which protects the authoritative count from underflow or duplicate events.
+     */
+    public boolean applyCasualty(String entityTypeId) {
+        String id = requireNonBlank(entityTypeId, "entityTypeId");
+        Integer count = composition.get(id);
+        if (count == null || count <= 0 || totalStrength <= 0) return false;
+        if (count == 1) composition.remove(id); else composition.put(id, count - 1);
+        totalStrength--;
+        if (totalStrength == 0) state = StrategicGroupState.DESTROYED;
+        return true;
     }
 
     public double etaSeconds() {
@@ -102,15 +138,16 @@ public final class StrategicGroup {
         return new AdvanceResult(elapsedSeconds, routeAdvance.distanceMoved(), arrivedNow, clamped);
     }
 
-    private static Map<String, Integer> sanitizeComposition(Map<String, Integer> input) {
+    private static LinkedHashMap<String, Integer> sanitizeComposition(Map<String, Integer> input) {
         Objects.requireNonNull(input, "composition");
         LinkedHashMap<String, Integer> copy = new LinkedHashMap<>();
-        input.forEach((key, count) -> {
-            String id = requireNonBlank(key, "composition id");
+        input.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
+            String id = requireNonBlank(entry.getKey(), "composition id");
+            Integer count = entry.getValue();
             if (count == null || count < 0) throw new IllegalArgumentException("composition counts must be non-negative");
             if (count > 0) copy.put(id, count);
         });
-        return Collections.unmodifiableMap(copy);
+        return copy;
     }
 
     private static String requireNonBlank(String value, String name) {
