@@ -12,6 +12,7 @@ import json
 import os
 import pathlib
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -21,6 +22,7 @@ import urllib.request
 import zipfile
 
 APP_VERSION = "0.1.0"
+PRESERVED_USER_PATHS = ("screenshots", "resourcepacks", "shaderpacks", "saves", "options.txt")
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -70,6 +72,13 @@ def _safe_rel(value: str) -> pathlib.PurePosixPath:
     return p
 
 
+def _version_tuple(value: str) -> tuple[int, ...]:
+    numbers = [int(x) for x in re.findall(r"\d+", value)]
+    if not numbers:
+        raise RuntimeError(f"invalid version string: {value!r}")
+    return tuple(numbers)
+
+
 def validate_manifest(manifest: dict) -> None:
     if manifest.get("schemaVersion") != 1:
         raise RuntimeError("Unsupported DrewCraft release manifest")
@@ -77,6 +86,16 @@ def validate_manifest(manifest: dict) -> None:
         raise RuntimeError("DrewCraft release does not declare Java 21")
     if not manifest.get("packVersion") or not isinstance(manifest.get("files"), list):
         raise RuntimeError("Malformed DrewCraft release manifest")
+    loader = manifest.get("loader", {})
+    if loader.get("id") != "neoforge" or not loader.get("version"):
+        raise RuntimeError("DrewCraft V1 requires an exact NeoForge loader version")
+    if not manifest.get("minecraftVersion"):
+        raise RuntimeError("DrewCraft release is missing minecraftVersion")
+    minimum = manifest.get("minimumLauncherVersion", "0")
+    if _version_tuple(APP_VERSION) < _version_tuple(minimum):
+        raise RuntimeError(
+            f"This DrewCraft launcher is too old ({APP_VERSION}); release requires {minimum} or newer"
+        )
     for entry in manifest["files"]:
         _safe_rel(entry["path"])
         if entry["side"] not in ("common", "client", "server"):
@@ -115,6 +134,20 @@ def download_verified(url: str, expected_sha: str, destination: pathlib.Path, ex
     destination.write_bytes(payload)
 
 
+def _reuse_existing(entry: dict, app_dir: pathlib.Path, destination: pathlib.Path) -> bool:
+    rel = pathlib.Path(*_safe_rel(entry["path"]).parts)
+    releases = app_dir / "releases"
+    if not releases.exists():
+        return False
+    for candidate in sorted(releases.glob("*/instance"), reverse=True):
+        source = candidate / rel
+        if verify_entry(source, entry):
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+            return True
+    return False
+
+
 def install_pack(manifest: dict, app_dir: pathlib.Path) -> pathlib.Path:
     validate_manifest(manifest)
     version = manifest["packVersion"]
@@ -126,7 +159,8 @@ def install_pack(manifest: dict, app_dir: pathlib.Path) -> pathlib.Path:
 
     for entry in selected_files(manifest):
         target = stage / pathlib.Path(*_safe_rel(entry["path"]).parts)
-        download_verified(entry["url"], entry["sha256"], target, entry["size"])
+        if not _reuse_existing(entry, app_dir, target):
+            download_verified(entry["url"], entry["sha256"], target, entry["size"])
 
     for entry in selected_files(manifest):
         target = stage / pathlib.Path(*_safe_rel(entry["path"]).parts)
@@ -189,7 +223,8 @@ def ensure_runtime_component(app_dir: pathlib.Path, name: str, spec: dict) -> pa
     downloads = app_dir / "downloads"
     downloads.mkdir(parents=True, exist_ok=True)
     archive = downloads / f"{name}-{version}.{spec['archive'].replace('.', '-')}"
-    download_verified(spec["url"], spec["sha256"], archive, spec.get("size"))
+    if not archive.is_file() or sha256_file(archive) != spec["sha256"]:
+        download_verified(spec["url"], spec["sha256"], archive, spec.get("size"))
     _extract_archive(archive, root, spec["archive"])
     executable = _find_runtime_executable(root, spec)
     if platform.system() != "Windows":
@@ -215,14 +250,58 @@ def ensure_runtime(manifest: dict, app_dir: pathlib.Path) -> dict:
     return {"java": str(java), "prism": str(prism)}
 
 
-def configure_prism_instance(instance_dir: pathlib.Path, java_path: str | None) -> str:
-    instance_id = instance_dir.parent.name
-    cfg = instance_dir.parent / "instance.cfg"
-    lines = ["InstanceType=OneSix", f"name=DrewCraft {instance_id}"]
+def _copy_preserved_user_data(previous_minecraft: pathlib.Path | None, target_minecraft: pathlib.Path) -> None:
+    if previous_minecraft is None or not previous_minecraft.is_dir():
+        return
+    for rel in PRESERVED_USER_PATHS:
+        source = previous_minecraft / rel
+        target = target_minecraft / rel
+        if not source.exists() or target.exists():
+            continue
+        if source.is_dir():
+            shutil.copytree(source, target)
+        elif source.is_file():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+
+
+def configure_prism_instance(instance_root: pathlib.Path, java_path: str | None, manifest: dict) -> str:
+    instance_root.mkdir(parents=True, exist_ok=True)
+    instance_id = instance_root.name
+    cfg = instance_root / "instance.cfg"
+    lines = [
+        "InstanceType=OneSix",
+        f"name=DrewCraft {manifest['packVersion']}",
+        "MCLaunchMethod=LauncherPart",
+    ]
     if java_path:
         lines.extend(["OverrideJavaLocation=true", f"JavaPath={java_path}"])
     cfg.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    mmc_pack = {
+        "formatVersion": 1,
+        "components": [
+            {"uid": "net.minecraft", "version": manifest["minecraftVersion"], "important": True},
+            {"uid": "net.neoforged", "version": manifest["loader"]["version"]},
+        ],
+    }
+    atomic_json(instance_root / "mmc-pack.json", mmc_pack)
     return instance_id
+
+
+def _previous_instance_minecraft(app_dir: pathlib.Path) -> pathlib.Path | None:
+    state_path = app_dir / "state.json"
+    if not state_path.is_file():
+        return None
+    try:
+        state = json.loads(state_path.read_text("utf-8"))
+        instance_id = state.get("instanceId")
+        prism_root = state.get("prismRoot")
+        if not instance_id or not prism_root:
+            return None
+        return pathlib.Path(prism_root) / "instances" / instance_id / "minecraft"
+    except Exception:
+        return None
 
 
 def converge(live_url: str, app_dir: pathlib.Path) -> dict:
@@ -237,15 +316,24 @@ def converge(live_url: str, app_dir: pathlib.Path) -> dict:
     if manifest["packVersion"] != live["packVersion"]:
         raise RuntimeError("stable pointer and manifest pack versions disagree")
 
+    previous_minecraft = _previous_instance_minecraft(app_dir)
     release_instance = install_pack(manifest, app_dir)
     runtime = ensure_runtime(manifest, app_dir)
     prism_root = app_dir / "prism-data"
-    managed_instance = prism_root / "instances" / f"DrewCraft-{manifest['packVersion']}"
+    instances_root = prism_root / "instances"
+    instances_root.mkdir(parents=True, exist_ok=True)
+    instance_id = f"DrewCraft-{manifest['packVersion']}"
+    managed_instance = instances_root / instance_id
+    stage_instance = instances_root / f".{instance_id}.partial"
+    if stage_instance.exists():
+        shutil.rmtree(stage_instance)
+    shutil.copytree(release_instance, stage_instance / "minecraft")
+    _copy_preserved_user_data(previous_minecraft, stage_instance / "minecraft")
+    configure_prism_instance(stage_instance, runtime.get("java"), manifest)
+
     if managed_instance.exists():
         shutil.rmtree(managed_instance)
-    managed_instance.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(release_instance, managed_instance / "minecraft")
-    instance_id = configure_prism_instance(managed_instance / "minecraft", runtime.get("java"))
+    os.replace(stage_instance, managed_instance)
 
     state = {
         "launcherVersion": APP_VERSION,
@@ -275,13 +363,21 @@ def verify_local(app_dir: pathlib.Path, live_url: str | None = None) -> list[str
     if sha256_bytes(payload) != live["manifestSha256"]:
         return ["manifest hash mismatch"]
     manifest = json.loads(payload.decode("utf-8"))
-    base = app_dir / "releases" / manifest["packVersion"] / "instance"
-    failures = []
+    validate_manifest(manifest)
+
+    release_root = app_dir / "releases" / manifest["packVersion"] / "instance"
+    prism_instance = pathlib.Path(state["prismRoot"]) / "instances" / state["instanceId"]
+    prism_minecraft = prism_instance / "minecraft"
+    failures: set[str] = set()
     for entry in selected_files(manifest):
-        path = base / pathlib.Path(*_safe_rel(entry["path"]).parts)
-        if not verify_entry(path, entry):
-            failures.append(entry["path"])
-    return failures
+        rel = pathlib.Path(*_safe_rel(entry["path"]).parts)
+        if not verify_entry(release_root / rel, entry) or not verify_entry(prism_minecraft / rel, entry):
+            failures.add(entry["path"])
+    if not (prism_instance / "mmc-pack.json").is_file():
+        failures.add("prism:mmc-pack.json")
+    if not (prism_instance / "instance.cfg").is_file():
+        failures.add("prism:instance.cfg")
+    return sorted(failures)
 
 
 def server_ready(state: dict) -> tuple[bool, str]:
@@ -308,7 +404,7 @@ def launch(app_dir: pathlib.Path) -> int:
         raise RuntimeError(message)
     prism = state.get("prismExecutable")
     if not prism:
-        raise RuntimeError("managed Prism runtime is not configured in this development manifest")
+        raise RuntimeError("managed Prism runtime is not configured")
     cmd = [prism, "--dir", state["prismRoot"], "--launch", state["instanceId"]]
     address = state.get("server", {}).get("address")
     if address:
