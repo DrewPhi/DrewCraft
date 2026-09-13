@@ -4,6 +4,7 @@ import dev.drewcraft.DrewCraft;
 import dev.drewcraft.config.DrewCraftConfig;
 import dev.drewcraft.persistence.DrewCraftSavedData;
 import dev.drewcraft.strategic.model.StrategicGroup;
+import dev.drewcraft.strategic.model.StrategicGroupType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -41,8 +42,14 @@ public final class StrategicScheduler {
         nextDueGameTime = now + interval;
 
         DrewCraftSavedData data = DrewCraftSavedData.get(server);
+        List<StrategicGroup> scheduledGroups = data.strategicGroups();
+        if (!DrewCraftConfig.STRATEGIC_HERDS.get()) {
+            scheduledGroups = scheduledGroups.stream()
+                    .filter(group -> group.groupType() != StrategicGroupType.HERD)
+                    .toList();
+        }
         CycleStats stats = advanceGroups(
-                data.strategicGroups(),
+                scheduledGroups,
                 now,
                 DrewCraftConfig.STRATEGIC_MAX_GROUPS_PER_CYCLE.get(),
                 DrewCraftConfig.STRATEGIC_MAX_MILLIS_PER_CYCLE.get(),
