@@ -12,7 +12,6 @@ import dev.drewcraft.strategic.source.GeneratedSourceRegistration;
 import dev.drewcraft.strategic.source.SourceClass;
 import dev.drewcraft.strategic.source.SourceCorePosition;
 import dev.drewcraft.strategic.source.SourceDescriptor;
-import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,10 +30,11 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 /**
  * Imports the offline-built production strategic seed file. This class never searches structures,
  * animals, or distant chunks. Source authority is registered from the file at server start; the
- * physical Source Core is placed only when its exact chunk naturally loads.
+ * physical Source Core is placed only when its exact chunk is already loaded or naturally loads.
  */
 public final class ProductionStrategicSeedRuntime {
     public static final String FILE_NAME = "drewcraft-strategic-seeds.json";
+    public static final String WORLD_METADATA_FILE_NAME = "drewcraft-world.json";
     private static final int SCHEMA_VERSION = 1;
     private static final Map<String, Map<Long, List<SourceDescriptor>>> SOURCES_BY_CHUNK = new HashMap<>();
 
@@ -44,7 +44,8 @@ public final class ProductionStrategicSeedRuntime {
     public static synchronized void onServerStarted(ServerStartedEvent event) {
         MinecraftServer server = event.getServer();
         SOURCES_BY_CHUNK.clear();
-        Path file = server.getWorldPath(LevelResource.ROOT).resolve(FILE_NAME);
+        Path worldRoot = server.getWorldPath(LevelResource.ROOT);
+        Path file = worldRoot.resolve(FILE_NAME);
         if (!Files.isRegularFile(file)) {
             DrewCraft.LOGGER.warn("Production strategic seed file not found at {}; production sources/herds were not imported", file);
             return;
@@ -57,6 +58,8 @@ public final class ProductionStrategicSeedRuntime {
             }
             String worldId = requiredString(root, "worldId");
             int worldRevision = requiredInt(root, "worldRevision");
+            validateWorldIdentity(worldRoot.resolve(WORLD_METADATA_FILE_NAME), worldId, worldRevision);
+
             DrewCraftSavedData data = DrewCraftSavedData.get(server);
             int sources = importSources(server, data, root.getAsJsonArray("sources"));
             int herds = importHerds(data, root.getAsJsonArray("herds"), server.overworld().getGameTime());
@@ -79,10 +82,7 @@ public final class ProductionStrategicSeedRuntime {
         List<SourceDescriptor> descriptors = byChunk.get(ChunkPos.asLong(pos.x, pos.z));
         if (descriptors == null) return;
         for (SourceDescriptor descriptor : descriptors) {
-            GeneratedSourceRegistration.RegistrationResult result = GeneratedSourceRegistration.register(level, descriptor);
-            if (!result.corePlaced() && !"already_cleared".equals(result.status())) {
-                DrewCraft.LOGGER.debug("Production source {} core placement status={}", result.source().sourceId(), result.status());
-            }
+            placeCoreIfLoaded(level, descriptor);
         }
     }
 
@@ -112,9 +112,24 @@ public final class ProductionStrategicSeedRuntime {
                     .computeIfAbsent(dimension, ignored -> new HashMap<>())
                     .computeIfAbsent(chunkKey, ignored -> new ArrayList<>())
                     .add(descriptor);
+
+            // Spawn/forced chunks may have loaded before ServerStartedEvent. Do not wait for a
+            // future unload/reload: place the core now only if its exact chunk is already loaded.
+            ServerLevel level = levelFor(server, dimension);
+            if (level != null) placeCoreIfLoaded(level, descriptor);
             count++;
         }
         return count;
+    }
+
+    private static void placeCoreIfLoaded(ServerLevel level, SourceDescriptor descriptor) {
+        SourceCorePosition core = descriptor.corePosition();
+        BlockPos corePos = new BlockPos(core.x(), core.y(), core.z());
+        if (!level.hasChunkAt(corePos)) return;
+        GeneratedSourceRegistration.RegistrationResult result = GeneratedSourceRegistration.register(level, descriptor);
+        if (!result.corePlaced() && !"already_cleared".equals(result.status())) {
+            DrewCraft.LOGGER.debug("Production source {} core placement status={}", result.source().sourceId(), result.status());
+        }
     }
 
     private static int importHerds(DrewCraftSavedData data, JsonArray items, long gameTime) {
@@ -137,6 +152,33 @@ public final class ProductionStrategicSeedRuntime {
             else DrewCraft.LOGGER.warn("Could not register production herd {}: {}", descriptor.stableHerdId(), result.status());
         }
         return count;
+    }
+
+    private static void validateWorldIdentity(Path metadataFile, String expectedWorldId, int expectedRevision) throws Exception {
+        if (!Files.isRegularFile(metadataFile)) {
+            throw new IllegalStateException("production world metadata is missing: " + metadataFile);
+        }
+        try (Reader reader = Files.newBufferedReader(metadataFile)) {
+            JsonObject metadata = JsonParser.parseReader(reader).getAsJsonObject();
+            if (requiredInt(metadata, "schemaVersion") != SCHEMA_VERSION) {
+                throw new IllegalStateException("unsupported production world metadata schema");
+            }
+            String actualWorldId = requiredString(metadata, "worldId");
+            int actualRevision = requiredInt(metadata, "worldRevision");
+            if (!expectedWorldId.equals(actualWorldId) || expectedRevision != actualRevision) {
+                throw new IllegalStateException(
+                        "strategic seed/world identity mismatch: seeds=" + expectedWorldId + "@" + expectedRevision
+                                + " world=" + actualWorldId + "@" + actualRevision
+                );
+            }
+        }
+    }
+
+    private static ServerLevel levelFor(MinecraftServer server, String dimensionId) {
+        for (ServerLevel level : server.getAllLevels()) {
+            if (level.dimension().location().toString().equals(dimensionId)) return level;
+        }
+        return null;
     }
 
     private static String requiredString(JsonObject object, String name) {
