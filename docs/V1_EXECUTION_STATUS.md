@@ -1,7 +1,7 @@
 # DrewCraft V1 Execution Status
 
 **Last updated:** 2026-09-12  
-**Current phase:** **BP1-BP6 strategic hostile-world gameplay complete -> BP7 herds/ecology next**  
+**Current phase:** **BP1-BP7 strategic gameplay/ecology complete -> BP8 production convergence next**  
 **Current breakpoint handoff:** `docs/CURRENT_BREAKPOINT.md`  
 **Breakpoint protocol:** `docs/DEVELOPMENT_BREAKPOINTS.md`
 
@@ -37,7 +37,7 @@ Persistent generated-geography sources, Source Core, mining/explosion clearing, 
 
 Detailed contract: `docs/HOSTILE_FORCES_V1.md`.
 
-JSON-driven undead/raider force templates now support patrols, hordes, raids, armies, and reinforcements; exact variable-strength source debits; persistent explainable mission knowledge; non-omniscient targeting; and large represented populations that reuse BP3 tactical caps.
+JSON-driven undead/raider templates support patrols, hordes, raids, armies, and reinforcements; exact source population debits; persistent explainable mission knowledge; non-omniscient targeting; and large represented populations reusing BP3 tactical caps.
 
 Representative proof: `256 strategic -> 64 active -> kill 37 -> 219 strategic / 27 active -> restart -> same mission/counts -> 37 refill slots`. Evidence: **34729884759**, large-army proof **34729684064**, variable-strength source transaction **34729641645**.
 
@@ -45,47 +45,52 @@ Representative proof: `256 strategic -> 64 active -> kill 37 -> 219 strategic / 
 
 Detailed contract: `docs/SIEGE_V1.md`.
 
-Implemented:
+Siege occurs only for loaded blocked `RAID`/`ARMY` encounters after ordinary navigation fails repeatedly. Local planning is bounded/cached; gates/doors/useful weak barriers and hardness affect scoring; protected/stateful/decorative blocks are avoided; one deliberate corridor is executed by designated breaker units. Open-gate, sealed-fort, protected-block, decorative-block, role/unit, and hard-work-bound tests pass.
 
-- independent `features.strategicSiege` kill switch;
-- siege only for already-materialized loaded `RAID`/`ARMY` encounters;
-- designated breaker types only (`zombie`, `husk`, `vindicator`, `ravager`);
-- normal Minecraft navigation attempted first every siege check;
-- 3 failed navigation checks required before planning;
-- already-loaded 12-block-radius local snapshots only; unloaded cells become protected rather than force-loaded;
-- deterministic bounded local breach search with 1,200-node default hard limit;
-- maximum 4 breach cells in one corridor;
-- encounter/local-geometry plan caching;
-- scoring for objective progress, hardness, gates, doors, weak barriers, hard barriers, decorative penalties, and protected blocks;
-- `#drewcraft:siege_protected` hard exclusion, including Source Core and bedrock-class blocks;
-- block entities protected by default so stateful containers/machines are not casually breached;
-- data-pack-extensible `#drewcraft:siege_decorative` high-cost tag;
-- one designated breaker approaches only the explicit planned breach position;
-- block is revalidated immediately before destruction;
-- every successful break invalidates the plan and forces a later re-snapshot/replan;
-- max 8 siege encounters inspected per 20-tick cycle and 30-tick per-encounter break cooldown.
+Final BP6 code/test head **`1bab32c0c6028e57f99f8684d7097c9c33ed02fa`**; CI **34730303373 — SUCCESS**. Runtime compile **34730277755 — SUCCESS**.
 
-Acceptance tests prove:
+### BP7 — strategic herds + local-spawn coexistence — PASS
 
-- open entrance/gate -> open route, **zero destruction**;
-- sealed fort -> useful weak breach;
-- gate preferred over harder wall even with a detour;
-- irrelevant decorative cells are not chosen because of proximity;
-- protected cells never enter a breach corridor;
-- impossible geometry obeys the hard search bound;
-- only eligible strategic roles and designated units can breach.
+Detailed contract: `docs/HERDS_ECOLOGY_V1.md`.
 
-The actual NeoForge loaded-world runtime compiles against the pinned 1.21.1 mappings, including vanilla navigation and deliberate block destruction.
+BP7 uses a deliberately additive wildlife model:
 
-Final BP6 code/test head **`1bab32c0c6028e57f99f8684d7097c9c33ed02fa`**; DrewCraft mod CI **34730303373 — SUCCESS**. Earlier full runtime compile **34730277755 — SUCCESS**.
+- strategic herds are created only from explicit deterministic `WildHerdDescriptor`s;
+- DrewCraft never scans or absorbs existing Minecraft animals into a herd;
+- herd IDs derive from dimension + species + migration endpoints;
+- `HERD` groups use faction `drewcraft:wildlife`, persisted `MIGRATION_ROUTE` mission state, and no hostile Source Core;
+- migration reuses BP1/BP2 cached coarse routes and unloaded arithmetic;
+- materialization/casualties/restart reuse BP3 unchanged;
+- default tactical cap remains 64 active entities, with the rest of a large herd abstract;
+- idempotent re-registration cannot reset an already-moving/casualty-bearing herd;
+- `features.strategicHerds` independently pauses herd movement/materialization while preserving herd records;
+- disabling the feature collapses only DrewCraft-tagged tactical herd copies, never ordinary local animals;
+- `/drewcraft herd create-test|list|ecology` provides diagnostics.
 
-Representative visual multiplayer castle tests remain BP9/BP10 acceptance, where final Terrain Diffusion terrain and real player/Create structures are available.
+Local ecology is intentionally independent. DrewCraft does not hook global mob-spawn events, replace `NaturalSpawner`, rewrite `SpawnPlacements`, or manipulate `BaseSpawner`; untagged entity joins return before any stale-strategic cancellation path. Thus strategic caps do not quota ordinary night/cave mobs, livestock, mob farms, or vanilla/modded spawners.
+
+Representative automated herd proof:
+
+```text
+80 strategic cows
+-> abstract migration
+-> 64 active / 16 abstract
+-> 10 confirmed deaths
+-> 70 strategic survivors / 54 active
+-> next wave = 10 (64-active ceiling)
+-> save/restart preserves HERD + migration mission + counts
+-> reconcile -> 70 strategic survivors, TRAVELING
+```
+
+Final BP7 code/test head **`dfa507d0ac9c330c16897afe19f88467c06784a6`**; DrewCraft mod CI **34730837899 — SUCCESS**.
+
+Production-world species/count/corridor seeds move to BP8. Representative final-pack observation of migrating herds plus night/cave spawning, a mob farm, and vanilla/modded spawners remains BP9/BP10 acceptance.
 
 ## Strategic performance invariant
 
 > **Keep the world abstract while nobody is looking; materialize only what players can interact with; cache expensive decisions; persist every important consequence.**
 
-In particular, distant groups never run siege logic. Siege work is small, local, bounded, cached, and only exists while a relevant tactical encounter is loaded.
+This now applies to hostile forces and wildlife alike. Ordinary Minecraft ecology remains a separate local system rather than being folded into DrewCraft strategic bookkeeping.
 
 ## Remaining critical path
 
@@ -96,14 +101,12 @@ DONE BP3 transactional materialization + casualties
 DONE BP4 hostile sources + permanent clearing
 DONE BP5 factions / patrols / hordes / raids / armies / reinforcements
 DONE BP6 bounded path-first siege planner
-→ NEXT BP7 strategic herds + local-spawn coexistence
-→ BP8 production world / deployment / release / launcher convergence
+DONE BP7 strategic herds + local-spawn coexistence
+→ NEXT BP8 production world / deployment / release / launcher convergence
 → BP9 cross-system scale / failure / recovery hardening
 → BP10 release candidate + hard acceptance
 → 1.0.0
 ```
-
-Production-world/pregeneration, host benchmarking, immutable release artifacts, server updater/backups, and Windows/macOS launcher work remain parallel tracks and converge before the RC freeze.
 
 ## Gate status
 
@@ -119,17 +122,14 @@ Production-world/pregeneration, host benchmarking, immutable release artifacts, 
 | BP4 hostile sources | **PASS** | 34728862438 |
 | BP5 hostile population breadth | **PASS** | 34729884759 + 34729684064 |
 | BP6 siege | **PASS** | 34730303373; runtime compile 34730277755 |
-| BP7 herds/local spawning | **NEXT** | ecology/coexistence proof |
-| Production world/pregen/restore | **OPEN / PARALLEL** | converge by BP8 |
-| ARM/production host benchmark | **OPEN / PARALLEL** | representative world required |
-| Release/server updater | **OPEN / PARALLEL** | converge by BP8 |
-| Windows/macOS launcher | **OPEN / PARALLEL** | converge by BP8 |
+| BP7 herds/local spawning | **PASS** | 34730837899; explicit ecology isolation guard |
+| BP8 production/release convergence | **NEXT** | world/host/release/updater/launcher convergence |
 | V1 full-stack acceptance | **OPEN** | BP9-BP10 |
 
-## Immediate next sequence — BP7
+## Immediate next sequence — BP8
 
-On the next **"go"**, follow `docs/CURRENT_BREAKPOINT.md` and the BP7 definition in `docs/DEVELOPMENT_BREAKPOINTS.md`.
+On the next **"go"**, follow `docs/CURRENT_BREAKPOINT.md` and BP8 in `docs/DEVELOPMENT_BREAKPOINTS.md`.
 
-BP7 must add persistent wild herds using the same abstract/materialized kernel while explicitly excluding named/domesticated/leashed/penned/player-owned animals from silent absorption, and must prove strategic systems do not replace or suppress ordinary night/cave spawning, mob farms, or normal spawners.
+BP8 must converge the production Terrain Diffusion world and pregeneration metadata, real source/herd seeding, production host decision/ARM compatibility, immutable client/server release artifacts and protocol manifest, server update/backup/rollback tooling, off-host restore proof, and one-click Windows plus Apple Silicon macOS install/update/repair paths.
 
-Do **not** begin BP8 production/release convergence until BP7 is reached, reported, and the user says **"go"** again.
+Do **not** begin BP9 full-stack scale/failure/recovery hardening until BP8 is reached, reported, and the user says **"go"** again.
