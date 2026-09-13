@@ -227,6 +227,20 @@ public final class DrewCraftSavedData extends SavedData {
         setDirty();
     }
 
+    /**
+     * Crash recovery for PREPARING/RECONCILING transactions. MATERIALIZED encounters are durable
+     * and intentionally survive restart; only incomplete transition states are rolled back.
+     */
+    public synchronized boolean recoverInterruptedStrategicEncounter(UUID encounterId) {
+        StrategicEncounter encounter = requireEncounter(encounterId);
+        if (encounter.state() != StrategicEncounterState.PREPARING
+                && encounter.state() != StrategicEncounterState.RECONCILING) {
+            return false;
+        }
+        completeStrategicEncounter(encounterId);
+        return true;
+    }
+
     public synchronized void markStrategicDirty() { setDirty(); }
 
     private StrategicEncounter requireEncounter(UUID encounterId) {
