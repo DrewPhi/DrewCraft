@@ -157,6 +157,8 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         (old_mc / "screenshots" / "castle.png").write_bytes(b"player screenshot")
         (old_mc / "resourcepacks").mkdir(parents=True)
         (old_mc / "resourcepacks" / "mine.zip").write_bytes(b"resourcepack")
+        (old_mc / "terrain-diffusion-models").mkdir(parents=True)
+        (old_mc / "terrain-diffusion-models" / "base_model.onnx").write_bytes(b"cached model")
         (old_mc / "options.txt").write_text("fov:0.5\n", encoding="utf-8")
 
         _, _, live_b = self.build_release("0.8.0-b")
@@ -165,6 +167,10 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         new_mc = pathlib.Path(state_b["prismRoot"]) / "instances" / state_b["instanceId"] / "minecraft"
         self.assertEqual(b"player screenshot", (new_mc / "screenshots" / "castle.png").read_bytes())
         self.assertEqual(b"resourcepack", (new_mc / "resourcepacks" / "mine.zip").read_bytes())
+        self.assertEqual(
+            b"cached model",
+            (new_mc / "terrain-diffusion-models" / "base_model.onnx").read_bytes(),
+        )
         self.assertEqual("fov:0.5\n", (new_mc / "options.txt").read_text("utf-8"))
         self.assertEqual([], launcher.verify_local(app))
 

@@ -150,6 +150,8 @@ Do not overwrite user-owned data on pack updates:
 - local logs
 - options that are intentionally user-specific unless policy says otherwise
 - account data
+- downloaded Terrain Diffusion model assets, which are hash-validated runtime
+  cache data and must not be fetched again after each versioned-instance update
 
 Pack-managed config should be explicitly distinguished from user-managed config.
 

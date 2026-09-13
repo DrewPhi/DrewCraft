@@ -149,7 +149,7 @@ Every converge/update:
 4. acquires/verifies pinned Java + Prism if absent;
 5. creates a real Prism instance with `instance.cfg` and `mmc-pack.json` declaring exact Minecraft + NeoForge versions;
 6. atomically promotes the versioned instance;
-7. preserves explicitly user-owned screenshots/resource packs/shader packs/saves/options where not pack-managed;
+7. preserves explicitly user-owned screenshots/resource packs/shader packs/saves/options and Terrain Diffusion's downloaded model cache where not pack-managed;
 8. verifies both the immutable local release cache and the actual Prism instance;
 9. checks safe server health/version information;
 10. launches the exact Prism instance and server address.

@@ -22,8 +22,19 @@ import time
 import urllib.request
 import zipfile
 
-APP_VERSION = "0.1.2"
-PRESERVED_USER_PATHS = ("screenshots", "resourcepacks", "shaderpacks", "saves", "options.txt")
+APP_VERSION = "0.1.3"
+PRESERVED_USER_PATHS = (
+    "screenshots",
+    "resourcepacks",
+    "shaderpacks",
+    "saves",
+    "options.txt",
+    # Terrain Diffusion downloads multi-gigabyte model assets during mod
+    # construction. They are runtime cache data, not pack-managed content, and
+    # must survive the launcher's versioned-instance convergence.
+    "terrain-diffusion-models",
+)
+HARDLINK_PRESERVED_PATHS = frozenset(("terrain-diffusion-models",))
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -296,7 +307,19 @@ def _copy_preserved_user_data(previous_minecraft: pathlib.Path | None, target_mi
         if not source.exists() or target.exists():
             continue
         if source.is_dir():
-            shutil.copytree(source, target)
+            if rel in HARDLINK_PRESERVED_PATHS:
+                # Model assets are immutable and hash-validated by Terrain
+                # Diffusion. Hard-linking avoids copying ~2 GiB on every
+                # converge; copy2 remains the cross-filesystem fallback.
+                def link_or_copy(src, dst):
+                    try:
+                        os.link(src, dst)
+                    except OSError:
+                        shutil.copy2(src, dst)
+
+                shutil.copytree(source, target, copy_function=link_or_copy)
+            else:
+                shutil.copytree(source, target)
         elif source.is_file():
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, target)
