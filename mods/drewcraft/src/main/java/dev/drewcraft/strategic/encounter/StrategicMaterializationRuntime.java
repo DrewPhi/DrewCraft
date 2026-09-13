@@ -105,7 +105,7 @@ public final class StrategicMaterializationRuntime {
                 // PREPARING/RECONCILING surviving a restart means the transaction was interrupted.
                 // Remove any loaded partial tactical objects, then safely return to strategic state.
                 discardLoadedEntities(level, encounter);
-                data.completeStrategicEncounter(encounter.encounterId());
+                data.recoverInterruptedStrategicEncounter(encounter.encounterId());
                 continue;
             }
             if (encounter.state() != StrategicEncounterState.MATERIALIZED) continue;
@@ -123,6 +123,7 @@ public final class StrategicMaterializationRuntime {
             );
             if (playerNearby) {
                 data.touchEncounterPlayerSeen(encounter.encounterId(), now);
+                releaseMissingReservations(level, data, encounter);
                 fillWave(level, data, group, encounter);
                 continue;
             }
@@ -240,6 +241,22 @@ public final class StrategicMaterializationRuntime {
             if (dx * dx + dz * dz <= radiusSquared) return true;
         }
         return false;
+    }
+
+    /**
+     * If a persisted entity UUID is no longer loaded while a player is observing the encounter,
+     * release it back into the abstract reserve. A later stale disk copy is rejected by join tags.
+     */
+    private static void releaseMissingReservations(ServerLevel level, DrewCraftSavedData data,
+                                                   StrategicEncounter encounter) {
+        boolean changed = false;
+        for (UUID entityId : encounter.activeEntityIds()) {
+            if (level.getEntity(entityId) == null) {
+                encounter.detachSurvivor(entityId);
+                changed = true;
+            }
+        }
+        if (changed) data.markStrategicDirty();
     }
 
     private static void discardLoadedEntities(ServerLevel level, StrategicEncounter encounter) {
