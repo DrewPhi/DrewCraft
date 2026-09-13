@@ -10,6 +10,7 @@ on:
       generation_pack_version:
         description: World-generation compatibility identity
         required: true
+        default: drewcraft-worldgen-1
         type: string
       world_revision:
         description: Required production world revision
@@ -139,7 +140,7 @@ jobs:
             --server build/server-application \
             --output build/release-layout
 
-      - name: Build immutable release manifest and stable-pointer candidate
+      - name: Build immutable provider-aware release manifest and stable-pointer candidate
         env:
           PACK_VERSION: ${{ inputs.pack_version }}
           GENERATION_PACK_VERSION: ${{ inputs.generation_pack_version }}
@@ -150,7 +151,7 @@ jobs:
         run: |
           args=(
             --layout build/release-layout
-            --output build/release-manifest.json
+            --output build/release-manifest.raw.json
             --base-url "$BASE_URL"
             --pack-version "$PACK_VERSION"
             --protocol-version 1
@@ -165,6 +166,9 @@ jobs:
           if [[ -n "$SERVER_ADDRESS" ]]; then args+=(--server-address "$SERVER_ADDRESS"); fi
           if [[ -n "$HEALTH_URL" ]]; then args+=(--health-url "$HEALTH_URL"); fi
           python tools/build_release_manifest.py "${args[@]}"
+          python tools/apply_release_acquisition.py build/release-manifest.raw.json \
+            --hash-evidence pack/manifest/candidate_hashes.yaml \
+            --output build/release-manifest.json
           python tools/release_contract.py validate build/release-manifest.json
           manifest_url="$BASE_URL/$PACK_VERSION/release-manifest.json"
           python tools/release_contract.py promote build/release-manifest.json \
@@ -192,16 +196,14 @@ jobs:
           python tools/release_contract.py verify build/release-manifest.json --root build/verify-client --side client
           python tools/release_contract.py verify build/release-manifest.json --root build/verify-server --side server
 
-      - name: Package immutable candidate payload
+      - name: Package publishable payload without rehosting provider artifacts
         run: |
-          mkdir -p build/publish/${{ inputs.pack_version }}
-          cp -a build/release-layout/common build/publish/${{ inputs.pack_version }}/common
-          cp -a build/release-layout/client build/publish/${{ inputs.pack_version }}/client
-          cp -a build/release-layout/server build/publish/${{ inputs.pack_version }}/server
-          cp build/release-manifest.json build/publish/${{ inputs.pack_version }}/release-manifest.json
-          cp build/live.json build/publish/live.json
-          cp build/verified-pack-evidence.json build/publish/${{ inputs.pack_version }}/verified-pack-evidence.json
-          find build/publish -type f -print0 | sort -z | xargs -0 sha256sum > build/publish/SHA256SUMS
+          python tools/package_release_payload.py \
+            --layout build/release-layout \
+            --manifest build/release-manifest.json \
+            --live build/live.json \
+            --evidence build/verified-pack-evidence.json \
+            --output build/publish
 
       - name: Upload release-candidate payload
         uses: actions/upload-artifact@v6
