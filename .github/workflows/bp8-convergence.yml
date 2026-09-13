@@ -8,10 +8,12 @@ on:
       - 'infra/**'
       - 'tools/release_contract.py'
       - 'tools/build_release_manifest.py'
+      - 'tools/assemble_release_layout.py'
       - 'tools/world_seed_index.py'
       - 'tools/world_bundle.py'
       - 'world/**'
       - 'tests/test_bp8_release_ops.py'
+      - 'pack/manifest/pack.yaml'
       - 'mods/drewcraft/**'
       - '.github/workflows/bp8-convergence.yml'
   workflow_dispatch:
