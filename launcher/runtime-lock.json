@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "javaVersion": "21.0.12.1+1",
+  "prismVersion": "11.1.0",
+  "platforms": {
+    "windows-x86_64": {
+      "java": {
+        "version": "21.0.12.1+1",
+        "archive": "zip",
+        "executableBasename": "java.exe",
+        "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jre_x64_windows_hotspot_21.0.12.1_1.zip",
+        "size": 48999141,
+        "sha256": "d35f31e712f0fcf6ac5a093edc90204fbff22f720ba3950bd09d331d5e621636"
+      },
+      "prism": {
+        "version": "11.1.0",
+        "archive": "zip",
+        "executableBasename": "prismlauncher.exe",
+        "url": "https://github.com/PrismLauncher/PrismLauncher/releases/download/11.1.0/PrismLauncher-Windows-MinGW-w64-Portable-11.1.0.zip",
+        "size": 43926838,
+        "sha256": "2bf5e879ea1c3f6a1aaaa43539667ce296308abf3e6a984d5cc4c48bfe3c431c"
+      }
+    },
+    "macos-arm64": {
+      "java": {
+        "version": "21.0.12.1+1",
+        "archive": "tar.gz",
+        "executableBasename": "java",
+        "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.12.1_1.tar.gz",
+        "size": 48144965,
+        "sha256": "dec50fc6f9fcd4fe3ae8cabf5a5fa68f6afc48841f7698e468e9aa5d54beed84"
+      },
+      "prism": {
+        "version": "11.1.0",
+        "archive": "zip",
+        "executableBasename": "prismlauncher",
+        "url": "https://github.com/PrismLauncher/PrismLauncher/releases/download/11.1.0/PrismLauncher-macOS-11.1.0.zip",
+        "size": 43614715,
+        "sha256": "b6ae145a02dd9bbc7c44ce3fa42ec942daca8c829584e21c66290a8e6ca89af8"
+      }
+    },
+    "linux-arm64-server": {
+      "java": {
+        "version": "21.0.12.1+1",
+        "archive": "tar.gz",
+        "executableBasename": "java",
+        "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.12.1_1.tar.gz",
+        "size": 51149460,
+        "sha256": "14be1f35ebdbd1f6e8d57eb911a3ffb74d6d9aa255abc5daf2b1302002cf2cf2"
+      }
+    }
+  }
+}
