@@ -2,173 +2,187 @@
 
 **Updated:** 2026-09-12  
 **Protocol:** `docs/DEVELOPMENT_BREAKPOINTS.md`  
-**Last completed breakpoint:** **BP4 — Hostile sources + permanent clearing**  
-**Next breakpoint:** **BP5 — Factions, patrols, hordes, raids, and large armies**
+**Last completed breakpoint:** **BP5 — Factions, patrols, hordes, raids, and large armies**  
+**Next breakpoint:** **BP6 — Path-first bounded siege planner**
 
-## BP4 status — REACHED
+## BP5 status — REACHED
 
-BP4 is complete at implementation/compile/unit/runtime-wiring scope. DrewCraft now has persistent hostile strategic producers layered on the BP1-BP3 strategic kernel.
+BP5 is complete at implementation/compile/unit/runtime-wiring scope. DrewCraft now has a data-driven hostile population layer on top of the BP1-BP4 strategic substrate.
 
-The detailed implementation contract is `docs/STRATEGIC_SOURCES.md`; `docs/SOURCE_CORE_SPEC.md` remains the product-level clearing contract.
+Detailed contract: `docs/HOSTILE_FORCES_V1.md`.
 
 ## Implementation
 
-### Persistent source authority
+### Data-driven factions and force roles
 
-World persistence is now schema **4** and stores versioned `SourceRecord`s alongside strategic groups and encounters.
+Packaged hostile-force content now lives in:
 
-A source persists:
+`mods/drewcraft/src/main/resources/data/drewcraft/strategic/factions.json`
 
-- stable source UUID;
-- dimension + generated structure ID + deterministic structure anchor;
-- source class and faction ID;
-- bound Source Core position;
-- `INTACT | DAMAGED | CLEARED` state;
-- remaining production budget;
-- launch strength/cooldown/speed;
-- next production time and launch serial;
-- transaction generation counter;
-- clear time/cause/actor metadata.
+`StrategicFactionCatalog` parses the versioned JSON into immutable `StrategicForceTemplate`s. Templates define:
 
-Schema-3 worlds migrate with an empty source registry; future source/world schemas fail closed.
+- faction;
+- strategic role;
+- allowed source classes;
+- strength multiplier;
+- target policy;
+- strategic travel-distance range;
+- weighted Minecraft entity composition.
 
-### Stable generated-geography identity
+V1 data contains:
 
-`SourceDescriptor` derives its stable UUID from:
+- `drewcraft:test_hostile`;
+- `drewcraft:undead`;
+- `drewcraft:raiders`.
 
-```text
-drewcraft-source-v1 | dimension | structureId | anchorX | anchorY | anchorZ
-```
+The hostile roles are:
 
-The physical Source Core is deliberately not the authority. Rediscovery is idempotent, a cleared source cannot be rediscovered back to life, conflicting immutable rediscovery fails closed, and two source identities may not bind the same core position.
+- `PATROL`;
+- `HORDE` / warband;
+- `RAID`;
+- `ARMY`;
+- `REINFORCEMENT`.
 
-`GeneratedSourceRegistration` is the narrow integration seam for DrewCraft-owned or third-party generated structures/templates. Structure integration supplies the exact generated descriptor; DrewCraft registers it and may place the core only when that core chunk is already loaded. It never searches or force-loads distant chunks.
+Undead and raider profiles use meaningfully different entity compositions. Composition allocation is deterministic and always sums exactly to represented strategic strength.
 
-### Physical Source Core
+### Variable-size source production
 
-`drewcraft:source_core` is now a real registered block.
+Sources no longer assume every strategic launch costs the same number of units.
 
-V1 safety behavior:
+A template computes its represented strength from the source base production strength. The source is charged the exact resulting `StrategicGroup.totalStrength()` inside the same synchronized `DrewCraftSavedData` authority used by Source Core clearing.
 
-- no BlockItem is registered;
-- piston reaction is `BLOCK`;
-- successful player destruction invokes the authoritative clear transaction;
-- actual explosion destruction invokes the same transaction;
-- an unbound/copied core block is strategically inert;
-- replacing a cleared core cannot reactivate its `SourceRecord`.
+Before commit DrewCraft verifies source identity/generation, source state, group source ID, faction, dimension, duplicate group ID, and available source budget.
 
-The current development model uses a placeholder vanilla texture; visual faction theming does not affect strategic authority.
+This preserves BP4 clear-versus-launch race safety while allowing genuinely large strategic forces.
 
-### Permanent clearing transaction
-
-Clearing is synchronized and idempotent.
-
-On the first legitimate clear:
-
-1. source state becomes `CLEARED`;
-2. source generation increments;
-3. clear metadata is recorded;
-4. future production is disabled permanently under V1 rules;
-5. world state is marked dirty;
-6. the irreversible clear is immediately flushed through world `DimensionDataStorage` rather than waiting for ordinary autosave.
-
-The admin clear command uses the same crash-durable persistence rule.
-
-### Bounded source production
-
-`SourceProductionScheduler` iterates persistent records only. It does not scan source chunks or keep them loaded.
-
-Default work limits:
-
-- production cycle every **200 ticks**;
-- **16** source records inspected per cycle;
-- **4** successful strategic launches per cycle;
-- **1200-tick** backoff after bounded route failure.
-
-The scheduler rotates its source cursor between cycles so a registry larger than the per-cycle inspection cap cannot permanently starve later source UUIDs.
-
-A failed BP2 route consumes no source population.
-
-### Clear-versus-launch race safety
-
-The scheduler captures `source.generation`, performs bounded route planning, then attempts an atomic `commitSourceLaunch` using the captured generation.
-
-Clearing increments the generation. Therefore:
-
-- a group whose commit wins before clearing is a valid independent strategic population and survives;
-- a route planned before clear but committed after clear is rejected;
-- no new group can commit after `CLEARED` becomes authoritative.
-
-This race is tested directly by clearing a source from inside the planner after generation capture and before commit.
-
-### Real strategic-group production
-
-BP4 launches real BP1/BP2 `StrategicGroup`s carrying their parent `sourceId`, persisted route, composition, strength, and normal BP3 materialization compatibility.
-
-The BP4 content profile is intentionally minimal: deterministic routed zombie `PATROL` groups prove the source→group transaction. **BP5**, not BP4, owns data-driven factions, multiple hostile compositions, patrol/horde/raid/army/reinforcement roles, richer objective selection, and large-army semantics.
-
-### Admin/debug surface
+Example V1 stronghold army:
 
 ```text
-/drewcraft source create-test
-/drewcraft source list
-/drewcraft source inspect <sourceId>
-/drewcraft source clear <sourceId>
-/drewcraft source perf
+base source launch strength = 32
+army multiplier = 8
+represented army strength = 256
+persistent source population debit = 256
 ```
 
-Inspection exposes source identity/state/core, budget/cooldown/generation/launch count, clear metadata, and existing strategic groups from that source. Performance diagnostics expose scheduler work, route failures, rejected race commits, fairness cursor, and CPU time.
+### Persistent mission state
 
-## BP4 acceptance evidence
+`StrategicGroup` is now schema **3** and persists a `StrategicMission` containing:
 
-Focused automated tests cover:
+- force-template ID;
+- target-knowledge category;
+- human-readable knowledge explanation;
+- exact objective position;
+- mission issue game time.
 
-- stable deterministic source identity;
-- idempotent rediscovery;
-- conflicting rediscovery fails closed;
-- duplicate core binding fails closed;
-- SourceRecord NBT round trip;
-- future SourceRecord schema rejection;
-- schema-3 → schema-4 world migration;
-- idempotent permanent clear;
-- cleared state survives save/reload;
-- rediscovery cannot reactivate a cleared source;
-- global source-launch cap;
-- fair bounded scheduler rotation;
-- failed route consumes no population and backs off;
-- clear-during-planning invalidates the stale launch commit;
-- group committed before clearing survives clearing;
-- that committed group survives save/restart with its source identity;
-- cleared source still refuses a new launch after restart.
+Schema-1 and schema-2 strategic groups migrate to `LEGACY_ROUTE` mission state using their existing route destination. Future group schemas still fail closed.
+
+The group constructor also verifies that composition counts sum exactly to `totalStrength`.
+
+### Non-omniscient targeting
+
+Target selection explicitly records **why** the force knows its target:
+
+- `SOURCE_GEOGRAPHY` — local/regional routes derived from the source itself;
+- `SCOUTED_REGION` — deterministic scouting objective;
+- `ALLIED_SOURCE_LOCATION` — another persistent intact same-faction source;
+- `LEGACY_ROUTE` — migration state for old groups.
+
+The BP5 source planner has no nearest-player/base lookup. A scouted army target is deterministic from persistent source/template/launch state and carries the explanation `no player position queried`.
+
+This policy is separated from runtime route calculation and is unit-tested as a pure strategic decision.
+
+### Large armies remain lightweight
+
+BP5 deliberately does not increase BP3's tactical caps.
+
+Default loaded limits remain:
+
+- **64 active entities per encounter**;
+- **128 successful new strategic entities globally per materialization cycle**;
+- **32 encounter records processed per cycle**.
+
+A 256-unit strategic army can therefore travel unloaded as one record while at most 64 of its units exist as tactical entities around players.
+
+### Representative BP5 acceptance proof
+
+The automated large-army scenario proves:
+
+```text
+source budget = 384
+        |
+commit 256-unit ARMY
+        v
+source budget = 128
+        |
+materialize encounter
+        v
+64 tactical reservations, 192 still abstract
+        |
+37 confirmed deaths
+        v
+strategic survivors = 219
+loaded survivors = 27
+        |
+next wave eligibility = exactly 37
+        |
+save / restart
+        v
+ARMY role + mission + target + 219 population + 27 encounter reservations all preserved
+```
+
+At no point does the test require 256 Minecraft entities to be loaded.
+
+## BP5 acceptance evidence
+
+Focused tests cover:
+
+- packaged versioned faction catalog loading;
+- undead and raider support for all five hostile roles;
+- deterministic exact weighted composition allocation;
+- affordability filtering;
+- exact variable-strength source population debit;
+- BP4 generation-lock compatibility for variable-strength launches;
+- mission NBT round trip;
+- schema-1/schema-2 mission migration;
+- future group-schema rejection;
+- non-omniscient scouted target policy without runtime routing/config dependency;
+- **256-unit army -> 64 active -> kill 37 -> 219 strategic / 27 active -> exactly 37 refill slots**;
+- save/restart preservation of army role, mission, target, casualties, and encounter authority.
 
 ### CI
 
-- final BP4 code/test head: **`188fff9583d917aeb44fd8802987f0b51604b178`**
-- DrewCraft mod CI: **run `34728862438` — SUCCESS**
+- final BP5 code/test head: **`c8bb18e8e6af986b614db08235c0d8b4202926a9`**
+- final DrewCraft mod CI: **run `34729884759` — SUCCESS**
 - job: `build-and-test` — **SUCCESS**
 - command: `gradle -p mods/drewcraft test build --stacktrace --no-daemon`
-- earlier focused persistence run `34728805083` and source-schema run `34728787877` also passed.
+- representative large-army proof run **`34729684064` — SUCCESS**
+- variable-strength source transaction run **`34729641645` — SUCCESS**
 
-## Important production-world boundary
+## Important V1 boundaries
 
-BP4 completes source identity, discovery, production, clearing, race safety, persistence, physical core behavior, and the structure-registration API.
+BP5 establishes force identity, faction composition, represented population size, mission/objective knowledge, exact source accounting, bounded materialization, casualty persistence, and restart behavior.
 
-The final production-world/pregeneration track must still select the concrete DrewCraft/third-party structure templates that act as camps/forts/cities/etc., assign deterministic Source Core anchors to those templates, and call `GeneratedSourceRegistration` as those structures are generated/indexed. This is deliberately a world-build integration task rather than a recurring live server scan.
+Still intentionally deferred:
 
-Later representative/full-stack acceptance will visually prove Source Core placement and destruction in those final structures and backup/restore of their cleared states.
+- exact balance/frequency/composition tuning beyond sane V1 defaults;
+- final production structure-to-faction assignments during world-build integration;
+- representative in-world visual/load testing in the final pack;
+- any fortification block-breaking or breach selection — **BP6 owns siege behavior**.
 
-## Next: BP5
+## Next: BP6
 
-On the next **"go"**, continue until BP5 is reached.
+On the next **"go"**, continue until BP6 is reached.
 
-BP5 expands the now-proven generic source/group pipeline into the V1 hostile population system:
+BP6 must implement a bounded path-first siege planner with these rules:
 
-1. data-driven faction and group templates;
-2. patrol, horde/warband, raid, army, and reinforcement roles;
-3. multiple meaningful hostile compositions;
-4. bounded large-army wave materialization using BP3;
-5. non-omniscient/explainable target knowledge;
-6. persistent mission/casualty state through unload/restart;
-7. representative large-army proof without loading every represented unit.
+1. ordinary navigation is attempted first;
+2. siege planning runs only for loaded, genuinely blocked encounters;
+3. only siege-capable hostile roles/units may breach;
+4. breach search is bounded and cached;
+5. gates, doors, weak/useful barriers, hardness, and protected tags affect scoring;
+6. a breach is a constrained useful corridor rather than indiscriminate destruction;
+7. an open gate is used instead of breaking walls;
+8. a sealed fort yields a useful deliberate breach;
+9. irrelevant nearby decorative structures/blocks are not selected merely because they are close.
 
-Stop and report again when BP5 passes. Do not begin BP6 siege planning until the user says **"go"** after that report.
+Stop and report again when BP6 passes. Do not begin BP7 herds/local-spawn coexistence until the user says **"go"** after that report.
