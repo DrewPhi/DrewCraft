@@ -1,10 +1,14 @@
 # DrewCraft V1 Execution Status
 
 **Last updated:** 2026-09-12  
-**Current phase:** environment/aviation/radar integration head implemented -> strategic-world kernel next  
-**Canonical contracts:** `docs/v_1_requirements.md`, `docs/v_1_development_tree.md`, `docs/V1_REMAINING_EXECUTION_PLAN.md`, and the V1 radar scope amendment `docs/RADAR_V1.md`
+**Current phase:** **Stage 11 strategic-world kernel / BP1-BP2 complete -> BP3 materialization next**  
+**Current breakpoint handoff:** `docs/CURRENT_BREAKPOINT.md`  
+**Breakpoint protocol:** `docs/DEVELOPMENT_BREAKPOINTS.md`  
+**Canonical contracts:** `docs/v_1_requirements.md`, `docs/v_1_development_tree.md`, `docs/V1_REMAINING_EXECUTION_PLAN.md`, `docs/STRATEGIC_ROUTING.md`, and the V1 radar scope amendment `docs/RADAR_V1.md`
 
-This file is the live execution-state overlay for DrewCraft V1. The requirements document defines the overall V1 product contract; the development tree defines dependency order; `docs/V1_REMAINING_EXECUTION_PLAN.md` is the detailed post-8B plan from the current state through `1.0.0`; this file records which gates have actually passed and what work is next. For radar specifically, `docs/RADAR_V1.md` supersedes the older Stage 10 custom-hardware / V1 cockpit-radar implementation details: V1 uses Create: Radars for physical ground radar, Project Atmosphere's existing handheld Weather Radar for pilots/explorers, and defers an MTS cockpit radar instrument to V1.1+.
+This file is the live execution-state overlay for DrewCraft V1. The requirements document defines the overall V1 product contract; the development tree defines dependency order; `docs/V1_REMAINING_EXECUTION_PLAN.md` is the detailed post-8B plan through `1.0.0`; `docs/CURRENT_BREAKPOINT.md` is the exact stop/resume handoff for "go" development sessions.
+
+For radar specifically, `docs/RADAR_V1.md` supersedes the older Stage 10 custom-hardware / V1 cockpit-radar implementation details: V1 uses Create: Radars for physical ground radar, Project Atmosphere's existing handheld Weather Radar for pilots/explorers, and defers an MTS cockpit radar instrument to V1.1+.
 
 ## Certified base snapshot and current integration profile
 
@@ -62,33 +66,65 @@ V1 uses the official **Create: Radars 0.4.9.4** physical ground radar instead of
 
 - Create: Radars owns dish construction, Create-powered operation, hardware range, native contacts, filters, networks and monitors;
 - a server-authoritative 9x9 Project Atmosphere weather product is cached for 20 ticks per radar/range;
-- the Create radar's own hardware range defines the weather product radius, so larger dish constructions naturally expand potential weather coverage;
-- Terrain Diffusion realized terrain masks individual weather beams, so antenna elevation/site selection can affect usable coverage without forcing chunks or invoking terrain inference;
+- the Create radar's own hardware range defines the weather product radius;
+- Terrain Diffusion realized terrain masks individual weather beams without forcing chunks or invoking terrain inference;
 - unavailable/unrealized terrain is marked uncertain rather than fabricated;
-- the compact product piggybacks on Create: Radars' existing monitor block-entity synchronization rather than adding per-render/per-display world scans;
-- the physical monitor and full-screen Create monitor render weather below Create: Radars' native contact tracks;
-- the full-screen view includes wind speed/direction and temperature when the Atmosphere API supplies them;
-- Project Atmosphere's existing handheld Weather Radar is retained unchanged for pilots/explorers;
-- MTS cockpit radar and dedicated airborne traffic radar are explicitly deferred to V1.1+;
-- the compatibility boundary has no compile-time Create: Radars dependency and uses optional `@Pseudo` mixins/reflection so it fails closed instead of making unrelated DrewCraft code unloadable.
+- the compact product piggybacks on Create: Radars' existing monitor block-entity synchronization;
+- the physical monitor and full-screen Create monitor render weather below native contact tracks;
+- the full-screen view includes wind speed/direction and temperature when available;
+- Project Atmosphere's existing handheld Weather Radar is retained unchanged;
+- MTS cockpit radar and dedicated airborne traffic radar are V1.1+;
+- optional `@Pseudo` mixins/reflection keep the compatibility boundary fail-closed.
 
-`docs/RADAR_V1.md` is the detailed acceptance contract. Automated code/manifest/hash validation is complete. The final representative client/world acceptance must still visually prove the physical Create monitor overlay, native contacts over weather, actual storm agreement, power-off recovery, and low-site versus high-site terrain coverage in the pregenerated world; those checks are intentionally part of the V1 full-stack acceptance rather than a synthetic unit test.
+`docs/RADAR_V1.md` is the detailed acceptance contract. Final representative client/world acceptance still needs to visually prove the physical monitor overlay, contacts over weather, storm agreement, power recovery, and low-site versus high-site terrain coverage.
+
+### Stage 11 / BP1-BP2 — strategic-world kernel — DONE at compile/unit/runtime-wiring scope
+
+Stage 11 now proves that distant strategic populations can exist and travel as **persistent lightweight records rather than loaded Minecraft mobs**.
+
+BP1 established:
+
+- stable strategic-group UUIDs and versioned persistence;
+- continuous dimension-aware strategic positions;
+- composition/strength/state/speed data;
+- cached-route cursor/progress;
+- bounded coarse scheduler with interval, group-count, CPU-time and catch-up budgets;
+- elapsed-time route advancement with no chunk loading, entity creation or path search;
+- admin diagnostics and focused persistence/scheduler tests.
+
+BP2 added the route-generation half:
+
+- configurable coarse routing cells, default **64×64 blocks**;
+- explicit `ROAD`, `BRIDGE`, `NORMAL`, `UNKNOWN`, `DIFFICULT`, `WATER`, and `BLOCKED` costs;
+- conservative `UNKNOWN` behavior instead of forced terrain generation;
+- a versioned coarse terrain-cost map that does not query Minecraft world state during route search;
+- bounded deterministic 8-neighbor A* with finite detour bounds and a hard expanded-node cap;
+- no blocked-corner diagonal cuts;
+- weighted route segments, so terrain affects both chosen route and travel time;
+- ETA from remaining weighted route cost divided by effective group speed;
+- LRU route-template cache keyed by endpoints/dimension/terrain-map version;
+- event-driven cache invalidation rather than periodic global rerouting;
+- solved routes persisted in each strategic group so restarts do not require A* to reconstruct an already-deployed route;
+- optional already-loaded-terrain capture through the realized-world terrain service only;
+- route/ETA/search-performance admin commands.
+
+Acceptance evidence includes a **10,000-block strategic journey driven through the real coarse scheduler**, saved/reloaded mid-trip as a restart boundary, then continued to exact arrival with the route cursor, weighted costs and group identity preserved. The proof uses no Minecraft world, chunk or entity object. DrewCraft mod CI runs **34726835776** and **34726857058** passed; the latter includes the final route-schema migration tests. `docs/STRATEGIC_ROUTING.md` is the routing contract and `docs/CURRENT_BREAKPOINT.md` records the BP2 handoff.
+
+Important production boundary: the routing engine is complete, but the final production terrain-cost index will be populated from the final pregenerated world/offline metadata. Live routing never triggers Terrain Diffusion generation. Unindexed territory remains explicitly `UNKNOWN` until indexed or safely captured from already-loaded realized terrain.
 
 ## Remaining V1 execution contract
 
-`docs/V1_REMAINING_EXECUTION_PLAN.md` is now the detailed implementation order from this point to `1.0.0`.
-
-Its most important strategic-performance invariant is:
+The strategic-performance invariant remains:
 
 > **Distant/unloaded groups are lightweight records with cached coarse routes and elapsed-time movement. They do not keep chunks loaded, run ordinary Minecraft AI, run siege planning, or recompute full paths continuously.**
 
-Normal Minecraft pathfinding and siege planning occur only for bounded materialized entities near players. Large army strength may therefore represent hundreds of units while only a capped tactical subset exists as entities at one time.
+Normal Minecraft pathfinding and siege planning occur only for bounded materialized entities near players. Large army strength may represent hundreds of units while only a capped tactical subset exists at once.
 
-The remaining critical path is:
+The remaining critical path is now:
 
 ```text
-11 strategic persistence/scheduler/coarse routing/ETA
-→ 12 transactional materialization + casualty reconciliation
+DONE 11 strategic persistence/scheduler/coarse routing/ETA
+→ NEXT 12 transactional materialization + casualty reconciliation
 → 13 hostile sources + Source Core clearing
 → 14 factions/hordes/raids/large armies
 → 15 bounded path-first siege planner
@@ -113,8 +149,6 @@ Until V1 is substantially complete:
 - repeat full-stack boot when a base/platform dependency change creates a real compatibility question and at V1 acceptance;
 - run the final representative acceptance locally/on dedicated hardware so clients, in-world behavior, logs and `spark` profiling can be inspected.
 
-The radar dependency addition is such a compatibility change, so current-profile verified-layout and dedicated-server smoke workflows were launched after the exact hashes were locked. Their result is compatibility evidence, not a substitute for the later physical-monitor/client acceptance described above.
-
 ## Gate status
 
 | Gate | State | Evidence / remaining condition |
@@ -122,8 +156,7 @@ The radar dependency addition is such a compatibility change, so current-profile
 | Reproducible manifest/resolver | **PASS** | 34-dependency graph validates; run 34724313201 |
 | Provider artifact acquisition/hashes | **PASS** | 33 provider artifacts, zero hard failures; run 34724313143 |
 | Original 31-dependency dedicated-server baseline | **PASS** | Run 34704011609 |
-| Current 34-dependency verified layout | **RUNNING / FINALIZING** | Full-profile verification launched after radar dependency chain was pinned |
-| Current 34-dependency dedicated-server smoke | **RUNNING / FINALIZING** | Fresh boot + restart compatibility test launched after radar dependency chain was pinned |
+| Current 34-dependency final full-stack acceptance | **OPEN** | Representative server/client/world acceptance remains later |
 | DrewCraft mod scaffold + persistence | **PASS** | Module and cheap CI established |
 | TD+ realized-world adapter | **PASS: compile/unit scope** | No force-load/inference query path |
 | Project Atmosphere adapter | **PASS: compile/unit scope** | Public snapshot, fail-closed boundary |
@@ -131,26 +164,33 @@ The radar dependency addition is such a compatibility change, so current-profile
 | MTS observation | **PASS: compile/unit scope** | Step 7A implemented |
 | Aviation/weather physics | **PASS: compile/unit scope** | Step 7B implemented; final in-game observation deferred |
 | Radar sensing engine | **PASS: compile/unit scope** | Step 8A implemented |
-| Physical ground radar/weather monitor integration | **DONE: code/manifest/hash scope** | Step 8B implemented; mod CI + graph + provider hashes green; `docs/RADAR_V1.md` defines final in-game acceptance |
-| MTS cockpit radar | **POST-V1** | V1 pilots use Atmosphere handheld + ATC communication |
-| Strategic-world kernel | **NEXT** | Follow Stage 11 in `V1_REMAINING_EXECUTION_PLAN.md` |
+| Physical ground radar/weather monitor integration | **DONE: code/manifest/hash scope** | Step 8B implemented; final visual acceptance later |
+| Strategic-world kernel | **PASS: compile/unit/runtime-wiring scope** | BP1+BP2; 10,000-block scheduler/restart proof; runs 34726835776 + 34726857058 |
+| Materialization + casualty reconciliation | **NEXT — BP3** | Encounter transaction, bounded entities, idempotent casualties, restart recovery |
+| Hostile sources | **BLOCKED ON BP3** | BP4 |
+| Army/faction breadth | **BLOCKED ON BP4** | BP5 |
+| Siege planner | **BLOCKED ON BP5** | BP6 |
+| Strategic herds/local-spawn coexistence | **BLOCKED ON BP6** | BP7 |
 | Production world/pregen/restore | **OPEN / PARALLEL** | Track A in remaining-plan document |
 | ARM/production host benchmark | **OPEN / PARALLEL** | Track B after representative world exists |
 | Release artifact/server updater | **OPEN / PARALLEL** | Tracks C-D |
 | Windows/macOS launcher | **OPEN / PARALLEL** | Track E |
-| V1 full-stack acceptance | **OPEN** | Stages 18-22 |
+| V1 full-stack acceptance | **OPEN** | BP8-BP10 / Stages 18-22 |
 
-## Immediate next sequence
+## Immediate next sequence — BP3
 
-Follow `docs/V1_REMAINING_EXECUTION_PLAN.md` exactly unless a blocking discovery is documented.
+On the next **"go"**, follow `docs/CURRENT_BREAKPOINT.md` and stop when BP3 passes.
 
-The immediate coding queue is:
+BP3 implementation order:
 
-1. strategic persistence schema + stable IDs;
-2. bounded strategic scheduler + elapsed-time/catch-up semantics;
-3. coarse terrain-cost interface/cache;
-4. cached route engine + ETA;
-5. admin diagnostics + one fully unloaded moving-group proof;
-6. only then begin the materialization/dematerialization transaction.
+1. persistent encounter UUID and explicit materialization state machine;
+2. atomic/duplication-safe strategic → tactical transition;
+3. durable entity identity mapping to `groupId` + `encounterId`;
+4. bounded active-entity and wave budgets;
+5. idempotent casualty accounting;
+6. safe dematerialization/reconciliation back to strategic state;
+7. restart recovery from `MATERIALIZING`, `MATERIALIZED`, and `DEMATERIALIZING` states;
+8. canonical `100 → fight → 63 → unload → restart → 63` proof;
+9. simultaneous two-player materialization cannot duplicate the encounter.
 
-Do not jump directly to army content, source breadth, siege AI, or herds before the shared persistence/routing/materialization gates pass.
+Do not begin hostile-source breadth, army content, siege AI, or herds until BP3 passes and the user says **"go"** again.
