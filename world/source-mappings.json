@@ -14,12 +14,6 @@
       "notes": "Rare high-capacity raider source."
     },
     {
-      "structureId": "minecraft:ancient_city",
-      "sourceClass": "CITY",
-      "factionId": "drewcraft:undead",
-      "notes": "Rare underground hostile city source; core placement still uses nearest accessible interior floor candidate."
-    },
-    {
       "structureId": "dungeons_arise:illager_campsite",
       "sourceClass": "CAMP",
       "factionId": "drewcraft:raiders",

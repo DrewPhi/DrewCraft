@@ -2,6 +2,7 @@ package dev.drewcraft.strategic.siege;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.DoorBlock;
@@ -66,6 +67,11 @@ public final class SiegeWorldSnapshot {
         BlockState state = level.getBlockState(pos);
         if (state.isAir() || state.getCollisionShape(level, pos).isEmpty()) return SiegeCell.open();
         if (level.getBlockEntity(pos) != null || state.is(SiegeBlockTags.PROTECTED)) return SiegeCell.protectedCell();
+        // The 2-D local planner must never interpret a natural hillside as a wall to mine through.
+        if (state.is(BlockTags.DIRT) || state.is(BlockTags.BASE_STONE_OVERWORLD)
+                || state.is(BlockTags.BASE_STONE_NETHER) || state.is(BlockTags.SAND)) {
+            return SiegeCell.protectedCell();
+        }
         float hardness = state.getDestroySpeed(level, pos);
         if (hardness < 0.0F) return SiegeCell.protectedCell();
         if (state.hasProperty(BlockStateProperties.OPEN) && state.getValue(BlockStateProperties.OPEN)) return SiegeCell.open();

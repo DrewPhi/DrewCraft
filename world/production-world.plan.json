@@ -34,7 +34,18 @@
   },
   "sourceMappings": "world/source-mappings.json",
   "strategicSeedOutput": "drewcraft-strategic-seeds.json",
+  "strategicObjectives": [],
   "strategicHerds": [],
+  "acceptance": {
+    "minimumSources": 8,
+    "minimumSourceClasses": 3,
+    "minimumHerds": 4,
+    "minimumObjectives": 1,
+    "minimumTerrainCells": 1000,
+    "duplicateSourceIdentities": 0,
+    "duplicateCorePositions": 0,
+    "sourcesOutsidePregenBoundary": 0
+  },
   "herdPolicy": {
     "productionRule": "After the final Terrain Diffusion candidate is selected, seed explicit corridors only in visually suitable open regions. Do not absorb live animals.",
     "initialSpecies": ["minecraft:cow", "minecraft:sheep", "minecraft:pig", "minecraft:horse"],

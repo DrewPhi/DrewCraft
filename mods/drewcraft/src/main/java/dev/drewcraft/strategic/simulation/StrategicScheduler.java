@@ -20,6 +20,7 @@ public final class StrategicScheduler {
     private static volatile CycleStats lastStats = CycleStats.empty();
     private static long nextDueGameTime = Long.MIN_VALUE;
     private static long lastObservedGameTime = Long.MIN_VALUE;
+    private static int groupCursor;
 
     private StrategicScheduler() {
     }
@@ -34,6 +35,7 @@ public final class StrategicScheduler {
 
         if (lastObservedGameTime != Long.MIN_VALUE && now < lastObservedGameTime) {
             nextDueGameTime = Long.MIN_VALUE;
+            groupCursor = 0;
         }
         lastObservedGameTime = now;
         if (nextDueGameTime != Long.MIN_VALUE && now < nextDueGameTime) {
@@ -48,13 +50,15 @@ public final class StrategicScheduler {
                     .filter(group -> group.groupType() != StrategicGroupType.HERD)
                     .toList();
         }
-        CycleStats stats = advanceGroups(
+        CycleStats stats = advanceGroupsFromIndex(
                 scheduledGroups,
                 now,
                 DrewCraftConfig.STRATEGIC_MAX_GROUPS_PER_CYCLE.get(),
                 DrewCraftConfig.STRATEGIC_MAX_MILLIS_PER_CYCLE.get(),
-                DrewCraftConfig.STRATEGIC_MAX_CATCHUP_SECONDS.get()
+                DrewCraftConfig.STRATEGIC_MAX_CATCHUP_SECONDS.get(),
+                groupCursor
         );
+        groupCursor = stats.nextCursor();
         lastStats = stats;
         if (stats.groupsUpdated() > 0) {
             data.markStrategicDirty();
@@ -71,6 +75,18 @@ public final class StrategicScheduler {
             double maxMillis,
             double maxCatchupSeconds
     ) {
+        return advanceGroupsFromIndex(groups, currentGameTime, maxGroups, maxMillis, maxCatchupSeconds, 0);
+    }
+
+    /** Round-robin bounded advancement used by the live scheduler and fairness tests. */
+    public static CycleStats advanceGroupsFromIndex(
+            Collection<StrategicGroup> groups,
+            long currentGameTime,
+            int maxGroups,
+            double maxMillis,
+            double maxCatchupSeconds,
+            int startIndex
+    ) {
         if (maxGroups < 1) {
             throw new IllegalArgumentException("maxGroups must be positive");
         }
@@ -80,6 +96,8 @@ public final class StrategicScheduler {
 
         List<StrategicGroup> ordered = new ArrayList<>(groups);
         ordered.sort(Comparator.comparing(group -> group.groupId().toString()));
+        int total = ordered.size();
+        int normalizedStart = total == 0 ? 0 : Math.floorMod(startIndex, total);
         long started = System.nanoTime();
         long deadlineNanos = started + Math.max(1L, (long) (maxMillis * 1_000_000.0));
         int processed = 0;
@@ -89,10 +107,11 @@ public final class StrategicScheduler {
         int clamped = 0;
         int failed = 0;
 
-        for (StrategicGroup group : ordered) {
+        for (int offset = 0; offset < total; offset++) {
             if (processed >= maxGroups || (processed > 0 && System.nanoTime() >= deadlineNanos)) {
                 break;
             }
+            StrategicGroup group = ordered.get((normalizedStart + offset) % total);
             processed++;
             try {
                 StrategicGroup.AdvanceResult result = group.advanceToGameTime(currentGameTime, maxCatchupSeconds);
@@ -115,6 +134,7 @@ public final class StrategicScheduler {
         }
 
         long elapsed = System.nanoTime() - started;
+        int nextCursor = total == 0 ? 0 : (normalizedStart + Math.max(1, processed)) % total;
         return new CycleStats(
                 ordered.size(),
                 processed,
@@ -124,7 +144,8 @@ public final class StrategicScheduler {
                 arrived,
                 clamped,
                 failed,
-                elapsed
+                elapsed,
+                nextCursor
         );
     }
 
@@ -164,12 +185,19 @@ public final class StrategicScheduler {
         }
         return new CycleStats(
                 ordered.size(), processed, Math.max(0, ordered.size() - processed), updated,
-                moved, arrived, clamped, failed, System.nanoTime() - started
+                moved, arrived, clamped, failed, System.nanoTime() - started, 0
         );
     }
 
     public static CycleStats lastStats() {
         return lastStats;
+    }
+
+    public static void resetRuntime() {
+        nextDueGameTime = Long.MIN_VALUE;
+        lastObservedGameTime = Long.MIN_VALUE;
+        groupCursor = 0;
+        lastStats = CycleStats.empty();
     }
 
     public record CycleStats(
@@ -181,10 +209,11 @@ public final class StrategicScheduler {
             int groupsArrived,
             int groupsClamped,
             int groupsFailed,
-            long elapsedNanos
+            long elapsedNanos,
+            int nextCursor
     ) {
         public static CycleStats empty() {
-            return new CycleStats(0, 0, 0, 0, 0, 0, 0, 0, 0L);
+            return new CycleStats(0, 0, 0, 0, 0, 0, 0, 0, 0L, 0);
         }
 
         public double elapsedMillis() {

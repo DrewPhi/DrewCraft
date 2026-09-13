@@ -9,6 +9,7 @@ import dev.drewcraft.strategic.model.StrategicGroupState;
 import dev.drewcraft.strategic.model.StrategicMission;
 import dev.drewcraft.strategic.model.StrategicPosition;
 import dev.drewcraft.strategic.model.StrategicTargetKnowledge;
+import dev.drewcraft.strategic.objective.StrategicObjectiveCatalog;
 import dev.drewcraft.strategic.routing.StrategicRoutingService;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
@@ -32,6 +33,7 @@ public final class SourceLaunchPlanner {
 
         int strength = template.desiredStrength(source.launchStrength());
         TargetSelection target = chooseTarget(data, source, template);
+        if (target == null) return new PlanResult(null, "no_known_objective");
         StrategicPosition start = new StrategicPosition(
                 source.dimension(), source.anchorX() + 0.5, source.anchorZ() + 0.5
         );
@@ -70,6 +72,17 @@ public final class SourceLaunchPlanner {
      */
     static TargetSelection chooseTarget(DrewCraftSavedData data, SourceRecord source,
                                         StrategicForceTemplate template) {
+        StrategicPosition sourcePosition = new StrategicPosition(
+                source.dimension(), source.anchorX() + 0.5, source.anchorZ() + 0.5
+        );
+        if (template.targetPolicy() == StrategicTargetPolicy.SCOUTED_EXPEDITION) {
+            return StrategicObjectiveCatalog.nearest(sourcePosition)
+                    .map(objective -> new TargetSelection(
+                            objective.position(), StrategicTargetKnowledge.SCOUTED_REGION,
+                            "reviewed " + objective.kind() + " objective " + objective.id()
+                    ))
+                    .orElse(null);
+        }
         if (template.targetPolicy() == StrategicTargetPolicy.ALLIED_REINFORCEMENT && data != null) {
             SourceRecord allied = data.sourceRecords().stream()
                     .filter(candidate -> !candidate.sourceId().equals(source.sourceId()))
@@ -97,10 +110,7 @@ public final class SourceLaunchPlanner {
                     position, StrategicTargetKnowledge.SOURCE_GEOGRAPHY,
                     "regional roaming route derived from source geography"
             );
-            case SCOUTED_EXPEDITION -> new TargetSelection(
-                    position, StrategicTargetKnowledge.SCOUTED_REGION,
-                    "deterministic precomputed scouting waypoint; no player position queried"
-            );
+            case SCOUTED_EXPEDITION -> throw new IllegalStateException("handled above");
             case ALLIED_REINFORCEMENT -> new TargetSelection(
                     position, StrategicTargetKnowledge.SOURCE_GEOGRAPHY,
                     "no allied source available; fallback regional route from source geography"

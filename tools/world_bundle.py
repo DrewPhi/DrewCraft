@@ -54,6 +54,34 @@ def validate_world(world: pathlib.Path) -> dict:
         raise RuntimeError("unsupported world/seed schema")
     if info.get("worldId") != seeds.get("worldId") or info.get("worldRevision") != seeds.get("worldRevision"):
         raise RuntimeError("world identity and strategic seed identity disagree")
+    radius = info.get("pregenRadiusBlocks")
+    if not isinstance(radius, int) or radius < 1:
+        raise RuntimeError("world metadata has invalid pregeneration radius")
+    source_ids = set()
+    core_positions = set()
+    for source in seeds.get("sources", []):
+        anchor = source.get("anchor", {})
+        core = source.get("core", {})
+        identity = (source.get("dimension"), source.get("structureId"), anchor.get("x"), anchor.get("y"), anchor.get("z"))
+        core_position = (source.get("dimension"), core.get("x"), core.get("y"), core.get("z"))
+        if None in identity or None in core_position:
+            raise RuntimeError("strategic source is missing identity/core coordinates")
+        if identity in source_ids or core_position in core_positions:
+            raise RuntimeError("strategic seed contains duplicate source identity/core")
+        source_ids.add(identity)
+        core_positions.add(core_position)
+        if abs(int(anchor["x"])) > radius + 1024 or abs(int(anchor["z"])) > radius + 1024:
+            raise RuntimeError("strategic source lies outside the reviewed pregeneration boundary")
+    objective_ids = [value.get("id") for value in seeds.get("objectives", [])]
+    if len(objective_ids) != len(set(objective_ids)):
+        raise RuntimeError("strategic seed contains duplicate objective IDs")
+    terrain = seeds.get("terrain", {})
+    if not isinstance(terrain.get("cellSizeBlocks", 0), int) or terrain.get("cellSizeBlocks", 0) < 1:
+        raise RuntimeError("strategic terrain index has an invalid cell size")
+    cells = terrain.get("cells", [])
+    cell_keys = [(cell.get("dimension"), cell.get("x"), cell.get("z")) for cell in cells]
+    if len(cell_keys) != len(set(cell_keys)):
+        raise RuntimeError("strategic terrain index contains duplicate cells")
     return info
 
 
@@ -94,7 +122,7 @@ def restore_archive(archive: pathlib.Path, destination: pathlib.Path) -> pathlib
             resolved = (destination / member.name).resolve()
             if base not in resolved.parents and resolved != base:
                 raise RuntimeError("unsafe path in world archive")
-        tf.extractall(destination)
+        tf.extractall(destination, filter="data")
     world = destination / "world"
     validate_world(world)
     return world

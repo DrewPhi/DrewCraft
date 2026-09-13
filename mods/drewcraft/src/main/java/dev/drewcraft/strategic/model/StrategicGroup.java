@@ -167,8 +167,23 @@ public final class StrategicGroup {
         StrategicRoute.AdvanceResult routeAdvance = route.advance(position, movementSpeedBlocksPerSecond * elapsedSeconds);
         position = routeAdvance.position();
         boolean arrivedNow = routeAdvance.arrived();
-        if (arrivedNow) state = StrategicGroupState.ARRIVED;
+        if (arrivedNow && repeatsRoute()) {
+            route = route.reversed();
+            mission = new StrategicMission(
+                    mission.templateId(), mission.targetKnowledge(), mission.knowledgeDetail(),
+                    route.destination(), mission.issuedGameTime()
+            );
+            state = StrategicGroupState.TRAVELING;
+        } else if (arrivedNow) {
+            state = StrategicGroupState.ARRIVED;
+        }
         return new AdvanceResult(elapsedSeconds, routeAdvance.distanceMoved(), arrivedNow, clamped);
+    }
+
+    private boolean repeatsRoute() {
+        return groupType == StrategicGroupType.PATROL
+                || groupType == StrategicGroupType.HORDE
+                || groupType == StrategicGroupType.HERD;
     }
 
     private static LinkedHashMap<String, Integer> sanitizeComposition(Map<String, Integer> input) {

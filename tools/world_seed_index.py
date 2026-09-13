@@ -52,6 +52,17 @@ def build_seed_index(index: dict, mappings: dict, world_plan: dict) -> dict:
             "factionId": mapping["factionId"],
         })
     sources.sort(key=lambda s: (s["dimension"], s["structureId"], s["anchor"]["x"], s["anchor"]["z"]))
+    identities = set()
+    cores = set()
+    for source in sources:
+        identity = (source["dimension"], source["structureId"], source["anchor"]["x"], source["anchor"]["y"], source["anchor"]["z"])
+        core = (source["dimension"], source["core"]["x"], source["core"]["y"], source["core"]["z"])
+        if identity in identities:
+            raise ValueError(f"duplicate source identity: {identity}")
+        if core in cores:
+            raise ValueError(f"duplicate source core: {core}")
+        identities.add(identity)
+        cores.add(core)
 
     herds = []
     for h in world_plan.get("strategicHerds", []):
@@ -63,12 +74,25 @@ def build_seed_index(index: dict, mappings: dict, world_plan: dict) -> dict:
             "count": int(h["count"]),
             "speedBlocksPerSecond": float(h["speedBlocksPerSecond"]),
         })
+    objectives = []
+    for objective in world_plan.get("strategicObjectives", []):
+        objectives.append({
+            "id": objective["id"],
+            "kind": objective["kind"],
+            "dimension": objective["dimension"],
+            "position": {"x": int(objective["position"]["x"]), "z": int(objective["position"]["z"])},
+        })
+    objectives.sort(key=lambda value: value["id"])
+
+    terrain = index.get("terrain", {"cellSizeBlocks": 64, "cells": []})
     return {
         "schemaVersion": 1,
         "worldId": world_plan["worldId"],
         "worldRevision": int(world_plan["worldRevision"]),
         "sources": sources,
         "herds": herds,
+        "objectives": objectives,
+        "terrain": terrain,
     }
 
 
@@ -83,7 +107,10 @@ def main() -> int:
     result = build_seed_index(load(args.structure_index), load(args.mappings), load(args.world_plan))
     pathlib.Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     pathlib.Path(args.output).write_text(json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-    print(f"sources={len(result['sources'])} herds={len(result['herds'])}")
+    print(
+        f"sources={len(result['sources'])} herds={len(result['herds'])} "
+        f"objectives={len(result['objectives'])} terrainCells={len(result['terrain']['cells'])}"
+    )
     return 0
 
 

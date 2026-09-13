@@ -9,6 +9,7 @@ import dev.drewcraft.strategic.model.StrategicPosition;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
@@ -28,6 +29,7 @@ public final class SiegeRuntime {
     private static final Map<UUID, EncounterState> STATES = new HashMap<>();
     private static long nextDueGameTime = Long.MIN_VALUE;
     private static long lastObservedGameTime = Long.MIN_VALUE;
+    private static int encounterCursor;
     private static volatile CycleStats lastStats = CycleStats.empty();
 
     private SiegeRuntime() { }
@@ -38,17 +40,28 @@ public final class SiegeRuntime {
         long now = server.overworld().getGameTime();
         if (lastObservedGameTime != Long.MIN_VALUE && now < lastObservedGameTime) {
             nextDueGameTime = Long.MIN_VALUE;
+            encounterCursor = 0;
             STATES.clear();
         }
         lastObservedGameTime = now;
         if (nextDueGameTime != Long.MIN_VALUE && now < nextDueGameTime) return;
         nextDueGameTime = now + DrewCraftConfig.STRATEGIC_SIEGE_INTERVAL_TICKS.get();
-        lastStats = runCycle(server, DrewCraftSavedData.get(server), now);
+        lastStats = runCycleFromIndex(server, DrewCraftSavedData.get(server), now, encounterCursor);
+        encounterCursor = lastStats.nextCursor();
     }
 
     static CycleStats runCycle(MinecraftServer server, DrewCraftSavedData data, long gameTime) {
+        return runCycleFromIndex(server, data, gameTime, 0);
+    }
+
+    static CycleStats runCycleFromIndex(MinecraftServer server, DrewCraftSavedData data,
+                                        long gameTime, int startIndex) {
         long started = System.nanoTime();
         int maxEncounters = DrewCraftConfig.STRATEGIC_SIEGE_MAX_ENCOUNTERS_PER_CYCLE.get();
+        List<StrategicEncounter> encounters = data.strategicEncounters();
+        int total = encounters.size();
+        int normalizedStart = total == 0 ? 0 : Math.floorMod(startIndex, total);
+        int inspected = 0;
         int processed = 0;
         int eligible = 0;
         int normalPathSuccess = 0;
@@ -57,11 +70,12 @@ public final class SiegeRuntime {
         int cacheHits = 0;
         int breaches = 0;
         Set<UUID> live = new HashSet<>();
+        for (StrategicEncounter encounter : encounters) live.add(encounter.encounterId());
 
-        for (StrategicEncounter encounter : data.strategicEncounters()) {
-            if (processed >= maxEncounters) break;
+        while (inspected < Math.min(maxEncounters, total)) {
+            StrategicEncounter encounter = encounters.get((normalizedStart + inspected) % total);
+            inspected++;
             if (encounter.state() != StrategicEncounterState.MATERIALIZED) continue;
-            live.add(encounter.encounterId());
             StrategicGroup group = data.strategicGroup(encounter.groupId()).orElse(null);
             if (group == null || !SiegeRolePolicy.groupMaySiege(group.groupType())) continue;
             ServerLevel level = levelFor(server, group.position().dimension());
@@ -157,8 +171,9 @@ public final class SiegeRuntime {
         }
 
         STATES.keySet().removeIf(id -> !live.contains(id));
-        return new CycleStats(processed, eligible, normalPathSuccess, blocked, plans, cacheHits, breaches,
-                (System.nanoTime() - started) / 1_000_000.0);
+        int nextCursor = total == 0 ? 0 : (normalizedStart + Math.max(1, inspected)) % total;
+        return new CycleStats(inspected, processed, eligible, normalPathSuccess, blocked, plans, cacheHits, breaches,
+                (System.nanoTime() - started) / 1_000_000.0, nextCursor);
     }
 
     private static Breaker chooseBreaker(ServerLevel level, StrategicEncounter encounter) {
@@ -200,6 +215,14 @@ public final class SiegeRuntime {
 
     public static CycleStats lastStats() { return lastStats; }
 
+    public static void resetRuntime() {
+        STATES.clear();
+        nextDueGameTime = Long.MIN_VALUE;
+        lastObservedGameTime = Long.MIN_VALUE;
+        encounterCursor = 0;
+        lastStats = CycleStats.empty();
+    }
+
     private record Breaker(Mob mob, String typeId) { }
 
     private static final class EncounterState {
@@ -221,9 +244,9 @@ public final class SiegeRuntime {
         }
     }
 
-    public record CycleStats(int encountersProcessed, int siegeEligible, int normalPathSuccesses,
+    public record CycleStats(int encountersInspected, int encountersProcessed, int siegeEligible, int normalPathSuccesses,
                              int blockedChecks, int plansComputed, int planCacheHits,
-                             int blocksBreached, double elapsedMillis) {
-        static CycleStats empty() { return new CycleStats(0, 0, 0, 0, 0, 0, 0, 0.0); }
+                             int blocksBreached, double elapsedMillis, int nextCursor) {
+        static CycleStats empty() { return new CycleStats(0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0); }
     }
 }

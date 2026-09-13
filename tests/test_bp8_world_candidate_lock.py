@@ -34,6 +34,16 @@ class ProductionWorldCandidateLockTest(unittest.TestCase):
                 "restartSeconds": 90,
                 "cleanRestoreVerified": True,
             },
+            "worldIndexStats": {
+                "sources": 8,
+                "sourceClasses": 3,
+                "herds": 4,
+                "objectives": 1,
+                "terrainCells": 1000,
+                "duplicateSourceIdentities": 0,
+                "duplicateCorePositions": 0,
+                "sourcesOutsidePregenBoundary": 0,
+            },
             "reviews": {
                 "visualTerrainQuality": {"pass": True, "notes": "mountains, rivers and valleys look coherent"},
                 "sourceDistribution": {"pass": True, "notes": "hostile sources are sparse enough for strategic travel"},

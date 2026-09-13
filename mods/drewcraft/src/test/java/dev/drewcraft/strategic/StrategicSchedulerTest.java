@@ -2,6 +2,7 @@ package dev.drewcraft.strategic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import dev.drewcraft.strategic.model.StrategicGroup;
 import dev.drewcraft.strategic.model.StrategicPosition;
@@ -30,6 +31,27 @@ class StrategicSchedulerTest {
         assertEquals(2, stats.groupsUpdated());
         assertEquals(2, stats.groupsMoved());
         assertTrue(stats.elapsedNanos() >= 0L);
+    }
+
+    @Test
+    void roundRobinCursorEventuallyAdvancesEveryGroup() {
+        List<StrategicGroup> groups = List.of(groupAt(0.0), groupAt(100.0), groupAt(200.0));
+        StrategicScheduler.CycleStats first = StrategicScheduler.advanceGroupsFromIndex(
+                groups, 20L, 2, 1000.0, 100.0, 0
+        );
+        double initiallyDeferredX = groups.stream()
+                .filter(group -> group.lastSimulatedGameTime() == 0L)
+                .findFirst().orElseThrow().position().x();
+
+        StrategicScheduler.CycleStats second = StrategicScheduler.advanceGroupsFromIndex(
+                groups, 40L, 2, 1000.0, 100.0, first.nextCursor()
+        );
+
+        assertNotEquals(0L, second.nextCursor());
+        assertTrue(groups.stream().allMatch(group -> group.lastSimulatedGameTime() > 0L));
+        assertNotEquals(initiallyDeferredX, groups.stream()
+                .filter(group -> group.lastSimulatedGameTime() == 40L)
+                .findFirst().orElseThrow().position().x());
     }
 
     private static StrategicGroup groupAt(double x) {

@@ -74,6 +74,15 @@ public final class StrategicRoute {
         return waypoints.getLast();
     }
 
+    /** A fresh route over the same path in the opposite direction. */
+    public StrategicRoute reversed() {
+        ArrayList<StrategicPosition> reversedWaypoints = new ArrayList<>(waypoints);
+        Collections.reverse(reversedWaypoints);
+        ArrayList<Double> reversedMultipliers = new ArrayList<>(segmentCostMultipliers);
+        Collections.reverse(reversedMultipliers);
+        return new StrategicRoute(reversedWaypoints, reversedMultipliers, Math.min(1, reversedWaypoints.size()));
+    }
+
     public double remainingDistanceFrom(StrategicPosition position) {
         if (arrived()) {
             return 0.0;

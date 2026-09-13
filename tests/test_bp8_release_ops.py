@@ -5,6 +5,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+import struct
 from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -24,6 +25,7 @@ launcher = load_module("drewcraft_bootstrap", "launcher/drewcraft_bootstrap.py")
 launcher_entry = load_module("drewcraft_entry", "launcher/drewcraft_entry.py")
 world_index = load_module("world_seed_index", "tools/world_seed_index.py")
 world_bundle = load_module("world_bundle", "tools/world_bundle.py")
+world_extract = load_module("extract_world_index", "tools/extract_world_index.py")
 release_layout = load_module("assemble_release_layout", "tools/assemble_release_layout.py")
 
 
@@ -83,6 +85,8 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
             "worldRevision": 1,
             "sources": [],
             "herds": [],
+            "objectives": [],
+            "terrain": {"cellSizeBlocks": 64, "cells": []},
         }) + "\n", encoding="utf-8")
         return world
 
@@ -147,6 +151,18 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertFalse((active / "config" / "client.txt").exists())
         self.assertEqual([], release_contract.verify_tree(active, manifest, "server"))
         self.assertEqual(b"world-state", (server_root / "persistent" / "world" / "level.dat").read_bytes())
+
+    def test_unchanged_launcher_converge_does_not_rebuild_prism_instance(self):
+        _, _, live_path = self.build_release()
+        app = self.tmp / "client-app"
+        state = launcher.converge(live_path.as_uri(), app)
+        marker = pathlib.Path(state["prismRoot"]) / "instances" / state["instanceId"] / "minecraft" / "user-marker.txt"
+        marker.write_text("keep me\n", encoding="utf-8")
+        with mock.patch.object(launcher, "install_pack", wraps=launcher.install_pack) as install:
+            again = launcher.converge(live_path.as_uri(), app)
+        self.assertEqual(state["instanceId"], again["instanceId"])
+        self.assertEqual("keep me\n", marker.read_text("utf-8"))
+        install.assert_not_called()
 
     def test_client_update_preserves_user_owned_data_between_atomic_version_instances(self):
         _, _, live_a = self.build_release("0.8.0-a")
@@ -278,6 +294,18 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertEqual(1, len(result["sources"]))
         self.assertEqual({"x": 101, "y": 66, "z": 100}, result["sources"][0]["core"])
         self.assertEqual(1, len(result["herds"]))
+        self.assertEqual({"cellSizeBlocks": 64, "cells": []}, result["terrain"])
+
+    def test_offline_anvil_reader_decodes_nbt_palette_and_heightmap_primitives(self):
+        raw = b"\x0a\x00\x00" + b"\x03\x00\x04xPos" + struct.pack(">i", 7) + b"\x00"
+        self.assertEqual(7, world_extract.NbtReader(raw).root()["xPos"])
+        chunk = world_extract.Chunk({
+            "xPos": 0, "zPos": 0,
+            "sections": [{"Y": 4, "block_states": {"palette": [{"Name": "minecraft:stone"}]}}],
+            "Heightmaps": {"WORLD_SURFACE": [1]},
+        })
+        self.assertEqual("minecraft:stone", chunk.block(1, 64, 1))
+        self.assertIsInstance(chunk.surface_y(0, 0), int)
 
 
 if __name__ == "__main__":

@@ -29,6 +29,8 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 public final class StrategicMaterializationRuntime {
     private static long nextDueGameTime = Long.MIN_VALUE;
     private static long lastObservedGameTime = Long.MIN_VALUE;
+    private static int encounterCursor;
+    private static int groupCursor;
 
     private StrategicMaterializationRuntime() {
     }
@@ -41,6 +43,8 @@ public final class StrategicMaterializationRuntime {
 
         if (lastObservedGameTime != Long.MIN_VALUE && now < lastObservedGameTime) {
             nextDueGameTime = Long.MIN_VALUE;
+            encounterCursor = 0;
+            groupCursor = 0;
         }
         lastObservedGameTime = now;
         if (nextDueGameTime != Long.MIN_VALUE && now < nextDueGameTime) return;
@@ -51,9 +55,17 @@ public final class StrategicMaterializationRuntime {
         StrategicSpawnBudget spawnBudget = new StrategicSpawnBudget(
                 DrewCraftConfig.STRATEGIC_MAX_NEW_ENTITIES_PER_CYCLE.get()
         );
-        int processed = processExistingEncounters(server, data, now, encounterBudget, spawnBudget);
-        if (processed < encounterBudget && !spawnBudget.exhausted()) {
-            createNearbyEncounters(server, data, now, encounterBudget - processed, spawnBudget);
+        int existingBudget = data.strategicEncounters().isEmpty() ? 0 : Math.max(1, encounterBudget / 2);
+        PassResult existing = processExistingEncounters(
+                server, data, now, existingBudget, spawnBudget, encounterCursor
+        );
+        encounterCursor = existing.nextCursor();
+        int creationBudget = encounterBudget - existing.inspected();
+        if (creationBudget > 0 && !spawnBudget.exhausted()) {
+            PassResult creation = createNearbyEncounters(
+                    server, data, now, creationBudget, spawnBudget, groupCursor
+            );
+            groupCursor = creation.nextCursor();
         }
     }
 
@@ -94,13 +106,17 @@ public final class StrategicMaterializationRuntime {
         }
     }
 
-    private static int processExistingEncounters(MinecraftServer server, DrewCraftSavedData data,
-                                                 long now, int budget,
-                                                 StrategicSpawnBudget spawnBudget) {
-        int processed = 0;
-        for (StrategicEncounter encounter : data.strategicEncounters()) {
-            if (processed >= budget) break;
-            processed++;
+    private static PassResult processExistingEncounters(MinecraftServer server, DrewCraftSavedData data,
+                                                        long now, int budget,
+                                                        StrategicSpawnBudget spawnBudget,
+                                                        int startIndex) {
+        List<StrategicEncounter> encounters = data.strategicEncounters();
+        int total = encounters.size();
+        int normalizedStart = total == 0 ? 0 : Math.floorMod(startIndex, total);
+        int inspected = 0;
+        while (inspected < Math.min(budget, total)) {
+            StrategicEncounter encounter = encounters.get((normalizedStart + inspected) % total);
+            inspected++;
             StrategicGroup group = data.strategicGroup(encounter.groupId()).orElse(null);
             if (group == null) continue;
             ServerLevel level = levelFor(server, group.position().dimension());
@@ -147,16 +163,22 @@ public final class StrategicMaterializationRuntime {
                 data.completeStrategicEncounter(encounter.encounterId());
             }
         }
-        return processed;
+        int nextCursor = total == 0 ? 0 : (normalizedStart + Math.max(1, inspected)) % total;
+        return new PassResult(inspected, nextCursor);
     }
 
-    private static void createNearbyEncounters(MinecraftServer server, DrewCraftSavedData data,
-                                               long now, int budget,
-                                               StrategicSpawnBudget spawnBudget) {
-        int processed = 0;
+    private static PassResult createNearbyEncounters(MinecraftServer server, DrewCraftSavedData data,
+                                                     long now, int budget,
+                                                     StrategicSpawnBudget spawnBudget,
+                                                     int startIndex) {
+        List<StrategicGroup> groups = data.strategicGroups();
+        int total = groups.size();
+        int normalizedStart = total == 0 ? 0 : Math.floorMod(startIndex, total);
+        int inspected = 0;
         int radius = DrewCraftConfig.STRATEGIC_MATERIALIZATION_RADIUS_BLOCKS.get();
-        for (StrategicGroup group : data.strategicGroups()) {
-            if (processed >= budget || spawnBudget.exhausted()) break;
+        while (inspected < Math.min(budget, total) && !spawnBudget.exhausted()) {
+            StrategicGroup group = groups.get((normalizedStart + inspected) % total);
+            inspected++;
             if (group.groupType() == StrategicGroupType.HERD && !DrewCraftConfig.STRATEGIC_HERDS.get()) continue;
             if (group.totalStrength() <= 0
                     || group.state() == StrategicGroupState.DESTROYED
@@ -168,7 +190,6 @@ public final class StrategicMaterializationRuntime {
             if (level == null || !hasPlayerWithin(level, group.position(), radius)) continue;
             if (!isGroupChunkAlreadyLoaded(level, group.position())) continue;
 
-            processed++;
             DrewCraftSavedData.BeginEncounterResult result = data.beginStrategicEncounter(group.groupId(), now);
             if (!result.created()) continue;
             StrategicEncounter encounter = result.encounter();
@@ -179,6 +200,8 @@ public final class StrategicMaterializationRuntime {
                 data.completeStrategicEncounter(encounter.encounterId());
             }
         }
+        int nextCursor = total == 0 ? 0 : (normalizedStart + Math.max(1, inspected)) % total;
+        return new PassResult(inspected, nextCursor);
     }
 
     private static void fillWave(ServerLevel level, DrewCraftSavedData data,
@@ -201,6 +224,13 @@ public final class StrategicMaterializationRuntime {
                     rawType, level, spawnPos, group.groupId(), encounter.encounterId(), entityTypeId
             );
             if (entity == null) continue;
+            if (!level.noCollision(entity)) {
+                entity.discard();
+                continue;
+            }
+            if (entity instanceof net.minecraft.world.entity.Mob mob) {
+                mob.setPersistenceRequired();
+            }
 
             // Register authority before addFreshEntity triggers EntityJoinLevelEvent.
             data.registerEncounterEntity(encounter.encounterId(), entity.getUUID(), entityTypeId);
@@ -299,4 +329,13 @@ public final class StrategicMaterializationRuntime {
         }
         return null;
     }
+
+    public static void resetRuntime() {
+        nextDueGameTime = Long.MIN_VALUE;
+        lastObservedGameTime = Long.MIN_VALUE;
+        encounterCursor = 0;
+        groupCursor = 0;
+    }
+
+    private record PassResult(int inspected, int nextCursor) { }
 }

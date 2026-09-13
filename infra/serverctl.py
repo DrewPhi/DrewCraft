@@ -47,6 +47,18 @@ def ensure_layout(root: pathlib.Path) -> None:
         (root / rel).mkdir(parents=True, exist_ok=True)
 
 
+def _tree_bytes(root: pathlib.Path) -> int:
+    return sum(path.stat().st_size for path in root.rglob("*") if path.is_file()) if root.exists() else 0
+
+
+def require_free_space(root: pathlib.Path, required_bytes: int, operation: str) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    free = shutil.disk_usage(root).free
+    # Keep 1 GiB for logs, temporary files, and the operating system.
+    if free < required_bytes + 1024 ** 3:
+        raise RuntimeError(f"insufficient disk space for {operation}: need {required_bytes + 1024 ** 3}, free {free}")
+
+
 def read_world_identity(root: pathlib.Path) -> dict:
     path = root / "persistent" / "world" / WORLD_INFO
     if not path.is_file():
@@ -71,6 +83,7 @@ def require_world_identity(root: pathlib.Path, manifest: dict) -> dict:
 def stage_release(root: pathlib.Path, manifest: dict) -> pathlib.Path:
     validate_manifest(manifest)
     ensure_layout(root)
+    require_free_space(root, sum(entry["size"] for entry in selected_files(manifest, "server")), "release staging")
     version = manifest["packVersion"]
     final = root / "releases" / version
     if final.exists():
@@ -173,11 +186,13 @@ def rollback_application(root: pathlib.Path, previous: pathlib.Path | None) -> d
     return manifest
 
 
-def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual") -> pathlib.Path:
+def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual", retain: int = 7,
+           copy_dir: pathlib.Path | None = None) -> pathlib.Path:
     ensure_layout(root)
     identity = require_world_identity(root, manifest)
     persistent = root / "persistent"
-    stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    require_free_space(root, _tree_bytes(persistent), "world backup")
+    stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     archive = root / "backups" / f"{stamp}-{label}.tar.gz"
     meta = {
         "schemaVersion": 1,
@@ -192,6 +207,16 @@ def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual") -> path
     digest = sha256_file(archive)
     archive.with_suffix(archive.suffix + ".sha256").write_text(digest + "\n", encoding="ascii")
     _atomic_json(archive.with_suffix(archive.suffix + ".json"), {**meta, "sha256": digest})
+    if copy_dir is not None:
+        copy_dir.mkdir(parents=True, exist_ok=True)
+        for source in (archive, archive.with_suffix(archive.suffix + ".sha256"), archive.with_suffix(archive.suffix + ".json")):
+            shutil.copy2(source, copy_dir / source.name)
+    if retain > 0:
+        archives = sorted((root / "backups").glob("*.tar.gz"), reverse=True)
+        for stale in archives[retain:]:
+            stale.unlink(missing_ok=True)
+            stale.with_suffix(stale.suffix + ".sha256").unlink(missing_ok=True)
+            stale.with_suffix(stale.suffix + ".json").unlink(missing_ok=True)
     return archive
 
 
@@ -213,7 +238,7 @@ def restore_backup(archive: pathlib.Path, target_root: pathlib.Path) -> pathlib.
             resolved = (target_root / member.name).resolve()
             if base not in resolved.parents and resolved != base:
                 raise RuntimeError("unsafe path in backup archive")
-        tf.extractall(target_root)
+        tf.extractall(target_root, filter="data")
     if not (target / "world" / WORLD_INFO).is_file():
         raise RuntimeError("restored backup is missing DrewCraft world identity")
     return target
@@ -239,12 +264,18 @@ def write_health(root: pathlib.Path, status: str, manifest: dict, message: str =
 
 
 def update_transaction(root: pathlib.Path, manifest: dict, *, stop_command: str | None = None,
-                       start_command: str | None = None, health_command: str | None = None) -> dict:
+                       start_command: str | None = None, health_command: str | None = None,
+                       backup_retain: int = 7, backup_copy_dir: pathlib.Path | None = None) -> dict:
     require_world_identity(root, manifest)
     release = stage_release(root, manifest)
     write_health(root, "updating", manifest)
-    archive = backup(root, manifest, label="pre-update")
     run_cmd(stop_command)
+    try:
+        archive = backup(root, manifest, label="pre-update", retain=backup_retain, copy_dir=backup_copy_dir)
+    except Exception:
+        run_cmd(start_command)
+        write_health(root, "ready", manifest, "update aborted because the stopped-world backup failed")
+        raise
     previous = activate(root, release, manifest)
     try:
         run_cmd(start_command)
@@ -273,9 +304,9 @@ def main() -> int:
     sub = p.add_subparsers(dest="command", required=True)
     s = sub.add_parser("stage"); s.add_argument("manifest")
     a = sub.add_parser("activate"); a.add_argument("manifest")
-    b = sub.add_parser("backup"); b.add_argument("manifest"); b.add_argument("--label", default="manual")
+    b = sub.add_parser("backup"); b.add_argument("manifest"); b.add_argument("--label", default="manual"); b.add_argument("--retain", type=int, default=7); b.add_argument("--copy-dir")
     r = sub.add_parser("restore"); r.add_argument("archive"); r.add_argument("--target-root", required=True)
-    u = sub.add_parser("update"); u.add_argument("manifest"); u.add_argument("--stop-command"); u.add_argument("--start-command"); u.add_argument("--health-command")
+    u = sub.add_parser("update"); u.add_argument("manifest"); u.add_argument("--stop-command"); u.add_argument("--start-command"); u.add_argument("--health-command"); u.add_argument("--backup-retain", type=int, default=7); u.add_argument("--backup-copy-dir")
     args = p.parse_args()
     root = pathlib.Path(args.root)
     if args.command == "restore":
@@ -284,10 +315,13 @@ def main() -> int:
     manifest = validate_manifest(load_json(args.manifest))
     if args.command == "stage": print(stage_release(root, manifest))
     elif args.command == "activate": print(activate(root, stage_release(root, manifest), manifest))
-    elif args.command == "backup": print(backup(root, manifest, label=args.label))
+    elif args.command == "backup": print(backup(root, manifest, label=args.label, retain=args.retain,
+                                                  copy_dir=pathlib.Path(args.copy_dir) if args.copy_dir else None))
     elif args.command == "update":
         print(json.dumps(update_transaction(root, manifest, stop_command=args.stop_command,
-                                            start_command=args.start_command, health_command=args.health_command), sort_keys=True))
+                                            start_command=args.start_command, health_command=args.health_command,
+                                            backup_retain=args.backup_retain,
+                                            backup_copy_dir=pathlib.Path(args.backup_copy_dir) if args.backup_copy_dir else None), sort_keys=True))
     return 0
 
 

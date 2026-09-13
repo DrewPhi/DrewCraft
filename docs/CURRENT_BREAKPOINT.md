@@ -1,9 +1,9 @@
 # DrewCraft Current Development Breakpoint
 
-**Updated:** 2026-09-12  
+**Updated:** 2026-09-13
 **Protocol:** `docs/DEVELOPMENT_BREAKPOINTS.md`  
 **Last completed breakpoint:** **BP8 — Production world + deployment + release/launcher convergence**  
-**Next breakpoint:** **BP9 — Cross-system scale, failure, recovery, and performance hardening**
+**Next breakpoint:** **BP9 evidence — generate the final candidate and run cross-system/host/recovery tests**
 
 ## BP8 status — REACHED
 
@@ -99,6 +99,24 @@ These are **not** claimed complete by BP8:
 Those are BP9/BP10 acceptance work. The public Pages repository does not yet contain a live DrewCraft release, so BP8 does not publish a broken pointer merely to claim distribution is live.
 
 ## Next: BP9
+
+The pre-generation hardening audit has been implemented; see `docs/V1_HARDENING_AUDIT.md`. The
+remaining work now depends on real generated-world and playtest evidence rather than another
+speculative code pass.
+
+### Interrupted verification handoff
+
+- Fast repository gate: `python3 -m pytest -q` passed **39 tests** after the hardening changes.
+- Python bytecode compilation passed for `launcher`, `infra`, `tools`, and `tests`.
+- The pinned Gradle 9.2.1 run completed Minecraft download, mappings, merge, decompile, patch, and
+  NeoForge artifact creation, then was intentionally interrupted during `transformSources` before
+  Java compilation/JUnit. Do not record the Java gate as passed yet.
+- Next code action: rerun
+  `GRADLE_USER_HOME=/tmp/drewcraft-gradle-home /tmp/gradle-9.2.1-dist/gradle-9.2.1/bin/gradle -p mods/drewcraft test build --no-daemon`.
+  The preparation cache should make the resumed run much shorter if `/tmp` still exists; otherwise
+  CI performs the same pinned build.
+- After the Java gate, inspect/fix any compile or JUnit failure, then use the production-world driver
+  described in `tools/README.md` when suitable generation hardware is available.
 
 On the next **"go"**, begin BP9 cross-system scale/failure/recovery hardening using the BP8 operational contract.
 

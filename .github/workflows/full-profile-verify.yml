@@ -76,7 +76,7 @@ jobs:
       - name: Rebuild and verify full current dependency profile
         run: |
           python tools/build_verified_profile.py \
-            --profile stage2_base_performance \
+            --profile source_structures_first_spike \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
             --output-dir build/verified-pack \
             --evidence-output build/full-profile-verification.json

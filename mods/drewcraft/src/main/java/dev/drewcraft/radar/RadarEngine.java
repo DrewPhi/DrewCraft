@@ -33,6 +33,10 @@ public final class RadarEngine {
         return INSTANCE;
     }
 
+    public void clearCache() {
+        cache.clear();
+    }
+
     public RadarScanResult scanGround(ServerLevel level, BlockPos controllerPos, double maxRangeBlocks) {
         if (level == null || controllerPos == null || !validRange(maxRangeBlocks)) {
             return RadarScanResult.unavailable("ground:invalid", level == null ? 0L : level.getGameTime(), maxRangeBlocks,
@@ -69,7 +73,7 @@ public final class RadarEngine {
     ) {
         long gameTime = level.getGameTime();
         CachedScan cached = cache.get(sensorKey);
-        if (cached != null && gameTime - cached.gameTime <= CACHE_TICKS
+        if (cached != null && gameTime >= cached.gameTime && gameTime - cached.gameTime <= CACHE_TICKS
                 && cached.origin.distanceToSqr(origin) <= 16.0) {
             return cached.result;
         }

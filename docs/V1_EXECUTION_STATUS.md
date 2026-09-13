@@ -1,7 +1,7 @@
 # DrewCraft V1 Execution Status
 
-**Last updated:** 2026-09-12  
-**Current phase:** **BP1-BP8 complete -> BP9 cross-system scale/failure/recovery hardening next**  
+**Last updated:** 2026-09-13
+**Current phase:** **BP9 hardening code pass complete; Java verification interrupted -> then production-world/playtest evidence**
 **Current breakpoint handoff:** `docs/CURRENT_BREAKPOINT.md`  
 **Breakpoint protocol:** `docs/DEVELOPMENT_BREAKPOINTS.md`
 
@@ -143,8 +143,8 @@ DONE BP8 production/deployment/release/launcher convergence
 | Real friend-machine client acceptance | **BP9/BP10** | Windows + Apple Silicon + Ubuntu/Linux x86-64 |
 | Public signed stable release | **BP10** | notarization/promotion/RC freeze |
 
-## Immediate next sequence — BP9
+## Immediate next sequence — BP9 evidence
 
-On the next **"go"**, use the BP8 operational contract to generate/freeze the real world candidate, deploy an exact release to the fixed-size host, run defining DrewCraft systems together under representative multiplayer load, measure performance, and deliberately exercise crash/restart/backup/recovery paths.
+Use `tools/build_production_world.py` on suitable hardware to generate/index/bundle a candidate, select the real herd corridors and explicit settlement objective, complete the measured candidate report, then deploy the exact combined release to the fixed-size host. Run defining DrewCraft systems together under representative multiplayer load and deliberately exercise crash/restart/backup/recovery paths. The code-level audit disposition is in `docs/V1_HARDENING_AUDIT.md`.
 
 Do **not** begin BP10 hard RC acceptance or tag `1.0.0` until BP9 is reached, reported, and the user says **"go"** again.

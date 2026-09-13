@@ -109,6 +109,10 @@ public final class DrewCraftConfig {
             .comment("Hard cap on new strategic groups committed by hostile sources in one production cycle.")
             .defineInRange("strategic.sources.maxLaunchesPerCycle", 4, 1, 128);
 
+    public static final ModConfigSpec.DoubleValue STRATEGIC_SOURCE_MAX_MILLIS_PER_CYCLE = BUILDER
+            .comment("Soft wall-clock budget for source route planning in one production cycle.")
+            .defineInRange("strategic.sources.maxMillisPerCycle", 8.0, 0.1, 100.0);
+
     public static final ModConfigSpec.IntValue STRATEGIC_SOURCE_ROUTE_RETRY_TICKS = BUILDER
             .comment("Backoff after a source cannot obtain a bounded strategic route. Population is not consumed.")
             .defineInRange("strategic.sources.routeRetryTicks", 1200, 20, 24000);

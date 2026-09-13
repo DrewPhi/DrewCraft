@@ -51,3 +51,14 @@ def test_towns_and_towers_outposts_are_sources_but_villages_are_not():
     assert all("pillager_outpost" in item["structureId"] for item in t_and_t)
     assert all(item["sourceClass"] == "CAMP" for item in t_and_t)
     assert all(item["factionId"] == "drewcraft:raiders" for item in t_and_t)
+
+
+def test_every_shipping_and_combined_smoke_workflow_builds_the_source_profile():
+    for name in ("release-candidate-build.yml", "local-dev-release.yml", "full-profile-verify.yml", "server-smoke.yml"):
+        text = (ROOT / ".github" / "workflows" / name).read_text(encoding="utf-8")
+        assert "--profile source_structures_first_spike" in text, name
+
+
+def test_ancient_city_is_not_silently_repurposed_as_an_undead_factory():
+    mappings = load_json(ROOT / "world/source-mappings.json")
+    assert "minecraft:ancient_city" not in {item["structureId"] for item in mappings["sources"]}

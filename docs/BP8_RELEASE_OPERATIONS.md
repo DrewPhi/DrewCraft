@@ -105,8 +105,8 @@ Initial 12 GB host policy uses `-Xms4G` / `-Xmx8G`; BP9 measurements may tune it
 2. verify world ID/revision/generation compatibility before activation;
 3. stage common+server files outside the live tree;
 4. verify size + SHA-256 for every managed file;
-5. create a checksummed pre-update backup;
-6. stop Minecraft cleanly when an operator/service command is supplied;
+5. stop Minecraft cleanly when an operator/service command is supplied;
+6. create a checksummed backup of the stopped world;
 7. atomically switch `current` to the staged immutable application release;
 8. start and health-check;
 9. publish `ready` only after success;
@@ -131,7 +131,7 @@ Production layout:
   bin/
 ```
 
-Backups include the complete persistent tree and metadata binding it to pack/protocol/world identity. Archives get SHA-256 sidecars. Restore refuses a non-empty target and verifies the archive before extraction.
+Backups include the complete persistent tree and metadata binding it to pack/protocol/world identity. Archives get SHA-256 sidecars. Restore refuses a non-empty target and verifies the archive before extraction. Updates check disk headroom first, retain the newest seven archives by default, and can copy each completed backup to a separately mounted/off-host path.
 
 BP8 automated acceptance restores into a separate clean root and verifies world + strategic state. Production BP9/BP10 still require an actual independent/off-host storage copy and recovery drill on representative world data.
 

@@ -38,6 +38,7 @@ public final class SourceProductionScheduler {
                 DrewCraftConfig.STRATEGIC_MAX_LAUNCHES_PER_CYCLE.get(),
                 DrewCraftConfig.STRATEGIC_SOURCE_ROUTE_RETRY_TICKS.get(),
                 sourceCursor,
+                DrewCraftConfig.STRATEGIC_SOURCE_MAX_MILLIS_PER_CYCLE.get(),
                 (source, gameTime) -> SourceLaunchPlanner.plan(data, source, gameTime)
         );
         sourceCursor = lastStats.nextCursor();
@@ -53,6 +54,13 @@ public final class SourceProductionScheduler {
     public static CycleStats runCycleFromIndex(DrewCraftSavedData data, long gameTime,
                                                int maxSources, int maxLaunches, long retryTicks,
                                                int startIndex, Planner planner) {
+        return runCycleFromIndex(data, gameTime, maxSources, maxLaunches, retryTicks,
+                startIndex, Double.POSITIVE_INFINITY, planner);
+    }
+
+    private static CycleStats runCycleFromIndex(DrewCraftSavedData data, long gameTime,
+                                                int maxSources, int maxLaunches, long retryTicks,
+                                                int startIndex, double maxMillis, Planner planner) {
         long started = System.nanoTime();
         List<SourceRecord> sources = data.sourceRecords();
         int total = sources.size();
@@ -64,6 +72,7 @@ public final class SourceProductionScheduler {
         int normalizedStart = total == 0 ? 0 : Math.floorMod(startIndex, total);
 
         while (seen < Math.min(maxSources, total) && launched < maxLaunches) {
+            if ((System.nanoTime() - started) / 1_000_000.0 >= maxMillis) break;
             SourceRecord source = sources.get((normalizedStart + seen) % total);
             seen++;
             if (!source.canLaunch(gameTime)) continue;
@@ -114,6 +123,13 @@ public final class SourceProductionScheduler {
     }
 
     public static CycleStats lastStats() { return lastStats; }
+
+    public static void resetRuntime() {
+        nextDueGameTime = Long.MIN_VALUE;
+        lastObservedGameTime = Long.MIN_VALUE;
+        sourceCursor = 0;
+        lastStats = CycleStats.empty();
+    }
 
     @FunctionalInterface
     public interface Planner {

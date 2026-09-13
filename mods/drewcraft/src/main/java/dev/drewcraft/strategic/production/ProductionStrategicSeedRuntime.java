@@ -8,6 +8,11 @@ import dev.drewcraft.DrewCraft;
 import dev.drewcraft.persistence.DrewCraftSavedData;
 import dev.drewcraft.strategic.herd.WildHerdDescriptor;
 import dev.drewcraft.strategic.herd.WildHerdRegistration;
+import dev.drewcraft.strategic.model.StrategicPosition;
+import dev.drewcraft.strategic.objective.StrategicObjectiveCatalog;
+import dev.drewcraft.strategic.routing.StrategicCell;
+import dev.drewcraft.strategic.routing.StrategicRoutingService;
+import dev.drewcraft.strategic.routing.StrategicTerrainClass;
 import dev.drewcraft.strategic.source.GeneratedSourceRegistration;
 import dev.drewcraft.strategic.source.SourceClass;
 import dev.drewcraft.strategic.source.SourceCorePosition;
@@ -19,6 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -26,6 +33,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 
 /**
  * Imports the offline-built production strategic seed file. This class never searches structures,
@@ -61,14 +69,25 @@ public final class ProductionStrategicSeedRuntime {
             validateWorldIdentity(worldRoot.resolve(WORLD_METADATA_FILE_NAME), worldId, worldRevision);
 
             DrewCraftSavedData data = DrewCraftSavedData.get(server);
-            int sources = importSources(server, data, root.getAsJsonArray("sources"));
-            int herds = importHerds(data, root.getAsJsonArray("herds"), server.overworld().getGameTime());
+            TerrainSeed terrain = parseTerrain(root.getAsJsonObject("terrain"));
+            List<StrategicObjectiveCatalog.StrategicObjective> objectiveSeeds = parseObjectives(root.getAsJsonArray("objectives"));
+            List<SourceDescriptor> sourceSeeds = parseSources(root.getAsJsonArray("sources"));
+            List<WildHerdDescriptor> herdSeeds = parseHerds(root.getAsJsonArray("herds"));
+            validateSourcesAgainstPersistentState(data, sourceSeeds);
+
+            StrategicRoutingService.reset();
+            int terrainCells = importTerrain(terrain);
+            StrategicObjectiveCatalog.replace(objectiveSeeds);
+            int sources = importSources(server, data, sourceSeeds);
+            int herds = importHerds(data, herdSeeds, server.overworld().getGameTime());
             DrewCraft.LOGGER.info(
-                    "Imported DrewCraft production seeds world={} revision={} sources={} herds={}",
-                    worldId, worldRevision, sources, herds
+                    "Imported DrewCraft production seeds world={} revision={} sources={} herds={} objectives={} terrainCells={}",
+                    worldId, worldRevision, sources, herds, objectiveSeeds.size(), terrainCells
             );
         } catch (Exception ex) {
             SOURCES_BY_CHUNK.clear();
+            StrategicObjectiveCatalog.clear();
+            StrategicRoutingService.reset();
             DrewCraft.LOGGER.error("Failed to import production strategic seeds from {}", file, ex);
         }
     }
@@ -86,16 +105,64 @@ public final class ProductionStrategicSeedRuntime {
         }
     }
 
-    private static int importSources(MinecraftServer server, DrewCraftSavedData data, JsonArray items) {
-        if (items == null) return 0;
-        int count = 0;
-        long gameTime = server.overworld().getGameTime();
+    public static synchronized void onServerStopped(ServerStoppedEvent event) {
+        SOURCES_BY_CHUNK.clear();
+        StrategicObjectiveCatalog.clear();
+    }
+
+    private static TerrainSeed parseTerrain(JsonObject terrain) {
+        if (terrain == null) return new TerrainSeed(64, Map.of());
+        int cellSize = requiredInt(terrain, "cellSizeBlocks");
+        JsonArray cells = terrain.getAsJsonArray("cells");
+        Map<StrategicCell, StrategicTerrainClass> parsed = new HashMap<>();
+        if (cells != null) {
+            for (JsonElement element : cells) {
+                JsonObject cell = element.getAsJsonObject();
+                StrategicCell key = new StrategicCell(requiredString(cell, "dimension"), requiredInt(cell, "x"), requiredInt(cell, "z"));
+                if (parsed.put(key, StrategicTerrainClass.valueOf(requiredString(cell, "terrainClass"))) != null) {
+                    throw new IllegalArgumentException("duplicate strategic terrain cell " + key);
+                }
+            }
+        }
+        return new TerrainSeed(cellSize, parsed);
+    }
+
+    private static int importTerrain(TerrainSeed terrain) {
+        if (terrain.cellSize() != StrategicRoutingService.terrainCosts().cellSizeBlocks()) {
+            throw new IllegalStateException("production terrain cell size does not match server routing configuration");
+        }
+        terrain.cells().forEach(StrategicRoutingService.terrainCosts()::put);
+        return terrain.cells().size();
+    }
+
+    private static List<StrategicObjectiveCatalog.StrategicObjective> parseObjectives(JsonArray items) {
+        List<StrategicObjectiveCatalog.StrategicObjective> objectives = new ArrayList<>();
+        if (items != null) {
+            for (JsonElement element : items) {
+                JsonObject item = element.getAsJsonObject();
+                JsonObject position = item.getAsJsonObject("position");
+                objectives.add(new StrategicObjectiveCatalog.StrategicObjective(
+                        requiredString(item, "id"), requiredString(item, "kind"),
+                        new StrategicPosition(requiredString(item, "dimension"),
+                                requiredDouble(position, "x"), requiredDouble(position, "z"))
+                ));
+            }
+        }
+        if (objectives.stream().map(StrategicObjectiveCatalog.StrategicObjective::id).distinct().count() != objectives.size()) {
+            throw new IllegalArgumentException("duplicate strategic objective ID");
+        }
+        return objectives;
+    }
+
+    private static List<SourceDescriptor> parseSources(JsonArray items) {
+        List<SourceDescriptor> descriptors = new ArrayList<>();
+        if (items == null) return descriptors;
         for (JsonElement element : items) {
             JsonObject item = element.getAsJsonObject();
             String dimension = requiredString(item, "dimension");
             JsonObject anchor = item.getAsJsonObject("anchor");
             JsonObject core = item.getAsJsonObject("core");
-            SourceDescriptor descriptor = new SourceDescriptor(
+            descriptors.add(new SourceDescriptor(
                     dimension,
                     requiredString(item, "structureId"),
                     requiredInt(anchor, "x"), requiredInt(anchor, "y"), requiredInt(anchor, "z"),
@@ -105,8 +172,35 @@ public final class ProductionStrategicSeedRuntime {
                     ),
                     SourceClass.valueOf(requiredString(item, "sourceClass")),
                     requiredString(item, "factionId")
-            );
+            ));
+        }
+        Set<java.util.UUID> ids = new HashSet<>();
+        Set<SourceCorePosition> cores = new HashSet<>();
+        for (SourceDescriptor descriptor : descriptors) {
+            if (!ids.add(descriptor.stableSourceId()) || !cores.add(descriptor.corePosition())) {
+                throw new IllegalArgumentException("duplicate source identity/core in production seeds");
+            }
+        }
+        return descriptors;
+    }
+
+    private static void validateSourcesAgainstPersistentState(DrewCraftSavedData data, List<SourceDescriptor> descriptors) {
+        for (SourceDescriptor descriptor : descriptors) {
+            data.sourceRecord(descriptor.stableSourceId()).ifPresent(existing -> {
+                if (!existing.identityMatches(descriptor)) throw new IllegalStateException("source identity conflict");
+            });
+            data.sourceAtCore(descriptor.corePosition()).ifPresent(existing -> {
+                if (!existing.sourceId().equals(descriptor.stableSourceId())) throw new IllegalStateException("source core conflict");
+            });
+        }
+    }
+
+    private static int importSources(MinecraftServer server, DrewCraftSavedData data, List<SourceDescriptor> descriptors) {
+        int count = 0;
+        long gameTime = server.overworld().getGameTime();
+        for (SourceDescriptor descriptor : descriptors) {
             data.discoverSource(descriptor, gameTime);
+            String dimension = descriptor.dimension();
             long chunkKey = ChunkPos.asLong(descriptor.corePosition().x() >> 4, descriptor.corePosition().z() >> 4);
             SOURCES_BY_CHUNK
                     .computeIfAbsent(dimension, ignored -> new HashMap<>())
@@ -132,27 +226,39 @@ public final class ProductionStrategicSeedRuntime {
         }
     }
 
-    private static int importHerds(DrewCraftSavedData data, JsonArray items, long gameTime) {
-        if (items == null) return 0;
-        int count = 0;
+    private static List<WildHerdDescriptor> parseHerds(JsonArray items) {
+        List<WildHerdDescriptor> descriptors = new ArrayList<>();
+        if (items == null) return descriptors;
         for (JsonElement element : items) {
             JsonObject item = element.getAsJsonObject();
             JsonObject origin = item.getAsJsonObject("origin");
             JsonObject destination = item.getAsJsonObject("destination");
-            WildHerdDescriptor descriptor = new WildHerdDescriptor(
+            descriptors.add(new WildHerdDescriptor(
                     requiredString(item, "dimension"),
                     requiredString(item, "species"),
                     requiredInt(origin, "x"), requiredInt(origin, "z"),
                     requiredInt(destination, "x"), requiredInt(destination, "z"),
                     requiredInt(item, "count"),
                     requiredDouble(item, "speedBlocksPerSecond")
-            );
+            ));
+        }
+        if (descriptors.stream().map(WildHerdDescriptor::stableHerdId).distinct().count() != descriptors.size()) {
+            throw new IllegalArgumentException("duplicate production herd route");
+        }
+        return descriptors;
+    }
+
+    private static int importHerds(DrewCraftSavedData data, List<WildHerdDescriptor> descriptors, long gameTime) {
+        int count = 0;
+        for (WildHerdDescriptor descriptor : descriptors) {
             WildHerdRegistration.RegistrationResult result = WildHerdRegistration.register(data, descriptor, gameTime);
             if (result.success()) count++;
             else DrewCraft.LOGGER.warn("Could not register production herd {}: {}", descriptor.stableHerdId(), result.status());
         }
         return count;
     }
+
+    private record TerrainSeed(int cellSize, Map<StrategicCell, StrategicTerrainClass> cells) { }
 
     private static void validateWorldIdentity(Path metadataFile, String expectedWorldId, int expectedRevision) throws Exception {
         if (!Files.isRegularFile(metadataFile)) {

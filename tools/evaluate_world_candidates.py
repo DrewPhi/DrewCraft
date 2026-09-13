@@ -30,6 +30,26 @@ REQUIRED_REVIEWS = (
 )
 
 
+def _require_index_metrics(plan: dict, report: dict) -> None:
+    requirements = plan.get("acceptance", {})
+    stats = report.get("worldIndexStats", {})
+    for requirement, metric in (
+        ("minimumSources", "sources"),
+        ("minimumSourceClasses", "sourceClasses"),
+        ("minimumHerds", "herds"),
+        ("minimumObjectives", "objectives"),
+        ("minimumTerrainCells", "terrainCells"),
+    ):
+        minimum = requirements.get(requirement, 0)
+        value = stats.get(metric)
+        if not isinstance(value, int) or value < minimum:
+            raise RuntimeError(f"candidate world index {metric}={value!r} is below required {minimum}")
+    if stats.get("duplicateSourceIdentities") != 0 or stats.get("duplicateCorePositions") != 0:
+        raise RuntimeError("candidate world index contains duplicate source identities or core positions")
+    if stats.get("sourcesOutsidePregenBoundary") != 0:
+        raise RuntimeError("candidate source lies outside the pregeneration boundary")
+
+
 def validate_candidate(plan: dict, report: dict) -> dict:
     if plan.get("schemaVersion") != 1 or report.get("schemaVersion") != 1:
         raise RuntimeError("unsupported production-world plan/report schema")
@@ -68,6 +88,8 @@ def validate_candidate(plan: dict, report: dict) -> dict:
         if not str(review.get("notes", "")).strip():
             raise RuntimeError(f"candidate review {name} requires notes")
 
+    _require_index_metrics(plan, report)
+
     return report
 
 
@@ -85,6 +107,7 @@ def lock_candidate(plan: dict, report: dict) -> dict:
         "worldArchiveSha256": report["worldArchiveSha256"].lower(),
         "metrics": report["metrics"],
         "reviews": report["reviews"],
+        "worldIndexStats": report["worldIndexStats"],
     }
     return locked
 

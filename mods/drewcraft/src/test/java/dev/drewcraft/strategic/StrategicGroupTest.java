@@ -55,6 +55,26 @@ class StrategicGroupTest {
         assertTrue(result.arrived());
         assertEquals(destination, group.position());
         assertEquals(StrategicGroupState.ARRIVED, group.state());
+        assertEquals(destination, group.destination());
         assertEquals(0.0, group.etaSeconds(), 1.0e-9);
+    }
+
+    @Test
+    void patrolTurnsAroundInsteadOfBecomingPermanentlyInert() {
+        StrategicPosition start = new StrategicPosition("minecraft:overworld", 0.0, 0.0);
+        StrategicPosition destination = new StrategicPosition("minecraft:overworld", 25.0, 0.0);
+        StrategicGroup group = new StrategicGroup(
+                UUID.randomUUID(), "test:faction", StrategicGroupType.PATROL, null,
+                start, StrategicRoute.between(start, destination), 2.5,
+                Map.of("minecraft:zombie", 1), 1, StrategicGroupState.TRAVELING, 0L
+        );
+
+        assertTrue(group.advanceBySeconds(100.0, 100.0).arrived());
+        assertEquals(destination, group.position());
+        assertEquals(start, group.destination());
+        assertEquals(StrategicGroupState.TRAVELING, group.state());
+
+        group.advanceBySeconds(10.0, 10.0);
+        assertEquals(start, group.position());
     }
 }

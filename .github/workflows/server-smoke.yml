@@ -66,7 +66,7 @@ jobs:
       - name: Rebuild verified server mod tree
         run: |
           python tools/build_verified_profile.py \
-            --profile stage2_base_performance \
+            --profile source_structures_first_spike \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
             --output-dir build/verified-pack \
             --evidence-output build/verified-pack-evidence.json

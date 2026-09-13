@@ -28,6 +28,10 @@ public final class WeatherRadarEngine {
         return INSTANCE;
     }
 
+    public void clearCache() {
+        cache.clear();
+    }
+
     public WeatherRadarProduct scanGround(ServerLevel level, BlockPos radarPosition, double rangeBlocks) {
         if (level == null || radarPosition == null || !Double.isFinite(rangeBlocks) || rangeBlocks <= 0.0) {
             return WeatherRadarProduct.unavailable(level == null ? 0L : level.getGameTime(), radarPosition, rangeBlocks, "invalid_request");
@@ -36,7 +40,7 @@ public final class WeatherRadarEngine {
         long gameTime = level.getGameTime();
         String key = level.dimension().location() + ":" + radarPosition.asLong() + ":" + Math.round(rangeBlocks);
         CachedProduct cached = cache.get(key);
-        if (cached != null && gameTime - cached.gameTime <= CACHE_TICKS) {
+        if (cached != null && gameTime >= cached.gameTime && gameTime - cached.gameTime <= CACHE_TICKS) {
             return cached.product;
         }
 

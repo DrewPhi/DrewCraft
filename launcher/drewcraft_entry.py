@@ -108,6 +108,10 @@ def _converge_with_progress(live_url: str, app_dir: pathlib.Path) -> dict:
     bar.pack(fill="x")
     stats = ttk.Label(frame, text="")
     stats.pack(anchor="w", pady=(8, 0))
+    cancelled = threading.Event()
+    cancel = ttk.Button(frame, text="Cancel", command=cancelled.set)
+    cancel.pack(anchor="e", pady=(8, 0))
+    root.protocol("WM_DELETE_WINDOW", cancelled.set)
     bar.start(12)
 
     events: queue.Queue = queue.Queue()
@@ -115,7 +119,7 @@ def _converge_with_progress(live_url: str, app_dir: pathlib.Path) -> dict:
 
     def worker():
         try:
-            result["state"] = converge(live_url, app_dir, progress=events.put)
+            result["state"] = converge(live_url, app_dir, progress=events.put, cancelled=cancelled.is_set)
         except Exception as exc:
             result["error"] = exc
         finally:
@@ -133,13 +137,14 @@ def _converge_with_progress(live_url: str, app_dir: pathlib.Path) -> dict:
             _terminal_progress(event) if event["phase"] != "worker_done" else None
             phase = event["phase"]
             if phase == "download":
-                total = event.get("total", 0)
+                total = event.get("overallTotal", event.get("total", 0))
+                downloaded = event.get("overallDownloaded", event["downloaded"])
                 if total:
                     bar.stop()
-                    bar.configure(mode="determinate", maximum=total, value=event["downloaded"])
+                    bar.configure(mode="determinate", maximum=total, value=downloaded)
                 detail.configure(text=event["label"])
                 eta = event.get("etaSeconds", 0)
-                stats.configure(text=f"{_format_bytes(event['downloaded'])} / {_format_bytes(total)} · about {eta:.0f}s remaining")
+                stats.configure(text=f"{_format_bytes(downloaded)} / {_format_bytes(total)} · about {eta:.0f}s for this file")
             elif phase == "file":
                 detail.configure(text=event["label"])
                 stats.configure(text=f"File {event['fileIndex']} of {event['fileCount']}")

@@ -7,7 +7,10 @@ import dev.drewcraft.service.DrewCraftServices;
 import dev.drewcraft.service.terrain.TerrainSample;
 import dev.drewcraft.service.weather.WeatherSample;
 import java.lang.reflect.Field;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import dev.drewcraft.DrewCraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
@@ -19,6 +22,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class MtsWeatherPhysicsBridge {
     private static volatile Bindings bindings;
+    private static final Set<Class<?>> REPORTED_FAILURES = ConcurrentHashMap.newKeySet();
 
     private MtsWeatherPhysicsBridge() {
     }
@@ -32,6 +36,11 @@ public final class MtsWeatherPhysicsBridge {
             return null;
         }
 
+        Object motionPoint = null;
+        Vec3 groundMotion = null;
+        double originalVelocity = 0.0;
+        double originalAxialVelocity = 0.0;
+        boolean changedFrame = false;
         try {
             if (!b.isAircraft(vehicle)) {
                 return null;
@@ -59,19 +68,33 @@ public final class MtsWeatherPhysicsBridge {
                 return null;
             }
 
-            Object motionPoint = b.motion.get(vehicle);
-            Vec3 groundMotion = b.readPoint(motionPoint);
+            motionPoint = b.motion.get(vehicle);
+            groundMotion = b.readPoint(motionPoint);
+            originalVelocity = b.velocity.getDouble(vehicle);
+            originalAxialVelocity = b.axialVelocity.getDouble(vehicle);
             Vec3 airMotion = groundMotion.subtract(windInternal);
-            b.writePoint(motionPoint, airMotion);
-            b.velocity.setDouble(vehicle, airMotion.length());
-
             Vec3 heading = b.readPoint(b.headingVector.get(vehicle));
             double airAxialVelocity = Math.abs(airMotion.dot(heading));
+
+            changedFrame = true;
+            b.writePoint(motionPoint, airMotion);
+            b.velocity.setDouble(vehicle, airMotion.length());
             b.axialVelocity.setDouble(vehicle, airAxialVelocity);
             b.refreshAerodynamicVectors(vehicle, airMotion, heading);
 
             return new Frame(windInternal, airAxialVelocity, airflow);
         } catch (ReflectiveOperationException | RuntimeException exception) {
+            if (changedFrame && motionPoint != null && groundMotion != null) {
+                try {
+                    b.writePoint(motionPoint, groundMotion);
+                    b.velocity.setDouble(vehicle, originalVelocity);
+                    b.axialVelocity.setDouble(vehicle, originalAxialVelocity);
+                    b.refreshGroundVectors(vehicle, groundMotion, b.readPoint(b.headingVector.get(vehicle)));
+                } catch (ReflectiveOperationException | RuntimeException restoreFailure) {
+                    exception.addSuppressed(restoreFailure);
+                }
+            }
+            reportOnce(vehicle.getClass(), exception);
             return null;
         }
     }
@@ -93,8 +116,8 @@ public final class MtsWeatherPhysicsBridge {
             b.axialVelocity.setDouble(vehicle, frame.airAxialVelocity());
             Vec3 heading = b.readPoint(b.headingVector.get(vehicle));
             b.refreshGroundVectors(vehicle, groundMotion, heading);
-        } catch (ReflectiveOperationException | RuntimeException ignored) {
-            // Optional compatibility bridge: fail closed instead of taking down the server.
+        } catch (ReflectiveOperationException | RuntimeException exception) {
+            reportOnce(vehicle.getClass(), exception);
         }
     }
 
@@ -106,6 +129,13 @@ public final class MtsWeatherPhysicsBridge {
         Bindings created = Bindings.tryBind(vehicleClass);
         bindings = created;
         return created;
+    }
+
+    private static void reportOnce(Class<?> type, Throwable throwable) {
+        if (REPORTED_FAILURES.add(type)) {
+            DrewCraft.LOGGER.warn("MTS weather physics bridge disabled or degraded for {}: {}",
+                    type.getName(), throwable.toString());
+        }
     }
 
     public record Frame(Vec3 windInternal, double airAxialVelocity, AviationAirflowSample airflow) {
