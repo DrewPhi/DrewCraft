@@ -3,6 +3,7 @@ package dev.drewcraft.strategic.faction;
 import dev.drewcraft.strategic.model.StrategicGroupType;
 import dev.drewcraft.strategic.source.SourceClass;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
@@ -46,7 +47,7 @@ public record StrategicForceTemplate(
             normalized.put(entityId, weight);
         });
         if (normalized.isEmpty()) throw new IllegalArgumentException("compositionWeights must not be empty");
-        compositionWeights = Map.copyOf(normalized);
+        compositionWeights = Collections.unmodifiableMap(normalized);
     }
 
     public boolean supports(SourceClass sourceClass) {
@@ -77,7 +78,7 @@ public record StrategicForceTemplate(
             String entityId = remainders.get((i - assigned) % remainders.size()).entityId();
             counts.merge(entityId, 1, Integer::sum);
         }
-        return Map.copyOf(counts);
+        return Collections.unmodifiableMap(counts);
     }
 
     private static String requireNonBlank(String value, String name) {
