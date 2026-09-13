@@ -4,11 +4,12 @@ This directory is the machine-readable dependency source of truth for DrewCraft.
 
 ## Candidate registries
 
-Stage 1 dependency discovery currently comes from **four companion registries**. The resolver must read the runtime candidate registries as one candidate namespace and reject duplicate/conflicting canonical IDs. `endgame_content.yaml` also records world-build-only assets that are intentionally not runtime mods.
+Stage 1 dependency discovery currently comes from **five companion registries**. The resolver must read the runtime candidate registries as one candidate namespace and reject duplicate/conflicting canonical IDs. `endgame_content.yaml` also records world-build-only assets that are intentionally not runtime mods.
 
 - `upstreams.yaml` — foundational gameplay/platform upstreams: Terrain Diffusion Plus, Chunky, Distant Horizons, Create, MTS, Project Atmosphere, Simple Clouds, seasons and their libraries.
 - `performance_candidates.yaml` — intended performance baseline plus isolated optimization experiments. Baseline entries are meant to enter the Stage 2 compatibility stack, but remain candidates until hashes/tests promote them.
 - `mob_structure_candidates.yaml` — controlled tactical hostile-AI, herd-AI, strategic-source structure, and structure-density compatibility spikes. Alternatives in this file are **not** additive by default.
+- `create_combat_mobility_candidates.yaml` — selected V1 Create combat/physics-mobility stack: Create Big Cannons, CBC Firepower Components, Create: Gunsmithing, Create Aeronautics, Create: High Seas, and their explicitly tracked transitives.
 - `endgame_content.yaml` — selected cult/endgame content foundations: Illager Invasion + Puzzles Lib for the cult tactical roster, the xSisyX Fantasy City & Terrain Builder schematic kit for the coherent cult architectural language, the eight derived source-site archetypes, Flightstone/Source Core/flak markers, and the hand-authored hidden capital. Raw third-party schematic/map binaries are not committed here by default.
 
 These files are discovery/evaluation registries, **not production lockfiles**.
@@ -20,6 +21,7 @@ These files are discovery/evaluation registries, **not production lockfiles**.
 It currently defines:
 
 - `stage2_base_performance` — foundational stack + conservative optimization baseline;
+- `stage2_create_combat_mobility` — selected firearms/artillery/Sable/Aeronautics/High Seas interaction stack;
 - separate Enhanced Hordes/Tweaks and Zombie Hordes hostile-AI branches;
 - separate Ethological and Herd Instinct herd-AI branches;
 - the first Towns and Towers + selective WDA source-structure branch;
@@ -28,7 +30,7 @@ It currently defines:
 - C2ME as an isolated world-build experiment;
 - Structure Essentials as optional world-build/source-debug tooling.
 
-The selected cult/endgame stack in `endgame_content.yaml` is currently post-V1 content work and therefore is **not yet injected into the base V1 profiles**. When implementation starts, add an explicit endgame compatibility profile rather than silently changing the frozen V1 baseline.
+The selected cult/endgame stack in `endgame_content.yaml` is currently separate from the certified baseline. When implementation starts, use an explicit endgame compatibility profile rather than silently changing the frozen baseline.
 
 Profiles are development inputs, **not release locks**. Production releases contain exact promoted dependencies and hashes.
 
@@ -50,7 +52,7 @@ The Stage 1 resolver/downloader must:
 3. detect duplicate/conflicting candidates;
 4. select an explicit compatibility profile;
 5. expand profile inheritance and reject incompatible profile combinations;
-6. recursively resolve required dependencies such as Placebo, Cupboard, Cristel Lib, Lithostitched, GlitchCore, Gabou's Libs, and Puzzles Lib when their parent candidates are selected;
+6. recursively resolve required dependencies such as Placebo, Cupboard, Cristel Lib, Lithostitched, GlitchCore, Gabou's Libs, Puzzles Lib, Sable, NTGL, playerAnimator, and Ritchie's Projectile Library when their parent candidates are selected;
 7. acquire artifacts through permitted provider paths;
 8. compute/verify SHA-256;
 9. classify each artifact as `common`, `client`, `server`, or operational/world-build tooling;
@@ -73,6 +75,21 @@ foundational upstream stack
 ```
 
 This establishes the pack/platform/performance baseline before optional structure or tactical-AI content is promoted.
+
+### Create combat + mobility profile
+
+The selected V1 expansion is tested together as:
+
+```text
+Create Big Cannons
++ CBC: Firepower Components
++ Create: Gunsmithing
++ Create Aeronautics
++ Create: High Seas
++ Sable / NTGL / playerAnimator / Ritchie's Projectile Library
+```
+
+MTS remains the practical conventional car/truck/aircraft layer; Create Aeronautics supplies block-built physics vehicles and airships; High Seas supplies block-built ships. Static weapons are validated before moving-platform weapons, and armed ships/airships are only accepted after projectile-collision, persistence, restart and performance gates pass.
 
 ### Hostile tactical-AI spikes
 
@@ -108,7 +125,7 @@ CTOV is initially an alternative to Towns and Towers, not an automatic companion
 
 ### Cult/endgame content stack
 
-The selected post-V1 cult campaign foundation is:
+The selected cult campaign foundation is:
 
 ```text
 Illager Invasion 1.21.1 NeoForge
