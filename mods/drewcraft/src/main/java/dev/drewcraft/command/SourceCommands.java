@@ -4,7 +4,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.drewcraft.content.DrewCraftBlocks;
 import dev.drewcraft.persistence.DrewCraftSavedData;
-import dev.drewcraft.strategic.model.StrategicGroup;
 import dev.drewcraft.strategic.source.SourceClass;
 import dev.drewcraft.strategic.source.SourceCorePosition;
 import dev.drewcraft.strategic.source.SourceDescriptor;
@@ -101,6 +100,9 @@ final class SourceCommands {
         boolean changed = DrewCraftSavedData.get(commandSource.getServer()).clearSource(
                 source.sourceId(), commandSource.getLevel().getGameTime(), "ADMIN", commandSource.getTextName()
         );
+        if (changed) {
+            commandSource.getServer().overworld().getDataStorage().save();
+        }
         commandSource.sendSuccess(() -> Component.literal(
                 "Source " + source.sourceId() + (changed ? " permanently CLEARED" : " was already CLEARED")
         ), true);
@@ -116,6 +118,7 @@ final class SourceCommands {
                         + " launched=" + stats.groupsLaunched()
                         + " routeFailures=" + stats.routeFailures()
                         + " rejectedCommits=" + stats.rejectedCommits()
+                        + " nextCursor=" + stats.nextCursor()
                         + " cpu=" + String.format(java.util.Locale.ROOT, "%.3fms", stats.elapsedMillis())
         ), false);
         return 1;
