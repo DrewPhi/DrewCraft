@@ -2,7 +2,9 @@ package dev.drewcraft.strategic.source;
 
 import dev.drewcraft.config.DrewCraftConfig;
 import dev.drewcraft.persistence.DrewCraftSavedData;
+import dev.drewcraft.strategic.model.StrategicGroup;
 import java.util.List;
+import java.util.UUID;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -28,14 +30,15 @@ public final class SourceProductionScheduler {
         if (nextDueGameTime != Long.MIN_VALUE && now < nextDueGameTime) return;
         nextDueGameTime = now + DrewCraftConfig.STRATEGIC_SOURCE_INTERVAL_TICKS.get();
 
+        DrewCraftSavedData data = DrewCraftSavedData.get(server);
         lastStats = runCycleFromIndex(
-                DrewCraftSavedData.get(server),
+                data,
                 now,
                 DrewCraftConfig.STRATEGIC_MAX_SOURCES_PER_CYCLE.get(),
                 DrewCraftConfig.STRATEGIC_MAX_LAUNCHES_PER_CYCLE.get(),
                 DrewCraftConfig.STRATEGIC_SOURCE_ROUTE_RETRY_TICKS.get(),
                 sourceCursor,
-                SourceLaunchPlanner::plan
+                (source, gameTime) -> SourceLaunchPlanner.plan(data, source, gameTime)
         );
         sourceCursor = lastStats.nextCursor();
     }
@@ -72,7 +75,7 @@ public final class SourceProductionScheduler {
                 routeFailures++;
                 continue;
             }
-            if (data.commitSourceLaunch(source.sourceId(), expectedGeneration, planned.group(), gameTime)) {
+            if (commitPlannedLaunch(data, source.sourceId(), expectedGeneration, planned.group(), gameTime)) {
                 launched++;
             } else {
                 rejectedCommits++;
@@ -84,6 +87,30 @@ public final class SourceProductionScheduler {
                 total, seen, due, launched, routeFailures, rejectedCommits, nextCursor,
                 (System.nanoTime() - started) / 1_000_000.0
         );
+    }
+
+    /**
+     * BP5 variable-strength launch commit. Synchronizing on SavedData preserves BP4's clear-vs-launch
+     * transaction boundary while charging the exact represented population instead of base strength.
+     */
+    public static boolean commitPlannedLaunch(DrewCraftSavedData data, UUID sourceId,
+                                              long expectedGeneration, StrategicGroup group,
+                                              long gameTime) {
+        synchronized (data) {
+            SourceRecord source = data.sourceRecord(sourceId)
+                    .orElseThrow(() -> new IllegalArgumentException("unknown strategic source: " + sourceId));
+            UUID groupSource = group.sourceId()
+                    .orElseThrow(() -> new IllegalArgumentException("source launch group is missing sourceId"));
+            if (!sourceId.equals(groupSource)) throw new IllegalArgumentException("group/source id mismatch");
+            if (!source.factionId().equals(group.factionId())) throw new IllegalArgumentException("group/source faction mismatch");
+            if (!source.dimension().equals(group.position().dimension())) throw new IllegalArgumentException("group/source dimension mismatch");
+            if (data.strategicGroup(group.groupId()).isPresent()) {
+                throw new IllegalStateException("duplicate strategic group id: " + group.groupId());
+            }
+            if (!source.commitLaunch(expectedGeneration, gameTime, group.totalStrength())) return false;
+            data.upsertStrategicGroup(group);
+            return true;
+        }
     }
 
     public static CycleStats lastStats() { return lastStats; }
