@@ -34,9 +34,9 @@ public final class SourceProductionScheduler {
         );
     }
 
-    static CycleStats runCycle(DrewCraftSavedData data, long gameTime,
-                               int maxSources, int maxLaunches, long retryTicks,
-                               Planner planner) {
+    public static CycleStats runCycle(DrewCraftSavedData data, long gameTime,
+                                      int maxSources, int maxLaunches, long retryTicks,
+                                      Planner planner) {
         long started = System.nanoTime();
         List<SourceRecord> sources = data.sourceRecords();
         int seen = 0;
@@ -60,7 +60,6 @@ public final class SourceProductionScheduler {
             if (data.commitSourceLaunch(source.sourceId(), expectedGeneration, planned.group(), gameTime)) {
                 launched++;
             } else {
-                // Most importantly, a Source Core may have been cleared after route planning.
                 rejectedCommits++;
             }
         }
@@ -74,7 +73,7 @@ public final class SourceProductionScheduler {
     public static CycleStats lastStats() { return lastStats; }
 
     @FunctionalInterface
-    interface Planner {
+    public interface Planner {
         SourceLaunchPlanner.PlanResult plan(SourceRecord source, long gameTime);
     }
 
