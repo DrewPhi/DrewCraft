@@ -3,6 +3,7 @@ package dev.drewcraft.strategic.source;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import net.minecraft.nbt.CompoundTag;
@@ -37,6 +38,14 @@ class SourceRecordTest {
         assertEquals("PLAYER_BREAK", restored.clearCause().orElseThrow());
         assertEquals("Drew", restored.clearedBy().orElseThrow());
         assertFalse(restored.canLaunch(Long.MAX_VALUE - 1));
+    }
+
+    @Test
+    void futureSourceRecordSchemaFailsClosed() {
+        SourceRecord source = SourceRecord.discovered(descriptor(0, 64, 0, 1, 65, 1), 0L);
+        CompoundTag future = SourceRecordNbt.save(source);
+        future.putInt("SchemaVersion", SourceRecord.CURRENT_SCHEMA_VERSION + 1);
+        assertThrows(IllegalStateException.class, () -> SourceRecordNbt.load(future));
     }
 
     private static SourceDescriptor descriptor(int ax, int ay, int az, int cx, int cy, int cz) {
