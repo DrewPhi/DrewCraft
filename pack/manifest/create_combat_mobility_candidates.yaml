@@ -1,0 +1,262 @@
+# DrewCraft Create combat + block-built mobility registry
+#
+# Selected 2026-09-13 after the V1 baseline was certified. These are intentional
+# V1 expansion candidates, not yet production locks. Every artifact must still
+# pass the DrewCraft compatibility matrix and receive a verified SHA-256 before
+# promotion to the future locked mods manifest.
+
+schema_version: 1
+last_researched: "2026-09-13"
+target:
+  minecraft: "1.21.1"
+  loader: "neoforge"
+  java: 21
+
+selection_policy:
+  status: selected_for_v1_compatibility_gate
+  principles:
+    - "Create remains the engineering/industrial language; do not add overlapping generic combat or vehicle ecosystems merely for breadth."
+    - "MTS remains the practical prefab road-vehicle and conventional-aircraft layer."
+    - "Create Aeronautics exists for player-engineered block-built physics vehicles/airships, not as an MTS replacement."
+    - "Create High Seas exists for large block-built ships with buoyancy/flooding, not as a vanilla-boat replacement."
+    - "Create Big Cannons owns structural artillery/autocannons; Create: Gunsmithing owns handheld firearms."
+    - "Do not add Create Weaponry or Create: Caliber to V1 unless a later concrete gap justifies them."
+    - "Do not add Clockwork/Valkyrien Skies solely for block-built vehicles while the selected native 1.21.1 NeoForge Aeronautics/Sable path is viable."
+    - "Night optics and spotlight systems are explicitly deferred; they are not part of this selection."
+
+components:
+  create_big_cannons:
+    display_name: "Create Big Cannons"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    role: "Buildable heavy artillery, autocannons, cannon mounts, ammunition and Create-powered loading/aiming."
+    provider:
+      type: curseforge
+      project_id: 646668
+      file_id: 8303106
+      candidate_version: "5.11.7"
+      filename: "createbigcannons-5.11.7+mc.1.21.1.jar"
+      release_status: release
+    source_repository: "Cannoneers-of-Create/CreateBigCannons"
+    required_dependencies:
+      - create
+      - ritchies_projectile_library
+    compatibility:
+      create: ">=6.0.7,<6.1.0"
+      sable: ">=2.0.0"
+    license: "Mixed MIT and CC BY-NC-SA; audit exact redistribution obligations before release packaging."
+    notes:
+      - "5.11.7 specifically includes Sable 2.x support/fixes, which is important for future artillery on moving Sable contraptions."
+      - "Routine defensive use should emphasize autocannon/grapeshot/shrapnel-style roles; heavy HE remains deliberate siege artillery."
+      - "Block-damage behavior must be tested/tuned so defensive use does not casually erase player builds."
+      - "No extra bronze/steel content mod is selected merely to unlock every CBC material tier for V1."
+
+  cbc_firepower_components:
+    display_name: "CBC: Firepower Components"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    role: "Compact cannon/autocannon mounts, ammunition feeds, magazine loaders and mount limiters for practical fortifications/vehicles."
+    provider:
+      type: curseforge
+      project_id: 1548138
+      file_id: 8801263
+      candidate_version: "0.4.2"
+      filename: "cbc_firepower_components-neoforge-1.21.1-0.4.2+mc.1.21.1-neoforge.jar"
+      release_status: release
+    source_repository: "DarkraiEMM/cbc_firepower_components"
+    required_dependencies:
+      - create
+      - create_big_cannons
+      - ritchies_projectile_library
+    compatibility:
+      create: "6.0.x"
+      create_big_cannons: "5.11.7"
+    license: MIT
+    notes:
+      - "Selected because it makes castle, bunker, ship and airship gun positions compact enough to be practical."
+      - "Verify mount behavior on Sable/Aeronautics contraptions before treating moving artillery as supported."
+
+  create_gunsmithing:
+    display_name: "Create: Gunsmithing"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    role: "Handheld animated steampunk firearms crafted through Create mechanics."
+    provider:
+      type: curseforge
+      project_id: 1194036
+      file_id: 8501347
+      candidate_version: "1.4.9"
+      filename: "create-gunsmithing-1.21.1-1.4.9.jar"
+      release_status: release
+    required_dependencies:
+      - create
+      - ntgl
+      - playeranimator
+    license: "All Rights Reserved"
+    redistribution: "Acquire through the original provider; do not rehost unless permission is established."
+    notes:
+      - "Chosen over a generic modern-gun ecosystem because the visual/progression language matches Create and DrewCraft."
+      - "1.4.9 declares NTGL 3.1.8 support; candidate dependency testing uses current NTGL 3.2.0 and must verify compatibility."
+
+  create_aeronautics:
+    display_name: "Create Aeronautics"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    role: "Block-built physics contraptions including airships, planes and custom moving machines."
+    provider:
+      type: curseforge
+      project_id: 676721
+      file_id: 8763471
+      candidate_version: "1.3.2"
+      filename: "create-aeronautics-bundled-1.21.1-1.3.2.jar"
+      release_status: release
+    required_dependencies:
+      - create
+      - sable
+    license: "Custom / Simulated Project License; verify release redistribution path."
+    redistribution: "Prefer original-provider acquisition until release audit is complete."
+    notes:
+      - "This is intentionally complementary to MTS: MTS supplies practical conventional vehicles; Aeronautics supplies player-engineered block-built vehicles."
+      - "Known upstream warning: Sable is intrusive and Aeronautics has shader-related visual issues; Windows and Apple Silicon client tests are hard gates."
+      - "Weather coupling for Aeronautics is desirable later, but V1 inclusion first requires stable physics/multiplayer behavior with the existing stack."
+
+  create_high_seas:
+    display_name: "Create: High Seas"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    role: "Physical buoyancy, material density, watertight compartments, flooding, drainage, trim and list for large Aeronautics ships."
+    provider:
+      type: curseforge
+      project_id: 1539377
+      file_id: 8741659
+      candidate_version: "0.2.2"
+      filename: "highseas-0.2.2.jar"
+      release_status: release
+    source_repository: "bro-is-kaneuss/Create-High-Seas"
+    required_dependencies:
+      - create
+      - create_aeronautics
+      - sable
+    license: "Provider lists All Rights Reserved; source repository states Apache-2.0. Treat redistribution as unresolved until audited."
+    redistribution: "Acquire through original provider until the license discrepancy is resolved."
+    notes:
+      - "Selected specifically for large player-built ships rather than simplified prefab boats."
+      - "Test enclosed-compartment flooding, sinking, save/restart behavior and multiplayer performance."
+      - "Test CBC/Firepower Components on moving/flooding vessels only after base Sable/Aeronautics/High Seas stability passes."
+
+libraries:
+  sable:
+    display_name: "Sable"
+    kind: physics_library
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    provider:
+      type: curseforge
+      project_id: 1312371
+      file_id: 8673825
+      candidate_version: "2.0.5"
+      filename: "sable-neoforge-1.21.1-2.0.5.jar"
+      release_status: release
+    license: "PolyForm Shield License 1.0.0"
+    required_by:
+      - create_aeronautics
+      - create_high_seas
+    notes:
+      - "Sable adds interactive moving sub-levels and a native Rapier physics pipeline."
+      - "Upstream explicitly warns it is intrusive and compatibility-prone; therefore it is isolated behind a dedicated compatibility profile before production promotion."
+      - "Native-library behavior must be tested on Windows x86-64, Linux x86-64/aarch64 as applicable, and Apple Silicon macOS."
+
+  ntgl:
+    display_name: "NukaTeam's Gun Lib"
+    kind: library
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    provider:
+      type: curseforge
+      project_id: 998474
+      file_id: 8585353
+      candidate_version: "3.2.0"
+      filename: "ntgl-1.21.1-3.2.0.jar"
+      release_status: release
+    license: LGPL-2.1
+    required_by:
+      - create_gunsmithing
+    notes:
+      - "3.2.0 explicitly adds Sable support so firearm projectiles interact with sub-levels instead of passing through them."
+      - "Verify Create: Gunsmithing 1.4.9 against NTGL 3.2.0 despite its changelog specifically mentioning 3.1.8 support."
+
+  playeranimator:
+    display_name: "playerAnimator"
+    kind: library
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    provider:
+      type: curseforge
+      project_id: 658587
+      file_id: 7389814
+      candidate_version: "2.0.4+1.21.1"
+      filename: "player-animation-lib-forge-2.0.4+1.21.1.jar"
+      release_status: beta
+    license: MIT
+    required_by:
+      - create_gunsmithing
+    notes:
+      - "NeoForge artifact retains 'forge' in the filename; provider metadata identifies it as NeoForge-compatible."
+      - "Beta status is acceptable only if client animation and multiplayer tests pass."
+
+  ritchies_projectile_library:
+    display_name: "Ritchie's Projectile Library"
+    kind: library
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    provider:
+      type: unresolved_provider_lock
+      candidate_version: "2.1.2"
+      filename: "ritchiesprojectilelib-2.1.2-mc.1.21.1-neoforge.jar"
+      file_id: null
+    required_by:
+      - create_big_cannons
+      - cbc_firepower_components
+    notes:
+      - "CBC 5.11.7 source metadata pins RPL 2.1.2. Resolve provider identity/hash before lock rather than relying on implicit launcher behavior."
+
+explicitly_not_selected:
+  create_weaponry:
+    reason: "Overlaps melee/tool crafting, rewrites ordinary tool progression, and does not currently provide a justified 1.21.1 NeoForge capability gap."
+  create_caliber:
+    reason: "Immature/beta relative to the selected Gunsmithing + CBC split; revisit only if a specific missing role appears."
+  clockwork_valkyrien_skies:
+    reason: "Do not add another physics authority solely for block-built vehicles while native 1.21.1 NeoForge Aeronautics/Sable satisfies the requirement."
+  drewcraft_night_optics:
+    reason: "Explicitly rejected/deferred by project decision."
+  spotlight_stack:
+    reason: "Night-fighting/searchlight work is deferred until later; do not expand V1 dependency surface now."
+
+compatibility_gates:
+  - "Resolve every artifact through an allowed provider and compute SHA-256 before promotion."
+  - "Dedicated server boots a fresh world and restarts the same world with the complete expansion profile."
+  - "Windows and Apple Silicon clients connect and render all selected systems."
+  - "Create contraptions/trains continue to function normally."
+  - "Sable sub-level assembly, movement, chunk crossing, save/restart and multiplayer authority remain stable."
+  - "MTS conventional vehicles coexist with Aeronautics without control/keybind/entity conflicts."
+  - "CBC projectiles and NTGL/Gunsmithing projectiles collide correctly with Sable contraptions."
+  - "Compact CBC mounts and ammunition automation work on static fortifications before moving-platform support is accepted."
+  - "Aeronautics airships/vehicles survive unload/reload and server restart without duplication/corruption."
+  - "High Seas buoyancy/flooding state survives unload/reload and restart."
+  - "Representative armed ship/airship test does not corrupt contraptions or produce unacceptable MSPT/network load."
+  - "Heavy artillery block damage receives safe server defaults before public survival use."
+  - "Licensing/acquisition path is documented for every shipped artifact."
