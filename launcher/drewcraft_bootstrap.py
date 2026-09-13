@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import time
 import urllib.request
 import zipfile
 
@@ -37,10 +38,32 @@ def sha256_file(path: pathlib.Path) -> str:
     return h.hexdigest()
 
 
-def fetch_bytes(url: str) -> bytes:
+def fetch_bytes(url: str, progress=None, label: str = "download") -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": f"DrewCraft-Launcher/{APP_VERSION}"})
     with urllib.request.urlopen(req, timeout=120) as response:
-        return response.read()
+        total = int(response.headers.get("Content-Length", "0") or 0)
+        started = time.monotonic()
+        downloaded = 0
+        payload = bytearray()
+        while True:
+            chunk = response.read(1024 * 1024)
+            if not chunk:
+                break
+            payload.extend(chunk)
+            downloaded += len(chunk)
+            elapsed = max(time.monotonic() - started, 0.001)
+            rate = downloaded / elapsed
+            eta = (total - downloaded) / rate if total > downloaded and rate > 0 else 0.0
+            if progress:
+                progress({
+                    "phase": "download",
+                    "label": label,
+                    "downloaded": downloaded,
+                    "total": total,
+                    "bytesPerSecond": rate,
+                    "etaSeconds": eta,
+                })
+        return bytes(payload)
 
 
 def fetch_json(url: str) -> dict:
@@ -125,9 +148,10 @@ def selected_files(manifest: dict) -> list[dict]:
     return [e for e in manifest["files"] if e["side"] in ("common", "client")]
 
 
-def download_verified(url: str, expected_sha: str, destination: pathlib.Path, expected_size: int | None = None) -> None:
+def download_verified(url: str, expected_sha: str, destination: pathlib.Path,
+                      expected_size: int | None = None, progress=None, label: str | None = None) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    payload = fetch_bytes(url)
+    payload = fetch_bytes(url, progress=progress, label=label or destination.name)
     if expected_size is not None and len(payload) != expected_size:
         raise RuntimeError(f"download size mismatch for {url}")
     got = sha256_bytes(payload)
@@ -150,19 +174,27 @@ def _reuse_existing(entry: dict, app_dir: pathlib.Path, destination: pathlib.Pat
     return False
 
 
-def install_pack(manifest: dict, app_dir: pathlib.Path) -> pathlib.Path:
+def install_pack(manifest: dict, app_dir: pathlib.Path, progress=None) -> pathlib.Path:
     validate_manifest(manifest)
     version = manifest["packVersion"]
     release = app_dir / "releases" / version / "instance"
     stage = app_dir / "staging" / f"{version}.partial"
-    if stage.exists():
-        shutil.rmtree(stage)
     stage.mkdir(parents=True, exist_ok=True)
 
-    for entry in selected_files(manifest):
+    entries = selected_files(manifest)
+    for index, entry in enumerate(entries, start=1):
         target = stage / pathlib.Path(*_safe_rel(entry["path"]).parts)
+        if progress:
+            progress({"phase": "file", "label": entry["path"], "fileIndex": index, "fileCount": len(entries)})
+        if verify_entry(target, entry):
+            continue
+        if target.exists():
+            target.unlink()
         if not _reuse_existing(entry, app_dir, target):
-            download_verified(entry["url"], entry["sha256"], target, entry["size"])
+            download_verified(
+                entry["url"], entry["sha256"], target, entry["size"],
+                progress=progress, label=entry["path"],
+            )
 
     for entry in selected_files(manifest):
         target = stage / pathlib.Path(*_safe_rel(entry["path"]).parts)
@@ -215,7 +247,7 @@ def _find_runtime_executable(root: pathlib.Path, spec: dict) -> pathlib.Path:
     return matches[0]
 
 
-def ensure_runtime_component(app_dir: pathlib.Path, name: str, spec: dict) -> pathlib.Path:
+def ensure_runtime_component(app_dir: pathlib.Path, name: str, spec: dict, progress=None) -> pathlib.Path:
     version = str(spec["version"])
     root = app_dir / "runtime" / name / version
     marker = root / ".drewcraft-runtime.json"
@@ -226,7 +258,10 @@ def ensure_runtime_component(app_dir: pathlib.Path, name: str, spec: dict) -> pa
     downloads.mkdir(parents=True, exist_ok=True)
     archive = downloads / f"{name}-{version}.{spec['archive'].replace('.', '-')}"
     if not archive.is_file() or sha256_file(archive) != spec["sha256"]:
-        download_verified(spec["url"], spec["sha256"], archive, spec.get("size"))
+        download_verified(
+            spec["url"], spec["sha256"], archive, spec.get("size"),
+            progress=progress, label=f"{name} runtime",
+        )
     _extract_archive(archive, root, spec["archive"])
     executable = _find_runtime_executable(root, spec)
     if platform.system() != "Windows":
@@ -240,15 +275,15 @@ def ensure_runtime_component(app_dir: pathlib.Path, name: str, spec: dict) -> pa
     return executable
 
 
-def ensure_runtime(manifest: dict, app_dir: pathlib.Path) -> dict:
+def ensure_runtime(manifest: dict, app_dir: pathlib.Path, progress=None) -> dict:
     runtime = manifest.get("runtime", {})
     if not runtime:
         return {}
     platform_spec = runtime.get(platform_key())
     if not platform_spec:
         raise RuntimeError(f"release has no runtime bundle for {platform_key()}")
-    java = ensure_runtime_component(app_dir, "java", platform_spec["java"])
-    prism = ensure_runtime_component(app_dir, "prism", platform_spec["prism"])
+    java = ensure_runtime_component(app_dir, "java", platform_spec["java"], progress)
+    prism = ensure_runtime_component(app_dir, "prism", platform_spec["prism"], progress)
     return {"java": str(java), "prism": str(prism)}
 
 
@@ -306,8 +341,10 @@ def _previous_instance_minecraft(app_dir: pathlib.Path) -> pathlib.Path | None:
         return None
 
 
-def converge(live_url: str, app_dir: pathlib.Path) -> dict:
+def converge(live_url: str, app_dir: pathlib.Path, progress=None) -> dict:
     app_dir.mkdir(parents=True, exist_ok=True)
+    if progress:
+        progress({"phase": "status", "label": "Checking for DrewCraft updates"})
     live = fetch_json(live_url)
     manifest_payload = fetch_bytes(live["manifestUrl"])
     got = sha256_bytes(manifest_payload)
@@ -319,8 +356,10 @@ def converge(live_url: str, app_dir: pathlib.Path) -> dict:
         raise RuntimeError("stable pointer and manifest pack versions disagree")
 
     previous_minecraft = _previous_instance_minecraft(app_dir)
-    release_instance = install_pack(manifest, app_dir)
-    runtime = ensure_runtime(manifest, app_dir)
+    release_instance = install_pack(manifest, app_dir, progress)
+    if progress:
+        progress({"phase": "status", "label": "Preparing Java and Prism Launcher"})
+    runtime = ensure_runtime(manifest, app_dir, progress)
     prism_root = app_dir / "prism-data"
     instances_root = prism_root / "instances"
     instances_root.mkdir(parents=True, exist_ok=True)
@@ -350,6 +389,8 @@ def converge(live_url: str, app_dir: pathlib.Path) -> dict:
         "server": manifest.get("server", {}),
     }
     atomic_json(app_dir / "state.json", state)
+    if progress:
+        progress({"phase": "complete", "label": "DrewCraft is ready"})
     return state
 
 

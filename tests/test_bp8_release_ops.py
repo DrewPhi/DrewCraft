@@ -173,6 +173,21 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "launcher is too old"):
             launcher.validate_manifest(manifest)
 
+    def test_interrupted_pack_install_resumes_verified_staging_files_and_reports_progress(self):
+        manifest, _, _ = self.build_release()
+        app = self.tmp / "client-app"
+        stage = app / "staging" / "0.8.0-test.partial"
+        cached = stage / "mods" / "shared.jar"
+        cached.parent.mkdir(parents=True)
+        cached.write_bytes(b"shared-v1")
+        events = []
+        with mock.patch.object(launcher, "download_verified", wraps=launcher.download_verified) as download:
+            release = launcher.install_pack(manifest, app, progress=events.append)
+        self.assertEqual(1, download.call_count)
+        self.assertEqual(b"shared-v1", (release / "mods" / "shared.jar").read_bytes())
+        self.assertTrue(any(event["phase"] == "download" for event in events))
+        self.assertTrue(any(event["phase"] == "file" for event in events))
+
     def test_launcher_selects_supported_linux_desktop_platform(self):
         with mock.patch.object(launcher.platform, "system", return_value="Linux"), \
                 mock.patch.object(launcher.platform, "machine", return_value="x86_64"):
