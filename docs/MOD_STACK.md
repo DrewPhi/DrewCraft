@@ -273,9 +273,9 @@ The production world must remain sparse.
 
 1. vanilla pillager outpost as a control;
 2. **Towns and Towers** for grounded pillager-outpost variants;
-3. **When Dungeons Arise**, but with a tiny hostile whitelist and aggressively increased spacing.
+3. **When Dungeons Arise**, but with a tiny generation allow-list and aggressively increased spacing.
 
-Candidate WDA concepts include camps, forts and a very small number of major palace/city-class sites. Do not turn every WDA structure into a source and do not accept default density blindly.
+Candidate WDA concepts include camps, forts and a very small number of major palace/city-class sites. Only those approved structures generate at all in the V1 production world. Each remains a complete dungeon with its normal exploration, mobs and loot while also receiving DrewCraft source identity and Source Core semantics. Disable every other WDA structure and do not accept default density blindly.
 
 ### Alternatives
 

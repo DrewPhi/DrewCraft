@@ -129,7 +129,8 @@ profiles:
       - cristel_lib
     worldgen_policy:
       - "Towns and Towers villages remain friendly/neutral unless explicitly mapped otherwise."
-      - "Only explicitly whitelisted WDA structures can become strategic sources."
+      - "Generate only explicitly allow-listed WDA structures; disable every other WDA structure."
+      - "Every enabled WDA structure remains an explorable dungeon with its intended mobs and loot and also becomes a DrewCraft strategic source."
       - "Use pack-owned structure enable/spacing/separation configuration first."
       - "Increase source spacing aggressively for Terrain Diffusion World Scale 2."
       - "Pregenerate a disposable representative region and produce structure/source density counts before promotion."

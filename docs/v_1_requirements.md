@@ -107,6 +107,11 @@ The world MUST preserve meaningful empty geography rather than becoming a dense 
 
 Strategically important hostile source structures MAY be custom DrewCraft structures or selected compatible generated structures.
 
+For V1, When Dungeons Arise MUST use an explicit allow-list. Every enabled WDA
+structure MUST remain a complete explorable dungeon with its intended mobs and
+loot while also serving as a DrewCraft strategic source. All other WDA
+structures MUST be disabled for production world generation.
+
 ---
 
 # 4. Required base gameplay/mod stack
