@@ -13,8 +13,8 @@ protocol:
   custom_mod_protocol: 1
 world:
   world_id: drewcraft-production
-  world_revision: 0
-  strategic_persistence_schema: 1
+  world_revision: 1
+  strategic_persistence_schema: 4
 profiles:
   default_development: stage2_base_performance
   source: pack/manifest/profiles.yaml
