@@ -38,6 +38,7 @@ public final class DrewCraftCommands {
                                 .then(Commands.literal("sample")
                                         .executes(context -> samplePower(context.getSource()))))
                         .then(StrategicCommands.node())
+                        .then(SourceCommands.node())
         );
     }
 
@@ -49,6 +50,7 @@ public final class DrewCraftCommands {
                         + " | persistenceSchema=" + DrewCraftSavedData.CURRENT_SCHEMA_VERSION
                         + " | strategicGroups=" + data.strategicGroups().size()
                         + " | strategicEncounters=" + data.strategicEncounters().size()
+                        + " | strategicSources=" + data.sourceRecords().size()
                         + " | lastTouched=" + data.lastTouchedGameTime()
         ), false);
         source.sendSuccess(() -> Component.literal("Feature flags: " + DrewCraftConfig.integrationSummary()), false);
@@ -84,9 +86,7 @@ public final class DrewCraftCommands {
     }
 
     private static String formatTerrain(TerrainSample sample) {
-        if (!sample.available()) {
-            return "terrain[" + sample.providerId() + "] unavailable: " + sample.status();
-        }
+        if (!sample.available()) return "terrain[" + sample.providerId() + "] unavailable: " + sample.status();
         return "terrain[" + sample.providerId() + "]"
                 + " surfaceY=" + sample.surfaceY().orElseThrow()
                 + " biome=" + sample.biomeId().orElse("unknown")
@@ -96,9 +96,7 @@ public final class DrewCraftCommands {
     }
 
     private static String formatWeather(WeatherSample sample) {
-        if (!sample.available()) {
-            return "weather[" + sample.providerId() + "] unavailable: " + sample.status();
-        }
+        if (!sample.available()) return "weather[" + sample.providerId() + "] unavailable: " + sample.status();
         return "weather[" + sample.providerId() + "]"
                 + " temp=" + number(sample.temperatureC(), "%.2fC")
                 + " wind=" + number(sample.windSpeedMps(), "%.2fm/s")
@@ -115,9 +113,7 @@ public final class DrewCraftCommands {
     }
 
     private static String formatPower(PowerSample sample) {
-        if (!sample.available()) {
-            return "power[" + sample.providerId() + "] unavailable: " + sample.status();
-        }
+        if (!sample.available()) return "power[" + sample.providerId() + "] unavailable: " + sample.status();
         String source = sample.sourcePosition()
                 .map(pos -> pos.getX() + "," + pos.getY() + "," + pos.getZ())
                 .orElse("none");
