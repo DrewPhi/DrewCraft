@@ -109,6 +109,38 @@ public final class DrewCraftConfig {
             .comment("Backoff after a source cannot obtain a bounded strategic route. Population is not consumed.")
             .defineInRange("strategic.sources.routeRetryTicks", 1200, 20, 24000);
 
+    public static final ModConfigSpec.BooleanValue STRATEGIC_SIEGE = BUILDER
+            .comment("Enable path-first bounded tactical siege behavior for eligible materialized raids/armies.")
+            .define("features.strategicSiege", true);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_SIEGE_INTERVAL_TICKS = BUILDER
+            .comment("Ticks between bounded siege checks. Siege logic only runs for materialized loaded encounters.")
+            .defineInRange("strategic.siege.intervalTicks", 20, 5, 200);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_SIEGE_RADIUS_BLOCKS = BUILDER
+            .comment("Half-width of the already-loaded local siege-planning snapshot.")
+            .defineInRange("strategic.siege.radiusBlocks", 12, 4, 32);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_SIEGE_BLOCKED_CHECKS = BUILDER
+            .comment("Consecutive failed ordinary-navigation checks required before breach planning is allowed.")
+            .defineInRange("strategic.siege.blockedChecksBeforePlan", 3, 1, 20);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_SIEGE_MAX_ENCOUNTERS_PER_CYCLE = BUILDER
+            .comment("Hard cap on siege-eligible encounter records inspected per siege cycle.")
+            .defineInRange("strategic.siege.maxEncountersPerCycle", 8, 1, 64);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_SIEGE_MAX_EXPANDED_NODES = BUILDER
+            .comment("Hard local planner node-expansion bound for a single siege plan.")
+            .defineInRange("strategic.siege.maxExpandedNodes", 1200, 32, 10000);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_SIEGE_MAX_BREACH_BLOCKS = BUILDER
+            .comment("Maximum number of barrier cells permitted in one constrained breach corridor.")
+            .defineInRange("strategic.siege.maxBreachBlocks", 4, 1, 12);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_SIEGE_BREAK_COOLDOWN_TICKS = BUILDER
+            .comment("Minimum ticks between deliberate siege block breaks for one encounter.")
+            .defineInRange("strategic.siege.breakCooldownTicks", 30, 5, 400);
+
     public static final ModConfigSpec.BooleanValue RADAR = BUILDER
             .comment("Enable DrewCraft radar sensing and Create: Radars weather/terrain integration.")
             .define("features.radar", true);
@@ -126,6 +158,7 @@ public final class DrewCraftConfig {
                 + ", mts=" + MTS_VEHICLE_ADAPTER.get()
                 + ", aviationWeather=" + AVIATION_WEATHER.get()
                 + ", strategic=" + STRATEGIC_KERNEL.get()
+                + ", siege=" + STRATEGIC_SIEGE.get()
                 + ", radar=" + RADAR.get();
     }
 }
