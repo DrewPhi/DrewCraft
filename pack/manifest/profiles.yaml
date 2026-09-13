@@ -6,7 +6,7 @@
 # compatibility gates decide what is promoted to future mods.yaml/content-packs.yaml.
 
 schema_version: 1
-last_updated: "2026-09-12"
+last_updated: "2026-09-13"
 
 target:
   minecraft: "1.21.1"
@@ -19,6 +19,7 @@ registries:
   gameplay_spikes: "pack/manifest/mob_structure_candidates.yaml"
   runtime_libraries: "pack/manifest/runtime_candidates.yaml"
   radar_integrations: "pack/manifest/radar_candidates.yaml"
+  create_combat_mobility: "pack/manifest/create_combat_mobility_candidates.yaml"
 
 profiles:
   stage2_base_performance:
@@ -66,6 +67,41 @@ profiles:
       - "Architectury is a required transitive of Gabou's Libs / Project Atmosphere, discovered by the dedicated-server smoke test."
       - "Create: Radars is the V1 physical radar frontend; DrewCraft extends it externally rather than forking or duplicating its hardware/network stack."
     gate: "Pass the foundational + performance matrix and final V1 full-stack acceptance before release promotion."
+
+  stage2_create_combat_mobility:
+    extends:
+      - stage2_base_performance
+    create_expansion_components:
+      - create_big_cannons
+      - cbc_firepower_components
+      - create_gunsmithing
+      - create_aeronautics
+      - create_high_seas
+    create_expansion_libraries:
+      - sable
+      - ntgl
+      - playeranimator
+      - ritchies_projectile_library
+    purpose: "Selected V1 Create combat + block-built vehicle/ship stack. Keeps MTS as practical conventional transport while adding engineered airships/ships, handheld firearms and structural artillery."
+    requirements:
+      - "Resolve exact provider artifact and SHA-256 for every component/transitive before lock."
+      - "Dedicated server must pass fresh-world boot + same-world restart with the entire profile."
+      - "Windows and Apple Silicon clients must pass join/render/control tests."
+      - "Sable sub-level assembly, movement, chunk crossing, unload/reload and server restart must not duplicate/corrupt entities or blocks."
+      - "MTS cars/trucks/aircraft must coexist with Aeronautics without control/keybind/entity conflicts."
+      - "Create Big Cannons must work on static emplacements first; moving-platform artillery is a later acceptance gate."
+      - "NTGL/Gunsmithing projectiles must collide correctly with Sable sub-levels."
+      - "CBC projectiles must collide correctly with Sable sub-levels."
+      - "High Seas buoyancy/flooding/list/trim state must survive unload/reload and restart."
+      - "Representative armed ship/airship stress test must have acceptable MSPT/network behavior before survival support."
+      - "Set conservative heavy-artillery block-damage defaults before production survival."
+    explicit_deferments:
+      - create_weaponry
+      - create_caliber
+      - clockwork_valkyrien_skies
+      - drewcraft_night_optics
+      - spotlight_stack
+    gate: "Pass the Create combat/mobility interaction matrix before these candidates enter the production lock."
 
   hostile_ai_enhanced_hordes:
     extends:
