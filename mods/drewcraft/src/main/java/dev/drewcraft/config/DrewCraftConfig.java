@@ -85,6 +85,10 @@ public final class DrewCraftConfig {
             .comment("Hard cap on simultaneously loaded entities representing one strategic group. Remaining strength stays abstract and can enter later waves.")
             .defineInRange("strategic.materialization.maxActiveEntities", 64, 1, 256);
 
+    public static final ModConfigSpec.IntValue STRATEGIC_MAX_NEW_ENTITIES_PER_CYCLE = BUILDER
+            .comment("Global hard cap on successful strategic entity spawns in one materialization cycle across all encounters.")
+            .defineInRange("strategic.materialization.maxNewEntitiesPerCycle", 128, 1, 1024);
+
     public static final ModConfigSpec.IntValue STRATEGIC_MAX_ENCOUNTERS_PROCESSED_PER_CYCLE = BUILDER
             .comment("Hard cap on encounter records inspected in one materialization cycle.")
             .defineInRange("strategic.materialization.maxEncountersPerCycle", 32, 1, 512);
