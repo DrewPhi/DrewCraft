@@ -19,6 +19,7 @@ sys.path.insert(0, str(REPO_ROOT / "tools"))
 from release_contract import load_json, selected_files, sha256_file, validate_manifest, verify_tree  # noqa: E402
 
 WORLD_INFO = "drewcraft-world.json"
+RELEASE_MANIFEST = ".drewcraft-release-manifest.json"
 
 
 def _download(url: str, target: pathlib.Path) -> None:
@@ -90,7 +91,7 @@ def stage_release(root: pathlib.Path, manifest: dict) -> pathlib.Path:
     failures = verify_tree(staging, manifest, "server")
     if failures:
         raise RuntimeError(f"staged release verification failed: {failures}")
-    (staging / ".drewcraft-release-manifest.json").write_text(
+    (staging / RELEASE_MANIFEST).write_text(
         json.dumps(manifest, sort_keys=True, indent=2) + "\n", encoding="utf-8"
     )
     os.replace(staging, final)
@@ -114,6 +115,17 @@ def _wire_persistent_paths(root: pathlib.Path, release: pathlib.Path) -> None:
         os.symlink(target.resolve(), link, target_is_directory=True)
 
 
+def _active_state(root: pathlib.Path, release: pathlib.Path, manifest: dict, previous: pathlib.Path | None) -> dict:
+    return {
+        "packVersion": manifest["packVersion"],
+        "protocolVersion": manifest["protocolVersion"],
+        "worldId": manifest["world"]["worldId"],
+        "worldRevision": manifest["world"]["worldRevision"],
+        "releasePath": str(release.resolve()),
+        "previousReleasePath": str(previous) if previous else None,
+    }
+
+
 def activate(root: pathlib.Path, release: pathlib.Path, manifest: dict) -> pathlib.Path | None:
     ensure_layout(root)
     require_world_identity(root, manifest)
@@ -125,27 +137,40 @@ def activate(root: pathlib.Path, release: pathlib.Path, manifest: dict) -> pathl
         temp_link.unlink()
     os.symlink(release.resolve(), temp_link, target_is_directory=True)
     os.replace(temp_link, link)
-    _atomic_json(root / "state" / "active-release.json", {
-        "packVersion": manifest["packVersion"],
-        "protocolVersion": manifest["protocolVersion"],
-        "worldId": manifest["world"]["worldId"],
-        "worldRevision": manifest["world"]["worldRevision"],
-        "releasePath": str(release.resolve()),
-        "previousReleasePath": str(previous) if previous else None,
-    })
+    _atomic_json(root / "state" / "active-release.json", _active_state(root, release, manifest, previous))
     return previous
 
 
-def rollback_application(root: pathlib.Path, previous: pathlib.Path | None) -> None:
+def _manifest_for_release(release: pathlib.Path) -> dict:
+    path = release / RELEASE_MANIFEST
+    if not path.is_file():
+        raise RuntimeError(f"release is missing {RELEASE_MANIFEST}: {release}")
+    return validate_manifest(json.loads(path.read_text("utf-8")))
+
+
+def rollback_application(root: pathlib.Path, previous: pathlib.Path | None) -> dict | None:
+    current = root / "current"
+    failed = _current_target(root)
     if previous is None:
-        raise RuntimeError("no previous application release to roll back to")
+        if current.exists() or current.is_symlink():
+            current.unlink()
+        (root / "state" / "active-release.json").unlink(missing_ok=True)
+        return None
     if not previous.is_dir():
         raise RuntimeError(f"previous release is unavailable: {previous}")
+
+    manifest = _manifest_for_release(previous)
+    require_world_identity(root, manifest)
     temp_link = root / ".current.rollback"
     if temp_link.exists() or temp_link.is_symlink():
         temp_link.unlink()
     os.symlink(previous.resolve(), temp_link, target_is_directory=True)
-    os.replace(temp_link, root / "current")
+    os.replace(temp_link, current)
+    _atomic_json(
+        root / "state" / "active-release.json",
+        _active_state(root, previous, manifest, failed if failed != previous else None),
+    )
+    return manifest
 
 
 def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual") -> pathlib.Path:
@@ -225,10 +250,18 @@ def update_transaction(root: pathlib.Path, manifest: dict, *, stop_command: str 
         run_cmd(start_command)
         run_cmd(health_command)
     except Exception:
-        rollback_application(root, previous)
-        write_health(root, "rollback", manifest, "application rollout failed; persistent world was not rolled back")
-        if start_command and previous is not None:
-            run_cmd(start_command)
+        previous_manifest = rollback_application(root, previous)
+        if previous_manifest is not None:
+            write_health(
+                root,
+                "ready",
+                previous_manifest,
+                "rolled back failed application release; persistent world was not rolled back",
+            )
+            if start_command:
+                run_cmd(start_command)
+        else:
+            write_health(root, "failed", manifest, "first application rollout failed; no prior release exists")
         raise
     write_health(root, "ready", manifest)
     return {"release": str(release), "backup": str(archive), "previous": str(previous) if previous else None}
