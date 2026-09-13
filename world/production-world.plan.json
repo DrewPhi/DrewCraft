@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "worldId": "drewcraft-production",
+  "worldRevision": 1,
+  "status": "candidate_selection_required",
+  "minecraftVersion": "1.21.1",
+  "neoforgeVersion": "21.1.250",
+  "javaMajor": 21,
+  "terrain": {
+    "provider": "Terrain Diffusion Plus",
+    "worldScale": 2,
+    "seed": null,
+    "pregenRadiusBlocks": null,
+    "freezeRule": "Seed and radius become immutable only after a representative candidate passes visual, generation-time, disk-size, backup, and restore review.",
+    "candidateRadiiBlocks": [4096, 8192, 12288],
+    "selectionMetrics": [
+      "generation_seconds",
+      "world_bytes",
+      "archive_bytes",
+      "backup_seconds",
+      "restore_seconds",
+      "restart_seconds",
+      "visual_terrain_quality",
+      "source_distribution",
+      "herd_corridor_quality"
+    ]
+  },
+  "dimensions": {
+    "overworld": "pregenerate_selected_radius",
+    "nether": "boot_and_validate",
+    "end": "boot_and_validate"
+  },
+  "sourceMappings": "world/source-mappings.json",
+  "strategicSeedOutput": "drewcraft-strategic-seeds.json",
+  "strategicHerds": [],
+  "herdPolicy": {
+    "productionRule": "After the final Terrain Diffusion candidate is selected, seed explicit corridors only in visually suitable open regions. Do not absorb live animals.",
+    "initialSpecies": ["minecraft:cow", "minecraft:sheep", "minecraft:pig", "minecraft:horse"],
+    "targetRepresentedCountRange": [40, 160],
+    "targetMigrationDistanceBlocks": [1024, 8192]
+  },
+  "archive": {
+    "format": "tar.gz",
+    "requiredFiles": ["drewcraft-world.json", "drewcraft-strategic-seeds.json"],
+    "sha256Required": true,
+    "cleanRestoreRequired": true
+  }
+}
