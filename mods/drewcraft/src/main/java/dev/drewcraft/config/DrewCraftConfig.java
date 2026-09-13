@@ -65,6 +65,30 @@ public final class DrewCraftConfig {
             .comment("Maximum number of solved strategic route templates retained in the in-memory LRU cache.")
             .defineInRange("strategic.routing.cacheEntries", 512, 1, 10000);
 
+    public static final ModConfigSpec.IntValue STRATEGIC_MATERIALIZATION_INTERVAL_TICKS = BUILDER
+            .comment("Ticks between bounded checks for nearby strategic materialization/reconciliation.")
+            .defineInRange("strategic.materialization.intervalTicks", 20, 5, 200);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_MATERIALIZATION_RADIUS_BLOCKS = BUILDER
+            .comment("Player proximity radius at which an abstract strategic group may materialize.")
+            .defineInRange("strategic.materialization.radiusBlocks", 160, 32, 512);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_DEMATERIALIZATION_RADIUS_BLOCKS = BUILDER
+            .comment("Larger hysteresis radius outside which tactical entities may collapse back to strategic state.")
+            .defineInRange("strategic.materialization.dematerializationRadiusBlocks", 224, 48, 768);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_DEMATERIALIZATION_GRACE_TICKS = BUILDER
+            .comment("Grace period after the last nearby player before encounter reconciliation.")
+            .defineInRange("strategic.materialization.graceTicks", 200, 0, 2400);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_MAX_ACTIVE_ENTITIES_PER_ENCOUNTER = BUILDER
+            .comment("Hard cap on simultaneously loaded entities representing one strategic group. Remaining strength stays abstract and can enter later waves.")
+            .defineInRange("strategic.materialization.maxActiveEntities", 64, 1, 256);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_MAX_ENCOUNTERS_PROCESSED_PER_CYCLE = BUILDER
+            .comment("Hard cap on encounter records inspected in one materialization cycle.")
+            .defineInRange("strategic.materialization.maxEncountersPerCycle", 32, 1, 512);
+
     public static final ModConfigSpec.BooleanValue RADAR = BUILDER
             .comment("Enable DrewCraft radar sensing and Create: Radars weather/terrain integration.")
             .define("features.radar", true);
