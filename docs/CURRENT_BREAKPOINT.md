@@ -2,187 +2,66 @@
 
 **Updated:** 2026-09-12  
 **Protocol:** `docs/DEVELOPMENT_BREAKPOINTS.md`  
-**Last completed breakpoint:** **BP5 — Factions, patrols, hordes, raids, and large armies**  
-**Next breakpoint:** **BP6 — Path-first bounded siege planner**
+**Last completed breakpoint:** **BP6 — Path-first bounded siege planner**  
+**Next breakpoint:** **BP7 — Strategic herds + local-spawn coexistence**
 
-## BP5 status — REACHED
+## BP6 status — REACHED
 
-BP5 is complete at implementation/compile/unit/runtime-wiring scope. DrewCraft now has a data-driven hostile population layer on top of the BP1-BP4 strategic substrate.
+BP6 is complete at implementation/compile/unit/runtime-wiring scope. Detailed contract: `docs/SIEGE_V1.md`.
 
-Detailed contract: `docs/HOSTILE_FORCES_V1.md`.
+## Implemented
 
-## Implementation
+- `SiegeRuntime` runs only for already-materialized, loaded strategic encounters.
+- Only `RAID` and `ARMY` groups are siege-capable in V1.
+- Only designated breakers (`zombie`, `husk`, `vindicator`, `ravager`) may execute a deliberate breach.
+- Normal Minecraft navigation is always attempted before any breach planning.
+- A breach plan is allowed only after **3 consecutive ordinary-navigation failures**.
+- Local snapshots are **12-block radius**, use only already-loaded chunks, and classify unloaded cells as protected rather than loading them.
+- `BoundedSiegePlanner` uses a pure deterministic local search with a default **1,200-node hard expansion cap** and **4 breach-cell maximum**.
+- Plans are cached per encounter/local-geometry fingerprint; unchanged geometry reuses the plan.
+- Block scoring accounts for objective progress, hardness, open space, doors, gates, weak barriers, solid barriers, decorative penalties, and protected cells.
+- `#drewcraft:siege_protected` is unbreachable; V1 includes bedrock-class blocks and `drewcraft:source_core`.
+- Any block with a block entity is protected by default, shielding containers/machines/stateful blocks.
+- `#drewcraft:siege_decorative` is data-pack extensible and receives a very large planning penalty.
+- A successful breach is a constrained corridor, not general mob griefing.
+- One designated breaker approaches an explicitly planned breach block before destruction.
+- The exact block is revalidated immediately before breaking.
+- After each successful break the plan is invalidated and the world must be re-snapshotted before another block can be broken.
+- Default runtime bound is **8 siege encounters per 20-tick cycle** with a **30-tick per-encounter break cooldown**.
+- `features.strategicSiege` is an independent server-side kill switch.
 
-### Data-driven factions and force roles
+## BP6 acceptance evidence
 
-Packaged hostile-force content now lives in:
+Focused tests prove:
 
-`mods/drewcraft/src/main/resources/data/drewcraft/strategic/factions.json`
+1. **open gate/open entrance** -> `OPEN_ROUTE`, zero breach blocks;
+2. **sealed fort** -> useful weak section selected rather than arbitrary wall destruction;
+3. **closed gate vs hard wall** -> gate selected even with a small detour;
+4. nearby irrelevant decorative cells are not selected merely because they are close;
+5. protected cells never enter a breach corridor;
+6. impossible geometry terminates at the configured node/work bound;
+7. only `RAID`/`ARMY` roles may siege;
+8. only designated breaker entity types may execute a breach.
 
-`StrategicFactionCatalog` parses the versioned JSON into immutable `StrategicForceTemplate`s. Templates define:
-
-- faction;
-- strategic role;
-- allowed source classes;
-- strength multiplier;
-- target policy;
-- strategic travel-distance range;
-- weighted Minecraft entity composition.
-
-V1 data contains:
-
-- `drewcraft:test_hostile`;
-- `drewcraft:undead`;
-- `drewcraft:raiders`.
-
-The hostile roles are:
-
-- `PATROL`;
-- `HORDE` / warband;
-- `RAID`;
-- `ARMY`;
-- `REINFORCEMENT`.
-
-Undead and raider profiles use meaningfully different entity compositions. Composition allocation is deterministic and always sums exactly to represented strategic strength.
-
-### Variable-size source production
-
-Sources no longer assume every strategic launch costs the same number of units.
-
-A template computes its represented strength from the source base production strength. The source is charged the exact resulting `StrategicGroup.totalStrength()` inside the same synchronized `DrewCraftSavedData` authority used by Source Core clearing.
-
-Before commit DrewCraft verifies source identity/generation, source state, group source ID, faction, dimension, duplicate group ID, and available source budget.
-
-This preserves BP4 clear-versus-launch race safety while allowing genuinely large strategic forces.
-
-Example V1 stronghold army:
-
-```text
-base source launch strength = 32
-army multiplier = 8
-represented army strength = 256
-persistent source population debit = 256
-```
-
-### Persistent mission state
-
-`StrategicGroup` is now schema **3** and persists a `StrategicMission` containing:
-
-- force-template ID;
-- target-knowledge category;
-- human-readable knowledge explanation;
-- exact objective position;
-- mission issue game time.
-
-Schema-1 and schema-2 strategic groups migrate to `LEGACY_ROUTE` mission state using their existing route destination. Future group schemas still fail closed.
-
-The group constructor also verifies that composition counts sum exactly to `totalStrength`.
-
-### Non-omniscient targeting
-
-Target selection explicitly records **why** the force knows its target:
-
-- `SOURCE_GEOGRAPHY` — local/regional routes derived from the source itself;
-- `SCOUTED_REGION` — deterministic scouting objective;
-- `ALLIED_SOURCE_LOCATION` — another persistent intact same-faction source;
-- `LEGACY_ROUTE` — migration state for old groups.
-
-The BP5 source planner has no nearest-player/base lookup. A scouted army target is deterministic from persistent source/template/launch state and carries the explanation `no player position queried`.
-
-This policy is separated from runtime route calculation and is unit-tested as a pure strategic decision.
-
-### Large armies remain lightweight
-
-BP5 deliberately does not increase BP3's tactical caps.
-
-Default loaded limits remain:
-
-- **64 active entities per encounter**;
-- **128 successful new strategic entities globally per materialization cycle**;
-- **32 encounter records processed per cycle**.
-
-A 256-unit strategic army can therefore travel unloaded as one record while at most 64 of its units exist as tactical entities around players.
-
-### Representative BP5 acceptance proof
-
-The automated large-army scenario proves:
-
-```text
-source budget = 384
-        |
-commit 256-unit ARMY
-        v
-source budget = 128
-        |
-materialize encounter
-        v
-64 tactical reservations, 192 still abstract
-        |
-37 confirmed deaths
-        v
-strategic survivors = 219
-loaded survivors = 27
-        |
-next wave eligibility = exactly 37
-        |
-save / restart
-        v
-ARMY role + mission + target + 219 population + 27 encounter reservations all preserved
-```
-
-At no point does the test require 256 Minecraft entities to be loaded.
-
-## BP5 acceptance evidence
-
-Focused tests cover:
-
-- packaged versioned faction catalog loading;
-- undead and raider support for all five hostile roles;
-- deterministic exact weighted composition allocation;
-- affordability filtering;
-- exact variable-strength source population debit;
-- BP4 generation-lock compatibility for variable-strength launches;
-- mission NBT round trip;
-- schema-1/schema-2 mission migration;
-- future group-schema rejection;
-- non-omniscient scouted target policy without runtime routing/config dependency;
-- **256-unit army -> 64 active -> kill 37 -> 219 strategic / 27 active -> exactly 37 refill slots**;
-- save/restart preservation of army role, mission, target, casualties, and encounter authority.
+The real NeoForge runtime compiles against the pinned Minecraft 1.21.1 / NeoForge 21.1.250 APIs, including vanilla navigation, loaded-world block classification, block tags, and deliberate block destruction.
 
 ### CI
 
-- final BP5 code/test head: **`c8bb18e8e6af986b614db08235c0d8b4202926a9`**
-- final DrewCraft mod CI: **run `34729884759` — SUCCESS**
-- job: `build-and-test` — **SUCCESS**
-- command: `gradle -p mods/drewcraft test build --stacktrace --no-daemon`
-- representative large-army proof run **`34729684064` — SUCCESS**
-- variable-strength source transaction run **`34729641645` — SUCCESS**
+- final BP6 code/test head: **`1bab32c0c6028e57f99f8684d7097c9c33ed02fa`**
+- DrewCraft mod CI: **run `34730303373` — SUCCESS**
+- job `build-and-test` — **SUCCESS**
+- earlier runtime compile run **`34730277755` — SUCCESS**
 
-## Important V1 boundaries
+## Important deferred acceptance
 
-BP5 establishes force identity, faction composition, represented population size, mission/objective knowledge, exact source accounting, bounded materialization, casualty persistence, and restart behavior.
+The final pack still needs representative visual multiplayer tests showing actual mobs choosing an open castle entrance and deliberately breaching a sealed player-built fort. That belongs to BP9/BP10 full-stack acceptance, where final world terrain, Create builds, latency, and real structures are present.
 
-Still intentionally deferred:
+No BP7 herd/ecology work has started.
 
-- exact balance/frequency/composition tuning beyond sane V1 defaults;
-- final production structure-to-faction assignments during world-build integration;
-- representative in-world visual/load testing in the final pack;
-- any fortification block-breaking or breach selection — **BP6 owns siege behavior**.
+## Next: BP7
 
-## Next: BP6
+On the next **"go"**, implement strategic wild herds plus coexistence proof for normal Minecraft ecology.
 
-On the next **"go"**, continue until BP6 is reached.
+Required outcome: persistent wild herds use the shared abstract/materialized kernel without absorbing protected/domesticated animals, while normal night/cave spawning, mob farms, and ordinary spawners continue working independently.
 
-BP6 must implement a bounded path-first siege planner with these rules:
-
-1. ordinary navigation is attempted first;
-2. siege planning runs only for loaded, genuinely blocked encounters;
-3. only siege-capable hostile roles/units may breach;
-4. breach search is bounded and cached;
-5. gates, doors, weak/useful barriers, hardness, and protected tags affect scoring;
-6. a breach is a constrained useful corridor rather than indiscriminate destruction;
-7. an open gate is used instead of breaking walls;
-8. a sealed fort yields a useful deliberate breach;
-9. irrelevant nearby decorative structures/blocks are not selected merely because they are close.
-
-Stop and report again when BP6 passes. Do not begin BP7 herds/local-spawn coexistence until the user says **"go"** after that report.
+Stop and report again when BP7 passes. Do not begin BP8 production/release convergence until the user says **"go"** after that report.
