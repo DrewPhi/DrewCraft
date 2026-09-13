@@ -93,6 +93,22 @@ public final class DrewCraftConfig {
             .comment("Hard cap on encounter records inspected in one materialization cycle.")
             .defineInRange("strategic.materialization.maxEncountersPerCycle", 32, 1, 512);
 
+    public static final ModConfigSpec.IntValue STRATEGIC_SOURCE_INTERVAL_TICKS = BUILDER
+            .comment("Ticks between bounded hostile-source production cycles. Sources are persistent records; this never scans distant chunks.")
+            .defineInRange("strategic.sources.intervalTicks", 200, 20, 2400);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_MAX_SOURCES_PER_CYCLE = BUILDER
+            .comment("Hard cap on persistent hostile sources inspected in one production cycle.")
+            .defineInRange("strategic.sources.maxSourcesPerCycle", 16, 1, 1024);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_MAX_LAUNCHES_PER_CYCLE = BUILDER
+            .comment("Hard cap on new strategic groups committed by hostile sources in one production cycle.")
+            .defineInRange("strategic.sources.maxLaunchesPerCycle", 4, 1, 128);
+
+    public static final ModConfigSpec.IntValue STRATEGIC_SOURCE_ROUTE_RETRY_TICKS = BUILDER
+            .comment("Backoff after a source cannot obtain a bounded strategic route. Population is not consumed.")
+            .defineInRange("strategic.sources.routeRetryTicks", 1200, 20, 24000);
+
     public static final ModConfigSpec.BooleanValue RADAR = BUILDER
             .comment("Enable DrewCraft radar sensing and Create: Radars weather/terrain integration.")
             .define("features.radar", true);
