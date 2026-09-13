@@ -4,13 +4,14 @@ This directory is the machine-readable dependency source of truth for DrewCraft.
 
 ## Candidate registries
 
-Stage 1 dependency discovery currently comes from **three companion registries**. The resolver must read them as one candidate namespace and reject duplicate/conflicting canonical IDs.
+Stage 1 dependency discovery currently comes from **four companion registries**. The resolver must read the runtime candidate registries as one candidate namespace and reject duplicate/conflicting canonical IDs. `endgame_content.yaml` also records world-build-only assets that are intentionally not runtime mods.
 
 - `upstreams.yaml` — foundational gameplay/platform upstreams: Terrain Diffusion Plus, Chunky, Distant Horizons, Create, MTS, Project Atmosphere, Simple Clouds, seasons and their libraries.
 - `performance_candidates.yaml` — intended performance baseline plus isolated optimization experiments. Baseline entries are meant to enter the Stage 2 compatibility stack, but remain candidates until hashes/tests promote them.
 - `mob_structure_candidates.yaml` — controlled tactical hostile-AI, herd-AI, strategic-source structure, and structure-density compatibility spikes. Alternatives in this file are **not** additive by default.
+- `endgame_content.yaml` — selected cult/endgame content foundations: Illager Invasion + Puzzles Lib for the cult tactical roster, the xSisyX Fantasy City & Terrain Builder schematic kit for the coherent cult architectural language, the eight derived source-site archetypes, Flightstone/Source Core/flak markers, and the hand-authored hidden capital. Raw third-party schematic/map binaries are not committed here by default.
 
-All three files are discovery/evaluation registries, **not production lockfiles**.
+These files are discovery/evaluation registries, **not production lockfiles**.
 
 ## Development profiles
 
@@ -27,6 +28,8 @@ It currently defines:
 - C2ME as an isolated world-build experiment;
 - Structure Essentials as optional world-build/source-debug tooling.
 
+The selected cult/endgame stack in `endgame_content.yaml` is currently post-V1 content work and therefore is **not yet injected into the base V1 profiles**. When implementation starts, add an explicit endgame compatibility profile rather than silently changing the frozen V1 baseline.
+
 Profiles are development inputs, **not release locks**. Production releases contain exact promoted dependencies and hashes.
 
 ## Future authoritative manifests
@@ -42,17 +45,19 @@ The eventual locked manifests contain only the exact promoted choices. For examp
 
 The Stage 1 resolver/downloader must:
 
-1. parse all candidate registries and `profiles.yaml`;
+1. parse runtime candidate registries and `profiles.yaml`;
 2. normalize canonical dependency IDs;
 3. detect duplicate/conflicting candidates;
 4. select an explicit compatibility profile;
 5. expand profile inheritance and reject incompatible profile combinations;
-6. recursively resolve required dependencies such as Placebo, Cupboard, Cristel Lib, Lithostitched, GlitchCore and Gabou's Libs;
+6. recursively resolve required dependencies such as Placebo, Cupboard, Cristel Lib, Lithostitched, GlitchCore, Gabou's Libs, and Puzzles Lib when their parent candidates are selected;
 7. acquire artifacts through permitted provider paths;
 8. compute/verify SHA-256;
 9. classify each artifact as `common`, `client`, `server`, or operational/world-build tooling;
 10. generate deterministic client/server layouts;
 11. fail closed on missing artifacts, hash drift, wrong-side files or unresolved transitives.
+
+World-build-only asset kits such as the selected cult schematic pack are acquired through their recorded creator/provider path and processed separately from runtime jar resolution.
 
 No friend or server administrator should manually download a hidden prerequisite.
 
@@ -91,7 +96,7 @@ Test independently, with Ethological as the richer experimental branch and Herd 
 
 ### Structure-source spike
 
-The first intended structure experiment is:
+The first intended V1 structure experiment is:
 
 ```text
 vanilla pillager outpost control
@@ -100,6 +105,19 @@ vanilla pillager outpost control
 ```
 
 CTOV is initially an alternative to Towns and Towers, not an automatic companion. Pack-owned per-structure spacing is preferred over another global structure-density mod unless testing demonstrates a clear need.
+
+### Cult/endgame content stack
+
+The selected post-V1 cult campaign foundation is:
+
+```text
+Illager Invasion 1.21.1 NeoForge
++ Puzzles Lib
++ DrewCraft strategic spawning/lore/Source Core logic
++ xSisyX Fantasy City & Terrain Builder asset kit (world-build only)
+```
+
+Illager Invasion provides the cult tactical entity roster, but DrewCraft owns strategic spawning and progression. Its native structures are not the canonical cult architecture. The eight required cult sites and the hidden capital are derived from one palette-normalized asset kit and fitted to the pregenerated Terrain Diffusion production world.
 
 ### Aggressive performance spike
 
@@ -128,6 +146,8 @@ mods.yaml / content-packs.yaml lock
         ↓
 client + server pack build
 ```
+
+World-build-only schematics follow a parallel provenance/inventory/palette-conversion/site-validation pipeline before being baked into the production world.
 
 Do not manually copy a jar into a release and treat it as locked.
 
