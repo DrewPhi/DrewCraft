@@ -102,6 +102,29 @@ class SourceProductionTransactionTest {
     }
 
     @Test
+    void boundedSourceWindowRotatesInsteadOfStarvingLaterRecords() {
+        DrewCraftSavedData data = emptyData();
+        SourceRecord first = data.discoverSource(descriptor(0), 0L).source();
+        SourceRecord second = data.discoverSource(descriptor(100), 0L).source();
+        SourceRecord third = data.discoverSource(descriptor(200), 0L).source();
+        long now = Math.max(first.nextActionGameTime(), Math.max(second.nextActionGameTime(), third.nextActionGameTime()));
+
+        SourceProductionScheduler.Planner planner = (source, gameTime) -> new SourceLaunchPlanner.PlanResult(
+                groupFor(source, source.launchSerial(), gameTime), "ok"
+        );
+        SourceProductionScheduler.CycleStats one = SourceProductionScheduler.runCycleFromIndex(
+                data, now, 1, 1, 1200L, 0, planner
+        );
+        SourceProductionScheduler.CycleStats two = SourceProductionScheduler.runCycleFromIndex(
+                data, now, 1, 1, 1200L, one.nextCursor(), planner
+        );
+
+        assertEquals(1, one.sourcesSeen());
+        assertEquals(1, two.sourcesSeen());
+        assertEquals(2, data.strategicGroups().size());
+    }
+
+    @Test
     void schemaThreeMigratesWithNoSources() {
         CompoundTag schemaThree = new CompoundTag();
         schemaThree.putInt("SchemaVersion", 3);
