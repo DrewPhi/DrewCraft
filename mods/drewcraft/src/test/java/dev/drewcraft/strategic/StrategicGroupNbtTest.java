@@ -26,10 +26,27 @@ class StrategicGroupNbtTest {
         assertEquals(original.position(), restored.position());
         assertEquals(original.destination(), restored.destination());
         assertEquals(original.route().cursor(), restored.route().cursor());
+        assertEquals(original.route().segmentCostMultipliers(), restored.route().segmentCostMultipliers());
         assertEquals(original.totalStrength(), restored.totalStrength());
         assertEquals(original.composition(), restored.composition());
         assertEquals(original.state(), restored.state());
         assertEquals(original.lastSimulatedGameTime(), restored.lastSimulatedGameTime());
+    }
+
+    @Test
+    void migratesSchemaOneFlatRouteToUnitCostMultipliers() {
+        StrategicGroup group = StrategicGroup.testGroup(
+                new StrategicPosition("minecraft:overworld", 0.0, 0.0),
+                new StrategicPosition("minecraft:overworld", 100.0, 0.0),
+                0L
+        );
+        CompoundTag tag = StrategicGroupNbt.save(group);
+        tag.putInt("SchemaVersion", 1);
+        tag.getCompound("Route").remove("SegmentCostMultipliers");
+
+        StrategicGroup restored = StrategicGroupNbt.load(tag);
+        assertEquals(1, restored.route().segmentCostMultipliers().size());
+        assertEquals(1.0, restored.route().segmentCostMultipliers().getFirst(), 1.0e-9);
     }
 
     @Test
