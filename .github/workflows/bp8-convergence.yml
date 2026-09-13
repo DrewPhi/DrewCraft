@@ -1,0 +1,102 @@
+name: BP8 convergence
+
+on:
+  push:
+    branches: [bp8-convergence, main]
+    paths:
+      - 'launcher/**'
+      - 'infra/**'
+      - 'tools/release_contract.py'
+      - 'tools/world_seed_index.py'
+      - 'tools/world_bundle.py'
+      - 'world/**'
+      - 'tests/test_bp8_release_ops.py'
+      - 'mods/drewcraft/**'
+      - '.github/workflows/bp8-convergence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Release/deploy/world proofs
+        run: python -m unittest -v tests/test_bp8_release_ops.py
+      - name: Validate JSON locks/plans
+        run: |
+          python -m json.tool launcher/runtime-lock.json >/dev/null
+          python -m json.tool world/production-world.plan.json >/dev/null
+          python -m json.tool world/source-mappings.json >/dev/null
+
+  server-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '9.2.1'
+      - name: Prove native ARM64 Java
+        run: |
+          uname -m
+          test "$(uname -m)" = "aarch64"
+          java -version
+      - name: Compile and test DrewCraft on ARM64
+        run: gradle -p mods/drewcraft test build --stacktrace --no-daemon
+
+  launcher-windows:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Build Windows one-click executable
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check pyinstaller==6.16.0
+          pyinstaller --noconfirm --clean --onefile --windowed --name DrewCraft --paths launcher launcher/drewcraft_entry.py
+          if (-not (Test-Path dist/DrewCraft.exe)) { throw "DrewCraft.exe missing" }
+      - name: Upload Windows bootstrap
+        uses: actions/upload-artifact@v6
+        with:
+          name: DrewCraft-Windows-x86_64
+          path: dist/DrewCraft.exe
+          if-no-files-found: error
+
+  launcher-macos-arm64:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Prove Apple Silicon runner
+        run: |
+          test "$(uname -m)" = "arm64"
+          sw_vers
+      - name: Build Apple Silicon app and DMG
+        run: |
+          python -m pip install --disable-pip-version-check pyinstaller==6.16.0
+          pyinstaller --noconfirm --clean --windowed --name DrewCraft --paths launcher launcher/drewcraft_entry.py
+          test -d dist/DrewCraft.app
+          file dist/DrewCraft.app/Contents/MacOS/DrewCraft | tee mac-binary.txt
+          grep -q 'arm64' mac-binary.txt
+          codesign --force --deep --sign - dist/DrewCraft.app
+          codesign --verify --deep --strict dist/DrewCraft.app
+          hdiutil create -volname DrewCraft -srcfolder dist/DrewCraft.app -ov -format UDZO dist/DrewCraft-macOS-arm64.dmg
+      - name: Upload Mac bootstrap
+        uses: actions/upload-artifact@v6
+        with:
+          name: DrewCraft-macOS-arm64
+          path: dist/DrewCraft-macOS-arm64.dmg
+          if-no-files-found: error
