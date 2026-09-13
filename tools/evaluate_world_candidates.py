@@ -37,6 +37,8 @@ def validate_candidate(plan: dict, report: dict) -> dict:
         raise RuntimeError("candidate worldId does not match production plan")
     if report.get("worldRevision") != plan.get("worldRevision"):
         raise RuntimeError("candidate worldRevision does not match production plan")
+    if report.get("generationPackVersion") != plan.get("generationPackVersion"):
+        raise RuntimeError("candidate generationPackVersion does not match production plan")
 
     terrain = plan.get("terrain", {})
     radius = report.get("pregenRadiusBlocks")
@@ -79,6 +81,7 @@ def lock_candidate(plan: dict, report: dict) -> dict:
     locked["terrain"]["pregenRadiusBlocks"] = report["pregenRadiusBlocks"]
     locked["terrain"]["lockedCandidate"] = {
         "candidateId": report.get("candidateId"),
+        "generationPackVersion": report["generationPackVersion"],
         "worldArchiveSha256": report["worldArchiveSha256"].lower(),
         "metrics": report["metrics"],
         "reviews": report["reviews"],
@@ -101,6 +104,7 @@ def main() -> int:
     print(json.dumps({
         "status": "locked",
         "candidateId": report.get("candidateId"),
+        "generationPackVersion": report["generationPackVersion"],
         "seed": report["seed"],
         "pregenRadiusBlocks": report["pregenRadiusBlocks"],
         "worldArchiveSha256": report["worldArchiveSha256"].lower(),
