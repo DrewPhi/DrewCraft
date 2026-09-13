@@ -1,0 +1,213 @@
+# DrewCraft cult/endgame content registry
+#
+# This file records the selected external content foundations for the cult
+# campaign described in docs/end_game_plans.md. It is intentionally separate
+# from the production lockfile: exact hashes, final configs, and any copied
+# structure assets must still pass the normal DrewCraft compatibility/world-build
+# gates before inclusion in a release.
+
+schema_version: 1
+last_researched: "2026-09-13"
+target:
+  minecraft: "1.21.1"
+  loader: "neoforge"
+  java: 21
+
+status: "selected_endgame_foundations"
+
+principles:
+  - "DrewCraft owns strategic spawning, Source Core state, lore drops, site clearing, army composition, and progression."
+  - "Third-party mods provide tactical entities/behaviors or raw structure assets only; they do not become strategic authorities."
+  - "Use one coherent structure kit for the cult civilization and normalize its block palette offline."
+  - "Do not commit third-party schematic/map binaries to this repository unless their redistribution terms are separately confirmed."
+  - "Important cult sites are fitted to the pregenerated Terrain Diffusion world rather than relying on uncontrolled random worldgen."
+
+cult_mobs:
+  foundation:
+    id: illager_invasion
+    display_name: "Illager Invasion"
+    role: "Base cult mob roster and combat behaviors"
+    selected: true
+    required_for_endgame: true
+    side: common
+    provider:
+      primary: curseforge
+      project_id: 891324
+      file_id: 6492670
+      candidate_version: "v21.1.6"
+      filename: "IllagerInvasion-v21.1.6-1.21.1-NeoForge.jar"
+      url: "https://www.curseforge.com/minecraft/mc-mods/illager-invasion/files/6492670"
+      alternate_modrinth_project_id: "jSV9w0J5"
+      alternate_modrinth_version_id: "9bEpNrvK"
+    source_repository: "Fuzss/illager-invasion"
+    license: MIT
+    required_dependencies:
+      - puzzles_lib
+    use_policy:
+      - "Use Illager Invasion entities as the tactical cult roster."
+      - "DrewCraft strategic records decide when/where cult patrols, armies, and city defenders materialize."
+      - "Do not let native raid/worldgen/spawn behavior create unaccounted strategic strength. Audit and suppress conflicting spawning where needed."
+      - "Native Illager Invasion structures are not the canonical cult architecture; the selected structure kit below owns the cult visual language."
+      - "Initial release may use upstream textures/models; later reskin the roster into one cult palette/style matching the structures."
+    candidate_roles:
+      footman:
+        entities: [basher, marauder, provoker]
+        use: "common soldiers and ranged troops"
+      cleric_scribe:
+        entities: [archivist]
+        use: "support caster, scripture/lore carrier"
+      elite_crusader:
+        entities: [inquisitor]
+        use: "heavy guard / Source Core defender"
+      prelate:
+        entities: [sorcerer, firecaller, necromancer]
+        use: "rare religious caster / army specialist"
+      high_inquisitor:
+        entities: [invoker]
+        use: "rare major-city/capital elite"
+      optional_specialist:
+        entities: [alchemist, illusioner]
+        use: "situational ranged/special encounter roles"
+    lore_drop_contract:
+      - "Cult mobs can drop named scripture/intelligence books."
+      - "Books should usually contain partial coordinates or partial geographic clues tied to a named cult site."
+      - "Examples: X only, Z only, X+Z without Y, approximate ranges, or rare full coordinates."
+      - "Multiple fragments for the same named site can be matched by players to reconstruct its location."
+      - "Rare full-coordinate drops accelerate discovery but are never required for progression."
+      - "Progression-critical information must have a non-RNG fallback through site archives or guaranteed drops."
+
+  dependencies:
+    puzzles_lib:
+      display_name: "Puzzles Lib"
+      role: "Required Illager Invasion library"
+      provider: modrinth
+      project_id: "QAGBst4M"
+      candidate_version: "v21.1.30"
+      filename: "PuzzlesLib-v21.1.30-1.21.1-NeoForge.jar"
+      url: "https://modrinth.com/mod/puzzles-lib/version/v21.1.30-1.21.1-NeoForge"
+      license: MPL-2.0
+      notes:
+        - "Illager Invasion 21.1.x requires Puzzles Lib; exact resolved artifact/hash still belongs in the production lock step."
+
+cult_structures:
+  canonical_asset_kit:
+    id: xsisyx_fantasy_city_terrain_builder
+    display_name: "Fantasy City & Terrain Builder Asset Pack"
+    creator: "xSisyX"
+    provider: planet_minecraft
+    url: "https://www.planetminecraft.com/project/fantasy-city-medival-tree-statue-house-rock-horse-cart-assets/"
+    format: "downloadable schematic / map asset pack"
+    selected: true
+    required_for_endgame: true
+    runtime_mod: false
+    world_build_only: true
+    contents_expected:
+      - "fantasy medieval houses"
+      - "cathedral / temple structures"
+      - "church build"
+      - "path and road pieces"
+      - "decorative environment pieces"
+      - "cliff/canyon/river/forest terrain pieces usable as optional composition aids"
+    acquisition_policy:
+      - "Acquire manually from the creator's Planet Minecraft page for world-build use."
+      - "Do not commit the raw third-party schematic/map download into the public DrewCraft repository by default."
+      - "Track the source URL and creator attribution alongside any derived world-build output."
+    transformation_pipeline:
+      - "import schematic pieces into the DrewCraft world-build workspace"
+      - "inspect footprint, orientation, entrances, and vertical extent"
+      - "normalize block palette offline so every cult site shares one visual language"
+      - "replace unsupported/mod-specific blocks if present"
+      - "add DrewCraft Source Core socket/location"
+      - "add lore/archive placements and mob encounter anchors"
+      - "add optional AA/flak-zone marker positions"
+      - "fit foundations/roads/walls to the chosen Terrain Diffusion site"
+      - "validate visually before production-world bake"
+
+  derived_site_set:
+    count_minor_and_regional: 8
+    sites:
+      - id: cult_site_01
+        archetype: "roadside shrine / patrol outpost"
+        scale: small
+        defenses: "light"
+      - id: cult_site_02
+        archetype: "watchtower compound"
+        scale: small
+        defenses: "light + optional single flak zone"
+      - id: cult_site_03
+        archetype: "temple archive"
+        scale: medium
+        defenses: "moderate"
+      - id: cult_site_04
+        archetype: "monastery / pilgrimage complex"
+        scale: medium
+        defenses: "moderate"
+      - id: cult_site_05
+        archetype: "regional fortress"
+        scale: medium_large
+        defenses: "walls + multiple defender tiers + flak"
+      - id: cult_site_06
+        archetype: "walled cult town"
+        scale: large
+        defenses: "walls + Source Core + flak"
+      - id: cult_site_07
+        archetype: "major temple city"
+        scale: large
+        defenses: "layered defenses + archive clue"
+      - id: cult_site_08
+        archetype: "regional citadel"
+        scale: large
+        defenses: "strongest pre-capital source + archive clue"
+    placement_rule: "Select/finalize sites against the pregenerated Terrain Diffusion production world; do not require one universal procedural layout to fit arbitrary terrain."
+    visual_rule: "All eight sites are assembled from the same asset kit and pass through the same DrewCraft palette-normalization rules."
+    source_core_rule: "Each strategic site contains exactly one DrewCraft Source Core whose neutralization permanently clears future source production."
+
+  capital:
+    id: hidden_cult_capital
+    archetype: "Anor-Londo-like monumental holy capital"
+    runtime_mod: false
+    source_assets: "same xSisyX canonical asset kit"
+    generation: "hand-composed / heavily authored for the chosen production seed"
+    initial_access: "outside initial world border"
+    reveal_rule: "Clearing/recovering the required eight site archives resolves the capital location and opens the appropriate pregenerated frontier."
+    travel_target: "approximately 10 minutes by supported aircraft from the nearest mature DrewCraft airfield; convert to block distance only after aircraft-speed playtesting"
+    composition_goals:
+      - "recognizable from long-range aircraft approach"
+      - "layered lower city, walls, stairs/roads, sacred district, major cathedral/temple, upper citadel"
+      - "integrated into dramatic Terrain Diffusion geography rather than placed on a giant flattened pad"
+      - "same architectural vocabulary as the eight earlier sites, but multiplied to monumental scale"
+      - "supports forward-base/logistics gameplay rather than a single boss-room shortcut"
+
+  drewcraft_owned_structures:
+    - id: flightstone
+      role: "unbreakable spawn progression monument / lore archive"
+      notes:
+        - "Starts with DrewCraft founding/aviation doctrine."
+        - "Activates one progress marker per cleared required cult site."
+        - "Permanently archives recovered clue state so lost books do not block progression."
+        - "After the final required archive is resolved, presents the capital revelation/frontier-opening state."
+    - id: source_core
+      role: "persistent hostile-source objective already owned by DrewCraft"
+      notes:
+        - "Neutralizing it clears future force production from the associated site."
+        - "Do not require players to physically demolish every building."
+    - id: flak_zone_marker
+      role: "simple anti-air defense anchor embedded in selected tower/fort pieces"
+      notes:
+        - "Not a full turret simulation."
+        - "While supported aircraft are in range, periodically create visible flak bursts near a velocity-predicted aircraft position with randomized error."
+        - "Hit probability / accuracy falls with altitude so defenses discourage careless low/straight overflight without making aircraft useless."
+        - "No block destruction from flak bursts."
+        - "Destroying/clearing the associated AA marker or site removes that coverage according to site rules."
+
+production_gates:
+  - "Illager Invasion + Puzzles Lib boot cleanly on the locked 1.21.1 NeoForge profile."
+  - "Conflicting native Illager Invasion spawning/worldgen is either intentionally retained or explicitly disabled; no accidental second strategic authority exists."
+  - "A sample mob from each chosen cult role can be materialized/reconciled by DrewCraft strategic state."
+  - "Lore drops can encode named-site partial coordinates and guaranteed fallback clues."
+  - "The xSisyX asset download is acquired and inventoried; useful schematic pieces and dimensions are recorded."
+  - "Offline palette replacement succeeds without corrupting block-state orientation/properties."
+  - "All eight site archetypes can be laid out from the one kit and visually read as the same civilization."
+  - "Sites fit real Terrain Diffusion terrain with acceptable foundations/roads and no giant arbitrary flattening."
+  - "Flak-zone behavior is visible, avoidable, altitude-sensitive, and not overpowered."
+  - "The final capital is validated from both ground approach and long-range aircraft approach before the production world is released."
