@@ -75,7 +75,8 @@ class WildHerdBp7AcceptanceTest {
         for (int i = 0; i < 10; i++) assertTrue(data.recordStrategicCasualty(encounter.encounterId(), active.get(i)));
         assertEquals(70, herd.totalStrength());
         assertEquals(54, encounter.activeEntityCount());
-        assertEquals(16, StrategicEncounterPlanner.nextWave(herd, encounter, 64).size());
+        // Sixteen survivors remain abstract, but only ten slots exist below the 64-active cap.
+        assertEquals(10, StrategicEncounterPlanner.nextWave(herd, encounter, 64).size());
 
         DrewCraftSavedData restored = DrewCraftSavedData.load(data.save(new CompoundTag(), null), null);
         StrategicGroup restoredHerd = restored.strategicGroup(descriptor.stableHerdId()).orElseThrow();
@@ -84,7 +85,7 @@ class WildHerdBp7AcceptanceTest {
         assertEquals(StrategicTargetKnowledge.MIGRATION_ROUTE, restoredHerd.mission().targetKnowledge());
         assertEquals(70, restoredHerd.totalStrength());
         assertEquals(54, restoredEncounter.activeEntityCount());
-        assertEquals(16, StrategicEncounterPlanner.nextWave(restoredHerd, restoredEncounter, 64).size());
+        assertEquals(10, StrategicEncounterPlanner.nextWave(restoredHerd, restoredEncounter, 64).size());
 
         restored.completeStrategicEncounter(restoredEncounter.encounterId());
         assertEquals(StrategicGroupState.TRAVELING, restoredHerd.state());
