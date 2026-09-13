@@ -148,11 +148,12 @@ jobs:
           python -m pip install --disable-pip-version-check pyinstaller==6.16.0
           pyinstaller --noconfirm --clean --onefile --windowed --name DrewCraft --paths launcher launcher/drewcraft_entry.py
           if (-not (Test-Path dist/DrewCraft.exe)) { throw "DrewCraft.exe missing" }
+          Copy-Item dist/DrewCraft.exe dist/DrewCraft-Windows.exe
       - name: Upload Windows bootstrap
         uses: actions/upload-artifact@v6
         with:
           name: DrewCraft-Windows-x86_64
-          path: dist/DrewCraft.exe
+          path: dist/DrewCraft-Windows.exe
           if-no-files-found: error
 
   launcher-macos-arm64:
@@ -187,10 +188,10 @@ jobs:
           grep -q 'arm64' mac-binary.txt
           codesign --force --deep --sign - dist/DrewCraft.app
           codesign --verify --deep --strict dist/DrewCraft.app
-          hdiutil create -volname DrewCraft -srcfolder dist/DrewCraft.app -ov -format UDZO dist/DrewCraft-macOS-arm64.dmg
+          hdiutil create -volname DrewCraft -srcfolder dist/DrewCraft.app -ov -format UDZO dist/DrewCraft-macOS.dmg
       - name: Upload Mac bootstrap
         uses: actions/upload-artifact@v6
         with:
           name: DrewCraft-macOS-arm64
-          path: dist/DrewCraft-macOS-arm64.dmg
+          path: dist/DrewCraft-macOS.dmg
           if-no-files-found: error
