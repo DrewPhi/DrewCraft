@@ -7,6 +7,7 @@ import dev.drewcraft.content.DrewCraftBlocks;
 import dev.drewcraft.net.DrewCraftProtocol;
 import dev.drewcraft.persistence.DrewCraftSavedData;
 import dev.drewcraft.strategic.encounter.StrategicMaterializationRuntime;
+import dev.drewcraft.strategic.production.ProductionStrategicSeedRuntime;
 import dev.drewcraft.strategic.siege.SiegeRuntime;
 import dev.drewcraft.strategic.simulation.StrategicScheduler;
 import dev.drewcraft.strategic.source.SourceProductionScheduler;
@@ -35,6 +36,8 @@ public final class DrewCraft {
         NeoForge.EVENT_BUS.addListener(StrategicMaterializationRuntime::onEntityJoinLevel);
         NeoForge.EVENT_BUS.addListener(SourceProductionScheduler::onServerTick);
         NeoForge.EVENT_BUS.addListener(SiegeRuntime::onServerTick);
+        NeoForge.EVENT_BUS.addListener(ProductionStrategicSeedRuntime::onServerStarted);
+        NeoForge.EVENT_BUS.addListener(ProductionStrategicSeedRuntime::onChunkLoad);
 
         LOGGER.info(
                 "DrewCraft integration platform {} loaded (protocol {}, persistence schema {})",
