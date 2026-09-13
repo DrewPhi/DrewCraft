@@ -48,6 +48,7 @@ public final class DrewCraftCommands {
                         + " | protocol=" + DrewCraftProtocol.CURRENT
                         + " | persistenceSchema=" + DrewCraftSavedData.CURRENT_SCHEMA_VERSION
                         + " | strategicGroups=" + data.strategicGroups().size()
+                        + " | strategicEncounters=" + data.strategicEncounters().size()
                         + " | lastTouched=" + data.lastTouchedGameTime()
         ), false);
         source.sendSuccess(() -> Component.literal("Feature flags: " + DrewCraftConfig.integrationSummary()), false);
