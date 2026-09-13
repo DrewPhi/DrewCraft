@@ -42,6 +42,27 @@ class LocalSpawnCoexistenceArchitectureTest {
         assertTrue(cancellation > emptyReturn, "join cancellation must only occur after DrewCraft strategic tag validation");
     }
 
+    @Test
+    void herdKillSwitchOnlyGatesStrategicHerdRecordsAndTaggedCopies() throws IOException {
+        String scheduler = Files.readString(Path.of(
+                "src/main/java/dev/drewcraft/strategic/simulation/StrategicScheduler.java"
+        ));
+        String runtime = Files.readString(Path.of(
+                "src/main/java/dev/drewcraft/strategic/encounter/StrategicMaterializationRuntime.java"
+        ));
+        String config = Files.readString(Path.of(
+                "src/main/java/dev/drewcraft/config/DrewCraftConfig.java"
+        ));
+
+        assertTrue(config.contains("features.strategicHerds"), "independent strategic-herd feature switch missing");
+        assertTrue(scheduler.contains("group.groupType() != StrategicGroupType.HERD"),
+                "disabled herds must be excluded from coarse strategic movement");
+        assertTrue(runtime.contains("group.groupType() == StrategicGroupType.HERD && !DrewCraftConfig.STRATEGIC_HERDS.get()"),
+                "disabled herds must not materialize and active strategic herd copies must reconcile");
+        assertFalse(runtime.contains("getEntitiesOfClass(Animal.class"),
+                "herd disabling must never scan/mutate ordinary animal populations");
+    }
+
     private static String read(Path path) {
         try {
             return Files.readString(path);
