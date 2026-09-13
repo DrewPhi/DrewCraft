@@ -2,174 +2,173 @@
 
 **Updated:** 2026-09-12  
 **Protocol:** `docs/DEVELOPMENT_BREAKPOINTS.md`  
-**Last completed breakpoint:** **BP3 — Transactional materialization + casualty reconciliation**  
-**Next breakpoint:** **BP4 — Hostile sources + permanent clearing**
+**Last completed breakpoint:** **BP4 — Hostile sources + permanent clearing**  
+**Next breakpoint:** **BP5 — Factions, patrols, hordes, raids, and large armies**
 
-## BP3 status — REACHED
+## BP4 status — REACHED
 
-BP3 is complete at implementation/compile/unit/runtime-wiring scope. DrewCraft now has a durable, bounded strategic ↔ tactical population transaction layered on the BP1/BP2 strategic kernel.
+BP4 is complete at implementation/compile/unit/runtime-wiring scope. DrewCraft now has persistent hostile strategic producers layered on the BP1-BP3 strategic kernel.
 
-The detailed transaction contract is `docs/STRATEGIC_MATERIALIZATION.md`.
+The detailed implementation contract is `docs/STRATEGIC_SOURCES.md`; `docs/SOURCE_CORE_SPEC.md` remains the product-level clearing contract.
 
 ## Implementation
 
-### Durable encounter authority
+### Persistent source authority
 
-- `StrategicEncounter` has a stable encounter UUID;
-- lifecycle states are `PREPARING`, `MATERIALIZED`, `RECONCILING`, `COMPLETE`;
-- each encounter stores:
-  - owning strategic-group UUID;
-  - pre-encounter strategic state to resume;
-  - start and last-nearby-player times;
-  - active tactical entity UUID → entity-type reservations;
-  - already-accounted casualty UUIDs;
-- `DrewCraftSavedData` is now schema **3** and persists active encounters;
-- schema 2 worlds migrate with an empty encounter registry;
-- future encounter/world schemas fail closed.
+World persistence is now schema **4** and stores versioned `SourceRecord`s alongside strategic groups and encounters.
 
-### Duplication-safe materialization
+A source persists:
 
-`beginStrategicEncounter()` is the atomic ownership boundary:
+- stable source UUID;
+- dimension + generated structure ID + deterministic structure anchor;
+- source class and faction ID;
+- bound Source Core position;
+- `INTACT | DAMAGED | CLEARED` state;
+- remaining production budget;
+- launch strength/cooldown/speed;
+- next production time and launch serial;
+- transaction generation counter;
+- clear time/cause/actor metadata.
 
-1. check whether the group already has an active encounter;
-2. if yes, return the existing encounter;
-3. otherwise freeze the group in `MATERIALIZED` state **before** entity creation;
-4. create exactly one durable `PREPARING` encounter.
+Schema-3 worlds migrate with an empty source registry; future source/world schemas fail closed.
 
-The method is synchronized and has a real two-thread barrier test proving simultaneous callers receive the same encounter UUID and exactly one reports creation.
+### Stable generated-geography identity
 
-### Real entity materialization
-
-`StrategicMaterializationRuntime` is registered on the NeoForge server/event bus and:
-
-- checks player proximity on a coarse configurable cadence;
-- materializes only in the group's existing dimension;
-- requires the group-position chunk to already be loaded;
-- never calls a chunk-loading API merely to materialize;
-- samples surface height only after `hasChunkAt` succeeds;
-- creates real configured `EntityType` entities;
-- writes durable group/encounter/type tags to entity persistent NBT;
-- commits the entity UUID into encounter authority **before** `addFreshEntity()` can fire the join event;
-- rejects stale tagged entities whose encounter/reservation no longer exists.
-
-### Bounded tactical population
-
-Default bounds:
-
-- materialization cadence: 20 ticks;
-- materialization radius: 160 blocks;
-- dematerialization radius: 224 blocks;
-- dematerialization grace: 200 ticks;
-- maximum active entities per encounter: **64**;
-- maximum successful new strategic entities across all encounters in one cycle: **128**;
-- maximum encounter records processed per cycle: **32**.
-
-The effective dematerialization radius is never allowed below the materialization radius, preserving hysteresis even under a bad config combination.
-
-Large strategic strength therefore remains abstract reserve rather than forcing all represented units to exist as entities.
-
-### Casualty reconciliation
-
-Strategic strength remains authoritative during materialization. Spawning an entity does **not** subtract population.
-
-A tagged `LivingDeathEvent`:
-
-- resolves the durable encounter;
-- accepts the death only if that entity UUID is still active;
-- moves the UUID to the casualty set;
-- decrements matching strategic composition exactly once;
-- decrements total strategic strength exactly once;
-- ignores duplicate death callbacks.
-
-Example proven by test:
+`SourceDescriptor` derives its stable UUID from:
 
 ```text
-strategic strength = 100
-active tactical cap = 64
-37 active entities die
-strategic strength = 63
-active survivors = 27
-eligible backfill = 36
+drewcraft-source-v1 | dimension | structureId | anchorX | anchorY | anchorZ
 ```
 
-The wave planner therefore can refill to at most 63 active survivors, never recreate the 37 casualties.
+The physical Source Core is deliberately not the authority. Rediscovery is idempotent, a cleared source cannot be rediscovered back to life, conflicting immutable rediscovery fails closed, and two source identities may not bind the same core position.
 
-### Dematerialization
+`GeneratedSourceRegistration` is the narrow integration seam for DrewCraft-owned or third-party generated structures/templates. Structure integration supplies the exact generated descriptor; DrewCraft registers it and may place the core only when that core chunk is already loaded. It never searches or force-loads distant chunks.
 
-After all players leave the larger dematerialization radius for the grace period:
+### Physical Source Core
 
-- loaded tactical survivors are discarded without counting as deaths;
-- the strategic group resumes its pre-encounter state;
-- already-recorded casualties remain authoritative;
-- the encounter is completed and removed;
-- unloaded stale entity copies are harmless because their later join is canceled.
+`drewcraft:source_core` is now a real registered block.
 
-### Restart/crash behavior
+V1 safety behavior:
 
-`PREPARING` or `RECONCILING` surviving a restart is treated as an interrupted transaction:
+- no BlockItem is registered;
+- piston reaction is `BLOCK`;
+- successful player destruction invokes the authoritative clear transaction;
+- actual explosion destruction invokes the same transaction;
+- an unbound/copied core block is strategically inert;
+- replacing a cleared core cannot reactivate its `SourceRecord`.
 
-- loaded partial entities are discarded;
-- the transaction rolls back to strategic state;
-- unloaded stale copies are rejected if they later load.
+The current development model uses a placeholder vanilla texture; visual faction theming does not affect strategic authority.
 
-A fully `MATERIALIZED` encounter survives restart with its active UUID reservations. Repeated attempts to materialize the same group reuse that encounter instead of duplicating it.
+### Permanent clearing transaction
 
-If a reserved entity UUID never actually made it to disk during a crash, observing the encounter releases that missing reservation back to abstract reserve and permits bounded backfill. A later stale copy is rejected.
+Clearing is synchronized and idempotent.
 
-### Persistence invariants
+On the first legitimate clear:
 
-Schema-3 load fails closed if:
+1. source state becomes `CLEARED`;
+2. source generation increments;
+3. clear metadata is recorded;
+4. future production is disabled permanently under V1 rules;
+5. world state is marked dirty;
+6. the irreversible clear is immediately flushed through world `DimensionDataStorage` rather than waiting for ordinary autosave.
 
-- an encounter references a missing group;
-- multiple active encounters reference one group;
-- an encounter references a group not in `MATERIALIZED` state;
-- active tactical count exceeds surviving strategic strength/composition;
-- a `MATERIALIZED` group has no durable encounter.
+The admin clear command uses the same crash-durable persistence rule.
 
-## BP3 acceptance evidence
+### Bounded source production
+
+`SourceProductionScheduler` iterates persistent records only. It does not scan source chunks or keep them loaded.
+
+Default work limits:
+
+- production cycle every **200 ticks**;
+- **16** source records inspected per cycle;
+- **4** successful strategic launches per cycle;
+- **1200-tick** backoff after bounded route failure.
+
+The scheduler rotates its source cursor between cycles so a registry larger than the per-cycle inspection cap cannot permanently starve later source UUIDs.
+
+A failed BP2 route consumes no source population.
+
+### Clear-versus-launch race safety
+
+The scheduler captures `source.generation`, performs bounded route planning, then attempts an atomic `commitSourceLaunch` using the captured generation.
+
+Clearing increments the generation. Therefore:
+
+- a group whose commit wins before clearing is a valid independent strategic population and survives;
+- a route planned before clear but committed after clear is rejected;
+- no new group can commit after `CLEARED` becomes authoritative.
+
+This race is tested directly by clearing a source from inside the planner after generation capture and before commit.
+
+### Real strategic-group production
+
+BP4 launches real BP1/BP2 `StrategicGroup`s carrying their parent `sourceId`, persisted route, composition, strength, and normal BP3 materialization compatibility.
+
+The BP4 content profile is intentionally minimal: deterministic routed zombie `PATROL` groups prove the source→group transaction. **BP5**, not BP4, owns data-driven factions, multiple hostile compositions, patrol/horde/raid/army/reinforcement roles, richer objective selection, and large-army semantics.
+
+### Admin/debug surface
+
+```text
+/drewcraft source create-test
+/drewcraft source list
+/drewcraft source inspect <sourceId>
+/drewcraft source clear <sourceId>
+/drewcraft source perf
+```
+
+Inspection exposes source identity/state/core, budget/cooldown/generation/launch count, clear metadata, and existing strategic groups from that source. Performance diagnostics expose scheduler work, route failures, rejected race commits, fairness cursor, and CPU time.
+
+## BP4 acceptance evidence
 
 Focused automated tests cover:
 
-- encounter lifecycle and NBT round trip;
-- encounter future-schema rejection;
-- schema-2 → schema-3 world migration;
-- idempotent casualty accounting;
-- bounded per-encounter wave planning;
-- global per-cycle spawn-budget exhaustion;
-- **canonical `100 → kill 37 → unload → restart → 63` proof**;
-- duplicate death callbacks leave the result at 63;
-- post-casualty backfill is exactly the surviving reserve;
-- materialized restart retains one encounter and active UUID authority;
-- interrupted `PREPARING` restart rolls safely back;
-- **two simultaneous callers cannot create two encounters**.
+- stable deterministic source identity;
+- idempotent rediscovery;
+- conflicting rediscovery fails closed;
+- duplicate core binding fails closed;
+- SourceRecord NBT round trip;
+- future SourceRecord schema rejection;
+- schema-3 → schema-4 world migration;
+- idempotent permanent clear;
+- cleared state survives save/reload;
+- rediscovery cannot reactivate a cleared source;
+- global source-launch cap;
+- fair bounded scheduler rotation;
+- failed route consumes no population and backs off;
+- clear-during-planning invalidates the stale launch commit;
+- group committed before clearing survives clearing;
+- that committed group survives save/restart with its source identity;
+- cleared source still refuses a new launch after restart.
 
 ### CI
 
-- final code/test head: `974e2d25cdede7a5679340445bfc3d5471e36cd8`
-- DrewCraft mod CI: **run `34727614866` — SUCCESS**
-- CI job: `build-and-test` — **SUCCESS**
+- final BP4 code/test head: **`188fff9583d917aeb44fd8802987f0b51604b178`**
+- DrewCraft mod CI: **run `34728862438` — SUCCESS**
+- job: `build-and-test` — **SUCCESS**
 - command: `gradle -p mods/drewcraft test build --stacktrace --no-daemon`
-- simultaneous-reservation proof run `34727505486` also passed.
+- earlier focused persistence run `34728805083` and source-schema run `34728787877` also passed.
 
-## Important acceptance boundary
+## Important production-world boundary
 
-BP3 proves the transaction, persistence, runtime event wiring, NeoForge API compatibility, bounded spawn policy, and restart/casualty invariants automatically.
+BP4 completes source identity, discovery, production, clearing, race safety, persistence, physical core behavior, and the structure-registration API.
 
-A later representative-world/full-stack acceptance still needs to observe actual hostile mobs materializing/dematerializing in the final pack under multiplayer load. That is deliberately retained for the cross-system/RC acceptance stage rather than forcing an expensive full Terrain Diffusion world boot for every strategic-kernel commit.
+The final production-world/pregeneration track must still select the concrete DrewCraft/third-party structure templates that act as camps/forts/cities/etc., assign deterministic Source Core anchors to those templates, and call `GeneratedSourceRegistration` as those structures are generated/indexed. This is deliberately a world-build integration task rather than a recurring live server scan.
 
-## Next: BP4
+Later representative/full-stack acceptance will visually prove Source Core placement and destruction in those final structures and backup/restore of their cleared states.
 
-On the next **"go"**, continue until BP4 is reached.
+## Next: BP5
 
-BP4 makes hostile generated structures real strategic producers:
+On the next **"go"**, continue until BP5 is reached.
 
-1. stable persistent `SourceRecord` registry tied to generated geography;
-2. idempotent source discovery/indexing;
-3. Source Core binding with authoritative clear semantics;
-4. deterministic source launch budget/cooldown;
-5. sources launch real BP1/BP2 strategic groups;
-6. clearing permanently survives unload/restart;
-7. clearing prevents all future launches from that source;
-8. groups already committed before clearing remain real populations.
+BP5 expands the now-proven generic source/group pipeline into the V1 hostile population system:
 
-Stop and report again when BP4 passes. Do not begin BP5 faction/horde/army breadth until the user says **"go"** after that report.
+1. data-driven faction and group templates;
+2. patrol, horde/warband, raid, army, and reinforcement roles;
+3. multiple meaningful hostile compositions;
+4. bounded large-army wave materialization using BP3;
+5. non-omniscient/explainable target knowledge;
+6. persistent mission/casualty state through unload/restart;
+7. representative large-army proof without loading every represented unit.
+
+Stop and report again when BP5 passes. Do not begin BP6 siege planning until the user says **"go"** after that report.
