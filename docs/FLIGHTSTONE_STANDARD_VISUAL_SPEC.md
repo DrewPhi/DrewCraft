@@ -2,190 +2,214 @@
 
 ## Status
 
-Canonical visual/art-direction plan for the DrewCraft Flightstone Standard.
+Canonical visual and implementation specification for the DrewCraft Flightstone Standard.
 
-This document complements `docs/FLIGHTSTONE_STANDARD_AND_SIEGE_PROTECTION.md`, which defines the Standard's gameplay, protection, discovery, targeting, and recovery rules.
-
----
-
-## 1. Core visual identity
-
-The Flightstone Standard is the primary civic and military symbol of the DrewCraft civilization.
-
-It should look immediately distinct from the Covenant of the Closed Sky and communicate:
-
-- aviation;
-- optimism;
-- engineering;
-- sacred civic purpose;
-- visibility rather than concealment.
-
-The object should read as something a settlement is proud to raise in an exposed courtyard, airfield, tower platform, or civic plaza.
-
-It is not supposed to look like an ordinary vanilla banner with a gameplay effect attached. It should feel like a unique enchanted civilization artifact.
+This document complements `docs/FLIGHTSTONE_STANDARD_AND_SIEGE_PROTECTION.md`, which defines ownership, placement, protection, discovery, targeting, capture, and recovery.
 
 ---
 
-## 2. Palette
+## 1. It is a real vanilla Minecraft banner
 
-Primary palette:
+The Flightstone Standard is **not** a custom cloth model and does not use a bespoke banner texture.
 
-- **aviation yellow** — dominant emblem/accent color;
-- **warm white / ivory** — dominant cloth/background color;
-- **pale gold / brass** — small structural and trim accents;
-- optional very small neutral metallic details where needed for readability.
+It is an ordinary **white Minecraft banner** carrying a fixed combination of vanilla banner-pattern layers. The goal is to make the civilization symbol feel completely native to Minecraft and to preserve all normal banner behavior:
 
-The palette should be bright and highly legible against the Covenant's blackened charcoal, slate, warm stone, oxblood, aged ivory, and old-gold visual language.
+- the cloth uses the vanilla banner model and waving renderer;
+- the design can be displayed as an ordinary standing or wall banner where appropriate;
+- the heraldry can be copied onto shields through Minecraft's normal banner + shield behavior;
+- no custom shader, cloth renderer, or banner atlas is required.
 
-The intended contrast is deliberate:
+The Standard's strategic powers come from DrewCraft's server-side Standard identity/state, **not from merely matching the visual pattern**.
 
-- Covenant: grounded, dark, stone-heavy, oxblood religious militarism;
-- DrewCraft Standard: open sky, warm white, aviation yellow, light, engineering, ascent.
-
-Avoid saturated fantasy-neon yellow. The yellow should feel closer to practical aviation/safety paint or golden aircraft markings than magical fluorescent dye.
+Decorative copies and shields may therefore display the same civilization heraldry without becoming protection objects.
 
 ---
 
-## 3. Banner / artifact form
+## 2. Canonical heraldry — Design V1
 
-The Standard should be a custom banner-like block or banner-derived block with enough visual distinction that players can recognize it immediately.
+Base item:
 
-Preferred qualities:
+- `minecraft:white_banner`
 
-- warm-white/ivory cloth field;
-- large aviation-yellow civilization emblem;
-- pale brass/gold trim or fittings;
-- subtle enchanted glint/shimmer;
-- readable silhouette from a distance;
-- visually attractive enough to serve as the centerpiece of a town square or fortress courtyard.
+Pattern layers, in draw order:
 
-The final emblem can be refined later, but it should communicate flight/ascent rather than copying the Covenant's downward/broken-wing symbolism.
+1. **Yellow Border** — `minecraft:border`
+2. **Yellow Horizontal Center Stripe** — `minecraft:stripe_middle`
+3. **Yellow Vertical Center Stripe** — `minecraft:stripe_center`
+4. **White Center Diamond / Lozenge** — `minecraft:rhombus`
+5. **Yellow Center Roundel** — `minecraft:circle`
 
-A stylized upward wing, propeller, rising star, or wing-and-sun motif would all fit the civilization's established aviation theology.
+The resulting symbol is intentionally geometric and Minecraft-native. It reads as a stylized aviation mark:
 
----
+- the horizontal yellow bar suggests **wings**;
+- the vertical yellow bar suggests the **propeller/ascent axis**;
+- the white diamond cuts negative space around the center like a **spinner/fairing**;
+- the yellow roundel forms a **propeller hub / aviation roundel**;
+- the yellow border gives the civilization a strong safety/aviation-color frame.
 
-## 4. The beam is the actual Minecraft beacon beam
+The base white field keeps the design bright and immediately distinct from the Covenant's charcoal, slate, oxblood, aged-ivory, and old-gold palette.
 
-This is a hard visual requirement:
-
-> **An active Flightstone Standard emits the actual vanilla Minecraft beacon beam visual. It is not merely "beacon-like" and should not use a separately designed custom light-column effect.**
-
-Implementation should reuse Minecraft's existing beacon-beam rendering behavior/renderer as directly as is practical for NeoForge 1.21.1.
-
-Reasons:
-
-- it is immediately recognizable to every Minecraft player;
-- it is already optimized and visually coherent with the game;
-- it gives the Standard monumental presence without introducing another bespoke rendering system;
-- it reinforces the true-sky-visibility placement rule;
-- it provides an obvious visual indication that protection is active;
-- when the Standard falls or deactivates, the disappearance of the beam instantly communicates loss of protection.
-
-The Standard does **not** need to be built on a vanilla beacon pyramid. Its own gameplay rules determine whether it is active.
+The design should stay deliberately simple. It needs to remain legible on both a full banner and the much smaller shield rendering.
 
 ---
 
-## 5. Beam color
+## 3. Palette
 
-The beam should use the vanilla beacon beam rendering system but with a DrewCraft-appropriate color treatment.
+The canonical V1 palette uses vanilla Minecraft dye colors:
 
-Preferred default:
+- **White** base and center negative space;
+- **Yellow** heraldry and border.
 
-- warm white / very pale golden-white core;
-- subtle aviation-yellow tint or segmentation where supported cleanly by the reused vanilla system.
+Conceptually this corresponds to DrewCraft's aviation-yellow + warm-white/ivory visual language.
 
-The goal is to preserve the unmistakable Minecraft beacon appearance while visually tying it to the Standard's white/yellow palette.
-
-Do not replace the vanilla beam with volumetric custom lighting merely to achieve more elaborate coloring.
-
-If exact custom tinting requires fragile renderer replacement, prefer a vanilla-supported beacon-beam color that is visually close to warm white/yellow rather than creating a bespoke renderer.
+Do not introduce a custom texture merely to obtain a slightly warmer white or brassier yellow. Minecraft-native readability and automatic shield compatibility are more valuable than exact RGB matching.
 
 ---
 
-## 6. Beam activation rules
+## 4. Banner versus Standard identity
 
-The beam renders only while the Standard is **active**.
+The visual design and the gameplay object are deliberately separated.
 
-An active Standard must satisfy the canonical gameplay rules, including:
+### Civilization heraldry
 
-- placed in the ordinary world rather than carried/stored;
-- true unobstructed line of sight to the sky;
-- not active as part of a moving Create contraption, train, Sable/Aeronautics craft, High Seas ship, airship, or other moving sub-level;
-- not captured/destroyed/deactivated.
+Any ordinary banner or shield carrying the same visual layers is simply DrewCraft civilization heraldry.
 
-The beam therefore doubles as a visual status indicator.
+Players should be free to:
+
+- copy the design onto shields;
+- use matching banners decoratively around forts, airports, ships, trains, towns, and military positions;
+- reproduce the visual motif without accidentally creating protected territory.
+
+### Flightstone Standard
+
+A real Flightstone Standard is an issued, player-owned strategic object tracked by DrewCraft server state.
+
+The prototype item includes a marker and design version for inspection/debugging, but the eventual authoritative implementation must use the player's persistent `StandardRecord`/ownership state rather than trusting copied item data alone.
+
+This prevents banner duplication, NBT/component copying, commands, or shield decoration from creating additional active Standards.
+
+---
+
+## 5. Enchanted presentation
+
+The issued Flightstone Standard item should have a subtle enchanted glint so it feels like an important civilization artifact in the inventory.
+
+The placed banner itself should still use Minecraft's ordinary banner renderer. Do not replace the cloth with a glowing or custom animated model.
+
+The monumental in-world effect comes from the beacon beam, not from making the cloth visually non-Minecraft-like.
+
+---
+
+## 6. The beam is literally Minecraft's vanilla beacon beam
+
+Hard requirement:
+
+> **An active Flightstone Standard emits the actual vanilla Minecraft beacon beam visual. It is not merely beacon-like.**
+
+Reuse the existing vanilla beacon beam rendering implementation as directly as practical for NeoForge 1.21.1.
+
+Do not create:
+
+- a separate volumetric-light shader;
+- a custom fake beam texture;
+- a particle column intended to imitate a beacon;
+- a second independent beam rendering system.
+
+The Standard does not require a beacon pyramid. DrewCraft's Standard activation rules determine whether the vanilla beam is rendered.
+
+---
+
+## 7. Beam color
+
+Preferred appearance is the closest clean vanilla-beacon treatment to the Standard's yellow/white palette:
+
+- pale yellow / golden-white where the existing renderer permits it cleanly;
+- otherwise prefer a simple vanilla-supported yellow/white result over fragile custom renderer replacement.
+
+The important requirement is recognizably using Minecraft's beacon beam, not exact color science.
+
+---
+
+## 8. Beam activation
+
+The beam renders only while the actual player-owned Standard is active under the canonical gameplay rules.
+
+In particular it must be:
+
+- placed in the ordinary world;
+- validly owned/registered as that player's Standard;
+- under true unobstructed sky according to DrewCraft's stricter sky rule;
+- anchored to the normal world rather than a moving Create/Sable/Aeronautics/High Seas contraption;
+- not captured, destroyed, or otherwise inactive.
 
 ### Active
 
 - vanilla beacon beam visible upward;
-- 300-block protection sphere active;
-- Standard may be discovered by Covenant scouts within the configured 800-block horizontal discovery radius.
+- 300-block 3D protection sphere active;
+- Standard is eligible for Covenant discovery at the configured 800-block horizontal radius.
 
-### Inactive / removed / captured
+### Inactive
 
-- beam disappears;
+- no beam;
 - no protection sphere from that Standard;
-- strategic behavior follows the canonical Standard/siege rules.
+- visual copies on banners/shields remain purely decorative.
 
 ---
 
-## 7. Sky visibility and visual logic
+## 9. True-sky rule remains stricter than vanilla beacon rules
 
-The Standard already requires true sky visibility for gameplay reasons. The beacon beam makes that rule visually intuitive.
+The beacon renderer does not define Standard placement legality.
 
-A player should be able to look at the object and understand why it cannot be placed beneath a roof: the Standard is literally projecting its civilization's signal vertically into the sky.
+DrewCraft's gameplay validator does.
 
-Glass still counts as a roof under the current design. The beam should not be used as a reason to weaken that placement rule merely because vanilla beacons can visually pass through some blocks.
+The Standard requires true open sky:
 
-Gameplay validity remains controlled by DrewCraft's explicit Standard validator.
+- glass above it is still invalid;
+- roofs, leaves, slabs, trapdoors, terrain, or other covering blocks that obstruct the vertical column are invalid;
+- an open vertical shaft is technically valid.
 
----
-
-## 8. Relationship to gameplay
-
-The visual design should make the Standard's gameplay function readable without additional UI.
-
-A settlement with a visible beam communicates:
-
-- this is protected territory;
-- this is an active player settlement;
-- this is the objective strategic enemies ultimately care about;
-- this location has true sky exposure;
-- losing this object has consequences.
-
-During a siege, the beam becomes an obvious rallying point for defenders and an obvious final objective for attackers.
-
-When the Standard is destroyed, the instant disappearance of the beam should make the loss legible even before the player reads any message or notices structural-protection changes.
+This is intentional even if a vanilla beacon might visually tolerate blocks that DrewCraft does not.
 
 ---
 
-## 9. Performance and implementation preference
+## 10. Shield use
 
-Prefer reuse over invention.
+Shield compatibility is a design requirement, not an accidental bonus.
 
-Implementation order:
+Because the heraldry consists entirely of vanilla banner layers, players should be able to combine a decorative/canonical-pattern banner with a shield using normal Minecraft mechanics and receive the same civilization motif on the shield.
 
-1. reuse vanilla beacon beam rendering/API behavior directly if accessible;
-2. use a narrow accessor/mixin only if needed to invoke the existing renderer cleanly;
-3. avoid copying/reimplementing the entire beacon renderer;
-4. do not create a separate shader/volumetric-beam system for V1.
+A decorated shield:
 
-The Standard's custom work should focus on:
+- carries the symbol;
+- has no settlement-protection power;
+- emits no beacon beam;
+- is not discoverable as a Standard;
+- does not count toward the player's one-Standard limit.
 
-- block/model/texture;
-- active-state validation;
-- the protection/strategic systems;
-- invoking the existing vanilla beam visual.
-
-This keeps the effect Minecraft-native, stable, and inexpensive to maintain.
+This lets the same visual language appear naturally on defenders during sieges without adding a custom shield item.
 
 ---
 
-## 10. Canon summary
+## 11. Current prototype implementation
 
-The canonical Flightstone Standard should therefore be understood as:
+`FlightstoneStandardDesign` constructs the V1 pattern directly with Minecraft data components.
 
-> **A beautiful enchanted warm-white and aviation-yellow civic banner/artifact, raised under open sky, that literally projects Minecraft's vanilla beacon beam upward while active.**
+For development inspection, the DrewCraft admin command:
 
-It is the visual opposite of the Covenant's ideology: the Covenant fears human severance from the earth, while the DrewCraft civilization deliberately raises a brilliant signal into the open sky from the center of the settlement it has chosen to defend.
+```text
+/drewcraft standard give
+```
+
+gives the executing player the canonical prototype Standard.
+
+The prototype intentionally proves the visual/item representation first. Full first-join issuance, placement validation, persistent ownership, beacon rendering, protection, scout discovery, capture, and recovery are implemented by the broader Standard system rather than by the banner pattern itself.
+
+---
+
+## 12. Canon summary
+
+The Flightstone Standard is:
+
+> **A genuine vanilla white Minecraft banner bearing a simple yellow aviation heraldry, usable as the same heraldry on ordinary shields, distinguished as the player's unique Standard by DrewCraft server state, and projecting Minecraft's actual vanilla beacon beam while actively raised under open sky.**
+
+The civilization should be able to put its symbol everywhere. Only the one Standard belonging to a player carries the strategic consequences.
