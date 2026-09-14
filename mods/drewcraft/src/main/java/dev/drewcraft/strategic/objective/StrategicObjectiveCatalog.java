@@ -24,7 +24,8 @@ public final class StrategicObjectiveCatalog {
     public static synchronized Optional<StrategicObjective> nearest(StrategicPosition origin) {
         return objectives.stream()
                 .filter(objective -> objective.position().dimension().equals(origin.dimension()))
-                .min(Comparator.comparingDouble(objective -> objective.position().distanceTo(origin))
+                .min(Comparator.<StrategicObjective>comparingDouble(
+                                objective -> objective.position().distanceTo(origin))
                         .thenComparing(StrategicObjective::id));
     }
 

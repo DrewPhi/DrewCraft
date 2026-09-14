@@ -49,8 +49,8 @@ public final class FlightstoneStandardDesign {
                 .add(patternRegistry.getOrThrow(BannerPatterns.BORDER), DyeColor.YELLOW)
                 .add(patternRegistry.getOrThrow(BannerPatterns.STRIPE_MIDDLE), DyeColor.YELLOW)
                 .add(patternRegistry.getOrThrow(BannerPatterns.STRIPE_CENTER), DyeColor.YELLOW)
-                .add(patternRegistry.getOrThrow(BannerPatterns.RHOMBUS), DyeColor.WHITE)
-                .add(patternRegistry.getOrThrow(BannerPatterns.CIRCLE), DyeColor.YELLOW)
+                .add(patternRegistry.getOrThrow(BannerPatterns.RHOMBUS_MIDDLE), DyeColor.WHITE)
+                .add(patternRegistry.getOrThrow(BannerPatterns.CIRCLE_MIDDLE), DyeColor.YELLOW)
                 .build();
 
         stack.set(DataComponents.BANNER_PATTERNS, layers);
