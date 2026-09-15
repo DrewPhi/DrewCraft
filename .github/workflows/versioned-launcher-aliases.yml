@@ -1,0 +1,54 @@
+name: Versioned launcher aliases
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/versioned-launcher-aliases.yml'
+  workflow_run:
+    workflows: ['BP8 convergence']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish-versioned-installers:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download latest friend installers and publish versioned copies
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          tag="$(gh api "repos/${GH_REPO}/releases/latest" --jq '.tag_name')"
+          version="${tag#launcher-v}"
+          test -n "$version"
+          test "$version" != "$tag"
+
+          mkdir -p dist
+          gh release download "$tag" \
+            --pattern 'DrewCraft-Windows.exe' \
+            --pattern 'DrewCraft-macOS.dmg' \
+            --pattern 'DrewCraft-Linux.deb' \
+            --dir dist \
+            --clobber
+
+          cp dist/DrewCraft-Windows.exe "dist/DrewCraft-Windows-v${version}.exe"
+          cp dist/DrewCraft-macOS.dmg "dist/DrewCraft-macOS-v${version}.dmg"
+          cp dist/DrewCraft-Linux.deb "dist/DrewCraft-Linux-v${version}.deb"
+
+          gh release upload "$tag" \
+            "dist/DrewCraft-Windows-v${version}.exe" \
+            "dist/DrewCraft-macOS-v${version}.dmg" \
+            "dist/DrewCraft-Linux-v${version}.deb" \
+            --clobber
+
+          echo "Published friend-facing launcher filenames for v${version}:"
+          printf '  %s\n' \
+            "DrewCraft-Windows-v${version}.exe" \
+            "DrewCraft-macOS-v${version}.dmg" \
+            "DrewCraft-Linux-v${version}.deb"
