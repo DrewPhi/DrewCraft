@@ -42,9 +42,16 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
 
     def test_fresh_install_seeds_potato_without_touching_gameplay_config(self):
         state, minecraft = self.state()
+        # converge() enables DrewCraft's managed resource pack before this helper
+        # runs, which can create options.txt on a truly fresh instance.
+        (minecraft / "options.txt").write_text(
+            'resourcePacks:["vanilla","file/drewcraft_cult_first_pass"]\n',
+            encoding="utf-8",
+        )
         self.assertTrue(client_defaults.apply_client_defaults(self.app, state))
 
         options = (minecraft / "options.txt").read_text("utf-8")
+        self.assertIn("file/drewcraft_cult_first_pass", options)
         self.assertIn("renderDistance:8", options)
         self.assertIn("simulationDistance:6", options)
         self.assertIn("particles:1", options)
@@ -87,7 +94,11 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
         dh.write_text("# custom\n[client.advanced.graphics.quality]\nlodChunkRenderDistanceRadius = 512\n", encoding="utf-8")
 
         self.assertTrue(client_defaults.apply_client_defaults(self.app, state))
-        self.assertEqual(options.read_text("utf-8"), "renderDistance:24\nmaxFps:165\n")
+        existing_options = options.read_text("utf-8")
+        self.assertIn("renderDistance:24", existing_options)
+        self.assertIn("maxFps:165", existing_options)
+        self.assertNotIn("renderDistance:8", existing_options)
+        self.assertNotIn("maxFps:60", existing_options)
         self.assertIn("transparency = true", clouds.read_text("utf-8"))
         self.assertIn("lodChunkRenderDistanceRadius = 512", dh.read_text("utf-8"))
 

@@ -25,13 +25,14 @@ PRESERVED_GRAPHICS_PATHS = (
     "configs/DistantHorizons.toml",
 )
 
+POTATO_OPTION_DEFAULTS = {
+    "renderDistance": "8",
+    "simulationDistance": "6",
+    "particles": "1",
+    "maxFps": "60",
+}
+
 POTATO_DEFAULT_FILES = {
-    "options.txt": (
-        "renderDistance:8\n"
-        "simulationDistance:6\n"
-        "particles:1\n"
-        "maxFps:60\n"
-    ),
     "config/simpleclouds-client.toml": (
         "# DrewCraft Potato defaults: client visuals only. Weather/gameplay state remains server-authoritative.\n"
         "[visual]\n"
@@ -122,6 +123,24 @@ def snapshot_user_graphics(app_dir: pathlib.Path) -> None:
             cached.unlink()
 
 
+def _merge_missing_options(options_path: pathlib.Path) -> None:
+    """Add Potato option keys without replacing Minecraft/user-owned values."""
+    try:
+        text = options_path.read_text("utf-8") if options_path.is_file() else ""
+    except OSError:
+        text = ""
+    lines = text.splitlines()
+    present = {line.split(":", 1)[0] for line in lines if ":" in line}
+    changed = False
+    for key, value in POTATO_OPTION_DEFAULTS.items():
+        if key not in present:
+            lines.append(f"{key}:{value}")
+            changed = True
+    if changed or not options_path.exists():
+        options_path.parent.mkdir(parents=True, exist_ok=True)
+        options_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _restore_cached_graphics(app_dir: pathlib.Path, minecraft_dir: pathlib.Path) -> None:
     cache_root = _user_data_root(app_dir)
     for rel in PRESERVED_GRAPHICS_PATHS:
@@ -159,6 +178,10 @@ def apply_client_defaults(app_dir: pathlib.Path, state: dict) -> bool:
     marker = _marker_path(app_dir)
     seeded = False
     if not marker.is_file():
+        # The managed-resource-pack step may already have created options.txt.
+        # Merge only absent graphics keys so resourcePacks and user choices win.
+        _merge_missing_options(minecraft_dir / "options.txt")
+
         for rel, content in POTATO_DEFAULT_FILES.items():
             target = minecraft_dir / pathlib.Path(rel)
             if target.exists():
