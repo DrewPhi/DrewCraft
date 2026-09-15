@@ -165,6 +165,33 @@ def _converge_with_progress(live_url: str, app_dir: pathlib.Path) -> dict:
     return result["state"]
 
 
+def _force_eight_gib(state: dict) -> None:
+    """Force the managed Prism instance to exactly 8 GiB of Java heap.
+
+    The bootstrap historically used 4 GiB minimum / 8 GiB maximum. DrewCraft's
+    friend-facing launcher intentionally overrides both values to 8192 MiB on
+    every run so the instance cannot silently fall back to 4096 MiB.
+    """
+    cfg = pathlib.Path(state["prismRoot"]) / "instances" / state["instanceId"] / "instance.cfg"
+    text = cfg.read_text(encoding="utf-8") if cfg.is_file() else ""
+    lines = text.splitlines()
+    required = {
+        "OverrideMemory": "true",
+        "MinMem": "8192",
+        "MaxMem": "8192",
+    }
+    for key, value in required.items():
+        replacement = f"{key}={value}"
+        for index, line in enumerate(lines):
+            if line.startswith(key + "="):
+                lines[index] = replacement
+                break
+        else:
+            lines.append(replacement)
+    cfg.parent.mkdir(parents=True, exist_ok=True)
+    cfg.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _authenticate_and_launch(state: dict, app_dir: pathlib.Path, poll_interval: float = 0.5) -> int:
     prism = state.get("prismExecutable")
     if not prism:
@@ -202,6 +229,7 @@ def main() -> int:
         snapshot_user_graphics(app_dir)
         state = _converge_with_progress(LIVE_URL, app_dir)
         apply_client_defaults(app_dir, state)
+        _force_eight_gib(state)
         if _needs_login(state):
             return _authenticate_and_launch(state, app_dir)
         return launch(app_dir)
