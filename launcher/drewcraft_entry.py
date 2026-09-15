@@ -15,7 +15,7 @@ import time
 from drewcraft_bootstrap import APP_VERSION, converge, default_app_dir, launch, platform_key
 from drewcraft_client_defaults import apply_client_defaults, snapshot_user_graphics
 
-LIVE_URL = "https://drewphi.github.io/DrewCraft/live.json"
+LIVE_URL = "https://github.com/DrewPhi/DrewCraft/releases/download/drewcraft-dev-pack/live.json"
 
 
 def _needs_login(state: dict) -> bool:
