@@ -34,6 +34,26 @@ def main() -> int:
     parser.add_argument("--seed", required=True, type=int)
     parser.add_argument("--radius", required=True, type=int)
     parser.add_argument("--generation-command", help="command that creates/pregenerates --world; omitted when already generated")
+    parser.add_argument(
+        "--dh-pregen-command",
+        help=(
+            "shell command that prebuilds Distant Horizons LODs into "
+            "--world/data/DistantHorizons.sqlite (e.g. boot the exact pack server and run "
+            "`/dh pregen start overworld 0 0 <radiusChunks> PRE_EXISTING`, then stop cleanly); "
+            "omitted to skip execution and only record/verify the cache"
+        ),
+    )
+    parser.add_argument(
+        "--dh-pregen-mode",
+        default="PRE_EXISTING",
+        choices=("PRE_EXISTING", "FEATURES", "INTERNAL_SERVER"),
+        help="recorded DH pregen mode; PRE_EXISTING converts already-Chunky-generated chunks (default, exact visuals, no double worldgen)",
+    )
+    parser.add_argument(
+        "--require-dh-cache",
+        action="store_true",
+        help="fail closed when world/data/DistantHorizons.sqlite is absent after the dh-pregen step (BP9 production default)",
+    )
     args = parser.parse_args()
 
     world = pathlib.Path(args.world).resolve()
@@ -53,6 +73,29 @@ def main() -> int:
             raise RuntimeError("generation did not produce level.dat; rerun with the correct --generation-command")
         state["generationSeconds"] = max(time.monotonic() - started, 0.001) if args.generation_command else None
         completed.add("generated"); state["completed"] = sorted(completed); atomic_json(state_path, state)
+
+    if "dh-pregen" not in completed:
+        dh_started = time.monotonic()
+        if args.dh_pregen_command:
+            subprocess.run(args.dh_pregen_command, shell=True, check=True)
+        dh_cache = world_bundle.dh_cache_info(world)
+        if args.require_dh_cache and not dh_cache["present"]:
+            raise RuntimeError(
+                "DH LOD cache missing at world/data/DistantHorizons.sqlite; "
+                "run the server `/dh pregen start <dimension> 0 0 <radiusChunks> PRE_EXISTING` "
+                "on top of the Chunky-pregenerated world, stop cleanly, then rerun"
+            )
+        state["dhPregenMode"] = args.dh_pregen_mode
+        state["dhPregenSeconds"] = max(time.monotonic() - dh_started, 0.001) if args.dh_pregen_command else None
+        state["dhCache"] = dh_cache
+        completed.add("dh-pregen"); state["completed"] = sorted(completed); atomic_json(state_path, state)
+    else:
+        dh_cache = world_bundle.dh_cache_info(world)
+        if args.require_dh_cache and not dh_cache["present"]:
+            raise RuntimeError("DH LOD cache missing at world/data/DistantHorizons.sqlite (previously recorded step cannot proceed without it)")
+        state["dhCache"] = dh_cache
+        state["dhPregenMode"] = state.get("dhPregenMode", args.dh_pregen_mode)
+        atomic_json(state_path, state)
 
     raw_index_path = work / "world-index.json"
     if "indexed" not in completed:
@@ -91,6 +134,11 @@ def main() -> int:
             "worldBytes": directory_bytes(world), "archiveBytes": output.stat().st_size,
             "backupSeconds": None, "restoreSeconds": restore_seconds, "restartSeconds": None,
             "cleanRestoreVerified": True,
+            "dhPregenMode": state.get("dhPregenMode", args.dh_pregen_mode),
+            "dhPregenSeconds": state.get("dhPregenSeconds"),
+            "dhCachePresent": bool(dh_cache["present"]),
+            "dhCacheBytes": dh_cache["size"],
+            "dhCacheSha256": dh_cache["sha256"],
         },
         "worldIndexStats": {
             "sources": len(seeds["sources"]), "sourceClasses": len(classes),

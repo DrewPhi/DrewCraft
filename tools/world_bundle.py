@@ -14,6 +14,24 @@ import tempfile
 WORLD_INFO = "drewcraft-world.json"
 SEED_INDEX = "drewcraft-strategic-seeds.json"
 
+# Distant Horizons server-side LOD cache produced by `/dh pregen`. Lives inside
+# the world tree, so the whole-tree tarball already carries it; this constant
+# just makes the pipeline's expectation explicit and measurable.
+DH_SQLITE_REL = pathlib.PurePosixPath("data/DistantHorizons.sqlite")
+
+
+def dh_cache_info(world: pathlib.Path) -> dict:
+    """Describe the prebuilt DH LOD cache inside a world tree.
+
+    Returns {"present": bool, "size": int|None, "sha256": str|None}. Missing
+    cache is not an error here -- the production driver decides whether to
+    fail closed via --require-dh-cache.
+    """
+    path = world / pathlib.Path(*DH_SQLITE_REL.parts)
+    if not path.is_file():
+        return {"present": False, "size": None, "sha256": None}
+    return {"present": True, "size": path.stat().st_size, "sha256": sha256_file(path)}
+
 
 def sha256_file(path: pathlib.Path) -> str:
     h = hashlib.sha256()
@@ -87,6 +105,7 @@ def validate_world(world: pathlib.Path) -> dict:
 
 def create_archive(world: pathlib.Path, output: pathlib.Path) -> dict:
     info = validate_world(world)
+    dh_cache = dh_cache_info(world)
     output.parent.mkdir(parents=True, exist_ok=True)
     with tarfile.open(output, "w:gz") as tf:
         tf.add(world, arcname="world")
@@ -94,6 +113,7 @@ def create_archive(world: pathlib.Path, output: pathlib.Path) -> dict:
     metadata = {
         "schemaVersion": 1,
         "world": info,
+        "dhCache": dh_cache,
         "archive": output.name,
         "size": output.stat().st_size,
         "sha256": digest,
@@ -146,6 +166,8 @@ def main() -> int:
     restore = sub.add_parser("restore")
     restore.add_argument("archive")
     restore.add_argument("--destination", required=True)
+    dh_cache = sub.add_parser("dh-cache")
+    dh_cache.add_argument("world")
     args = p.parse_args()
 
     if args.command == "stamp":
@@ -160,6 +182,8 @@ def main() -> int:
         print(json.dumps(validate_world(pathlib.Path(args.world)), sort_keys=True))
     elif args.command == "restore":
         print(restore_archive(pathlib.Path(args.archive), pathlib.Path(args.destination)))
+    elif args.command == "dh-cache":
+        print(json.dumps(dh_cache_info(pathlib.Path(args.world)), sort_keys=True))
     return 0
 
 
