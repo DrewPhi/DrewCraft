@@ -38,6 +38,7 @@ public final class DrewCraftCommands {
                                 .then(Commands.literal("sample")
                                         .executes(context -> samplePower(context.getSource()))))
                         .then(FlightstoneStandardCommands.node())
+                        .then(SummonCommands.node())
                         .then(StrategicCommands.node())
                         .then(SourceCommands.node())
                         .then(HerdCommands.node())
