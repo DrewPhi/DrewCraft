@@ -28,6 +28,8 @@ def fixture_repo(root: Path) -> Path:
             "base": {"foundation": ["a"], "performance_baseline": ["b"]},
             "hostile_a": {"extends": ["base"], "gameplay_components": ["c"], "incompatible_profiles": ["hostile_b"], "overlays": ["pack/overlays/hostile_a"]},
             "hostile_b": {"extends": ["base"], "gameplay_components": ["d"], "incompatible_profiles": ["hostile_a"]},
+            "without_b": {"extends": ["base"], "exclude_dependencies": ["b"]},
+            "bad_exclude": {"extends": ["base"], "exclude_dependencies": ["lib"]},
         },
     })
     write_yaml(root / "pack/manifest/upstreams.yaml", {"upstreams": {"a": {"side": "common", "artifact": {"provider": "curseforge", "project_id": 1, "file_id": 2, "candidate_version": "1", "filename": "a.jar"}}}})
@@ -46,6 +48,20 @@ def test_profile_resolution_is_deterministic_and_transitive(tmp_path: Path):
     resolved = pack.resolve(["hostile_a"], profiles, catalog)
     assert resolved["ordered_ids"] == ["a", "lib", "b", "c"]
     assert pack.make_plan(resolved, catalog)["unresolved_identity_count"] == 0
+
+
+def test_profile_can_exclude_inherited_root(tmp_path: Path):
+    profiles, catalog = loaded(fixture_repo(tmp_path))
+    resolved = pack.resolve(["without_b"], profiles, catalog)
+    assert resolved["ordered_ids"] == ["a"]
+    assert resolved["excluded_ids"] == ["b"]
+    assert pack.make_plan(resolved, catalog)["excluded_dependencies"] == ["b"]
+
+
+def test_excluding_required_transitive_fails_closed(tmp_path: Path):
+    profiles, catalog = loaded(fixture_repo(tmp_path))
+    with pytest.raises(pack.PackError, match="excludes dependency lib required by b"):
+        pack.resolve(["bad_exclude"], profiles, catalog)
 
 
 def test_incompatible_profiles_fail_closed(tmp_path: Path):
@@ -127,3 +143,14 @@ def test_production_profile_resolves_moreculling_cloth_config_dependency():
     cloth = resolved["ordered_ids"].index("cloth_config")
     assert cloth < moreculling
     assert catalog["cloth_config"]["side"] == "client"
+
+
+def test_playtest_01_excludes_sable_incompatible_optimizers():
+    root = MODULE.parents[1]
+    profiles = pack.load_yaml(root / "pack/manifest/profiles.yaml")
+    catalog = pack.collect_catalog(root, profiles)
+    resolved = pack.resolve(["playtest_01"], profiles, catalog)
+    assert {"embeddium", "scalablelux"} <= set(resolved["excluded_ids"])
+    assert "embeddium" not in resolved["ordered_ids"]
+    assert "scalablelux" not in resolved["ordered_ids"]
+    assert "sable" in resolved["ordered_ids"]

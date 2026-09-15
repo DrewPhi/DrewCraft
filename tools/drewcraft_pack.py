@@ -160,8 +160,13 @@ def resolve(names: list[str], profiles_doc: dict[str, Any], catalog: dict[str, d
     roots: list[str] = []
     policies: list[str] = []
     overlays: list[str] = []
+    excluded: set[str] = set()
     for name in expanded:
         p = profiles[name]
+        excluded_values = p.get("exclude_dependencies") or []
+        if not isinstance(excluded_values, list):
+            raise PackError(f"profile {name}: exclude_dependencies must be a list")
+        excluded.update(str(x) for x in excluded_values)
         for key in DEP_KEYS:
             values = p.get(key) or []
             if not isinstance(values, list):
@@ -179,7 +184,11 @@ def resolve(names: list[str], profiles_doc: dict[str, Any], catalog: dict[str, d
     ordered: list[str] = []
     active: set[str] = set()
     done: set[str] = set()
-    def visit(cid: str) -> None:
+    def visit(cid: str, required_by: str | None = None) -> None:
+        if cid in excluded:
+            if required_by is not None:
+                raise PackError(f"profile excludes dependency {cid} required by {required_by}")
+            return
         if cid in done:
             return
         if cid in active:
@@ -191,7 +200,7 @@ def resolve(names: list[str], profiles_doc: dict[str, Any], catalog: dict[str, d
         if not isinstance(deps, list):
             raise PackError(f"{cid}: required_dependencies must be a list")
         for dep in deps:
-            visit(str(dep))
+            visit(str(dep), cid)
         active.remove(cid)
         done.add(cid)
         ordered.append(cid)
@@ -200,6 +209,7 @@ def resolve(names: list[str], profiles_doc: dict[str, Any], catalog: dict[str, d
     return {
         "profiles": expanded,
         "ordered_ids": ordered,
+        "excluded_ids": sorted(excluded),
         "policies": policies,
         "overlays": list(dict.fromkeys(overlays)),
     }
@@ -245,6 +255,7 @@ def make_plan(resolved: dict[str, Any], catalog: dict[str, dict[str, Any]]) -> d
         "schema_version": 1, "profiles": resolved["profiles"],
         "dependency_count": len(deps), "unresolved_identity_count": unresolved,
         "policies": resolved["policies"], "overlays": resolved.get("overlays") or [],
+        "excluded_dependencies": resolved.get("excluded_ids") or [],
         "dependencies": deps,
     }
 
