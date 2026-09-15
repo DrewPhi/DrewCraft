@@ -158,7 +158,8 @@ jobs:
       - name: Build Windows one-click executable
         shell: pwsh
         run: |
-          python -m pip install --disable-pip-version-check pyinstaller==6.16.0
+          python -m pip install --disable-pip-version-check pyinstaller==6.16.0 certifi==2026.7.22
+          python -c "import certifi; print(certifi.where())"
           pyinstaller --noconfirm --clean --onefile --windowed --name DrewCraft --paths launcher launcher/drewcraft_entry.py
           if (-not (Test-Path dist/DrewCraft.exe)) { throw "DrewCraft.exe missing" }
           Copy-Item dist/DrewCraft.exe dist/DrewCraft-Windows.exe
@@ -194,7 +195,8 @@ jobs:
           PY
       - name: Build Apple Silicon app and DMG
         run: |
-          python -m pip install --disable-pip-version-check pyinstaller==6.16.0
+          python -m pip install --disable-pip-version-check pyinstaller==6.16.0 certifi==2026.7.22
+          python -c "import certifi; print(certifi.where())"
           pyinstaller --noconfirm --clean --windowed --name DrewCraft --paths launcher launcher/drewcraft_entry.py
           test -d dist/DrewCraft.app
           file dist/DrewCraft.app/Contents/MacOS/DrewCraft | tee mac-binary.txt
@@ -235,7 +237,8 @@ jobs:
           PY
       - name: Build Ubuntu/Debian launcher package
         run: |
-          python -m pip install --disable-pip-version-check pyinstaller==6.16.0
+          python -m pip install --disable-pip-version-check pyinstaller==6.16.0 certifi==2026.7.22
+          python -c "import certifi; print(certifi.where())"
           pyinstaller --noconfirm --clean --onefile --name DrewCraft --paths launcher launcher/drewcraft_entry.py
           test -x dist/DrewCraft
           mkdir -p build/deb/DEBIAN build/deb/usr/bin build/deb/usr/share/applications

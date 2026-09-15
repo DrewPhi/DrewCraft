@@ -14,6 +14,7 @@ import pathlib
 import platform
 import re
 import shutil
+import ssl
 import subprocess
 import sys
 import tarfile
@@ -65,9 +66,21 @@ def sha256_file(path: pathlib.Path) -> str:
     return h.hexdigest()
 
 
+def _https_context() -> "ssl.SSLContext":
+    # macOS-bundled Python (and PyInstaller apps) cannot see the system
+    # keychain, so bare urlopen() fails there with CERTIFICATE_VERIFY_FAILED
+    # on the very first https call. Prefer the certifi bundle when present
+    # (CI bundles it into all three OS launchers); otherwise system default.
+    try:
+        import certifi
+    except ImportError:
+        return ssl.create_default_context()
+    return ssl.create_default_context(cafile=certifi.where())
+
+
 def fetch_bytes(url: str, progress=None, label: str = "download") -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": f"DrewCraft-Launcher/{APP_VERSION}"})
-    with urllib.request.urlopen(req, timeout=120) as response:
+    with urllib.request.urlopen(req, timeout=120, context=_https_context()) as response:
         total = int(response.headers.get("Content-Length", "0") or 0)
         started = time.monotonic()
         downloaded = 0
@@ -196,7 +209,7 @@ def download_verified(url: str, expected_sha: str, destination: pathlib.Path,
         headers["Range"] = f"bytes={existing}-"
     req = urllib.request.Request(url, headers=headers)
     started = time.monotonic()
-    with urllib.request.urlopen(req, timeout=120) as response:
+    with urllib.request.urlopen(req, timeout=120, context=_https_context()) as response:
         resumed = existing > 0 and getattr(response, "status", None) == 206
         if not resumed:
             existing = 0

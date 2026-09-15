@@ -98,6 +98,15 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertEqual(len(paths), len(set(paths)))
         launcher.validate_manifest(manifest)
 
+    def test_launcher_https_context_verifies(self):
+        # Regression: macOS-bundled Python cannot see the system keychain, so
+        # bare urlopen() dies with CERTIFICATE_VERIFY_FAILED on first launch.
+        import ssl
+        context = launcher._https_context()
+        self.assertIsInstance(context, ssl.SSLContext)
+        self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
+        self.assertGreater(len(context.get_ca_certs()), 0)
+
     def stamp_server_world(self, server_root, generation_pack_version="worldgen-v1", body=b"world-state"):
         world = server_root / "persistent" / "world"
         world.mkdir(parents=True, exist_ok=True)
