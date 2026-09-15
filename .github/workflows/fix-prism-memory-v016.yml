@@ -1,0 +1,86 @@
+name: Fix Prism memory keys v0.1.6
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-prism-memory-v016.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Patch launcher memory settings to Prism's real keys
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          bootstrap = Path('launcher/drewcraft_bootstrap.py')
+          text = bootstrap.read_text(encoding='utf-8')
+          text = text.replace('APP_VERSION = "0.1.5"', 'APP_VERSION = "0.1.6"')
+          old = '''MANAGED_MEMORY = (\n    ("OverrideMemory", "true"),\n    ("MinMem", "4096"),\n    ("MaxMem", "8192"),\n)\n"""Managed client RAM (16 GB assumption): Min 4G / Max 8G.\n\nThe pack (Terrain models alone ~2 GB, plus Distant Horizons and 40+ mods)\nis thin on Prism defaults. Managed instance, managed settings.\n"""'''
+          new = '''MANAGED_MEMORY = (\n    ("OverrideMemory", "true"),\n    ("MinMemAlloc", "8192"),\n    ("MaxMemAlloc", "8192"),\n)\n"""Managed client RAM: exactly 8 GiB.\n\nPrism's instance keys are MinMemAlloc/MaxMemAlloc. OverrideMemory=true\nforces these instance values instead of inheriting the global Prism default.\n"""'''
+          if old not in text:
+              raise SystemExit('expected MANAGED_MEMORY block not found')
+          text = text.replace(old, new)
+          needle = '''    lines = text.splitlines()\n    changed = False\n    for key, value in MANAGED_MEMORY:\n'''
+          replacement = '''    lines = text.splitlines()\n    # v0.1.5 accidentally wrote non-Prism keys MinMem/MaxMem. Remove them so\n    # old installs cannot display a misleading 4096 value after repair.\n    legacy_prefixes = ("MinMem=", "MaxMem=")\n    filtered = [line for line in lines if not line.startswith(legacy_prefixes)]\n    changed = filtered != lines\n    lines = filtered\n    for key, value in MANAGED_MEMORY:\n'''
+          if needle not in text:
+              raise SystemExit('memory apply function shape changed')
+          text = text.replace(needle, replacement)
+          text = text.replace('''    # Managed memory: the pack (Terrain models alone ~2 GB, plus Distant\n    # Horizons and 40+ mods) is thin on Prism defaults. 16 GB machines get\n    # Min 4G / Max 8G, leaving half the box for the OS. Managed instance,\n    # managed settings: converge rewrites this file every update.\n''', '''    # Managed memory is applied below with Prism's actual per-instance keys.\n    # DrewCraft intentionally forces an 8 GiB heap on every convergence.\n''')
+          bootstrap.write_text(text, encoding='utf-8')
+
+          entry = Path('launcher/drewcraft_entry.py')
+          text = entry.read_text(encoding='utf-8')
+          text = text.replace('''        "MinMem": "8192",\n        "MaxMem": "8192",''', '''        "MinMemAlloc": "8192",\n        "MaxMemAlloc": "8192",''')
+          needle = '''    lines = text.splitlines()\n    required = {\n        "OverrideMemory": "true",\n        "MinMemAlloc": "8192",\n        "MaxMemAlloc": "8192",\n    }\n'''
+          replacement = '''    lines = text.splitlines()\n    # Clean up the invalid keys emitted by v0.1.5 before writing Prism's real\n    # per-instance memory settings.\n    lines = [line for line in lines if not line.startswith(("MinMem=", "MaxMem="))]\n    required = {\n        "OverrideMemory": "true",\n        "MinMemAlloc": "8192",\n        "MaxMemAlloc": "8192",\n    }\n'''
+          if needle not in text:
+              raise SystemExit('entry memory helper shape changed')
+          text = text.replace(needle, replacement)
+          text = text.replace('''    The bootstrap historically used 4 GiB minimum / 8 GiB maximum. DrewCraft's\n    friend-facing launcher intentionally overrides both values to 8192 MiB on\n    every run so the instance cannot silently fall back to 4096 MiB.\n''', '''    Prism uses MinMemAlloc/MaxMemAlloc for instance memory. DrewCraft writes\n    both to 8192 MiB on every run so it cannot inherit a 4096 MiB global value.\n''')
+          entry.write_text(text, encoding='utf-8')
+
+          tests = Path('tests/test_bp8_release_ops.py')
+          text = tests.read_text(encoding='utf-8')
+          text = text.replace('self.assertIn("MinMem=4096", instance_cfg)', 'self.assertIn("MinMemAlloc=8192", instance_cfg)')
+          text = text.replace('self.assertIn("MaxMem=8192", instance_cfg)', 'self.assertIn("MaxMemAlloc=8192", instance_cfg)')
+          text = text.replace('''if not line.startswith(("OverrideMemory=", "MinMem=", "MaxMem="))\n        ) + "\\nMaxMem=4096\\n"''', '''if not line.startswith(("OverrideMemory=", "MinMemAlloc=", "MaxMemAlloc=", "MinMem=", "MaxMem="))\n        ) + "\\nMaxMemAlloc=4096\\nMinMem=4096\\n"''')
+          text = text.replace('self.assertIn("MinMem=4096", repaired)', 'self.assertIn("MinMemAlloc=8192", repaired)')
+          text = text.replace('self.assertIn("MaxMem=8192", repaired)', 'self.assertIn("MaxMemAlloc=8192", repaired)')
+          text = text.replace('self.assertNotIn("MaxMem=4096", repaired)', 'self.assertNotIn("MaxMemAlloc=4096", repaired)\n        self.assertNotIn("MinMem=4096", repaired)')
+          tests.write_text(text, encoding='utf-8')
+          PY
+      - name: Verify source contains only valid managed Prism memory keys
+        run: |
+          grep -q 'APP_VERSION = "0.1.6"' launcher/drewcraft_bootstrap.py
+          grep -q 'MinMemAlloc", "8192"' launcher/drewcraft_bootstrap.py
+          grep -q 'MaxMemAlloc", "8192"' launcher/drewcraft_bootstrap.py
+          grep -q 'MinMemAlloc": "8192"' launcher/drewcraft_entry.py
+          grep -q 'MaxMemAlloc": "8192"' launcher/drewcraft_entry.py
+      - name: Run BP8 regression tests
+        run: |
+          python -m pip install --disable-pip-version-check PyYAML==6.0.2
+          python -m unittest discover -s tests -p 'test_bp8_*.py' -v
+      - name: Commit corrected launcher
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add launcher/drewcraft_bootstrap.py launcher/drewcraft_entry.py tests/test_bp8_release_ops.py
+          git commit -m 'Use Prism memory keys and force 8 GiB in v0.1.6'
+          git push origin HEAD:main
+      - name: Explicitly build and publish v0.1.6
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run bp8-convergence.yml --ref main
