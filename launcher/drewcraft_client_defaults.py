@@ -20,16 +20,35 @@ PROFILE_NAME = "potato"
 # options.txt is already preserved by drewcraft_bootstrap. These mod configs
 # need the same treatment, but must stay outside the immutable release truth so
 # users can turn graphics up without the repair path resetting them.
+#
+# NOTE: Distant Horizons keeps server and client settings in a single file at
+# config/DistantHorizons.toml (singular "config"). There is no "configs/"
+# directory on real NeoForge installs; writing there would silently do nothing.
 PRESERVED_GRAPHICS_PATHS = (
     "config/simpleclouds-client.toml",
-    "configs/DistantHorizons.toml",
+    "config/DistantHorizons.toml",
 )
 
+# Max-potato vanilla defaults, seeded only for missing keys on first launch.
+# Key names/values verified against the 1.21.1 options surface:
+# - graphicsMode 0 = Fast (1 = Fancy default, 2 = Fabulous);
+# - particles 2 = Minimal; renderClouds false = off;
+# - mipmapLevels 0, biomeBlendRadius 0, entityDistanceScaling 0.5 (minimums);
+# - ao 0 = smooth lighting off under either int or boolean parsing.
+# Unknown keys are ignored by vanilla, so this degrades safely on any version.
 POTATO_OPTION_DEFAULTS = {
-    "renderDistance": "8",
-    "simulationDistance": "6",
-    "particles": "1",
+    "renderDistance": "6",
+    "simulationDistance": "5",
+    "graphicsMode": "0",
+    "particles": "2",
     "maxFps": "60",
+    "renderClouds": "false",
+    "mipmapLevels": "0",
+    "biomeBlendRadius": "0",
+    "entityDistanceScaling": "0.5",
+    "entityShadows": "false",
+    "enableVsync": "false",
+    "ao": "0",
 }
 
 POTATO_DEFAULT_FILES = {
@@ -51,12 +70,12 @@ POTATO_DEFAULT_FILES = {
         "distantShadows = false\n"
         "shadowDistance = 1000\n"
     ),
-    "configs/DistantHorizons.toml": (
+    "config/DistantHorizons.toml": (
         "# DrewCraft Potato default: keep long-distance geography while limiting LOD radius.\n"
         "_version = 4\n"
         "\n"
         "[client.advanced.graphics.quality]\n"
-        "lodChunkRenderDistanceRadius = 128\n"
+        "lodChunkRenderDistanceRadius = 64\n"
     ),
 }
 

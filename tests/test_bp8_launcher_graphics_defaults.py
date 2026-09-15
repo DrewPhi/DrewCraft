@@ -52,10 +52,18 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
 
         options = (minecraft / "options.txt").read_text("utf-8")
         self.assertIn("file/drewcraft_cult_first_pass", options)
-        self.assertIn("renderDistance:8", options)
-        self.assertIn("simulationDistance:6", options)
-        self.assertIn("particles:1", options)
+        self.assertIn("renderDistance:6", options)
+        self.assertIn("simulationDistance:5", options)
+        self.assertIn("graphicsMode:0", options)
+        self.assertIn("particles:2", options)
         self.assertIn("maxFps:60", options)
+        self.assertIn("renderClouds:false", options)
+        self.assertIn("mipmapLevels:0", options)
+        self.assertIn("biomeBlendRadius:0", options)
+        self.assertIn("entityDistanceScaling:0.5", options)
+        self.assertIn("entityShadows:false", options)
+        self.assertIn("enableVsync:false", options)
+        self.assertIn("ao:0", options)
 
         clouds = (minecraft / "config/simpleclouds-client.toml").read_text("utf-8")
         self.assertIn('levelOfDetail = "LOW"', clouds)
@@ -69,9 +77,9 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
         self.assertNotIn("renderClouds = false", clouds)
         self.assertNotIn("generateMesh = false", clouds)
 
-        dh = (minecraft / "configs/DistantHorizons.toml").read_text("utf-8")
+        dh = (minecraft / "config/DistantHorizons.toml").read_text("utf-8")
         self.assertIn("[client.advanced.graphics.quality]", dh)
-        self.assertIn("lodChunkRenderDistanceRadius = 128", dh)
+        self.assertIn("lodChunkRenderDistanceRadius = 64", dh)
 
         marker = json.loads(
             (self.app / "user-data/client-defaults.json").read_text("utf-8")
@@ -86,7 +94,7 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
         state, minecraft = self.state()
         options = minecraft / "options.txt"
         clouds = minecraft / "config/simpleclouds-client.toml"
-        dh = minecraft / "configs/DistantHorizons.toml"
+        dh = minecraft / "config/DistantHorizons.toml"
         clouds.parent.mkdir(parents=True, exist_ok=True)
         dh.parent.mkdir(parents=True, exist_ok=True)
         options.write_text("renderDistance:24\nmaxFps:165\n", encoding="utf-8")
@@ -95,10 +103,14 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
 
         self.assertTrue(client_defaults.apply_client_defaults(self.app, state))
         existing_options = options.read_text("utf-8")
+        # User-chosen values are preserved exactly; absent potato keys are added.
         self.assertIn("renderDistance:24", existing_options)
         self.assertIn("maxFps:165", existing_options)
-        self.assertNotIn("renderDistance:8", existing_options)
+        self.assertNotIn("renderDistance:6", existing_options)
         self.assertNotIn("maxFps:60", existing_options)
+        self.assertIn("simulationDistance:5", existing_options)
+        self.assertIn("graphicsMode:0", existing_options)
+        self.assertIn("particles:2", existing_options)
         self.assertIn("transparency = true", clouds.read_text("utf-8"))
         self.assertIn("lodChunkRenderDistanceRadius = 512", dh.read_text("utf-8"))
 
@@ -111,7 +123,7 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
         client_defaults.apply_client_defaults(self.app, state1)
 
         clouds1 = minecraft1 / "config/simpleclouds-client.toml"
-        dh1 = minecraft1 / "configs/DistantHorizons.toml"
+        dh1 = minecraft1 / "config/DistantHorizons.toml"
         clouds1.write_text("# user chose Beautiful clouds\n", encoding="utf-8")
         dh1.write_text("# user chose 384 chunks\n", encoding="utf-8")
         (self.app / "state.json").write_text(json.dumps(state1), encoding="utf-8")
@@ -125,7 +137,7 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
             "# user chose Beautiful clouds\n",
         )
         self.assertEqual(
-            (minecraft2 / "configs/DistantHorizons.toml").read_text("utf-8"),
+            (minecraft2 / "config/DistantHorizons.toml").read_text("utf-8"),
             "# user chose 384 chunks\n",
         )
 
