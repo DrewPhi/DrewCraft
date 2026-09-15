@@ -225,6 +225,26 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertEqual([], release_contract.verify_tree(active, manifest, "server"))
         self.assertEqual(b"world-state", (server_root / "persistent" / "world" / "level.dat").read_bytes())
 
+    def test_up_to_date_converge_repairs_legacy_memory_settings(self):
+        manifest, _, live_path = self.build_release()
+        app = self.tmp / "client-app-mem"
+        state = launcher.converge(live_path.as_uri(), app)
+        prism_instance = pathlib.Path(state["prismRoot"]) / "instances" / state["instanceId"]
+        # Simulate an instance created before managed memory: 4G cap, no override flag.
+        cfg = prism_instance / "instance.cfg"
+        legacy = cfg.read_text(encoding="utf-8")
+        legacy = "\n".join(
+            line for line in legacy.splitlines()
+            if not line.startswith(("OverrideMemory=", "MinMem=", "MaxMem="))
+        ) + "\nMaxMem=4096\n"
+        cfg.write_text(legacy, encoding="utf-8")
+        launcher.converge(live_path.as_uri(), app)
+        repaired = cfg.read_text(encoding="utf-8")
+        self.assertIn("OverrideMemory=true", repaired)
+        self.assertIn("MinMem=4096", repaired)
+        self.assertIn("MaxMem=8192", repaired)
+        self.assertNotIn("MaxMem=4096", repaired)
+
     def test_unchanged_launcher_converge_does_not_rebuild_prism_instance(self):
         _, _, live_path = self.build_release()
         app = self.tmp / "client-app"

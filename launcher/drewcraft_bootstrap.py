@@ -23,7 +23,7 @@ import time
 import urllib.request
 import zipfile
 
-APP_VERSION = "0.1.4"
+APP_VERSION = "0.1.5"
 PRESERVED_USER_PATHS = (
     "screenshots",
     "resourcepacks",
@@ -424,13 +424,11 @@ def configure_prism_instance(instance_root: pathlib.Path, java_path: str | None,
         "InstanceType=OneSix",
         f"name=DrewCraft {manifest['packVersion']}",
         "MCLaunchMethod=LauncherPart",
-        "OverrideMemory=true",
-        "MinMem=4096",
-        "MaxMem=8192",
     ]
     if java_path:
         lines.extend(["OverrideJavaLocation=true", f"JavaPath={java_path}"])
     cfg.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    _apply_memory_settings(instance_root)
 
     mmc_pack = {
         "formatVersion": 1,
@@ -482,6 +480,8 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
                 existing_state["prismExecutable"] = runtime.get("prism")
                 existing_state["javaExecutable"] = runtime.get("java")
                 atomic_json(state_path, existing_state)
+                _apply_memory_settings(
+                    pathlib.Path(existing_state["prismRoot"]) / "instances" / existing_state["instanceId"])
                 if progress: progress({"phase": "complete", "label": "DrewCraft is already up to date"})
                 return existing_state
         except Exception:
@@ -528,6 +528,47 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
 
 
 MANAGED_RESOURCE_PACKS = ("drewcraft_cult_first_pass",)
+
+
+MANAGED_MEMORY = (
+    ("OverrideMemory", "true"),
+    ("MinMem", "4096"),
+    ("MaxMem", "8192"),
+)
+"""Managed client RAM (16 GB assumption): Min 4G / Max 8G.
+
+The pack (Terrain models alone ~2 GB, plus Distant Horizons and 40+ mods)
+is thin on Prism defaults. Managed instance, managed settings.
+"""
+
+
+def _apply_memory_settings(instance_root: pathlib.Path) -> None:
+    """Idempotently enforce managed RAM in an existing instance.cfg.
+
+    Fresh instances get it from configure_prism_instance; pre-existing
+    instances (created before this policy) get repaired here on every
+    converge, including the up-to-date fast path that rebuilds nothing.
+    """
+    cfg = instance_root / "instance.cfg"
+    try:
+        text = cfg.read_text(encoding="utf-8") if cfg.is_file() else ""
+    except OSError:
+        return
+    lines = text.splitlines()
+    changed = False
+    for key, value in MANAGED_MEMORY:
+        for index, line in enumerate(lines):
+            if line.startswith(key + "="):
+                if line != f"{key}={value}":
+                    lines[index] = f"{key}={value}"
+                    changed = True
+                break
+        else:
+            lines.append(f"{key}={value}")
+            changed = True
+    if changed or not cfg.is_file():
+        cfg.parent.mkdir(parents=True, exist_ok=True)
+        cfg.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def _ensure_managed_resource_packs(minecraft_dir: pathlib.Path) -> None:
