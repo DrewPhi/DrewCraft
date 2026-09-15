@@ -6,7 +6,7 @@
 # compatibility gates decide what is promoted to future mods.yaml/content-packs.yaml.
 
 schema_version: 1
-last_updated: "2026-09-13"
+last_updated: "2026-09-15"
 
 target:
   minecraft: "1.21.1"
@@ -128,6 +128,9 @@ profiles:
       - embeddium
       - scalablelux
     purpose: "playtest-0.1 pack (owner decision C13): full Create combat/mobility stack + Covenant cult roster + natural source structures on the certified base. No SSH/host work included."
+    notes:
+      - "Embeddium is excluded because Sable 2.0.5 bundles Veil 4.3.2, which declares Embeddium incompatible."
+      - "ScalableLux is excluded because Sable 2.0.5 declares ScalableLux incompatible."
     gate: "Fresh-world boot + same-world restart + client join on all three OS targets before any human session."
 
   hostile_ai_enhanced_hordes:
