@@ -311,7 +311,7 @@ artifacts:
     project_id: 1194036
     file_id: 8501347
     filename: create-gunsmithing-1.21.1-1.4.9.jar
-    sha256: d9e00c7e9cc5dec11455d42dd0f6d78418ce2213c4140ca8bec6b1e0e73adf1d
+    sha256: d9e00c7e9cc5dec11455d42dd0f6d78418ce2213c4740ca8bec6b1e0e73adf1d
     size: 1819221
   sable:
     provider: curseforge
