@@ -32,13 +32,12 @@ components:
     ownership_class: UPSTREAM_BINARY
     side: common
     role: "Buildable heavy artillery, autocannons, cannon mounts, ammunition and Create-powered loading/aiming."
-    provider:
-      type: curseforge
-      project_id: 646668
-      file_id: 8303106
-      candidate_version: "5.11.7"
-      filename: "createbigcannons-5.11.7+mc.1.21.1.jar"
-      release_status: release
+    provider: curseforge
+    project_id: 646668
+    file_id: 8303106
+    candidate_version: "5.11.7"
+    filename: "createbigcannons-5.11.7+mc.1.21.1.jar"
+    release_status: release
     source_repository: "Cannoneers-of-Create/CreateBigCannons"
     required_dependencies:
       - create
@@ -60,13 +59,12 @@ components:
     ownership_class: UPSTREAM_BINARY
     side: common
     role: "Compact cannon/autocannon mounts, ammunition feeds, magazine loaders and mount limiters for practical fortifications/vehicles."
-    provider:
-      type: curseforge
-      project_id: 1548138
-      file_id: 8801263
-      candidate_version: "0.4.2"
-      filename: "cbc_firepower_components-neoforge-1.21.1-0.4.2+mc.1.21.1-neoforge.jar"
-      release_status: release
+    provider: curseforge
+    project_id: 1548138
+    file_id: 8801263
+    candidate_version: "0.4.2"
+    filename: "cbc_firepower_components-neoforge-1.21.1-0.4.2+mc.1.21.1-neoforge.jar"
+    release_status: release
     source_repository: "DarkraiEMM/cbc_firepower_components"
     required_dependencies:
       - create
@@ -88,13 +86,12 @@ components:
     ownership_class: UPSTREAM_BINARY
     side: common
     role: "Handheld animated steampunk firearms crafted through Create mechanics."
-    provider:
-      type: curseforge
-      project_id: 1194036
-      file_id: 8501347
-      candidate_version: "1.4.9"
-      filename: "create-gunsmithing-1.21.1-1.4.9.jar"
-      release_status: release
+    provider: curseforge
+    project_id: 1194036
+    file_id: 8501347
+    candidate_version: "1.4.9"
+    filename: "create-gunsmithing-1.21.1-1.4.9.jar"
+    release_status: release
     required_dependencies:
       - create
       - ntgl
@@ -112,13 +109,12 @@ components:
     ownership_class: UPSTREAM_BINARY
     side: common
     role: "Block-built physics contraptions including airships, planes and custom moving machines."
-    provider:
-      type: curseforge
-      project_id: 676721
-      file_id: 8763471
-      candidate_version: "1.3.2"
-      filename: "create-aeronautics-bundled-1.21.1-1.3.2.jar"
-      release_status: release
+    provider: curseforge
+    project_id: 676721
+    file_id: 8763471
+    candidate_version: "1.3.2"
+    filename: "create-aeronautics-bundled-1.21.1-1.3.2.jar"
+    release_status: release
     required_dependencies:
       - create
       - sable
@@ -137,13 +133,12 @@ components:
     ownership_class: UPSTREAM_BINARY
     side: common
     role: "Physical buoyancy, material density, watertight compartments, flooding, drainage, trim and list for large Aeronautics ships."
-    provider:
-      type: curseforge
-      project_id: 1539377
-      file_id: 8741659
-      candidate_version: "0.2.2"
-      filename: "highseas-0.2.2.jar"
-      release_status: release
+    provider: curseforge
+    project_id: 1539377
+    file_id: 8741659
+    candidate_version: "0.2.2"
+    filename: "highseas-0.2.2.jar"
+    release_status: release
     source_repository: "bro-is-kaneuss/Create-High-Seas"
     required_dependencies:
       - create
@@ -163,13 +158,12 @@ libraries:
     required_for_v1: true
     ownership_class: UPSTREAM_BINARY
     side: common
-    provider:
-      type: curseforge
-      project_id: 1312371
-      file_id: 8673825
-      candidate_version: "2.0.5"
-      filename: "sable-neoforge-1.21.1-2.0.5.jar"
-      release_status: release
+    provider: curseforge
+    project_id: 1312371
+    file_id: 8673825
+    candidate_version: "2.0.5"
+    filename: "sable-neoforge-1.21.1-2.0.5.jar"
+    release_status: release
     license: "PolyForm Shield License 1.0.0"
     required_by:
       - create_aeronautics
@@ -186,15 +180,14 @@ libraries:
     required_for_v1: true
     ownership_class: UPSTREAM_BINARY
     side: common
-    provider:
-      type: modrinth
-      project_id: "8BmcQJ2H"
-      version_id: "RVIo5f6E"
-      candidate_version: "4.8.2"
-      filename: "geckolib-neoforge-1.21.1-4.8.2.jar"
-      download_url: "https://cdn.modrinth.com/data/8BmcQJ2H/versions/RVIo5f6E/geckolib-neoforge-1.21.1-4.8.2.jar"
-      sha256: "a733757157bd914b56a24c09d2797c522f0f339eb5e45ec1d70a8a9326ecd9df"
-      release_status: release
+    provider: modrinth
+    project_id: "8BmcQJ2H"
+    version_id: "RVIo5f6E"
+    candidate_version: "4.8.2"
+    filename: "geckolib-neoforge-1.21.1-4.8.2.jar"
+    download_url: "https://cdn.modrinth.com/data/8BmcQJ2H/versions/RVIo5f6E/geckolib-neoforge-1.21.1-4.8.2.jar"
+    sha256: "a733757157bd914b56a24c09d2797c522f0f339eb5e45ec1d70a8a9326ecd9df"
+    release_status: release
     license: MIT
     required_by:
       - ntgl
@@ -207,13 +200,12 @@ libraries:
     required_for_v1: true
     ownership_class: UPSTREAM_BINARY
     side: common
-    provider:
-      type: curseforge
-      project_id: 998474
-      file_id: 8585353
-      candidate_version: "3.2.0"
-      filename: "ntgl-1.21.1-3.2.0.jar"
-      release_status: release
+    provider: curseforge
+    project_id: 998474
+    file_id: 8585353
+    candidate_version: "3.2.0"
+    filename: "ntgl-1.21.1-3.2.0.jar"
+    release_status: release
     license: LGPL-2.1
     required_by:
       - create_gunsmithing
@@ -230,13 +222,12 @@ libraries:
     required_for_v1: true
     ownership_class: UPSTREAM_BINARY
     side: common
-    provider:
-      type: curseforge
-      project_id: 658587
-      file_id: 7389814
-      candidate_version: "2.0.4+1.21.1"
-      filename: "player-animation-lib-forge-2.0.4+1.21.1.jar"
-      release_status: beta
+    provider: curseforge
+    project_id: 658587
+    file_id: 7389814
+    candidate_version: "2.0.4+1.21.1"
+    filename: "player-animation-lib-forge-2.0.4+1.21.1.jar"
+    release_status: beta
     license: MIT
     required_by:
       - create_gunsmithing
@@ -250,13 +241,12 @@ libraries:
     required_for_v1: true
     ownership_class: UPSTREAM_BINARY
     side: common
-    provider:
-      type: curseforge
-      project_id: 1279407
-      file_id: 7587771
-      candidate_version: "2.1.2"
-      filename: "ritchiesprojectilelib-2.1.2-mc.1.21.1-neoforge.jar"
-      release_status: release
+    provider: curseforge
+    project_id: 1279407
+    file_id: 7587771
+    candidate_version: "2.1.2"
+    filename: "ritchiesprojectilelib-2.1.2-mc.1.21.1-neoforge.jar"
+    release_status: release
     required_by:
       - create_big_cannons
       - cbc_firepower_components

@@ -70,7 +70,7 @@ jobs:
       - name: Build exact verified client/server trees
         run: |
           python tools/build_verified_profile.py \
-            --profile source_structures_first_spike \
+            --profile playtest_01 \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
             --output-dir build/verified-pack \
             --evidence-output build/verified-pack-evidence.json

@@ -56,7 +56,10 @@ def test_towns_and_towers_outposts_are_sources_but_villages_are_not():
 def test_every_shipping_and_combined_smoke_workflow_builds_the_source_profile():
     for name in ("release-candidate-build.yml", "local-dev-release.yml", "full-profile-verify.yml", "server-smoke.yml"):
         text = (ROOT / ".github" / "workflows" / name).read_text(encoding="utf-8")
-        assert "--profile source_structures_first_spike" in text, name
+        # playtest_01 extends source_structures_first_spike, so it still builds
+        # the full source profile plus the combat/covenant stacks.
+        assert ("--profile source_structures_first_spike" in text
+                or "--profile playtest_01" in text), name
 
 
 def test_ancient_city_is_not_silently_repurposed_as_an_undead_factory():

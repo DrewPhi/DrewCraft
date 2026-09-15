@@ -73,13 +73,13 @@ profiles:
       - stage2_base_performance
     create_expansion_components:
       - create_big_cannons
-      - cbc_firepower_components
       - create_gunsmithing
       - create_aeronautics
       - create_high_seas
     create_expansion_libraries:
       - sable
       - ntgl
+      - geckolib
       - playeranimator
       - ritchies_projectile_library
     purpose: "Selected V1 Create combat + block-built vehicle/ship stack. Keeps MTS as practical conventional transport while adding engineered airships/ships, handheld firearms and structural artillery."
@@ -123,7 +123,8 @@ profiles:
     extends:
       - stage2_create_combat_mobility
       - covenant_endgame_spike
-    purpose: "playtest-0.1 pack (owner decision C13): full Create combat/mobility stack + Covenant cult roster on the certified base. No SSH/host work included."
+      - source_structures_first_spike
+    purpose: "playtest-0.1 pack (owner decision C13): full Create combat/mobility stack + Covenant cult roster + natural source structures on the certified base. No SSH/host work included."
     gate: "Fresh-world boot + same-world restart + client join on all three OS targets before any human session."
 
   hostile_ai_enhanced_hordes:
