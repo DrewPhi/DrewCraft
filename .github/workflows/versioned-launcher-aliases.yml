@@ -52,3 +52,5 @@ jobs:
             "DrewCraft-Windows-v${version}.exe" \
             "DrewCraft-macOS-v${version}.dmg" \
             "DrewCraft-Linux-v${version}.deb"
+
+# Keep versioned friend-facing downloads byte-identical to the current unversioned self-update assets.
