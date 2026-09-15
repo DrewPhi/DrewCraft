@@ -13,6 +13,7 @@ import threading
 import time
 
 from drewcraft_bootstrap import converge, default_app_dir, launch
+from drewcraft_client_defaults import apply_client_defaults, snapshot_user_graphics
 
 LIVE_URL = "https://drewphi.github.io/DrewCraft/live.json"
 
@@ -183,7 +184,13 @@ def _authenticate_and_launch(state: dict, app_dir: pathlib.Path, poll_interval: 
 def main() -> int:
     app_dir = default_app_dir()
     with _single_instance(app_dir):
+        # Capture client-owned mod graphics config before converge replaces the
+        # versioned Prism instance. Minecraft options.txt is already preserved
+        # inside drewcraft_bootstrap; this extends the same behavior to the two
+        # expensive render systems whose defaults DrewCraft seeds below.
+        snapshot_user_graphics(app_dir)
         state = _converge_with_progress(LIVE_URL, app_dir)
+        apply_client_defaults(app_dir, state)
         if _needs_login(state):
             return _authenticate_and_launch(state, app_dir)
         return launch(app_dir)
