@@ -204,11 +204,17 @@ jobs:
           codesign --force --deep --sign - dist/DrewCraft.app
           codesign --verify --deep --strict dist/DrewCraft.app
           hdiutil create -volname DrewCraft -srcfolder dist/DrewCraft.app -ov -format UDZO dist/DrewCraft-macOS.dmg
+          # Raw updater-consumed binary: the in-app self-updater replaces only
+          # Contents/MacOS/DrewCraft, so publish the bare binary alongside the DMG.
+          cp dist/DrewCraft.app/Contents/MacOS/DrewCraft dist/DrewCraft-macOS-arm64
+          test -x dist/DrewCraft-macOS-arm64
       - name: Upload Mac bootstrap
         uses: actions/upload-artifact@v6
         with:
           name: DrewCraft-macOS-arm64
-          path: dist/DrewCraft-macOS.dmg
+          path: |
+            dist/DrewCraft-macOS.dmg
+            dist/DrewCraft-macOS-arm64
           if-no-files-found: error
 
   launcher-linux-x86_64:
@@ -268,6 +274,7 @@ jobs:
         run: |
           test -f dist/DrewCraft-Windows.exe
           test -f dist/DrewCraft-macOS.dmg
+          test -f dist/DrewCraft-macOS-arm64
           test -f dist/DrewCraft-Linux.deb
       - name: Publish launcher version 0.1.3
         env:
@@ -284,5 +291,6 @@ jobs:
           gh release upload launcher-v0.1.3 \
             dist/DrewCraft-Windows.exe \
             dist/DrewCraft-macOS.dmg \
+            dist/DrewCraft-macOS-arm64 \
             dist/DrewCraft-Linux.deb \
             --clobber

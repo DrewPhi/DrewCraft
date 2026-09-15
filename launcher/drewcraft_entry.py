@@ -12,7 +12,7 @@ import sys
 import threading
 import time
 
-from drewcraft_bootstrap import converge, default_app_dir, launch
+from drewcraft_bootstrap import APP_VERSION, converge, default_app_dir, launch, platform_key
 from drewcraft_client_defaults import apply_client_defaults, snapshot_user_graphics
 
 LIVE_URL = "https://drewphi.github.io/DrewCraft/live.json"
@@ -182,6 +182,17 @@ def _authenticate_and_launch(state: dict, app_dir: pathlib.Path, poll_interval: 
 
 
 def main() -> int:
+    try:
+        from self_update import maybe_self_update
+    except ImportError:
+        maybe_self_update = None
+    if maybe_self_update is not None:
+        try:
+            maybe_self_update(APP_VERSION, platform_key(), sys.argv)
+        except SystemExit:
+            raise
+        except Exception:
+            pass
     app_dir = default_app_dir()
     with _single_instance(app_dir):
         # Capture client-owned mod graphics config before converge replaces the
