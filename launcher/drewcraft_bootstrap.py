@@ -500,6 +500,7 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
     if managed_instance.exists():
         shutil.rmtree(managed_instance)
     _replace_path(stage_instance, managed_instance)
+    _ensure_managed_resource_packs(managed_instance / "minecraft")
 
     state = {
         "launcherVersion": APP_VERSION,
@@ -517,6 +518,45 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
     if progress:
         progress({"phase": "complete", "label": "DrewCraft is ready"})
     return state
+
+
+MANAGED_RESOURCE_PACKS = ("drewcraft_cult_first_pass",)
+
+
+def _ensure_managed_resource_packs(minecraft_dir: pathlib.Path) -> None:
+    # DrewCraft-owned resource packs ship inside the release but live in the
+    # user-preserved resourcepacks/ tree, so installation alone does not
+    # enable them. Ensure our packs are active without touching the player's
+    # other choices. Missing pack directories are skipped (older releases).
+    options = minecraft_dir / "options.txt"
+    try:
+        text = options.read_text("utf-8") if options.is_file() else ""
+    except OSError:
+        return
+    wanted = [f"file/{name}" for name in MANAGED_RESOURCE_PACKS
+              if (minecraft_dir / "resourcepacks" / name / "pack.mcmeta").is_file()]
+    if not wanted:
+        return
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if line.startswith("resourcePacks:"):
+            try:
+                active = json.loads(line.split(":", 1)[1])
+            except ValueError:
+                active = []
+            if not isinstance(active, list):
+                active = []
+            changed = False
+            for pack in wanted:
+                if pack not in active:
+                    active.append(pack)
+                    changed = True
+            if changed:
+                lines[index] = "resourcePacks:" + json.dumps(active)
+                options.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            return
+    lines.append("resourcePacks:" + json.dumps(["vanilla", *wanted]))
+    options.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def verify_local(app_dir: pathlib.Path, live_url: str | None = None) -> list[str]:

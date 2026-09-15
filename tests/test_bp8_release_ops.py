@@ -107,6 +107,31 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
         self.assertGreater(len(context.get_ca_certs()), 0)
 
+    def test_covenant_resource_pack_injects_and_enables(self):
+        inject_pack = load_module("inject_resourcepack", "tools/inject_resourcepack.py")
+        client = self.tmp / "client-tree"
+        client.mkdir(parents=True)
+        (client / "drewcraft-layout.json").write_text(
+            json.dumps({"schema_version": 1, "target": "client", "files": []}), encoding="utf-8")
+        entries = inject_pack.inject(client)
+        self.assertEqual(len(entries), 7)
+        self.assertTrue((client / "resourcepacks/drewcraft_cult_first_pass/assets/illagerinvasion/textures/entity/basher.png").is_file())
+        layout = json.loads((client / "drewcraft-layout.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(layout["files"]), 7)
+
+        minecraft = self.tmp / "minecraft-test"
+        pack_dir = minecraft / "resourcepacks/drewcraft_cult_first_pass"
+        pack_dir.mkdir(parents=True)
+        (pack_dir / "pack.mcmeta").write_text("{}\n", encoding="utf-8")
+        (minecraft / "options.txt").write_text('version:1\nresourcePacks:["vanilla"]\n', encoding="utf-8")
+        launcher._ensure_managed_resource_packs(minecraft)
+        options = (minecraft / "options.txt").read_text(encoding="utf-8")
+        self.assertIn("file/drewcraft_cult_first_pass", options)
+        self.assertIn('"vanilla"', options)
+        # Idempotent: second run changes nothing.
+        launcher._ensure_managed_resource_packs(minecraft)
+        self.assertEqual(options, (minecraft / "options.txt").read_text(encoding="utf-8"))
+
     def stamp_server_world(self, server_root, generation_pack_version="worldgen-v1", body=b"world-state"):
         world = server_root / "persistent" / "world"
         world.mkdir(parents=True, exist_ok=True)

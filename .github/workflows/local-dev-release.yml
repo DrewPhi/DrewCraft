@@ -80,6 +80,8 @@ jobs:
           python tools/inject_drewcraft_mod.py \
             --client build/verified-pack/client \
             --server build/verified-pack/server
+          python tools/inject_resourcepack.py \
+            --client build/verified-pack/client
           python tools/drewcraft_pack.py verify build/verified-pack/client
           python tools/drewcraft_pack.py verify build/verified-pack/server
 
