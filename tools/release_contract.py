@@ -112,12 +112,21 @@ def build_manifest_from_layout(
 ) -> dict:
     root = pathlib.Path(layout_root)
     files: list[dict] = []
+    seen: set[str] = set()
     for side in ("common", "client", "server"):
         side_root = root / side
         if not side_root.exists():
             continue
         for path in sorted(p for p in side_root.rglob("*") if p.is_file()):
             rel = path.relative_to(side_root).as_posix()
+            if pathlib.PurePosixPath(rel).name == "drewcraft-layout.json":
+                # Builder metadata, not managed game content: each pack tree
+                # carries its own layout file, and listing both would create a
+                # duplicate managed path that launchers must reject.
+                continue
+            if rel in seen:
+                raise RuntimeError(f"duplicate managed path in release layout: {rel}")
+            seen.add(rel)
             files.append({
                 "path": _safe_rel(rel),
                 "side": side,

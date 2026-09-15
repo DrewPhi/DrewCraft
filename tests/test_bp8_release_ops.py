@@ -67,6 +67,37 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         live_path.write_bytes(release_contract.canonical_json_bytes(live))
         return manifest, manifest_path, live_path
 
+    def test_layout_files_are_builder_metadata_not_managed_paths(self):
+        # Regression: client/ and server/ pack trees each carry their own
+        # drewcraft-layout.json. The release manifest must list neither, or
+        # Windows launchers fail with "duplicate managed path: drewcraft-layout.json".
+        publish = self.tmp / "publish-dup"
+        layout = publish / "0.8.0-dup"
+        (layout / "client").mkdir(parents=True)
+        (layout / "server").mkdir(parents=True)
+        (layout / "client" / "drewcraft-layout.json").write_text('{"target": "client"}\n', encoding="utf-8")
+        (layout / "server" / "drewcraft-layout.json").write_text('{"target": "server"}\n', encoding="utf-8")
+        (layout / "client" / "mods").mkdir(parents=True)
+        (layout / "client" / "mods" / "a.jar").write_bytes(b"a")
+        manifest = release_contract.build_manifest_from_layout(
+            layout,
+            pack_version="0.8.0-dup",
+            channel="test",
+            protocol_version=7,
+            minecraft_version="1.21.1",
+            loader_id="neoforge",
+            loader_version="21.1.250",
+            minimum_launcher_version="0.1.0",
+            world_id="drewcraft-production",
+            world_revision=1,
+            generation_pack_version="worldgen-v1",
+            base_url=publish.as_uri(),
+        )
+        paths = [e["path"] for e in manifest["files"]]
+        self.assertNotIn("drewcraft-layout.json", paths)
+        self.assertEqual(len(paths), len(set(paths)))
+        launcher.validate_manifest(manifest)
+
     def stamp_server_world(self, server_root, generation_pack_version="worldgen-v1", body=b"world-state"):
         world = server_root / "persistent" / "world"
         world.mkdir(parents=True, exist_ok=True)
