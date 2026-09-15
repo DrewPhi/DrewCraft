@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
-import java.util.Random;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
 
@@ -33,8 +33,9 @@ final class FlakMathTest {
 
     @Test
     void nullBridgesDegradeToEmpty() {
-        assertEquals(Optional.empty(), FlakMath.rollBurst(null, new Vec3(1, 0, 0), 1.0, 6.0, new Random(1)));
-        assertEquals(Optional.empty(), FlakMath.rollBurst(new Vec3(0, 0, 0), null, 1.0, 6.0, new Random(1)));
+        RandomSource rng = RandomSource.create();
+        assertEquals(Optional.empty(), FlakMath.rollBurst(null, new Vec3(1, 0, 0), 1.0, 6.0, rng));
+        assertEquals(Optional.empty(), FlakMath.rollBurst(new Vec3(0, 0, 0), null, 1.0, 6.0, rng));
     }
 
     @Test

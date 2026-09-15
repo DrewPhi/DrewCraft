@@ -57,6 +57,32 @@ class DrewCraftSavedDataTest {
     }
 
     @Test
+    void migratesSchemaFourWithEmptyCovenantProgression() {
+        CompoundTag old = new CompoundTag();
+        old.putInt("SchemaVersion", 4);
+        DrewCraftSavedData migrated = DrewCraftSavedData.load(old, null);
+        assertTrue(migrated.covenantClearedSites().isEmpty());
+        assertTrue(migrated.covenantArchives().isEmpty());
+    }
+
+    @Test
+    void covenantProgressionIsIdempotentAndSurvivesRoundTrip() {
+        CompoundTag emptyCurrent = new CompoundTag();
+        emptyCurrent.putInt("SchemaVersion", DrewCraftSavedData.CURRENT_SCHEMA_VERSION);
+        DrewCraftSavedData data = DrewCraftSavedData.load(emptyCurrent, null);
+
+        assertTrue(data.applyCovenantClear("ashen_gate", "Seal I"));
+        assertTrue(!data.applyCovenantClear("ashen_gate", "Seal I duplicate"));
+        assertTrue(data.isCovenantCleared("ashen_gate"));
+
+        CompoundTag saved = data.save(new CompoundTag(), null);
+        DrewCraftSavedData restored = DrewCraftSavedData.load(saved, null);
+        assertEquals(java.util.List.of("ashen_gate"), restored.covenantClearedSites());
+        assertEquals("Seal I", restored.covenantArchives().get("ashen_gate"));
+        assertTrue(!restored.applyCovenantClear("ashen_gate", "replay"));
+    }
+
+    @Test
     void rejectsFutureWorldStateSchema() {
         CompoundTag future = new CompoundTag();
         future.putInt("SchemaVersion", DrewCraftSavedData.CURRENT_SCHEMA_VERSION + 1);

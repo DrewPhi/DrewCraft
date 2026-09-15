@@ -36,7 +36,8 @@ public final class FlakMath {
     }
 
     /** Burst point: predicted position plus uniform random error in each axis. */
-    public static Vec3 burstPoint(Vec3 predicted, double errorRadiusBlocks, Random rng) {
+    public static Vec3 burstPoint(Vec3 predicted, double errorRadiusBlocks,
+                                  net.minecraft.util.RandomSource rng) {
         double ex = (rng.nextDouble() * 2.0 - 1.0) * errorRadiusBlocks;
         double ey = (rng.nextDouble() * 2.0 - 1.0) * errorRadiusBlocks;
         double ez = (rng.nextDouble() * 2.0 - 1.0) * errorRadiusBlocks;
@@ -79,7 +80,7 @@ public final class FlakMath {
      * (null inputs degrade safely instead of crashing the tick).
      */
     public static Optional<Vec3> rollBurst(Vec3 aircraftPos, Vec3 aircraftVel,
-            double leadSeconds, double errorRadiusBlocks, Random rng) {
+            double leadSeconds, double errorRadiusBlocks, net.minecraft.util.RandomSource rng) {
         if (aircraftPos == null || aircraftVel == null || rng == null) {
             return Optional.empty();
         }

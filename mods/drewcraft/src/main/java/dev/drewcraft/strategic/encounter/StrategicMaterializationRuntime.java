@@ -79,7 +79,9 @@ public final class StrategicMaterializationRuntime {
         DrewCraftSavedData data = DrewCraftSavedData.get(level.getServer());
         StrategicEncounter encounter = data.strategicEncounter(tag.encounterId()).orElse(null);
         if (encounter == null || !encounter.groupId().equals(tag.groupId())) return;
-        data.recordStrategicCasualty(tag.encounterId(), event.getEntity().getUUID());
+        if (data.recordStrategicCasualty(tag.encounterId(), event.getEntity().getUUID())) {
+            dev.drewcraft.lore.LoreDropRuntime.maybeDrop(level, event.getEntity(), tag);
+        }
     }
 
     /**

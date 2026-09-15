@@ -1,6 +1,7 @@
 package dev.drewcraft.content;
 
 import dev.drewcraft.DrewCraft;
+import dev.drewcraft.standard.FlightstoneMonumentBlock;
 import dev.drewcraft.strategic.source.SourceCoreBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.PushReaction;
@@ -16,6 +17,14 @@ public final class DrewCraftBlocks {
             SourceCoreBlock::new,
             BlockBehaviour.Properties.of()
                     .strength(4.0F, 6.0F)
+                    .pushReaction(PushReaction.BLOCK)
+    );
+
+    public static final DeferredBlock<FlightstoneMonumentBlock> FLIGHTSTONE_MONUMENT = BLOCKS.registerBlock(
+            "flightstone_monument",
+            FlightstoneMonumentBlock::new,
+            BlockBehaviour.Properties.of()
+                    .strength(-1.0F, 3600000.0F)
                     .pushReaction(PushReaction.BLOCK)
     );
 

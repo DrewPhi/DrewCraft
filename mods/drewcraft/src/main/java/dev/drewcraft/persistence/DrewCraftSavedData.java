@@ -28,30 +28,38 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
 
 public final class DrewCraftSavedData extends SavedData {
-    public static final int CURRENT_SCHEMA_VERSION = 4;
+    public static final int CURRENT_SCHEMA_VERSION = 5;
     private static final String DATA_NAME = "drewcraft_world_state";
     private static final String TAG_SCHEMA_VERSION = "SchemaVersion";
     private static final String TAG_LAST_TOUCHED_GAME_TIME = "LastTouchedGameTime";
     private static final String TAG_STRATEGIC_GROUPS = "StrategicGroups";
     private static final String TAG_STRATEGIC_ENCOUNTERS = "StrategicEncounters";
     private static final String TAG_STRATEGIC_SOURCES = "StrategicSources";
+    private static final String TAG_COVENANT_CLEARED = "CovenantCleared";
+    private static final String TAG_COVENANT_ARCHIVES = "CovenantArchives";
 
     private long lastTouchedGameTime;
     private final Map<UUID, StrategicGroup> strategicGroups;
     private final Map<UUID, StrategicEncounter> strategicEncounters;
     private final Map<UUID, SourceRecord> strategicSources;
+    private final Set<String> covenantCleared;
+    private final Map<String, String> covenantArchives;
 
     private DrewCraftSavedData() {
-        this(0L, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        this(0L, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>(),
+                new LinkedHashSet<>(), new LinkedHashMap<>());
     }
 
     private DrewCraftSavedData(long lastTouchedGameTime, Map<UUID, StrategicGroup> strategicGroups,
                                Map<UUID, StrategicEncounter> strategicEncounters,
-                               Map<UUID, SourceRecord> strategicSources) {
+                               Map<UUID, SourceRecord> strategicSources,
+                               Set<String> covenantCleared, Map<String, String> covenantArchives) {
         this.lastTouchedGameTime = lastTouchedGameTime;
         this.strategicGroups = new LinkedHashMap<>(strategicGroups);
         this.strategicEncounters = new LinkedHashMap<>(strategicEncounters);
         this.strategicSources = new LinkedHashMap<>(strategicSources);
+        this.covenantCleared = new LinkedHashSet<>(covenantCleared);
+        this.covenantArchives = new LinkedHashMap<>(covenantArchives);
         validateEncounterIndex();
         validateSourceIndex();
     }
@@ -113,7 +121,25 @@ public final class DrewCraftSavedData extends SavedData {
                 }
             }
         }
-        return new DrewCraftSavedData(lastTouched, groups, encounters, sources);
+        // Schema 5 introduces Covenant campaign progression (cleared sources +
+        // sealed archives). Older schemas migrate with empty progression.
+        LinkedHashSet<String> cleared = new LinkedHashSet<>();
+        LinkedHashMap<String, String> archives = new LinkedHashMap<>();
+        if (storedSchema >= 5) {
+            if (tag.contains(TAG_COVENANT_CLEARED, Tag.TAG_LIST)) {
+                ListTag clearedTags = tag.getList(TAG_COVENANT_CLEARED, Tag.TAG_STRING);
+                for (int i = 0; i < clearedTags.size(); i++) {
+                    cleared.add(clearedTags.getString(i));
+                }
+            }
+            if (tag.contains(TAG_COVENANT_ARCHIVES, Tag.TAG_COMPOUND)) {
+                CompoundTag archiveTags = tag.getCompound(TAG_COVENANT_ARCHIVES);
+                for (String key : archiveTags.getAllKeys()) {
+                    archives.put(key, archiveTags.getString(key));
+                }
+            }
+        }
+        return new DrewCraftSavedData(lastTouched, groups, encounters, sources, cleared, archives);
     }
 
     @Override
@@ -142,6 +168,18 @@ public final class DrewCraftSavedData extends SavedData {
                 .map(SourceRecordNbt::save)
                 .forEach(sources::add);
         tag.put(TAG_STRATEGIC_SOURCES, sources);
+
+        ListTag cleared = new ListTag();
+        covenantCleared.stream().sorted().forEach(key -> {
+            net.minecraft.nbt.StringTag tagEntry = net.minecraft.nbt.StringTag.valueOf(key);
+            cleared.add(tagEntry);
+        });
+        tag.put(TAG_COVENANT_CLEARED, cleared);
+        CompoundTag archives = new CompoundTag();
+        covenantArchives.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> archives.putString(entry.getKey(), entry.getValue()));
+        tag.put(TAG_COVENANT_ARCHIVES, archives);
         return tag;
     }
 
@@ -221,6 +259,41 @@ public final class DrewCraftSavedData extends SavedData {
         boolean changed = source.clear(gameTime, cause, actor);
         if (changed) setDirty();
         return changed;
+    }
+
+    /**
+     * Covenant campaign progression. Idempotent: replaying a clear (restart,
+     * duplicate break events) returns {@code false} and changes nothing.
+     * Mirrors {@link dev.drewcraft.progression.CovenantProgression} semantics
+     * in durable storage.
+     */
+    public synchronized boolean applyCovenantClear(String siteKey, String archiveText) {
+        if (siteKey == null || siteKey.isEmpty()) {
+            throw new IllegalArgumentException("siteKey required");
+        }
+        if (covenantCleared.contains(siteKey)) {
+            return false;
+        }
+        covenantCleared.add(siteKey);
+        if (archiveText != null) {
+            covenantArchives.put(siteKey, archiveText);
+        }
+        setDirty();
+        return true;
+    }
+
+    public synchronized boolean isCovenantCleared(String siteKey) {
+        return covenantCleared.contains(siteKey);
+    }
+
+    public synchronized List<String> covenantClearedSites() {
+        ArrayList<String> sites = new ArrayList<>(covenantCleared);
+        sites.sort(String::compareTo);
+        return List.copyOf(sites);
+    }
+
+    public synchronized Map<String, String> covenantArchives() {
+        return Map.copyOf(covenantArchives);
     }
 
     /**
