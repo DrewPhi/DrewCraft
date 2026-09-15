@@ -1,6 +1,7 @@
 """Tests for launcher/self_update.py — seamless updates on all three OSs."""
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import os
@@ -51,6 +52,15 @@ class SelfUpdateTest(unittest.TestCase):
         self.assertFalse(self_update.update_available("0.1.5", latest))
         self.assertFalse(self_update.update_available("0.1.6", latest))
         self.assertFalse(self_update.update_available("0.1.4", None))
+
+    def test_equal_version_uses_release_digest(self):
+        current = self.tmp / "DrewCraft.exe"
+        current.write_bytes(b"current-binary")
+        latest = {"version": "0.1.5", "release": {}}
+        matching = {"digest": "sha256:" + hashlib.sha256(b"current-binary").hexdigest()}
+        rebuilt = {"digest": "sha256:" + hashlib.sha256(b"rebuilt-binary").hexdigest()}
+        self.assertFalse(self_update.update_available("0.1.5", latest, matching, current))
+        self.assertTrue(self_update.update_available("0.1.5", latest, rebuilt, current))
 
     def test_fetch_latest_skips_drafts_and_picks_highest(self):
         releases = [release("0.1.9", draft=True), release("0.1.3"), release("0.1.5")]
@@ -107,7 +117,6 @@ class SelfUpdateTest(unittest.TestCase):
             self.assertEqual(b"new-binary", current.read_bytes())
             asides = [p for p in self.tmp.iterdir() if ".old" in p.name]
             self.assertEqual(1, len(asides))
-            # Failure path restores the original instead of stranding the player.
             staged = self.tmp / "other.new"
             staged.write_bytes(b"nope")
             with mock.patch.object(self_update.os, "replace", side_effect=OSError("locked")):
@@ -125,10 +134,16 @@ class SelfUpdateTest(unittest.TestCase):
         self.assertTrue((self.tmp / "DrewCraft-Windows.exe").is_file())
         self.assertTrue((self.tmp / "notes.txt").is_file())
 
+    def test_root_owned_linux_package_uses_user_update_target(self):
+        current = pathlib.Path("/usr/bin/drewcraft")
+        xdg = self.tmp / "xdg"
+        with mock.patch.dict(os.environ, {"XDG_DATA_HOME": str(xdg)}), \
+                mock.patch.object(self_update.os, "access", return_value=False):
+            target = self_update.update_target(current, "linux-x86_64")
+        self.assertEqual(xdg / "DrewCraft" / "launcher" / "DrewCraft-Linux-x86_64", target)
+
     def test_maybe_self_update_never_strands_player(self):
-        # Dev mode (not frozen): always continue normally.
         self.assertFalse(self_update.maybe_self_update("0.0.0", "windows-x86_64", ["drewcraft"]))
-        # Opt-outs continue normally.
         with mock.patch.dict(os.environ, {self_update.SKIP_ENV: "1"}):
             self.assertFalse(self_update.maybe_self_update("0.0.0", "windows-x86_64", ["drewcraft"]))
         self.assertFalse(self_update.maybe_self_update("0.0.0", "windows-x86_64",
@@ -136,7 +151,6 @@ class SelfUpdateTest(unittest.TestCase):
 
     def test_maybe_self_update_relaunches_on_newer_release(self):
         latest = {"version": "9.9.9", "release": release("9.9.9", assets=("DrewCraft-Windows.exe",))}
-        asset = latest["release"]["assets"][0]
         current = self.tmp / "DrewCraft-Windows.exe"
         current.write_bytes(b"old")
         with mock.patch.object(self_update.sys, "frozen", True, create=True), \
@@ -148,7 +162,29 @@ class SelfUpdateTest(unittest.TestCase):
                 mock.patch.object(self_update, "relaunch", side_effect=SystemExit(0)):
             with self.assertRaises(SystemExit):
                 self_update.maybe_self_update("0.0.0", "windows-x86_64", ["drewcraft"])
-        self.assertEqual(asset["browser_download_url"], asset["browser_download_url"])
+        self.assertEqual(b"new", current.read_bytes())
+
+    def test_maybe_self_update_relaunches_on_same_version_rebuild(self):
+        current = self.tmp / "DrewCraft-Windows.exe"
+        current.write_bytes(b"old-build")
+        rebuilt_bytes = b"new-build"
+        rebuilt_asset = {
+            "name": "DrewCraft-Windows.exe",
+            "state": "uploaded",
+            "browser_download_url": "https://example.invalid/DrewCraft-Windows.exe",
+            "digest": "sha256:" + hashlib.sha256(rebuilt_bytes).hexdigest(),
+        }
+        latest = {"version": "0.1.5", "release": {"assets": [rebuilt_asset]}}
+        with mock.patch.object(self_update.sys, "frozen", True, create=True), \
+                mock.patch.object(self_update.sys, "executable", str(current)), \
+                mock.patch.object(self_update, "fetch_latest_launcher", return_value=latest), \
+                mock.patch.object(self_update, "download_asset",
+                                  side_effect=lambda url, digest, dest, context=None: (
+                                      pathlib.Path(dest).write_bytes(rebuilt_bytes), pathlib.Path(dest))[1]), \
+                mock.patch.object(self_update, "relaunch", side_effect=SystemExit(0)):
+            with self.assertRaises(SystemExit):
+                self_update.maybe_self_update("0.1.5", "windows-x86_64", ["drewcraft"])
+        self.assertEqual(rebuilt_bytes, current.read_bytes())
 
     def test_current_executable_none_in_dev(self):
         with mock.patch.object(self_update.sys, "frozen", False, create=True):

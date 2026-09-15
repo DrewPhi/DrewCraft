@@ -204,8 +204,6 @@ jobs:
           codesign --force --deep --sign - dist/DrewCraft.app
           codesign --verify --deep --strict dist/DrewCraft.app
           hdiutil create -volname DrewCraft -srcfolder dist/DrewCraft.app -ov -format UDZO dist/DrewCraft-macOS.dmg
-          # Raw updater-consumed binary: the in-app self-updater replaces only
-          # Contents/MacOS/DrewCraft, so publish the bare binary alongside the DMG.
           cp dist/DrewCraft.app/Contents/MacOS/DrewCraft dist/DrewCraft-macOS-arm64
           test -x dist/DrewCraft-macOS-arm64
       - name: Upload Mac bootstrap
@@ -247,6 +245,10 @@ jobs:
           python -c "import certifi; print(certifi.where())"
           pyinstaller --noconfirm --clean --onefile --name DrewCraft --paths launcher launcher/drewcraft_entry.py
           test -x dist/DrewCraft
+          cp dist/DrewCraft dist/DrewCraft-Linux-x86_64
+          test -x dist/DrewCraft-Linux-x86_64
+          launcher_version="$(python -c "import ast,pathlib; t=ast.parse(pathlib.Path('launcher/drewcraft_bootstrap.py').read_text()); print(next(n.value.value for n in t.body if isinstance(n,ast.Assign) and any(isinstance(x,ast.Name) and x.id=='APP_VERSION' for x in n.targets)))")"
+          sed -i "s/^Version:.*/Version: ${launcher_version}/" launcher/linux/control
           mkdir -p build/deb/DEBIAN build/deb/usr/bin build/deb/usr/share/applications
           install -m 0755 dist/DrewCraft build/deb/usr/bin/drewcraft
           install -m 0644 launcher/linux/control build/deb/DEBIAN/control
@@ -257,7 +259,9 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: DrewCraft-Linux-x86_64
-          path: dist/DrewCraft-Linux.deb
+          path: |
+            dist/DrewCraft-Linux.deb
+            dist/DrewCraft-Linux-x86_64
           if-no-files-found: error
 
   publish-launchers:
@@ -265,32 +269,43 @@ jobs:
     needs: [launcher-windows, launcher-macos-arm64, launcher-linux-x86_64]
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v7
         with:
           pattern: DrewCraft-*
           path: dist
           merge-multiple: true
+      - name: Read launcher version from source
+        id: launcher-version
+        run: |
+          version="$(python -c "import ast,pathlib; t=ast.parse(pathlib.Path('launcher/drewcraft_bootstrap.py').read_text()); print(next(n.value.value for n in t.body if isinstance(n,ast.Assign) and any(isinstance(x,ast.Name) and x.id=='APP_VERSION' for x in n.targets)))")"
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Publishing launcher-v$version"
       - name: Verify public launcher filenames
         run: |
           test -f dist/DrewCraft-Windows.exe
           test -f dist/DrewCraft-macOS.dmg
           test -f dist/DrewCraft-macOS-arm64
           test -f dist/DrewCraft-Linux.deb
-      - name: Publish launcher version 0.1.3
+          test -f dist/DrewCraft-Linux-x86_64
+      - name: Publish current launcher release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          LAUNCHER_VERSION: ${{ steps.launcher-version.outputs.version }}
         run: |
-          if ! gh release view launcher-v0.1.3 >/dev/null 2>&1; then
-            gh release create launcher-v0.1.3 \
+          tag="launcher-v${LAUNCHER_VERSION}"
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" \
               --target "$GITHUB_SHA" \
-              --title "DrewCraft Launcher 0.1.3" \
-              --notes "Development launcher with one-click post-authentication launch, visible download progress, Windows/macOS/Linux support, and Terrain Diffusion model-cache preservation across updates." \
-              --prerelease
+              --title "DrewCraft Launcher ${LAUNCHER_VERSION}" \
+              --notes "Current DrewCraft friend launcher. Each run self-updates the launcher first, then converges Java, Prism, the modpack, configs, and managed client defaults."
           fi
-          gh release upload launcher-v0.1.3 \
+          gh release upload "$tag" \
             dist/DrewCraft-Windows.exe \
             dist/DrewCraft-macOS.dmg \
             dist/DrewCraft-macOS-arm64 \
             dist/DrewCraft-Linux.deb \
+            dist/DrewCraft-Linux-x86_64 \
             --clobber

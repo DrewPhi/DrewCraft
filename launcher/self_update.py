@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 """Self-updating DrewCraft launchers: one download, forever current.
 
-Design (verified against platform behavior):
-- POSIX (macOS .app binary, Linux): an atomic os.replace() over the running
-  binary is safe. Unix executes by inode; the old image keeps running.
-- Windows: a running .exe cannot be overwritten, but it CAN be renamed (the
-  lock is on the file handle, not the directory entry). Rename self aside to
-  a unique .old name, move the download into place, spawn it, exit. Stale
-  .old files are reaped best-effort on startup.
-- Temp/download names never contain "update", "setup", or "install", which
-  would trip Windows' installer-detection UAC heuristic.
-- .deb installs (root-owned /usr/bin) and other unwritable targets fail
-  closed with a "re-download" message instead of privilege tricks.
-- No network or any failure: proceed to normal converge. Updating must never
-  strand a player who only wanted to play.
+Design:
+- Windows: a running .exe cannot be overwritten, but it can be renamed. The
+  updater renames the current image aside, atomically installs the new image,
+  relaunches it, and reaps stale .old files on later starts.
+- macOS: the installed app's executable is replaced atomically with the raw
+  arm64 executable published beside the DMG.
+- Linux: a writable standalone executable updates in place. A root-owned .deb
+  install delegates future updates to a per-user executable under XDG data, so
+  the user never needs sudo or another website download.
+- Every start checks both launcher version and the published SHA-256 digest.
+  This means a rebuilt launcher under the same version tag still propagates.
+- Any network/update failure fails open into normal pack convergence so an
+  updater outage never prevents someone from playing.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import pathlib
@@ -29,8 +30,8 @@ RELEASES_API = "https://api.github.com/repos/DrewPhi/DrewCraft/releases"
 TAG_PREFIX = "launcher-v"
 
 # Platform key (see drewcraft_bootstrap.platform_key) -> release asset name.
-# macOS uses a raw binary asset (published alongside the DMG) because the
-# updater replaces only Contents/MacOS/DrewCraft inside the installed .app.
+# macOS and Linux publish raw updater-consumed executables alongside their
+# friend-facing DMG/.deb packages.
 PLATFORM_ASSETS = {
     "windows-x86_64": "DrewCraft-Windows.exe",
     "macos-arm64": "DrewCraft-macOS-arm64",
@@ -46,6 +47,26 @@ def _version_tuple(value: str) -> tuple[int, ...]:
     if not numbers:
         raise RuntimeError(f"invalid version string: {value!r}")
     return tuple(numbers)
+
+
+def sha256_file(path: pathlib.Path) -> str:
+    hasher = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+
+def _asset_digest(asset: dict | None) -> str | None:
+    if not asset:
+        return None
+    digest = str(asset.get("digest") or "")
+    if not digest.startswith("sha256:"):
+        return None
+    value = digest.removeprefix("sha256:").lower()
+    if len(value) != 64 or any(ch not in "0123456789abcdef" for ch in value):
+        return None
+    return value
 
 
 def current_executable() -> pathlib.Path | None:
@@ -90,12 +111,35 @@ def fetch_latest_launcher(context=None) -> dict | None:
     return {"version": best[1], "release": best[2]}
 
 
-def update_available(current_version: str, latest: dict | None) -> bool:
+def update_available(
+    current_version: str,
+    latest: dict | None,
+    asset: dict | None = None,
+    current: pathlib.Path | None = None,
+) -> bool:
+    """Return whether the running launcher should be replaced.
+
+    A newer semantic version always wins. For equal versions, compare the
+    release asset digest against the running binary so CI can safely clobber a
+    release asset and still propagate an urgent launcher-only fix.
+    """
     if not latest:
         return False
     try:
-        return _version_tuple(latest["version"]) > _version_tuple(current_version)
-    except RuntimeError:
+        latest_version = _version_tuple(latest["version"])
+        running_version = _version_tuple(current_version)
+    except (KeyError, RuntimeError):
+        return False
+    if latest_version > running_version:
+        return True
+    if latest_version < running_version:
+        return False
+    expected = _asset_digest(asset)
+    if expected is None or current is None:
+        return False
+    try:
+        return sha256_file(current) != expected
+    except OSError:
         return False
 
 
@@ -110,7 +154,6 @@ def asset_for_platform(latest: dict, platform_key: str) -> dict | None:
 
 
 def download_asset(url: str, digest: str | None, dest: pathlib.Path, context=None) -> pathlib.Path:
-    import hashlib
     import ssl
 
     try:
@@ -129,7 +172,11 @@ def download_asset(url: str, digest: str | None, dest: pathlib.Path, context=Non
                 break
             hasher.update(chunk)
             out.write(chunk)
-    if digest and hasher.hexdigest() != digest.removeprefix("sha256:"):
+    expected = None
+    if digest:
+        value = str(digest)
+        expected = value.removeprefix("sha256:") if value.startswith("sha256:") else value
+    if expected and hasher.hexdigest() != expected:
         tmp.unlink(missing_ok=True)
         raise RuntimeError("launcher download hash mismatch")
     os.replace(tmp, dest)
@@ -137,11 +184,7 @@ def download_asset(url: str, digest: str | None, dest: pathlib.Path, context=Non
 
 
 def swap_executable(current: pathlib.Path, downloaded: pathlib.Path) -> pathlib.Path:
-    """Atomically install the download over the running binary.
-
-    Returns the path to launch. Never leaves the player without a binary:
-    on Windows the original is renamed aside first and restored on failure.
-    """
+    """Atomically install the download over the target executable."""
     if os.name == "nt":
         aside = _unique_aside(current)
         try:
@@ -192,6 +235,25 @@ def reap_asides(directory: pathlib.Path, stem: str) -> list[str]:
     return removed
 
 
+def update_target(current: pathlib.Path, platform_key: str) -> pathlib.Path:
+    """Choose an updateable target without requiring privilege escalation."""
+    if platform_key != "linux-x86_64" or os.access(current.parent, os.W_OK):
+        return current
+    xdg = os.environ.get("XDG_DATA_HOME")
+    base = pathlib.Path(xdg).expanduser() if xdg else pathlib.Path.home() / ".local" / "share"
+    return base / "DrewCraft" / "launcher" / "DrewCraft-Linux-x86_64"
+
+
+def _matches_asset(path: pathlib.Path, asset: dict) -> bool:
+    expected = _asset_digest(asset)
+    if expected is None or not path.is_file():
+        return False
+    try:
+        return sha256_file(path) == expected
+    except OSError:
+        return False
+
+
 def relaunch(path: pathlib.Path, args: list[str]) -> NoReturn:
     if os.name != "nt":
         os.chmod(path, 0o755)
@@ -200,11 +262,7 @@ def relaunch(path: pathlib.Path, args: list[str]) -> NoReturn:
 
 
 def maybe_self_update(app_version: str, platform_key: str, argv: list[str]) -> bool:
-    """Check, download, swap, and relaunch. Returns True when relaunching.
-
-    Returns False (continue normally) when disabled, not frozen, already
-    current, undiscoverable, unwritable, or on any error.
-    """
+    """Check, download, swap, and relaunch before normal pack convergence."""
     if os.environ.get(SKIP_ENV) or "--skip-self-update" in argv:
         return False
     current = current_executable()
@@ -214,31 +272,50 @@ def maybe_self_update(app_version: str, platform_key: str, argv: list[str]) -> b
         reap_asides(current.parent, current.name)
     except Exception:
         pass
+
     latest = fetch_latest_launcher()
-    if not update_available(app_version, latest):
+    if latest is None:
         return False
     asset = asset_for_platform(latest, platform_key)
     if asset is None:
         return False
+    if not update_available(app_version, latest, asset, current):
+        return False
+
+    target = update_target(current, platform_key)
+    forward = [a for a in argv[1:] if a != "--skip-self-update"]
+
+    # A root-owned Linux package may repeatedly enter through /usr/bin. If the
+    # already-downloaded user-local launcher matches the current release, just
+    # hand off to it instead of downloading again.
+    if target != current and _matches_asset(target, asset):
+        relaunch(target, forward)
+
     digest = asset.get("digest")
     try:
-        staged = download_asset(asset["browser_download_url"], digest,
-                                current.parent / (current.name + ".new"))
+        staged = download_asset(
+            asset["browser_download_url"], digest, target.parent / (target.name + ".new")
+        )
     except Exception:
         return False
     if os.name != "nt":
         try:
             os.chmod(staged, 0o755)
         except OSError:
+            staged.unlink(missing_ok=True)
             return False
     try:
-        installed = swap_executable(current, staged)
-    except RuntimeError:
+        if target.exists():
+            installed = swap_executable(target, staged)
+        else:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            os.replace(staged, target)
+            installed = target
+    except (OSError, RuntimeError):
         try:
             staged.unlink(missing_ok=True)
         except OSError:
             pass
         return False
-    forward = [a for a in argv[1:] if a != "--skip-self-update"]
     relaunch(installed, forward)
     return True  # Unreachable; relaunch exits.
