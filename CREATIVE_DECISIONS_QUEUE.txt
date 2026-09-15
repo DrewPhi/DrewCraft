@@ -1,0 +1,112 @@
+DrewCraft — Creative decisions needed before playtest
+==================================================
+Fill in your choice after the colon / below each item. Code work that is NOT
+blocked will continue in parallel. Anything marked [BLOCKS] cannot be finished
+without your answer; everything else uses the stated default until you override it.
+
+How to use:
+- Answer inline (e.g. "CHOICE: B") and tell me to apply it.
+- Leave blank to keep the listed default.
+- Delete a section once decided and implemented.
+
+--------------------------------------------------
+C1. Covenant skin final palette sign-off [BLOCKS final UV polish only, not packaging/CI]
+Default: keep first-pass charcoal/slate/warm stone/dark oak/aged ivory + oxblood + restrained old-gold (assets/resourcepacks/drewcraft_cult_first_pass/README.md).
+Q: Are Basher/Archivist/Inquisitor/Firecaller/Necromancer/Invoker recolors visually approved in-game, or should I adjust regions/overlays in place once we have dev-client screenshots?
+CHOICE: The current skins that I had in the GitHub were are good to use in the game for the first playtest.
+
+--------------------------------------------------
+C2. Illager Invasion version freeze [BLOCKS promotion lock]
+Current selection: IllagerInvasion v21.1.6 (CurseForge file 6492670) + Puzzles Lib v21.1.30 (pack/manifest/endgame_content.yaml:36-90).
+Q: Freeze exactly these two, or allow a newer 21.1.x if hashes/compat pass? Note: changing versions invalidates provider-hash evidence 34724313143 and forces a full re-verify + server smoke.
+CHOICE: freeze those two or now if new stuff comes out we can update later.
+
+--------------------------------------------------
+C3. Native Illager Invasion behavior to retain vs suppress [BLOCKS audit completion]
+Candidates to decide per docs/end_game_plans.md + endgame_content.yaml:49,204-205:
+  a) native raids (village raid bar / hero of the village)
+  b) random patrol / pillager-patrol-style spawns
+  c) native structures/worldgen (Illager Invasion buildings) — proposed: DISABLED, canonical architecture is xSisyX-derived sites only
+  d) Illager Invasion loot tables / enchantment trade behavior
+Default if blank: disable a+b+c for strategic purity, keep d unless it creates unaccounted strength. Explicitly document retained items.
+CHOICE a:disable
+CHOICE b:disable
+CHOICE c: disable
+CHOICE d: agree
+
+--------------------------------------------------
+C4. Entity-role roster mapping [BLOCKS strategic spawn wiring]
+Current candidate_roles (endgame_content.yaml:52-70):
+  footman=[basher,marauder,provoker], cleric_scribe=[archivist],
+  elite_crusader=[inquisitor], prelate=[sorcerer,firecaller,necromancer],
+  high_inquisitor=[invoker], optional_specialist=[alchemist,illusioner].
+Q: Confirm exact entity IDs, or cut/merge any role (e.g. is marauder too bandit-like for the cult? should sorcerer stay prelate or move to specialist?)?
+CHOICE: This is pefect
+
+--------------------------------------------------
+C5. Lore drop tuning numbers (NOT mechanics — mechanics are codeable now)
+Current data defaults (pack/content/lore/config.json:88-121):
+  x_only .38 / z_only .38 / x_y .09 / z_y .09 / x_z .045 / full .015;
+  per-kill: footman 1.25%, archivist 4%, prelate/specialist 6%, inquisitor 8%, invoker 12%;
+  75% home-site bias, 25% random uncleared; cleared-site residue 5%.
+Q: Keep these probabilities for pre-playtest automation, or retune? Balance can wait until after humans play.
+CHOICE: Perfect
+
+--------------------------------------------------
+C6. Flightstone monument final text/visual cadence
+Mechanics (Source Core clear -> marker activates -> archive -> capital reveal) are codeable now.
+Q: Do you want terse milestone messages only (founding / first clear / halfway / all-eight / frontier / victory), or fuller liturgical text now? If fuller, paste text or point at docs/lore/cult_lore_bible.md sections to canonize.
+CHOICE: Surprise me just make it simple. I want you to decide a practical elegant and simple and natural way to amke the flightstone monument work.
+
+--------------------------------------------------
+C7. Flak feel parameters (mechanics codeable now, feel needs humans later)
+Spec (docs/end_game_plans.md:344-386 + endgame_content.yaml:193-201): predicted lead + random error, altitude-dependent accuracy, bounded damage, no terrain damage, tower/site disable rules.
+Q: Confirm defaults to code: minor site 0-1 zones, regional 1-several overlapping, capital dense-but-avoidable; damage modest vs lethal; higher altitude = safer. Any hard numbers (radius, period, damage) you want frozen now?
+CHOICE: all good
+
+--------------------------------------------------
+C8. Eight site names/tiers/AA/production numbers [BLOCKS site-data freeze]
+Lore already freezes names/roles (pack/content/lore/config.json:21-86): Ashen Gate, First Stone Abbey, Red Reliquary, Low Bell Monastery, Closed Wing Bastion, Saint Orun Scriptorium, Cairnwatch, Eighth Chain Citadel (+ Vespera capital).
+Q: Confirm per-site tier, required defenders, Source Core type, clue pool, AA capability, archive contents, structural archetype, strategic production strength, capital prerequisites. I will encode what exists as data; gameplay beauty/placement comes later.
+CHOICE (per-site overrides or "freeze lore defaults"): all good
+
+--------------------------------------------------
+C9. xSisyX asset acquisition + redistribution boundary
+Status: endgame_content.yaml:97-124 says acquire manually from Planet Minecraft, do NOT commit raw binaries by default (private friends-only project, attribution required).
+Q: Have you downloaded the kit? If yes, drop path here so I can inventory + build the offline palette tool. If no, I proceed with tooling + mock fixtures and leave acquisition as your action.
+KIT PATH / STATUS: no need for palette tool since we will stick with teh xSisyX builds as they are. I do not have them donwloaded
+
+--------------------------------------------------
+C10. Production world candidate inputs (seed/radius) [BLOCKS final bake, not tooling]
+Tooling (candidate generation, pregeneration, measurement, indexing, herd corridors, stamping, hashing, restore, comparison) is all automatable now.
+Q: Any seed/radius preferences among 4096/8192/12288, or leave to measured/visual gate later? Do you want several disposable candidates generated before any multiplayer session?
+CHOICE: for the test server lets just do 1000x1000 blocks world. For the server teh world will take up less than 200 gigabytes so we can figure that out later.
+
+--------------------------------------------------
+C11. playtest-0.1 private channel target + fixed test server
+Q: Where should the immutable playtest-0.1 manifest + exact server artifact + launchers live, and what is the fixed test server address/channel pointer? I will not publish public live.json until you approve.
+TARGET: Not sure 
+
+--------------------------------------------------
+C12. First-playtest scope / friend-machine matrix
+BP9 wants Windows + Apple Silicon + Ubuntu/Linux acceptance (docs/V1_EXECUTION_STATUS.md:109, docs/CURRENT_BREAKPOINT.md:87-99).
+Q: Who provides which machines for the first human pass? Any machines to exclude from the initial round?
+MACHINES: my friends will try it out. 
+
+--------------------------------------------------
+C13. Create combat/mobility scope for pre-playtest pack
+profiles.yaml now selects Create Big Cannons / Aeronautics / High Seas / Gunsmithing as V1 compatibility candidates (not yet locked).
+Q: Include the full Create combat/mobility stack in the playtest-0.1 pack, or keep playtest-0.1 to base+radar+Illager first and gate combat separately?
+CHOICE: full create stack 
+
+--------------------------------------------------
+C14. Apple signing/notarization timing
+BP8 notes production Apple signing/notarization remains an RC gate (docs/CURRENT_BREAKPOINT.md:64,96).
+Q: Use ad-hoc/development signature for playtest-0.1 (default), or provide Developer ID now for signed pre-release?
+CHOICE: ad-hoc for playtest-0.1 (friends right-click Open once); paid Apple signing at RC. Confirmed in chat.
+
+--------------------------------------------------
+Notes
+-----
+- I will keep coding mechanics, wiring, tests, CI, manifests, tooling, smoke tests, upgrade/rollback, launcher packaging, instrumentation, and checklists without waiting.
+- I will re-prompt only when a [BLOCKS] item is the sole remaining work in its track.

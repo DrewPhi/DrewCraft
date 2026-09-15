@@ -22,6 +22,8 @@ DEP_KEYS = (
     "gameplay_components",
     "gameplay_libraries",
     "experimental_performance",
+    "create_expansion_components",
+    "create_expansion_libraries",
 )
 CLIENT_SIDES = {"common", "client", "client_and_server_candidate"}
 SERVER_SIDES = {
@@ -46,10 +48,35 @@ def load_yaml(path: Path) -> dict[str, Any]:
     return data
 
 
+def _artifact_identity(raw: dict[str, Any]) -> tuple:
+    # Normalized identity used to tolerate the same upstream artifact being
+    # declared in two candidate registries (e.g. radar + combat both declare
+    # Create Big Cannons). Only filename/version/provider IDs matter here;
+    # notes/license text differences must not block resolution.
+    art = artifact({"artifact": {}, **raw}) if "provider" in raw or "artifact" in raw else {}
+    provider = raw.get("provider")
+    if isinstance(provider, dict):
+        provider_type = provider.get("type")
+        nested = provider
+    else:
+        provider_type = provider
+        nested = {}
+    return (
+        str(raw.get("filename") or nested.get("filename") or art.get("filename") or ""),
+        str(raw.get("candidate_version") or nested.get("candidate_version") or art.get("candidate_version") or ""),
+        str(raw.get("project_id") or nested.get("project_id") or art.get("project_id") or ""),
+        str(raw.get("file_id") or nested.get("file_id") or art.get("file_id") or ""),
+        str(raw.get("version_id") or nested.get("version_id") or art.get("version_id") or ""),
+        str(provider_type or art.get("provider") or ""),
+    )
+
+
 def register(out: dict[str, dict[str, Any]], cid: str, raw: dict[str, Any], registry: str) -> None:
     entry = {"id": cid, "registry": registry, **raw}
     old = out.get(cid)
     if old and old != entry:
+        if _artifact_identity(old) == _artifact_identity(entry):
+            return
         raise PackError(f"candidate id collision: {cid}")
     out[cid] = entry
 
@@ -76,7 +103,12 @@ def collect_catalog(root: Path, profiles_doc: dict[str, Any]) -> dict[str, dict[
                         raw = dict(node)
                         cid = str(raw.pop("id"))
                         register(out, cid, raw, str(alias))
-                    elif key and any(k in node for k in ("provider", "candidate_version", "project_id")):
+                    elif (
+                        key
+                        and key not in ("provider", "artifact")
+                        and any(k in node for k in ("provider", "candidate_version", "project_id"))
+                        and any(k in node for k in ("display_name", "kind", "side", "required_for_v1"))
+                    ):
                         register(out, key, node, str(alias))
                     for k, v in node.items():
                         walk(v, str(k))
@@ -359,7 +391,7 @@ def build(lock: dict[str, Any], output: Path, target: str, repo_root: Path | Non
         src = Path(f["path"])
         dst = mods / f["filename"]
         shutil.copy2(src, dst)
-        files.append({"id": dep["id"], "path": str(dst.relative_to(root)), "sha256": f["sha256"]})
+        files.append({"id": dep["id"], "path": dst.relative_to(root).as_posix(), "sha256": f["sha256"]})
 
     repository = (repo_root or Path(__file__).resolve().parents[1]).resolve()
     for overlay_value in lock.get("overlays") or []:

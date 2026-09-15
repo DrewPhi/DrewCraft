@@ -200,6 +200,47 @@ candidate_sets:
         verdict: do_not_add_by_default
         reason: "Powerful but generic structure modifiers can conflict with pack-specific generation schemes; use only after selected source mods are known."
 
+  cult_tactical_roster:
+    verdict: selected_endgame_roster
+    purpose: "Illager Invasion tactical cult roster; DrewCraft owns all strategic spawning, composition, lore drops, Source Cores and sieges."
+    components:
+      - id: illager_invasion
+        display_name: "Illager Invasion"
+        kind: mod
+        side: common
+        provider: modrinth
+        project_id: "jSV9w0J5"
+        version_id: "9bEpNrvK"
+        candidate_version: "v21.1.6"
+        filename: "IllagerInvasion-v21.1.6-1.21.1-NeoForge.jar"
+        download_url: "https://cdn.modrinth.com/data/jSV9w0J5/versions/9bEpNrvK/IllagerInvasion-v21.1.6-1.21.1-NeoForge.jar"
+        sha256: "5adfdd0df0c5dbe81e4458da50442b58863f9db9f22abc182f81e487eef0e6db"
+        release_status: release
+        license: MIT
+        source_repository: "Fuzss/illager-invasion"
+        required_dependencies:
+          - puzzles_lib
+        notes:
+          - "Tactical entity/behavior layer only; never a strategic authority."
+          - "Native raids, patrol-mixin spawns and structures must be suppressed or explicitly retained by audit; see endgame_content.yaml production gates."
+      - id: puzzles_lib
+        display_name: "Puzzles Lib"
+        kind: library
+        side: common
+        provider: modrinth
+        project_id: "QAGBst4M"
+        version_id: "UmQp641s"
+        candidate_version: "v21.1.30"
+        filename: "PuzzlesLib-v21.1.30-1.21.1-NeoForge.jar"
+        download_url: "https://cdn.modrinth.com/data/QAGBst4M/versions/UmQp641s/PuzzlesLib-v21.1.30-1.21.1-NeoForge.jar"
+        sha256: "3719344055f3409756f0cde6eab3d18e65cf1236029bbe1aa8284369554e4ce8"
+        release_status: release
+        license: "MPL-2.0"
+        required_by:
+          - illager_invasion
+        notes:
+          - "Required Illager Invasion library on NeoForge; no separate Extensible Enums jar (bundled since v21.1.1)."
+
 libraries:
   cristel_lib:
     display_name: "Cristel Lib"

@@ -103,6 +103,29 @@ profiles:
       - spotlight_stack
     gate: "Pass the Create combat/mobility interaction matrix before these candidates enter the production lock."
 
+  covenant_endgame_spike:
+    extends:
+      - stage2_base_performance
+    gameplay_components:
+      - illager_invasion
+      - puzzles_lib
+    overlays:
+      - pack/overlays/covenant_endgame_spike
+    purpose: "Covenant cult tactical roster spike. DrewCraft owns strategic spawning, composition, lore drops, Source Cores and sieges; Illager Invasion supplies local mob behavior only."
+    requirements:
+      - "Disable native Illager Invasion raids (all participateInRaids=false) so no second strategic authority exists."
+      - "Suppress or explicitly retain patrol-mixin marauder spawns, native structures/worldgen and loot injects via datapack audit."
+      - "Materialize every cult entity through DrewCraft strategic state with tagged encounters and idempotent casualties."
+      - "Boot dedicated server fresh-world + same-world restart with the full profile before promotion."
+    gate: "Pass the endgame production gates in pack/manifest/endgame_content.yaml before these candidates enter the production lock."
+
+  playtest_01:
+    extends:
+      - stage2_create_combat_mobility
+      - covenant_endgame_spike
+    purpose: "playtest-0.1 pack (owner decision C13): full Create combat/mobility stack + Covenant cult roster on the certified base. No SSH/host work included."
+    gate: "Fresh-world boot + same-world restart + client join on all three OS targets before any human session."
+
   hostile_ai_enhanced_hordes:
     extends:
       - stage2_base_performance

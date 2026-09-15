@@ -60,4 +60,10 @@ ufw allow 25565/tcp
 ufw allow 25566/tcp
 ufw --force enable
 
+# Stock OCI Ubuntu images carry a premature INPUT REJECT ahead of any UFW
+# chains, which would silently nullify the allows above. Remove it; UFW
+# provides its own edge policy (and netfilter-persistent is gone, so nothing
+# restores the stale rule on boot).
+iptables -D INPUT -j REJECT --reject-with icmp-host-prohibited 2>/dev/null || true
+
 echo "Host base ready. Install infra/drewcraft.service and infra/drewcraft-health.service, then deploy a verified release with infra/serverctl.py."

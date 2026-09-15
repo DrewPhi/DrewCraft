@@ -79,6 +79,7 @@ components:
     notes:
       - "Selected because it makes castle, bunker, ship and airship gun positions compact enough to be practical."
       - "Verify mount behavior on Sable/Aeronautics contraptions before treating moving artillery as supported."
+      - "EVIDENCE 2026-09-15 (A1 test server): 0.4.2 mixin targets resolveKineticMount in Create: Radars 0.4.9.4 and fails to apply -> hard boot crash. HELD OUT of the test set until a compatible Firepower/Radars pair is researched."
 
   create_gunsmithing:
     display_name: "Create: Gunsmithing"
@@ -127,6 +128,7 @@ components:
       - "This is intentionally complementary to MTS: MTS supplies practical conventional vehicles; Aeronautics supplies player-engineered block-built vehicles."
       - "Known upstream warning: Sable is intrusive and Aeronautics has shader-related visual issues; Windows and Apple Silicon client tests are hard gates."
       - "Weather coupling for Aeronautics is desirable later, but V1 inclusion first requires stable physics/multiplayer behavior with the existing stack."
+      - "EVIDENCE 2026-09-15 (A1 test server): the stack's embedded Veil declares incompatibility with Embeddium; drop Embeddium from any profile containing this stack."
 
   create_high_seas:
     display_name: "Create: High Seas"
@@ -176,6 +178,28 @@ libraries:
       - "Sable adds interactive moving sub-levels and a native Rapier physics pipeline."
       - "Upstream explicitly warns it is intrusive and compatibility-prone; therefore it is isolated behind a dedicated compatibility profile before production promotion."
       - "Native-library behavior must be tested on Windows x86-64, Linux x86-64/aarch64 as applicable, and Apple Silicon macOS."
+      - "EVIDENCE 2026-09-15 (A1 test server): Sable 2.0.5 declares incompatibility with ScalableLux; drop ScalableLux from any profile containing this stack."
+
+  geckolib:
+    display_name: "GeckoLib"
+    kind: library
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    provider:
+      type: modrinth
+      project_id: "8BmcQJ2H"
+      version_id: "RVIo5f6E"
+      candidate_version: "4.8.2"
+      filename: "geckolib-neoforge-1.21.1-4.8.2.jar"
+      download_url: "https://cdn.modrinth.com/data/8BmcQJ2H/versions/RVIo5f6E/geckolib-neoforge-1.21.1-4.8.2.jar"
+      sha256: "a733757157bd914b56a24c09d2797c522f0f339eb5e45ec1d70a8a9326ecd9df"
+      release_status: release
+    license: MIT
+    required_by:
+      - ntgl
+    notes:
+      - "EVIDENCE 2026-09-15 (A1 test server): NTGL 3.2.0 hard-requires geckolib >= 4.8.2; boot fails without it. Pinned minimum satisfying version."
 
   ntgl:
     display_name: "NukaTeam's Gun Lib"
@@ -193,9 +217,12 @@ libraries:
     license: LGPL-2.1
     required_by:
       - create_gunsmithing
+    required_dependencies:
+      - geckolib
     notes:
       - "3.2.0 explicitly adds Sable support so firearm projectiles interact with sub-levels instead of passing through them."
       - "Verify Create: Gunsmithing 1.4.9 against NTGL 3.2.0 despite its changelog specifically mentioning 3.1.8 support."
+      - "EVIDENCE 2026-09-15 (A1 test server): NTGL 3.2.0 requires geckolib >= 4.8.2 at load time."
 
   playeranimator:
     display_name: "playerAnimator"
@@ -224,10 +251,12 @@ libraries:
     ownership_class: UPSTREAM_BINARY
     side: common
     provider:
-      type: unresolved_provider_lock
+      type: curseforge
+      project_id: 1279407
+      file_id: 7587771
       candidate_version: "2.1.2"
       filename: "ritchiesprojectilelib-2.1.2-mc.1.21.1-neoforge.jar"
-      file_id: null
+      release_status: release
     required_by:
       - create_big_cannons
       - cbc_firepower_components

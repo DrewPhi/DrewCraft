@@ -139,6 +139,15 @@ def _active_state(root: pathlib.Path, release: pathlib.Path, manifest: dict, pre
     }
 
 
+def _replace_link(temp_link: pathlib.Path, dest: pathlib.Path) -> None:
+    # os.replace() cannot atomically replace an existing directory symlink on
+    # Windows (WinError 5). Unlink the destination first on Windows; POSIX
+    # keeps the atomic replace path.
+    if os.name == "nt" and (dest.exists() or dest.is_symlink()):
+        dest.unlink()
+    os.replace(temp_link, dest)
+
+
 def activate(root: pathlib.Path, release: pathlib.Path, manifest: dict) -> pathlib.Path | None:
     ensure_layout(root)
     require_world_identity(root, manifest)
@@ -149,7 +158,7 @@ def activate(root: pathlib.Path, release: pathlib.Path, manifest: dict) -> pathl
     if temp_link.exists() or temp_link.is_symlink():
         temp_link.unlink()
     os.symlink(release.resolve(), temp_link, target_is_directory=True)
-    os.replace(temp_link, link)
+    _replace_link(temp_link, link)
     _atomic_json(root / "state" / "active-release.json", _active_state(root, release, manifest, previous))
     return previous
 
@@ -178,7 +187,7 @@ def rollback_application(root: pathlib.Path, previous: pathlib.Path | None) -> d
     if temp_link.exists() or temp_link.is_symlink():
         temp_link.unlink()
     os.symlink(previous.resolve(), temp_link, target_is_directory=True)
-    os.replace(temp_link, current)
+    _replace_link(temp_link, current)
     _atomic_json(
         root / "state" / "active-release.json",
         _active_state(root, previous, manifest, failed if failed != previous else None),

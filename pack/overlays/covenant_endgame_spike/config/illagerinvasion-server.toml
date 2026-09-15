@@ -1,0 +1,38 @@
+# Illager Invasion server config — DrewCraft Covenant strategic ownership.
+#
+# DrewCraft owns ALL strategic spawning, composition, lore drops, Source Cores
+# and sieges. Illager Invasion supplies local mob behavior only. Every native
+# raid wave must be disabled so no second strategic authority exists.
+#
+# VERIFY ON FIRST BOOT: compare key casing against the generated
+# config/illagerinvasion-server.toml on a NeoForge 1.21.1 dedicated server
+# (Puzzles Lib MOD_ID-server.toml convention). Source field names from
+# Fuzss/illager-invasion branch 1.21.1 ServerConfig + RaidWavesConfigHelper.
+# invoker defaults false upstream; set explicitly anyway.
+
+[general]
+	# Boss bar for the Invoker encounter.
+	invokerBossBar = true
+	# Platinum trim effects from Illager Invasion gear.
+	platinumTrimEffects = true
+
+[basher]
+	participateInRaids = false
+[provoker]
+	participateInRaids = false
+[necromancer]
+	participateInRaids = false
+[sorcerer]
+	participateInRaids = false
+[illusioner]
+	participateInRaids = false
+[archivist]
+	participateInRaids = false
+[marauder]
+	participateInRaids = false
+[inquisitor]
+	participateInRaids = false
+[alchemist]
+	participateInRaids = false
+[invoker]
+	participateInRaids = false

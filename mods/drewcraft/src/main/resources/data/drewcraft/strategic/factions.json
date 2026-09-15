@@ -30,6 +30,16 @@
         {"id":"drewcraft:raider_raid","groupType":"RAID","sourceClasses":["FORT","CITY","STRONGHOLD"],"strengthMultiplier":3,"targetPolicy":"SCOUTED_EXPEDITION","minDistanceBlocks":2048,"maxDistanceBlocks":4096,"composition":{"minecraft:pillager":0.50,"minecraft:vindicator":0.30,"minecraft:witch":0.10,"minecraft:ravager":0.10}},
         {"id":"drewcraft:raider_reinforcement","groupType":"REINFORCEMENT","sourceClasses":["FORT","CITY","STRONGHOLD"],"strengthMultiplier":2,"targetPolicy":"ALLIED_REINFORCEMENT","minDistanceBlocks":512,"maxDistanceBlocks":1536,"composition":{"minecraft:pillager":0.60,"minecraft:vindicator":0.30,"minecraft:witch":0.10}}
       ]
+    },
+    {
+      "id": "drewcraft:covenant",
+      "templates": [
+        {"id":"drewcraft:covenant_patrol","groupType":"PATROL","sourceClasses":["CAMP","FORT","CITY","RUIN","STRONGHOLD"],"strengthMultiplier":1,"targetPolicy":"LOCAL_PATROL","minDistanceBlocks":384,"maxDistanceBlocks":896,"composition":{"illagerinvasion:basher":0.40,"illagerinvasion:marauder":0.35,"illagerinvasion:provoker":0.25}},
+        {"id":"drewcraft:covenant_horde","groupType":"HORDE","sourceClasses":["CAMP","FORT","CITY","RUIN","STRONGHOLD"],"strengthMultiplier":2,"targetPolicy":"REGIONAL_ROAM","minDistanceBlocks":1024,"maxDistanceBlocks":2560,"composition":{"illagerinvasion:basher":0.35,"illagerinvasion:marauder":0.30,"illagerinvasion:provoker":0.20,"illagerinvasion:archivist":0.15}},
+        {"id":"drewcraft:covenant_raid","groupType":"RAID","sourceClasses":["FORT","CITY","RUIN","STRONGHOLD"],"strengthMultiplier":3,"targetPolicy":"SCOUTED_EXPEDITION","minDistanceBlocks":2048,"maxDistanceBlocks":4096,"composition":{"illagerinvasion:inquisitor":0.30,"illagerinvasion:provoker":0.30,"illagerinvasion:sorcerer":0.15,"illagerinvasion:firecaller":0.15,"illagerinvasion:archivist":0.10}},
+        {"id":"drewcraft:covenant_army","groupType":"ARMY","sourceClasses":["CITY","STRONGHOLD"],"strengthMultiplier":8,"targetPolicy":"SCOUTED_EXPEDITION","minDistanceBlocks":3072,"maxDistanceBlocks":6144,"composition":{"illagerinvasion:basher":0.30,"illagerinvasion:marauder":0.20,"illagerinvasion:provoker":0.20,"illagerinvasion:inquisitor":0.12,"illagerinvasion:archivist":0.08,"illagerinvasion:firecaller":0.04,"illagerinvasion:necromancer":0.04,"illagerinvasion:invoker":0.02}},
+        {"id":"drewcraft:covenant_reinforcement","groupType":"REINFORCEMENT","sourceClasses":["FORT","CITY","STRONGHOLD"],"strengthMultiplier":2,"targetPolicy":"ALLIED_REINFORCEMENT","minDistanceBlocks":512,"maxDistanceBlocks":1536,"composition":{"illagerinvasion:basher":0.40,"illagerinvasion:provoker":0.30,"illagerinvasion:archivist":0.20,"illagerinvasion:alchemist":0.10}}
+      ]
     }
   ]
 }

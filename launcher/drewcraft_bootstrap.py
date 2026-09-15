@@ -37,6 +37,22 @@ PRESERVED_USER_PATHS = (
 HARDLINK_PRESERVED_PATHS = frozenset(("terrain-diffusion-models",))
 
 
+def _replace_path(src: pathlib.Path, dest: pathlib.Path, attempts: int = 5) -> None:
+    # Windows transient locks (AV/indexer) can hold newly copied files briefly,
+    # making os.replace fail with WinError 32. Retry briefly before giving up.
+    last: OSError | None = None
+    for attempt in range(attempts):
+        try:
+            os.replace(src, dest)
+            return
+        except OSError as exc:
+            last = exc
+            if attempt < attempts - 1:
+                time.sleep(0.2 * (attempt + 1))
+    assert last is not None
+    raise last
+
+
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -470,7 +486,7 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
 
     if managed_instance.exists():
         shutil.rmtree(managed_instance)
-    os.replace(stage_instance, managed_instance)
+    _replace_path(stage_instance, managed_instance)
 
     state = {
         "launcherVersion": APP_VERSION,
