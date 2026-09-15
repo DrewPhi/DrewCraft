@@ -415,11 +415,18 @@ def _copy_preserved_user_data(previous_minecraft: pathlib.Path | None, target_mi
 def configure_prism_instance(instance_root: pathlib.Path, java_path: str | None, manifest: dict) -> str:
     instance_root.mkdir(parents=True, exist_ok=True)
     instance_id = instance_root.name
+    # Managed memory: the pack (Terrain models alone ~2 GB, plus Distant
+    # Horizons and 40+ mods) is thin on Prism defaults. 16 GB machines get
+    # Min 4G / Max 8G, leaving half the box for the OS. Managed instance,
+    # managed settings: converge rewrites this file every update.
     cfg = instance_root / "instance.cfg"
     lines = [
         "InstanceType=OneSix",
         f"name=DrewCraft {manifest['packVersion']}",
         "MCLaunchMethod=LauncherPart",
+        "OverrideMemory=true",
+        "MinMem=4096",
+        "MaxMem=8192",
     ]
     if java_path:
         lines.extend(["OverrideJavaLocation=true", f"JavaPath={java_path}"])

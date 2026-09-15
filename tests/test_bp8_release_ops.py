@@ -22,6 +22,10 @@ def load_module(name, path):
 release_contract = load_module("release_contract", "tools/release_contract.py")
 serverctl = load_module("serverctl", "infra/serverctl.py")
 launcher = load_module("drewcraft_bootstrap", "launcher/drewcraft_bootstrap.py")
+# drewcraft_entry.py imports its sibling drewcraft_client_defaults module.
+# Pre-register it so this module also passes in isolation instead of only
+# when another test file happens to import first alphabetically.
+load_module("drewcraft_client_defaults", "launcher/drewcraft_client_defaults.py")
 launcher_entry = load_module("drewcraft_entry", "launcher/drewcraft_entry.py")
 world_index = load_module("world_seed_index", "tools/world_seed_index.py")
 world_bundle = load_module("world_bundle", "tools/world_bundle.py")
@@ -192,6 +196,10 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertEqual("net.neoforged", mmc["components"][1]["uid"])
         self.assertEqual("21.1.250", mmc["components"][1]["version"])
         self.assertTrue((prism_instance / "instance.cfg").is_file())
+        instance_cfg = (prism_instance / "instance.cfg").read_text(encoding="utf-8")
+        self.assertIn("OverrideMemory=true", instance_cfg)
+        self.assertIn("MinMem=4096", instance_cfg)
+        self.assertIn("MaxMem=8192", instance_cfg)
         self.assertEqual([], launcher.verify_local(app))
 
         # Corruption in either the immutable local release cache or the actual Prism
