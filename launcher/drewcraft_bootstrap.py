@@ -23,7 +23,7 @@ import time
 import urllib.request
 import zipfile
 
-APP_VERSION = "0.1.6"
+APP_VERSION = "0.1.7"
 PRESERVED_USER_PATHS = (
     "screenshots",
     "resourcepacks",
