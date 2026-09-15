@@ -23,7 +23,7 @@ import time
 import urllib.request
 import zipfile
 
-APP_VERSION = "0.1.6"
+APP_VERSION = "0.1.7"
 PRESERVED_USER_PATHS = (
     "screenshots",
     "resourcepacks",
@@ -78,36 +78,64 @@ def _https_context() -> "ssl.SSLContext":
     return ssl.create_default_context(cafile=certifi.where())
 
 
-def fetch_bytes(url: str, progress=None, label: str = "download") -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": f"DrewCraft-Launcher/{APP_VERSION}"})
-    with urllib.request.urlopen(req, timeout=120, context=_https_context()) as response:
-        total = int(response.headers.get("Content-Length", "0") or 0)
-        started = time.monotonic()
-        downloaded = 0
-        payload = bytearray()
-        while True:
-            chunk = response.read(1024 * 1024)
-            if not chunk:
-                break
-            payload.extend(chunk)
-            downloaded += len(chunk)
-            elapsed = max(time.monotonic() - started, 0.001)
-            rate = downloaded / elapsed
-            eta = (total - downloaded) / rate if total > downloaded and rate > 0 else 0.0
-            if progress:
-                progress({
-                    "phase": "download",
-                    "label": label,
-                    "downloaded": downloaded,
-                    "total": total,
-                    "bytesPerSecond": rate,
-                    "etaSeconds": eta,
-                })
-        return bytes(payload)
+def fetch_bytes(url: str) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": f"DrewCraft/{APP_VERSION}"})
+    with urllib.request.urlopen(req, timeout=60, context=_https_context()) as resp:
+        return resp.read()
 
 
 def fetch_json(url: str) -> dict:
     return json.loads(fetch_bytes(url).decode("utf-8"))
+
+
+def atomic_json(path: pathlib.Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    _replace_path(tmp, path)
+
+
+def _safe_rel(value: str) -> pathlib.PurePosixPath:
+    p = pathlib.PurePosixPath(value)
+    if p.is_absolute() or ".." in p.parts or not p.parts:
+        raise RuntimeError(f"unsafe relative path: {value!r}")
+    return p
+
+
+def validate_manifest(m: dict) -> None:
+    required = {
+        "schemaVersion", "packVersion", "protocolVersion", "minecraftVersion",
+        "loader", "java", "runtime", "files",
+    }
+    missing = sorted(required - m.keys())
+    if missing:
+        raise RuntimeError(f"manifest missing {missing}")
+    if m["schemaVersion"] != 1:
+        raise RuntimeError("unsupported release schema")
+    if m["loader"].get("id") != "neoforge":
+        raise RuntimeError("DrewCraft V1 launcher requires NeoForge")
+    if not isinstance(m["files"], list):
+        raise RuntimeError("manifest files must be an array")
+    seen: set[tuple[str, str]] = set()
+    for f in m["files"]:
+        for key in ("path", "side", "url", "sha256", "size", "managed"):
+            if key not in f:
+                raise RuntimeError(f"file entry missing {key}")
+        _safe_rel(f["path"])
+        if f["side"] not in ("common", "client", "server"):
+            raise RuntimeError(f"bad file side: {f['side']}")
+        if not f["managed"]:
+            raise RuntimeError("all V1 release files must be managed")
+        if not re.fullmatch(r"[0-9a-f]{64}", f["sha256"]):
+            raise RuntimeError(f"invalid sha256 for {f['path']}")
+        key = (f["side"], f["path"])
+        if key in seen:
+            raise RuntimeError(f"duplicate manifest path: {key}")
+        seen.add(key)
+
+
+def selected_files(manifest: dict, side: str = "client") -> list[dict]:
+    return [f for f in manifest["files"] if f["side"] in ("common", side)]
 
 
 def platform_key() -> str:
@@ -117,185 +145,88 @@ def platform_key() -> str:
         return "windows-x86_64"
     if system == "darwin" and machine in ("arm64", "aarch64"):
         return "macos-arm64"
-    if system == "linux" and machine in ("amd64", "x86_64"):
+    if system == "linux" and machine in ("x86_64", "amd64"):
         return "linux-x86_64"
-    raise RuntimeError(f"Unsupported DrewCraft launcher platform: {system}/{machine}")
+    raise RuntimeError(f"unsupported platform: {system}/{machine}")
 
 
 def default_app_dir() -> pathlib.Path:
-    if platform.system() == "Windows":
-        return pathlib.Path(os.environ.get("LOCALAPPDATA", pathlib.Path.home())) / "DrewCraft"
-    if platform.system() == "Darwin":
+    system = platform.system()
+    if system == "Windows":
+        base = pathlib.Path(os.environ.get("LOCALAPPDATA", pathlib.Path.home() / "AppData" / "Local"))
+        return base / "DrewCraft"
+    if system == "Darwin":
         return pathlib.Path.home() / "Library" / "Application Support" / "DrewCraft"
-    return pathlib.Path.home() / ".local" / "share" / "DrewCraft"
-
-
-def _safe_rel(value: str) -> pathlib.PurePosixPath:
-    p = pathlib.PurePosixPath(value)
-    if p.is_absolute() or ".." in p.parts or "." in p.parts or not p.parts:
-        raise RuntimeError(f"unsafe managed path: {value}")
-    return p
-
-
-def _version_tuple(value: str) -> tuple[int, ...]:
-    numbers = [int(x) for x in re.findall(r"\d+", value)]
-    if not numbers:
-        raise RuntimeError(f"invalid version string: {value!r}")
-    return tuple(numbers)
-
-
-def validate_manifest(manifest: dict) -> None:
-    if manifest.get("schemaVersion") != 1:
-        raise RuntimeError("Unsupported DrewCraft release manifest")
-    if manifest.get("java", {}).get("major") != 21:
-        raise RuntimeError("DrewCraft release does not declare Java 21")
-    if not manifest.get("packVersion") or not isinstance(manifest.get("files"), list):
-        raise RuntimeError("Malformed DrewCraft release manifest")
-    loader = manifest.get("loader", {})
-    if loader.get("id") != "neoforge" or not loader.get("version"):
-        raise RuntimeError("DrewCraft V1 requires an exact NeoForge loader version")
-    if not manifest.get("minecraftVersion"):
-        raise RuntimeError("DrewCraft release is missing minecraftVersion")
-    minimum = manifest.get("minimumLauncherVersion", "0")
-    if _version_tuple(APP_VERSION) < _version_tuple(minimum):
-        raise RuntimeError(
-            f"This DrewCraft launcher is too old ({APP_VERSION}); release requires {minimum} or newer"
-        )
-    seen_paths = set()
-    for entry in manifest["files"]:
-        path = str(_safe_rel(entry["path"]))
-        if path in seen_paths:
-            raise RuntimeError(f"duplicate managed path in release manifest: {path}")
-        seen_paths.add(path)
-        if entry["side"] not in ("common", "client", "server"):
-            raise RuntimeError("Malformed release side")
-        if not isinstance(entry.get("size"), int) or entry["size"] < 0:
-            raise RuntimeError(f"invalid release size for {path}")
-        if not re.fullmatch(r"[0-9a-f]{64}", str(entry.get("sha256", ""))):
-            raise RuntimeError(f"invalid release SHA-256 for {path}")
-        if not str(entry.get("url", "")).startswith(("https://", "file://")):
-            raise RuntimeError(f"unsupported release URL for {path}")
-
-
-def atomic_json(path: pathlib.Path, value: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(prefix=path.name + ".", dir=path.parent)
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump(value, fh, sort_keys=True, separators=(",", ":"))
-            fh.write("\n")
-        os.replace(tmp, path)
-    finally:
-        if os.path.exists(tmp):
-            os.unlink(tmp)
+    return pathlib.Path(os.environ.get("XDG_DATA_HOME", pathlib.Path.home() / ".local" / "share")) / "DrewCraft"
 
 
 def verify_entry(path: pathlib.Path, entry: dict) -> bool:
     return path.is_file() and path.stat().st_size == entry["size"] and sha256_file(path) == entry["sha256"]
 
 
-def selected_files(manifest: dict) -> list[dict]:
-    return [e for e in manifest["files"] if e["side"] in ("common", "client")]
-
-
-def download_verified(url: str, expected_sha: str, destination: pathlib.Path,
-                      expected_size: int | None = None, progress=None, label: str | None = None,
-                      cancelled=None) -> None:
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    partial = destination.with_suffix(destination.suffix + ".partial")
-    existing = partial.stat().st_size if partial.is_file() else 0
-    headers = {"User-Agent": f"DrewCraft-Launcher/{APP_VERSION}"}
-    if existing:
-        headers["Range"] = f"bytes={existing}-"
-    req = urllib.request.Request(url, headers=headers)
-    started = time.monotonic()
-    with urllib.request.urlopen(req, timeout=120, context=_https_context()) as response:
-        resumed = existing > 0 and getattr(response, "status", None) == 206
-        if not resumed:
-            existing = 0
-        response_total = int(response.headers.get("Content-Length", "0") or 0)
-        total = expected_size or (existing + response_total)
-        downloaded = existing
-        with partial.open("ab" if resumed else "wb") as out:
-            while True:
-                if cancelled and cancelled():
-                    raise RuntimeError("download cancelled; partial data was kept for resume")
-                chunk = response.read(1024 * 1024)
-                if not chunk: break
-                out.write(chunk)
-                downloaded += len(chunk)
-                elapsed = max(time.monotonic() - started, 0.001)
-                rate = max(downloaded - existing, 1) / elapsed
-                if progress:
-                    progress({"phase": "download", "label": label or destination.name,
-                              "downloaded": downloaded, "total": total, "bytesPerSecond": rate,
-                              "etaSeconds": max(total - downloaded, 0) / rate if total else 0.0})
-    if expected_size is not None and partial.stat().st_size != expected_size:
+def download_verified(url: str, expected_sha: str, dest: pathlib.Path, expected_size: int | None = None,
+                      progress=None, label: str | None = None, cancelled=None) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    partial = dest.with_name(dest.name + ".partial")
+    partial.unlink(missing_ok=True)
+    req = urllib.request.Request(url, headers={"User-Agent": f"DrewCraft/{APP_VERSION}"})
+    hasher = hashlib.sha256()
+    total = 0
+    with urllib.request.urlopen(req, timeout=300, context=_https_context()) as resp, partial.open("wb") as fh:
+        response_total = resp.headers.get("Content-Length")
+        response_total = int(response_total) if response_total and response_total.isdigit() else None
+        while True:
+            if cancelled and cancelled():
+                raise RuntimeError("cancelled")
+            chunk = resp.read(1024 * 1024)
+            if not chunk:
+                break
+            fh.write(chunk)
+            hasher.update(chunk)
+            total += len(chunk)
+            if progress:
+                progress({"phase": "download", "label": label or dest.name, "bytes": total,
+                          "total": expected_size or response_total})
+    if expected_size is not None and total != expected_size:
         partial.unlink(missing_ok=True)
         raise RuntimeError(f"download size mismatch for {url}")
-    got = sha256_file(partial)
+    got = hasher.hexdigest()
     if got != expected_sha:
         partial.unlink(missing_ok=True)
-        raise RuntimeError(f"download hash mismatch for {url}: expected {expected_sha} got {got}")
-    os.replace(partial, destination)
-
-
-def _reuse_existing(entry: dict, app_dir: pathlib.Path, destination: pathlib.Path) -> bool:
-    rel = pathlib.Path(*_safe_rel(entry["path"]).parts)
-    releases = app_dir / "releases"
-    if not releases.exists():
-        return False
-    for candidate in sorted(releases.glob("*/instance"), reverse=True):
-        source = candidate / rel
-        if verify_entry(source, entry):
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, destination)
-            return True
-    return False
+        raise RuntimeError(f"download hash mismatch expected={expected_sha} got={got}")
+    _replace_path(partial, dest)
 
 
 def install_pack(manifest: dict, app_dir: pathlib.Path, progress=None, cancelled=None) -> pathlib.Path:
-    validate_manifest(manifest)
-    version = manifest["packVersion"]
-    release = app_dir / "releases" / version / "instance"
-    stage = app_dir / "staging" / f"{version}.partial"
-    stage.mkdir(parents=True, exist_ok=True)
-
-    entries = selected_files(manifest)
-    total_bytes = sum(entry["size"] for entry in entries)
-    completed_bytes = 0
-    for index, entry in enumerate(entries, start=1):
-        if cancelled and cancelled(): raise RuntimeError("installation cancelled")
-        target = stage / pathlib.Path(*_safe_rel(entry["path"]).parts)
-        if progress:
-            progress({"phase": "file", "label": entry["path"], "fileIndex": index, "fileCount": len(entries)})
-        if verify_entry(target, entry):
-            completed_bytes += entry["size"]
-            continue
-        if target.exists():
-            target.unlink()
-        if not _reuse_existing(entry, app_dir, target):
-            def aggregate(event, base=completed_bytes):
-                event = dict(event)
-                event["overallDownloaded"] = base + event.get("downloaded", 0)
-                event["overallTotal"] = total_bytes
-                if progress: progress(event)
-            download_verified(
-                entry["url"], entry["sha256"], target, entry["size"],
-                progress=aggregate, label=entry["path"], cancelled=cancelled,
-            )
-        completed_bytes += entry["size"]
-
-    for entry in selected_files(manifest):
-        target = stage / pathlib.Path(*_safe_rel(entry["path"]).parts)
-        if not verify_entry(target, entry):
-            raise RuntimeError(f"staged pack verification failed: {entry['path']}")
-
-    if release.parent.exists():
-        shutil.rmtree(release.parent)
-    release.parent.mkdir(parents=True, exist_ok=True)
-    os.replace(stage, release)
-    return release
+    version_root = app_dir / "releases" / manifest["packVersion"]
+    target = version_root / "instance"
+    manifest_marker = version_root / ".manifest-sha256"
+    manifest_hash = sha256_bytes(json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+    if target.is_dir() and manifest_marker.is_file() and manifest_marker.read_text("ascii").strip() == manifest_hash:
+        if all(verify_entry(target / pathlib.Path(*_safe_rel(f["path"]).parts), f) for f in selected_files(manifest)):
+            return target
+    stage = version_root / ".instance.partial"
+    if stage.exists():
+        shutil.rmtree(stage)
+    stage.mkdir(parents=True)
+    downloads = app_dir / "downloads" / manifest["packVersion"]
+    for f in selected_files(manifest):
+        rel = pathlib.Path(*_safe_rel(f["path"]).parts)
+        cache = downloads / f["sha256"]
+        if not verify_entry(cache, f):
+            download_verified(f["url"], f["sha256"], cache, f["size"], progress=progress,
+                              label=rel.name, cancelled=cancelled)
+        dest = stage / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            os.link(cache, dest)
+        except OSError:
+            shutil.copy2(cache, dest)
+    if target.exists():
+        shutil.rmtree(target)
+    _replace_path(stage, target)
+    manifest_marker.write_text(manifest_hash + "\n", encoding="ascii")
+    return target
 
 
 def _extract_archive(archive: pathlib.Path, destination: pathlib.Path, kind: str) -> None:
