@@ -23,7 +23,7 @@ import time
 import urllib.request
 import zipfile
 
-APP_VERSION = "0.1.5"
+APP_VERSION = "0.1.6"
 PRESERVED_USER_PATHS = (
     "screenshots",
     "resourcepacks",
@@ -415,10 +415,8 @@ def _copy_preserved_user_data(previous_minecraft: pathlib.Path | None, target_mi
 def configure_prism_instance(instance_root: pathlib.Path, java_path: str | None, manifest: dict) -> str:
     instance_root.mkdir(parents=True, exist_ok=True)
     instance_id = instance_root.name
-    # Managed memory: the pack (Terrain models alone ~2 GB, plus Distant
-    # Horizons and 40+ mods) is thin on Prism defaults. 16 GB machines get
-    # Min 4G / Max 8G, leaving half the box for the OS. Managed instance,
-    # managed settings: converge rewrites this file every update.
+    # Managed memory is applied below with Prism's actual per-instance keys.
+    # DrewCraft intentionally forces an 8 GiB heap on every convergence.
     cfg = instance_root / "instance.cfg"
     lines = [
         "InstanceType=OneSix",
@@ -532,13 +530,13 @@ MANAGED_RESOURCE_PACKS = ("drewcraft_cult_first_pass",)
 
 MANAGED_MEMORY = (
     ("OverrideMemory", "true"),
-    ("MinMem", "4096"),
-    ("MaxMem", "8192"),
+    ("MinMemAlloc", "8192"),
+    ("MaxMemAlloc", "8192"),
 )
-"""Managed client RAM (16 GB assumption): Min 4G / Max 8G.
+"""Managed client RAM: exactly 8 GiB.
 
-The pack (Terrain models alone ~2 GB, plus Distant Horizons and 40+ mods)
-is thin on Prism defaults. Managed instance, managed settings.
+Prism's instance keys are MinMemAlloc/MaxMemAlloc. OverrideMemory=true
+forces these instance values instead of inheriting the global Prism default.
 """
 
 
@@ -555,7 +553,12 @@ def _apply_memory_settings(instance_root: pathlib.Path) -> None:
     except OSError:
         return
     lines = text.splitlines()
-    changed = False
+    # v0.1.5 accidentally wrote non-Prism keys MinMem/MaxMem. Remove them so
+    # old installs cannot display a misleading 4096 value after repair.
+    legacy_prefixes = ("MinMem=", "MaxMem=")
+    filtered = [line for line in lines if not line.startswith(legacy_prefixes)]
+    changed = filtered != lines
+    lines = filtered
     for key, value in MANAGED_MEMORY:
         for index, line in enumerate(lines):
             if line.startswith(key + "="):

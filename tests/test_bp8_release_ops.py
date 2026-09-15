@@ -198,8 +198,8 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertTrue((prism_instance / "instance.cfg").is_file())
         instance_cfg = (prism_instance / "instance.cfg").read_text(encoding="utf-8")
         self.assertIn("OverrideMemory=true", instance_cfg)
-        self.assertIn("MinMem=4096", instance_cfg)
-        self.assertIn("MaxMem=8192", instance_cfg)
+        self.assertIn("MinMemAlloc=8192", instance_cfg)
+        self.assertIn("MaxMemAlloc=8192", instance_cfg)
         self.assertEqual([], launcher.verify_local(app))
 
         # Corruption in either the immutable local release cache or the actual Prism
@@ -235,15 +235,16 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         legacy = cfg.read_text(encoding="utf-8")
         legacy = "\n".join(
             line for line in legacy.splitlines()
-            if not line.startswith(("OverrideMemory=", "MinMem=", "MaxMem="))
-        ) + "\nMaxMem=4096\n"
+            if not line.startswith(("OverrideMemory=", "MinMemAlloc=", "MaxMemAlloc=", "MinMem=", "MaxMem="))
+        ) + "\nMaxMemAlloc=4096\nMinMem=4096\n"
         cfg.write_text(legacy, encoding="utf-8")
         launcher.converge(live_path.as_uri(), app)
         repaired = cfg.read_text(encoding="utf-8")
         self.assertIn("OverrideMemory=true", repaired)
-        self.assertIn("MinMem=4096", repaired)
-        self.assertIn("MaxMem=8192", repaired)
-        self.assertNotIn("MaxMem=4096", repaired)
+        self.assertIn("MinMemAlloc=8192", repaired)
+        self.assertIn("MaxMemAlloc=8192", repaired)
+        self.assertNotIn("MaxMemAlloc=4096", repaired)
+        self.assertNotIn("MinMem=4096", repaired)
 
     def test_unchanged_launcher_converge_does_not_rebuild_prism_instance(self):
         _, _, live_path = self.build_release()

@@ -168,17 +168,19 @@ def _converge_with_progress(live_url: str, app_dir: pathlib.Path) -> dict:
 def _force_eight_gib(state: dict) -> None:
     """Force the managed Prism instance to exactly 8 GiB of Java heap.
 
-    The bootstrap historically used 4 GiB minimum / 8 GiB maximum. DrewCraft's
-    friend-facing launcher intentionally overrides both values to 8192 MiB on
-    every run so the instance cannot silently fall back to 4096 MiB.
+    Prism uses MinMemAlloc/MaxMemAlloc for instance memory. DrewCraft writes
+    both to 8192 MiB on every run so it cannot inherit a 4096 MiB global value.
     """
     cfg = pathlib.Path(state["prismRoot"]) / "instances" / state["instanceId"] / "instance.cfg"
     text = cfg.read_text(encoding="utf-8") if cfg.is_file() else ""
     lines = text.splitlines()
+    # Clean up the invalid keys emitted by v0.1.5 before writing Prism's real
+    # per-instance memory settings.
+    lines = [line for line in lines if not line.startswith(("MinMem=", "MaxMem="))]
     required = {
         "OverrideMemory": "true",
-        "MinMem": "8192",
-        "MaxMem": "8192",
+        "MinMemAlloc": "8192",
+        "MaxMemAlloc": "8192",
     }
     for key, value in required.items():
         replacement = f"{key}={value}"
