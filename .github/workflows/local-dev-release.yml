@@ -6,11 +6,30 @@ on:
     paths:
       - '.github/workflows/local-dev-release.yml'
       - 'dev-release/**'
+      - 'pack/manifest/**'
+      - 'pack/overlays/**'
+      - 'assets/resourcepacks/**'
+      - 'mods/drewcraft/**'
       - 'tools/apply_release_acquisition.py'
+      - 'tools/assemble_release_layout.py'
+      - 'tools/build_release_manifest.py'
+      - 'tools/build_verified_profile.py'
+      - 'tools/inject_drewcraft_mod.py'
+      - 'tools/inject_resourcepack.py'
+      - 'tools/package_release_payload.py'
+      - 'tools/release_contract.py'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: drewcraft-live-dev-pack
+  cancel-in-progress: false
+
+env:
+  PACK_VERSION: 0.1.0-dev-local
+  DEV_RELEASE_TAG: drewcraft-dev-pack
 
 jobs:
   build-local-dev:
@@ -98,7 +117,7 @@ jobs:
             --layout build/release-layout \
             --output build/release-manifest.raw.json \
             --base-url https://drewphi.github.io/DrewCraft/dev/releases \
-            --pack-version 0.1.0-dev-local \
+            --pack-version "$PACK_VERSION" \
             --protocol-version 1 \
             --world-id drewcraft-production \
             --world-revision 1 \
@@ -109,11 +128,78 @@ jobs:
             --runtime-lock launcher/runtime-lock.json
           python tools/apply_release_acquisition.py build/release-manifest.raw.json \
             --output build/release-manifest.json
+
+      - name: Retarget DrewCraft-owned files to prerelease assets
+        run: |
+          python - <<'PY'
+          import json
+          import pathlib
+          import shutil
+          import urllib.parse
+
+          repo = "DrewPhi/DrewCraft"
+          tag = "drewcraft-dev-pack"
+          manifest_path = pathlib.Path("build/release-manifest.json")
+          layout = pathlib.Path("build/release-layout")
+          assets = pathlib.Path("build/dev-release-assets")
+          if assets.exists():
+              shutil.rmtree(assets)
+          assets.mkdir(parents=True)
+
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          for entry in manifest["files"]:
+              if entry.get("origin", {}).get("type") != "drewcraft_release":
+                  continue
+              side = entry["side"]
+              rel = entry["path"]
+              source = layout / side / rel
+              if not source.is_file():
+                  raise SystemExit(f"missing release-owned file: {side}:{rel}")
+              asset_name = side + "--" + rel.replace("/", "--")
+              shutil.copy2(source, assets / asset_name)
+              entry["url"] = (
+                  f"https://github.com/{repo}/releases/download/{tag}/"
+                  + urllib.parse.quote(asset_name)
+              )
+
+          manifest_path.write_text(
+              json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          PY
           python tools/release_contract.py validate build/release-manifest.json
           python tools/release_contract.py promote build/release-manifest.json \
-            --manifest-url https://drewphi.github.io/DrewCraft/dev/releases/0.1.0-dev-local/release-manifest.json \
+            --manifest-url "https://github.com/DrewPhi/DrewCraft/releases/download/$DEV_RELEASE_TAG/release-manifest.json" \
             --channel development \
             --output build/live.json
+          cp build/release-manifest.json build/dev-release-assets/release-manifest.json
+          cp build/live.json build/dev-release-assets/live.json
+          cp build/verified-pack-evidence.json build/dev-release-assets/verified-pack-evidence.json
+
+      - name: Publish live dev-pack prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if gh release view "$DEV_RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$DEV_RELEASE_TAG" \
+              --title "DrewCraft live development pack" \
+              --notes "Machine-managed playtest_01 payload. The friend launcher follows live.json from this prerelease." \
+              --prerelease
+          else
+            gh release create "$DEV_RELEASE_TAG" \
+              --target "$GITHUB_SHA" \
+              --title "DrewCraft live development pack" \
+              --notes "Machine-managed playtest_01 payload. The friend launcher follows live.json from this prerelease." \
+              --prerelease
+          fi
+
+          # Publish all content first; publish the pointer last so clients never
+          # observe a live.json that references assets still being uploaded.
+          find build/dev-release-assets -maxdepth 1 -type f ! -name live.json -print0 \
+            | xargs -0 gh release upload "$DEV_RELEASE_TAG" --clobber
+          gh release upload "$DEV_RELEASE_TAG" build/dev-release-assets/live.json --clobber
 
       - name: Package public local-dev payload
         run: |
@@ -125,7 +211,7 @@ jobs:
             --output build/public-dev
           find build/public-dev -type f -maxdepth 8 -printf '%p %s bytes\n' | sort
 
-      - name: Upload local-dev payload
+      - name: Upload local-dev payload archive
         uses: actions/upload-artifact@v6
         with:
           name: DrewCraft-local-dev-publish
