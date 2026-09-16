@@ -6,18 +6,13 @@
   aviation-weather bridge (MTS wind-frame coupling, turbulence,
   visibility effects on flight) is deferred. Flying still works;
   weather simply does not push planes around yet.
-- **PROPOSED (not yet implemented): disable Project Atmosphere for
-  pre-V1, keep Simple Clouds.** Rationale: PA + full storm simulation
-  is too performance-heavy for the first playtest round. Simple Clouds
-  stays for sky visuals only.
-  - Consequences if adopted: no live storms, no handheld Weather Radar
-    readings, no radar weather overlay, no weather-driven flak modifiers.
-    Flak keeps working on altitude/distance math. The DrewCraft weather
-    adapter is already fail-closed, so code needs no changes — only the
-    pack (remove projectatmosphere + gaboulibs from the release set)
-    and a fresh dev payload + Pages publish.
-  - Decision needed before the session: run WITH PA (heavy but complete)
-    or WITHOUT PA (light, weather items above skipped).
+- **ACTIVE 2026-09-16: Project Atmosphere + Simple Clouds removed.**
+  Server runs 43 mods without both (boots in ~41s, no errors;
+  Atmosphere hard-requires SimpleClouds so they left together).
+  Client side rides the new `playtest_light` profile (playtest_01 minus
+  project_atmosphere/gabous_libs/simple_clouds; Distant Horizons kept).
+  Until the light payload publishes, remove the same jars by hand.
+  Weather/aviation coupling and radar weather overlays stay post-V1.
 
 ## Still to test (assuming PA-disabled lightweight session)
 
