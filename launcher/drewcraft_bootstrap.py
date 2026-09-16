@@ -23,7 +23,7 @@ import time
 import urllib.request
 import zipfile
 
-APP_VERSION = "0.1.7"
+APP_VERSION = "0.1.8"
 PRESERVED_USER_PATHS = (
     "screenshots",
     "resourcepacks",
@@ -480,6 +480,8 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
                 atomic_json(state_path, existing_state)
                 _apply_memory_settings(
                     pathlib.Path(existing_state["prismRoot"]) / "instances" / existing_state["instanceId"])
+                _remove_deprecated_managed_resource_packs(
+                    pathlib.Path(existing_state["prismRoot"]) / "instances" / existing_state["instanceId"] / "minecraft")
                 if progress: progress({"phase": "complete", "label": "DrewCraft is already up to date"})
                 return existing_state
         except Exception:
@@ -500,6 +502,7 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
         shutil.rmtree(stage_instance)
     shutil.copytree(release_instance, stage_instance / "minecraft")
     _copy_preserved_user_data(previous_minecraft, stage_instance / "minecraft")
+    _remove_deprecated_managed_resource_packs(stage_instance / "minecraft")
     configure_prism_instance(stage_instance, runtime.get("java"), manifest)
 
     if managed_instance.exists():
@@ -525,7 +528,8 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
     return state
 
 
-MANAGED_RESOURCE_PACKS = ("drewcraft_cult_first_pass",)
+MANAGED_RESOURCE_PACKS: tuple[str, ...] = ()
+DEPRECATED_MANAGED_RESOURCE_PACKS = ("drewcraft_cult_first_pass",)
 
 
 MANAGED_MEMORY = (
@@ -608,6 +612,45 @@ def _ensure_managed_resource_packs(minecraft_dir: pathlib.Path) -> None:
             return
     lines.append("resourcePacks:" + json.dumps(["vanilla", *wanted]))
     options.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _remove_deprecated_managed_resource_packs(minecraft_dir: pathlib.Path) -> None:
+    """Remove only DrewCraft-owned packs retired from the shipping profile.
+
+    The general resourcepacks directory remains user-owned and preserved.
+    """
+    deprecated = {f"file/{name}" for name in DEPRECATED_MANAGED_RESOURCE_PACKS}
+    for name in DEPRECATED_MANAGED_RESOURCE_PACKS:
+        path = minecraft_dir / "resourcepacks" / name
+        if path.is_dir():
+            shutil.rmtree(path)
+        elif path.exists():
+            path.unlink()
+
+    options = minecraft_dir / "options.txt"
+    if not options.is_file():
+        return
+    try:
+        lines = options.read_text("utf-8").splitlines()
+    except OSError:
+        return
+    changed = False
+    for index, line in enumerate(lines):
+        if not line.startswith("resourcePacks:"):
+            continue
+        try:
+            active = json.loads(line.split(":", 1)[1])
+        except ValueError:
+            return
+        if not isinstance(active, list):
+            return
+        filtered = [item for item in active if item not in deprecated]
+        if filtered != active:
+            lines[index] = "resourcePacks:" + json.dumps(filtered)
+            changed = True
+        break
+    if changed:
+        options.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def verify_local(app_dir: pathlib.Path, live_url: str | None = None) -> list[str]:

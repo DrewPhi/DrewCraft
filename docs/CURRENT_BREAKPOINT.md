@@ -17,6 +17,7 @@ V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain
 - Defaulted DrewCraft's deferred weather/radar/strategic feature flags off.
 - Repointed dev release, RC, server smoke, full-profile verification, validation, and hash workflows to the shipping profile.
 - Updated website messaging while retaining stable Windows/Mac/Linux launcher aliases.
+- Retired the Covenant resource pack from V1 release injection; launcher 0.1.8 removes only that formerly managed pack while preserving user resource packs.
 - Rebased V1 documentation and moved the larger design into `docs/FURTHER_IDEAS.md`.
 
 ## Local evidence

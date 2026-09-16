@@ -30,6 +30,7 @@
 - Automatic managed-instance launch, repair, self-update, streaming progress, rate, ETA, and resumable downloads.
 - WDA five-structure allow-list and runtime compatibility override.
 - Strategic/weather systems retained for future releases behind feature flags.
+- Launcher 0.1.8 retires the old Covenant resource pack from V1 and removes only that DrewCraft-managed directory from existing installs.
 
 ## Remaining V1 gates
 

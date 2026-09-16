@@ -111,7 +111,7 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
         self.assertGreater(len(context.get_ca_certs()), 0)
 
-    def test_covenant_resource_pack_injects_and_enables(self):
+    def test_archived_covenant_resource_pack_can_still_be_built_explicitly(self):
         inject_pack = load_module("inject_resourcepack", "tools/inject_resourcepack.py")
         client = self.tmp / "client-tree"
         client.mkdir(parents=True)
@@ -123,18 +123,25 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         layout = json.loads((client / "drewcraft-layout.json").read_text(encoding="utf-8"))
         self.assertEqual(len(layout["files"]), 7)
 
-        minecraft = self.tmp / "minecraft-test"
-        pack_dir = minecraft / "resourcepacks/drewcraft_cult_first_pass"
-        pack_dir.mkdir(parents=True)
-        (pack_dir / "pack.mcmeta").write_text("{}\n", encoding="utf-8")
-        (minecraft / "options.txt").write_text('version:1\nresourcePacks:["vanilla"]\n', encoding="utf-8")
-        launcher._ensure_managed_resource_packs(minecraft)
-        options = (minecraft / "options.txt").read_text(encoding="utf-8")
-        self.assertIn("file/drewcraft_cult_first_pass", options)
-        self.assertIn('"vanilla"', options)
-        # Idempotent: second run changes nothing.
-        launcher._ensure_managed_resource_packs(minecraft)
-        self.assertEqual(options, (minecraft / "options.txt").read_text(encoding="utf-8"))
+    def test_focused_v1_removes_only_deprecated_managed_resource_pack(self):
+        minecraft = self.tmp / "minecraft-focused-v1"
+        old_pack = minecraft / "resourcepacks/drewcraft_cult_first_pass"
+        user_pack = minecraft / "resourcepacks/my-pack"
+        old_pack.mkdir(parents=True)
+        user_pack.mkdir(parents=True)
+        (old_pack / "pack.mcmeta").write_text("{}\n", encoding="utf-8")
+        (user_pack / "pack.mcmeta").write_text("{}\n", encoding="utf-8")
+        (minecraft / "options.txt").write_text(
+            'resourcePacks:["vanilla","file/drewcraft_cult_first_pass","file/my-pack"]\n',
+            encoding="utf-8",
+        )
+
+        launcher._remove_deprecated_managed_resource_packs(minecraft)
+
+        self.assertFalse(old_pack.exists())
+        self.assertTrue(user_pack.is_dir())
+        active = json.loads((minecraft / "options.txt").read_text("utf-8").split(":", 1)[1])
+        self.assertEqual(active, ["vanilla", "file/my-pack"])
 
     def stamp_server_world(self, server_root, generation_pack_version="worldgen-v1", body=b"world-state"):
         world = server_root / "persistent" / "world"

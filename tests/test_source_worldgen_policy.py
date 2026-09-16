@@ -59,6 +59,11 @@ def test_every_shipping_and_combined_smoke_workflow_builds_the_source_profile():
         assert "--profile v1_survival_exploration" in text, name
 
 
+def test_focused_v1_live_release_does_not_inject_covenant_resource_pack():
+    text = (ROOT / ".github/workflows/local-dev-release.yml").read_text(encoding="utf-8")
+    assert "inject_resourcepack.py" not in text
+
+
 def test_ancient_city_is_not_silently_repurposed_as_an_undead_factory():
     mappings = load_json(ROOT / "world/source-mappings.json")
     assert "minecraft:ancient_city" not in {item["structureId"] for item in mappings["sources"]}

@@ -8,14 +8,12 @@ on:
       - 'dev-release/**'
       - 'pack/manifest/**'
       - 'pack/overlays/**'
-      - 'assets/resourcepacks/**'
       - 'mods/drewcraft/**'
       - 'tools/apply_release_acquisition.py'
       - 'tools/assemble_release_layout.py'
       - 'tools/build_release_manifest.py'
       - 'tools/build_verified_profile.py'
       - 'tools/inject_drewcraft_mod.py'
-      - 'tools/inject_resourcepack.py'
       - 'tools/package_release_payload.py'
       - 'tools/release_contract.py'
   workflow_dispatch:
@@ -99,8 +97,6 @@ jobs:
           python tools/inject_drewcraft_mod.py \
             --client build/verified-pack/client \
             --server build/verified-pack/server
-          python tools/inject_resourcepack.py \
-            --client build/verified-pack/client
           python tools/drewcraft_pack.py verify build/verified-pack/client
           python tools/drewcraft_pack.py verify build/verified-pack/server
 
