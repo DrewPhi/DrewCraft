@@ -1,8 +1,8 @@
 # DrewCraft Current Development Breakpoint
 
 **Updated:** 2026-09-16
-**Current breakpoint:** **BP-V1A — focused profile convergence**
-**Next breakpoint:** **BP-V1B — server and gameplay proof**
+**Last completed breakpoint:** **BP-V1A — focused profile convergence**
+**Current breakpoint:** **BP-V1B — server and gameplay proof**
 
 ## Decision
 
@@ -28,11 +28,14 @@ V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain
 - Python bytecode compilation, YAML parsing, and `git diff --check`: passed.
 - Pinned Gradle 9.2.1 `test`: **BUILD SUCCESSFUL**.
 
-## Evidence still required before BP-V1A passes
+## BP-V1A remote evidence
 
-- Commit/push and obtain green remote profile/build evidence.
-- Publish the rebuilt live development pack so existing launcher downloads converge to the focused profile.
+- Commit `3ac388a` is pushed to `main`.
+- Pack manifests, provider hashes, DrewCraft mod CI, full V1 profile verification, source-structure smoke, BP8 convergence, and live-pack publication passed.
+- The published evidence names `v1_survival_core` and `v1_survival_exploration`; the release manifest contains no Covenant or weather paths.
+- Launcher **0.1.8** was published as GitHub's latest release with the exact Windows EXE, Apple Silicon DMG, and Linux DEB filenames used by the website.
+- The existing website buttons therefore download 0.1.8, and existing launchers converge through the corrected `live.json`.
 
 ## BP-V1B
 
-Build the exact profile, boot and restart a dedicated server, then run the focused gameplay smoke checklist: survival, vehicle, aircraft, Create, and one approved WDA dungeon. Do not require production world pregeneration or post-V1 features.
+The remote dedicated-server job has rebuilt the exact profile and NeoForge runtime and is currently performing the slow first Diffusion-world boot. After it boots/restarts cleanly, run the focused gameplay smoke checklist: survival, vehicle, aircraft, Create, and one approved WDA dungeon. Do not require production world pregeneration or post-V1 features.

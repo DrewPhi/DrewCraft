@@ -2,7 +2,7 @@
 
 **Updated:** 2026-09-16
 **Shipping profile:** `v1_survival_exploration`
-**Phase:** profile convergence, then server/gameplay proof
+**Phase:** server/gameplay proof
 
 ## Scope state
 
@@ -34,8 +34,8 @@
 
 ## Remaining V1 gates
 
-1. Validate and publish the focused profile.
-2. Pass fresh-server boot and same-world restart.
+1. ~~Validate and publish the focused profile.~~ Complete.
+2. Pass fresh-server boot and same-world restart (remote job in progress).
 3. Pass focused gameplay smoke and small multiplayer performance evidence.
 4. Deploy the exact server application and complete backup/restore.
 5. Pass clean install/login/launch/update on all three client platforms.
@@ -49,3 +49,9 @@ No post-V1 feature is part of these gates.
 - Full Python test suite: 92 passed.
 - Pinned Gradle 9.2.1 DrewCraft tests: passed.
 - YAML parse, Python compile, and diff whitespace checks: passed.
+
+## Published evidence
+
+- Focused live pack and manifest: published from commit `3ac388a` with no Covenant or weather payload paths.
+- Launcher 0.1.8: Windows, Apple Silicon macOS, and Ubuntu/Linux builds passed and are the website's latest release aliases.
+- Server application layout and native ARM64 DrewCraft build passed; first-world dedicated-server smoke is still running and is not yet claimed complete.
