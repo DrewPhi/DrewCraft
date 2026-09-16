@@ -35,8 +35,8 @@
 ## Remaining V1 gates
 
 1. ~~Validate and publish the focused profile.~~ Complete.
-2. Pass fresh-server boot and same-world restart (remote job in progress).
-3. Pass focused gameplay smoke and small multiplayer performance evidence.
+2. ~~Pass fresh-server boot and same-world restart.~~ Complete in run `35147504223`.
+3. Pass focused hands-on gameplay smoke and small multiplayer performance evidence.
 4. Deploy the exact server application and complete backup/restore.
 5. Pass clean install/login/launch/update on all three client platforms.
 6. Freeze, soak, promote, and tag the exact tested release.
@@ -54,4 +54,5 @@ No post-V1 feature is part of these gates.
 
 - Focused live pack and manifest: published from commit `3ac388a` with no Covenant or weather payload paths.
 - Launcher 0.1.8: Windows, Apple Silicon macOS, and Ubuntu/Linux builds passed and are the website's latest release aliases.
-- Server application layout and native ARM64 DrewCraft build passed; first-world dedicated-server smoke is still running and is not yet claimed complete.
+- Server application layout and native ARM64 DrewCraft build passed.
+- Dedicated-server run `35147504223` passed fresh Diffusion-world boot, clean stop, same-world restart, and fatal-error scanning with the focused profile.

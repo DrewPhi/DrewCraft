@@ -38,4 +38,4 @@ V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain
 
 ## BP-V1B
 
-The remote dedicated-server job has rebuilt the exact profile and NeoForge runtime and is currently performing the slow first Diffusion-world boot. After it boots/restarts cleanly, run the focused gameplay smoke checklist: survival, vehicle, aircraft, Create, and one approved WDA dungeon. Do not require production world pregeneration or post-V1 features.
+Dedicated-server run `35147504223` passed the exact-profile rebuild, NeoForge install, fresh Diffusion-world boot, clean stop, same-world restart, and fatal-error scan. The remaining BP-V1B work is the hands-on gameplay checklist: survival, vehicle, aircraft, Create, and one approved WDA dungeon. Do not require production world pregeneration or post-V1 features.
