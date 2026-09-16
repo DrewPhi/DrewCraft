@@ -1,5 +1,7 @@
 # DrewCraft Endgame Plans
 
+> **Post-V1 design archive (2026-09-16):** the custom endgame is intentionally deferred until the focused survival/exploration release is stable. See `FURTHER_IDEAS.md`.
+
 This document is the canonical current design for the DrewCraft long-term campaign/endgame. It is primarily post-V1 content/progression work unless pieces are promoted into the V1 requirements.
 
 The guiding principle is simple:

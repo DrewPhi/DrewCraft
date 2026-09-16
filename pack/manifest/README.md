@@ -1,6 +1,6 @@
 # DrewCraft Pack Manifests
 
-This directory is the machine-readable dependency source of truth for DrewCraft.
+This directory is the machine-readable dependency source of truth for DrewCraft. The only shipping V1 profile is `v1_survival_exploration`; all other profiles are historical baselines or isolated post-V1 research.
 
 ## Candidate registries
 
@@ -9,7 +9,7 @@ Stage 1 dependency discovery currently comes from **five companion registries**.
 - `upstreams.yaml` — foundational gameplay/platform upstreams: Terrain Diffusion Plus, Chunky, Distant Horizons, Create, MTS, Project Atmosphere, Simple Clouds, seasons and their libraries.
 - `performance_candidates.yaml` — intended performance baseline plus isolated optimization experiments. Baseline entries are meant to enter the Stage 2 compatibility stack, but remain candidates until hashes/tests promote them.
 - `mob_structure_candidates.yaml` — controlled tactical hostile-AI, herd-AI, strategic-source structure, and structure-density compatibility spikes. Alternatives in this file are **not** additive by default.
-- `create_combat_mobility_candidates.yaml` — selected V1 Create combat/physics-mobility stack: Create Big Cannons, CBC Firepower Components, Create: Gunsmithing, Create Aeronautics, Create: High Seas, and their explicitly tracked transitives.
+- `create_combat_mobility_candidates.yaml` — Create combat/physics-mobility candidates and their transitives. The shipping profile selects Big Cannons, Gunsmithing, Aeronautics, and High Seas; incompatible Firepower Components remains held out.
 - `endgame_content.yaml` — selected cult/endgame content foundations: Illager Invasion + Puzzles Lib for the cult tactical roster, the xSisyX Fantasy City & Terrain Builder schematic kit for the coherent cult architectural language, the eight derived source-site archetypes, Flightstone/Source Core/flak markers, and the hand-authored hidden capital. Raw third-party schematic/map binaries are not committed here by default.
 
 These files are discovery/evaluation registries, **not production lockfiles**.
@@ -20,6 +20,7 @@ These files are discovery/evaluation registries, **not production lockfiles**.
 
 It currently defines:
 
+- `v1_survival_exploration` — the authoritative focused V1 stack: Diffusion terrain, MTS vehicles/planes, compatible Create family, selected WDA dungeons, and performance essentials;
 - `stage2_base_performance` — foundational stack + conservative optimization baseline;
 - `stage2_create_combat_mobility` — selected firearms/artillery/Sable/Aeronautics/High Seas interaction stack;
 - separate Enhanced Hordes/Tweaks and Zombie Hordes hostile-AI branches;
@@ -30,7 +31,7 @@ It currently defines:
 - C2ME as an isolated world-build experiment;
 - Structure Essentials as optional world-build/source-debug tooling.
 
-The selected cult/endgame stack in `endgame_content.yaml` is currently separate from the certified baseline. When implementation starts, use an explicit endgame compatibility profile rather than silently changing the frozen baseline.
+The cult/endgame and weather/strategic stacks are post-V1. Use explicit research profiles and never silently change the frozen shipping profile.
 
 Profiles are development inputs, **not release locks**. Production releases contain exact promoted dependencies and hashes.
 
@@ -82,14 +83,13 @@ The selected V1 expansion is tested together as:
 
 ```text
 Create Big Cannons
-+ CBC: Firepower Components
 + Create: Gunsmithing
 + Create Aeronautics
 + Create: High Seas
 + Sable / NTGL / playerAnimator / Ritchie's Projectile Library
 ```
 
-MTS remains the practical conventional car/truck/aircraft layer; Create Aeronautics supplies block-built physics vehicles and airships; High Seas supplies block-built ships. Static weapons are validated before moving-platform weapons, and armed ships/airships are only accepted after projectile-collision, persistence, restart and performance gates pass.
+MTS remains the practical conventional car/truck/aircraft layer; Create Aeronautics supplies block-built physics vehicles and airships; High Seas supplies block-built ships. CBC: Firepower Components stays out until a release compatible with Create: Radars is proven.
 
 ### Hostile tactical-AI spikes
 

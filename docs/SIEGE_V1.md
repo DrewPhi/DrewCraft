@@ -1,5 +1,7 @@
 # DrewCraft V1 Siege Contract
 
+> **Post-V1 design archive (2026-09-16):** this completed design is not part of the focused V1 shipping profile. See `FURTHER_IDEAS.md`.
+
 **Scope:** BP6 path-first bounded siege behavior for materialized hostile raids and armies.
 
 ## Core rule

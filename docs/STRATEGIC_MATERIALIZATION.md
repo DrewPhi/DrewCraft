@@ -1,5 +1,7 @@
 # DrewCraft Strategic Materialization Contract
 
+> **Post-V1 design archive (2026-09-16):** preserved for a later release; not part of the focused V1 shipping profile. See `FURTHER_IDEAS.md`.
+
 **Status:** V1 BP3 implementation contract  
 **Minecraft:** 1.21.1  
 **Authority:** `DrewCraftSavedData` schema 3

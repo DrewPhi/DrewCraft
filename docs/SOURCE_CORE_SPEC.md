@@ -1,5 +1,7 @@
 # DrewCraft Hostile Source Core Contract
 
+> **Post-V1 design archive (2026-09-16):** preserved for a later release; not part of the focused V1 shipping profile. See `FURTHER_IDEAS.md`.
+
 This file is the focused implementation contract for clearing hostile strategic sources. It supplements `STRATEGIC_WORLD_MODEL.md`, `SYSTEMS.md`, `v_1_requirements.md`, and `v_1_development_tree.md`.
 
 The core rule is:

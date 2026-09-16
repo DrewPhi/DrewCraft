@@ -1,4 +1,4 @@
-name: Verify full DrewCraft base profile
+name: Verify DrewCraft V1 shipping profile
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ permissions:
   contents: read
 
 jobs:
-  verify-stage2-base:
+  verify-v1-shipping-profile:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -76,7 +76,7 @@ jobs:
       - name: Rebuild and verify full current dependency profile
         run: |
           python tools/build_verified_profile.py \
-            --profile source_structures_first_spike \
+            --profile v1_survival_exploration \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
             --output-dir build/verified-pack \
             --evidence-output build/full-profile-verification.json

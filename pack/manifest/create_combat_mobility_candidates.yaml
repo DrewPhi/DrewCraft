@@ -1,7 +1,7 @@
 # DrewCraft Create combat + block-built mobility registry
 #
-# Selected 2026-09-13 after the V1 baseline was certified. These are intentional
-# V1 expansion candidates, not yet production locks. Every artifact must still
+# Selected 2026-09-13 and narrowed for the focused V1 on 2026-09-16. These are
+# compatibility candidates; only components selected by v1_survival_exploration ship. Every artifact must still
 # pass the DrewCraft compatibility matrix and receive a verified SHA-256 before
 # promotion to the future locked mods manifest.
 
@@ -20,6 +20,7 @@ selection_policy:
     - "Create Aeronautics exists for player-engineered block-built physics vehicles/airships, not as an MTS replacement."
     - "Create High Seas exists for large block-built ships with buoyancy/flooding, not as a vanilla-boat replacement."
     - "Create Big Cannons owns structural artillery/autocannons; Create: Gunsmithing owns handheld firearms."
+    - "CBC Firepower Components is held out after a confirmed hard boot conflict with Create: Radars."
     - "Do not add Create Weaponry or Create: Caliber to V1 unless a later concrete gap justifies them."
     - "Do not add Clockwork/Valkyrien Skies solely for block-built vehicles while the selected native 1.21.1 NeoForge Aeronautics/Sable path is viable."
     - "Night optics and spotlight systems are explicitly deferred; they are not part of this selection."
@@ -55,7 +56,7 @@ components:
   cbc_firepower_components:
     display_name: "CBC: Firepower Components"
     kind: mod
-    required_for_v1: true
+    required_for_v1: false
     ownership_class: UPSTREAM_BINARY
     side: common
     role: "Compact cannon/autocannon mounts, ammunition feeds, magazine loaders and mount limiters for practical fortifications/vehicles."

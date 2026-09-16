@@ -35,13 +35,13 @@ jobs:
         run: python -m pip install -r tools/requirements-pack.txt
       - name: Unit tests
         run: python -m pytest -q tests/test_pack_resolver.py tests/test_source_worldgen_policy.py
-      - name: Validate base profile graph
-        run: python tools/drewcraft_pack.py validate --profile stage2_base_performance --output build/stage2-base-plan.json
+      - name: Validate V1 shipping profile graph
+        run: python tools/drewcraft_pack.py validate --profile v1_survival_exploration --output build/v1-shipping-plan.json
       - name: Show unresolved exact identities
         run: |
           python - <<'PY'
           import json
-          p=json.load(open('build/stage2-base-plan.json'))
+          p=json.load(open('build/v1-shipping-plan.json'))
           print(f"dependencies={p['dependency_count']} unresolved_identities={p['unresolved_identity_count']}")
           for d in p['dependencies']:
               if not d['exact_identity_ready']:
@@ -49,5 +49,5 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: stage2-base-plan
-          path: build/stage2-base-plan.json
+          name: v1-shipping-plan
+          path: build/v1-shipping-plan.json

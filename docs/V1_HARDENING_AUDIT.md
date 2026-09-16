@@ -1,5 +1,7 @@
 # V1 hardening audit disposition
 
+> **Historical audit:** this records work completed under the former broad V1 scope. Strategic/world-indexing items are now post-V1; launcher/server hardening remains applicable.
+
 **Updated:** 2026-09-13
 
 This records the implementation pass approved before production-world generation. It does not

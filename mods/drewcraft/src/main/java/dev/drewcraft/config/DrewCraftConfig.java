@@ -10,32 +10,32 @@ public final class DrewCraftConfig {
             .define("integrations.terrainDiffusion", true);
 
     public static final ModConfigSpec.BooleanValue PROJECT_ATMOSPHERE_ADAPTER = BUILDER
-            .comment("Enable the read-only Project Atmosphere public API adapter. The adapter fails closed if the upstream API shape changes.")
-            .define("integrations.projectAtmosphere", true);
+            .comment("Post-V1: enable the read-only Project Atmosphere public API adapter. Disabled in the focused V1.")
+            .define("integrations.projectAtmosphere", false);
 
     public static final ModConfigSpec.BooleanValue CREATE_POWER_ADAPTER = BUILDER
             .comment("Enable the read-only Create kinetic-power adapter used by DrewCraft machinery.")
             .define("integrations.createPower", true);
 
     public static final ModConfigSpec.BooleanValue CREATE_RADARS_ADAPTER = BUILDER
-            .comment("Enable DrewCraft weather/terrain integration with the official Create: Radars monitor and ground radar.")
-            .define("integrations.createRadars", true);
+            .comment("Post-V1: enable DrewCraft weather/terrain integration with Create: Radars. The upstream radar mod can still run independently.")
+            .define("integrations.createRadars", false);
 
     public static final ModConfigSpec.BooleanValue MTS_VEHICLE_ADAPTER = BUILDER
             .comment("Enable the read-only Immersive Vehicles / MTS vehicle observation adapter.")
             .define("integrations.mtsVehicle", true);
 
     public static final ModConfigSpec.BooleanValue AVIATION_WEATHER = BUILDER
-            .comment("Enable server-authoritative Project Atmosphere wind/turbulence in MTS aircraft aerodynamics.")
-            .define("features.aviationWeather", true);
+            .comment("Post-V1: enable server-authoritative Project Atmosphere wind/turbulence in MTS aircraft aerodynamics.")
+            .define("features.aviationWeather", false);
 
     public static final ModConfigSpec.BooleanValue STRATEGIC_KERNEL = BUILDER
-            .comment("Enable the lightweight DrewCraft strategic-world persistence/simulation kernel.")
-            .define("features.strategicKernel", true);
+            .comment("Post-V1: enable the DrewCraft strategic-world persistence/simulation kernel.")
+            .define("features.strategicKernel", false);
 
     public static final ModConfigSpec.BooleanValue STRATEGIC_HERDS = BUILDER
-            .comment("Enable movement/materialization of explicitly registered strategic wild herds. Disabling preserves herd records and does not affect ordinary Minecraft animals/spawns.")
-            .define("features.strategicHerds", true);
+            .comment("Post-V1: enable movement/materialization of explicitly registered strategic wild herds. Disabling preserves records and ordinary Minecraft ecology.")
+            .define("features.strategicHerds", false);
 
     public static final ModConfigSpec.IntValue STRATEGIC_SCHEDULER_INTERVAL_TICKS = BUILDER
             .comment("Ticks between coarse strategic simulation cycles. No strategic pathfinding or entity AI runs here.")
@@ -118,8 +118,8 @@ public final class DrewCraftConfig {
             .defineInRange("strategic.sources.routeRetryTicks", 1200, 20, 24000);
 
     public static final ModConfigSpec.BooleanValue STRATEGIC_SIEGE = BUILDER
-            .comment("Enable path-first bounded tactical siege behavior for eligible materialized raids/armies.")
-            .define("features.strategicSiege", true);
+            .comment("Post-V1: enable path-first bounded tactical siege behavior for eligible materialized raids/armies.")
+            .define("features.strategicSiege", false);
 
     public static final ModConfigSpec.IntValue STRATEGIC_SIEGE_INTERVAL_TICKS = BUILDER
             .comment("Ticks between bounded siege checks. Siege logic only runs for materialized loaded encounters.")
@@ -150,8 +150,8 @@ public final class DrewCraftConfig {
             .defineInRange("strategic.siege.breakCooldownTicks", 30, 5, 400);
 
     public static final ModConfigSpec.BooleanValue RADAR = BUILDER
-            .comment("Enable DrewCraft radar sensing and Create: Radars weather/terrain integration.")
-            .define("features.radar", true);
+            .comment("Post-V1: enable DrewCraft radar sensing and weather/terrain integration. Upstream Create: Radars remains independent.")
+            .define("features.radar", false);
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 

@@ -1,5 +1,7 @@
 # DrewCraft V1 Strategic Herds and Ecology Isolation
 
+> **Post-V1 design archive (2026-09-16):** this completed design is not part of the focused V1 shipping profile. See `FURTHER_IDEAS.md`.
+
 BP7 adds persistent wild herds without replacing or quota-managing ordinary Minecraft ecology.
 
 ## Core rule

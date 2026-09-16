@@ -89,7 +89,7 @@ jobs:
       - name: Build exact verified client/server trees
         run: |
           python tools/build_verified_profile.py \
-            --profile playtest_light \
+            --profile v1_survival_exploration \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
             --output-dir build/verified-pack \
             --evidence-output build/verified-pack-evidence.json
@@ -185,13 +185,13 @@ jobs:
           if gh release view "$DEV_RELEASE_TAG" >/dev/null 2>&1; then
             gh release edit "$DEV_RELEASE_TAG" \
               --title "DrewCraft live development pack" \
-              --notes "Machine-managed playtest_01 payload. The friend launcher follows live.json from this prerelease." \
+              --notes "Machine-managed focused V1 survival/exploration payload. The friend launcher follows live.json from this prerelease." \
               --prerelease
           else
             gh release create "$DEV_RELEASE_TAG" \
               --target "$GITHUB_SHA" \
               --title "DrewCraft live development pack" \
-              --notes "Machine-managed playtest_01 payload. The friend launcher follows live.json from this prerelease." \
+              --notes "Machine-managed focused V1 survival/exploration payload. The friend launcher follows live.json from this prerelease." \
               --prerelease
           fi
 

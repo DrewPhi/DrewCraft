@@ -4,20 +4,20 @@ The Stage 1 resolver is fail-closed. Candidate profiles may resolve as a depende
 
 ```bash
 python -m pip install -r tools/requirements-pack.txt
-python tools/drewcraft_pack.py validate --profile stage2_base_performance
-python tools/drewcraft_pack.py plan --profile stage2_base_performance --output build/plan.json
+python tools/drewcraft_pack.py validate --profile v1_survival_exploration
+python tools/drewcraft_pack.py plan --profile v1_survival_exploration --output build/plan.json
 ```
 
 For CurseForge entries with unresolved file IDs, set `CURSEFORGE_API_KEY` and hydrate provider metadata:
 
 ```bash
-python tools/drewcraft_pack.py hydrate --profile stage2_base_performance --output build/hydrated.json
+python tools/drewcraft_pack.py hydrate --profile v1_survival_exploration --output build/hydrated.json
 ```
 
 Then fetch exact provider artifacts and compute hashes:
 
 ```bash
-python tools/drewcraft_pack.py fetch --profile stage2_base_performance --hydration build/hydrated.json --output build/fetched.json
+python tools/drewcraft_pack.py fetch --profile v1_survival_exploration --hydration build/hydrated.json --output build/fetched.json
 ```
 
 `fetch` exits non-zero if even one artifact cannot be acquired exactly.
@@ -33,9 +33,10 @@ python tools/drewcraft_pack.py verify build/pack/server
 
 Candidate registries are not release lockfiles. Exact provider identities and hashes are promoted into future `mods.yaml` / `content-packs.yaml` only after compatibility gates pass.
 
-## Production world
+## Production world (optional/post-V1 strategic indexing)
 
-The resumable production-world driver runs generation (or accepts an already generated world),
+The focused V1 does not require strategic source/herd indexing or a massive pregenerated world. The
+existing resumable production-world driver is retained for later strategic-world work. It runs generation (or accepts an already generated world),
 reads Anvil region files without launching Minecraft, creates strategic source/core and terrain
 indexes, stamps the world, bundles it, and proves a clean restore:
 

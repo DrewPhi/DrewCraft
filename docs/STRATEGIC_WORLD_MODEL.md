@@ -1,5 +1,7 @@
 # DrewCraft Strategic World Model
 
+> **Post-V1 design archive (2026-09-16):** preserved for a later release; not part of the focused V1 shipping profile. See `FURTHER_IDEAS.md`.
+
 This document is the canonical behavioral contract for DrewCraft's persistent hostile populations, hostile source structures, roaming forces, materialization, and wild animal herds.
 
 It complements `docs/SYSTEMS.md` and the implementation gates in `docs/v_1_development_tree.md`. If an implementation choice conflicts with this world model, this document describes the intended player-facing behavior while the V1 requirements/development tree remain authoritative for release order.

@@ -6,7 +6,7 @@
 # compatibility gates decide what is promoted to future mods.yaml/content-packs.yaml.
 
 schema_version: 1
-last_updated: "2026-09-15"
+last_updated: "2026-09-16"
 
 target:
   minecraft: "1.21.1"
@@ -22,6 +22,66 @@ registries:
   create_combat_mobility: "pack/manifest/create_combat_mobility_candidates.yaml"
 
 profiles:
+  v1_survival_core:
+    description: "Focused DrewCraft V1 base: Diffusion terrain, practical vehicles, Create, distant terrain, and conservative performance fixes."
+    foundation:
+      - terrain_diffusion_plus
+      - chunky
+      - distant_horizons
+      - create
+      - create_radars
+      - immersive_vehicles
+      - mts_official_pack
+    performance_baseline:
+      - modernfix
+      - ferritecore
+      - lithium
+      - servercore
+      - chunk_sending
+      - alltheleaks
+      - fastsuite
+      - fastworkbench
+      - fastfurnace
+      - clumps
+      - connectivity
+      - spark
+      - immediatelyfast
+      - entity_culling
+      - moreculling
+    config_policy:
+      - "Use semantics-preserving optimizer defaults first."
+      - "No live world pregeneration; Chunky is an offline/admin tool."
+      - "Embeddium and ScalableLux remain excluded because the selected Aeronautics/Sable stack declares incompatibilities."
+      - "Weather, seasons, custom armies, sieges, herds, Source Cores, and custom radar/weather coupling are post-V1."
+
+  v1_survival_exploration:
+    extends:
+      - v1_survival_core
+    create_expansion_components:
+      - create_big_cannons
+      - create_gunsmithing
+      - create_aeronautics
+      - create_high_seas
+    gameplay_components:
+      - when_dungeons_arise
+    overlays:
+      - pack/overlays/source_structures_first_spike
+    purpose: "Authoritative shipping profile for V1: beautiful large-scale survival, vehicles and planes, Create engineering, and selected WDA dungeon exploration."
+    worldgen_policy:
+      - "The built-in DrewCraft datapack enables only the five approved WDA dungeons; all other WDA structures remain disabled."
+      - "WDA dungeons keep their upstream mobs and loot, but have no V1 strategic-source or Source Core behavior."
+      - "Vanilla structures, villages, caves, mobs, farms, redstone, and survival progression remain available."
+    requirements:
+      - "Fresh-world boot, same-world restart, and multiplayer client join must pass with this exact profile."
+      - "MTS cars and aircraft must coexist with Create Aeronautics controls and entities."
+      - "Create contraptions, trains, artillery, firearms, Aeronautics craft, and High Seas ships require basic survival smoke coverage."
+      - "Launcher and server releases must be generated from this same profile."
+    notes:
+      - "Create: Radars remains as ordinary Create content; DrewCraft weather/terrain radar coupling is disabled for V1."
+      - "CBC Firepower Components remains held out because its tested release hard-crashes with Create: Radars."
+      - "WDA's metadata excludes Minecraft 1.21.1 incorrectly; the narrowly scoped FML dependency override remains a runtime-gated compatibility measure."
+    gate: "This is the only V1 shipping profile. Research profiles below must never replace it implicitly."
+
   stage2_base_performance:
     description: "Foundational DrewCraft stack plus conservative performance baseline and the V1 physical radar frontend."
     foundation:

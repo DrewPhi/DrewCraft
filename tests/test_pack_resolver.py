@@ -154,3 +154,24 @@ def test_playtest_01_excludes_sable_incompatible_optimizers():
     assert "embeddium" not in resolved["ordered_ids"]
     assert "scalablelux" not in resolved["ordered_ids"]
     assert "sable" in resolved["ordered_ids"]
+
+
+def test_v1_shipping_profile_is_focused_and_complete():
+    root = MODULE.parents[1]
+    profiles = pack.load_yaml(root / "pack/manifest/profiles.yaml")
+    catalog = pack.collect_catalog(root, profiles)
+    resolved = pack.resolve(["v1_survival_exploration"], profiles, catalog)
+    ids = set(resolved["ordered_ids"])
+
+    assert {
+        "terrain_diffusion_plus", "distant_horizons", "create", "create_radars",
+        "immersive_vehicles", "mts_official_pack", "create_big_cannons",
+        "create_gunsmithing", "create_aeronautics", "create_high_seas",
+        "when_dungeons_arise", "sable", "ntgl", "cloth_config",
+    } <= ids
+    assert {
+        "project_atmosphere", "simple_clouds", "serene_seasons",
+        "illager_invasion", "towns_and_towers", "embeddium", "scalablelux",
+        "cbc_firepower_components",
+    }.isdisjoint(ids)
+    assert resolved["overlays"] == ["pack/overlays/source_structures_first_spike"]

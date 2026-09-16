@@ -1,5 +1,7 @@
 # DrewCraft V1 Radar Contract
 
+> **Post-V1 design archive (2026-09-16):** Create: Radars remains ordinary V1 content, but DrewCraft weather/terrain radar coupling is deferred. See `FURTHER_IDEAS.md`.
+
 ## V1 scope
 
 DrewCraft V1 uses **Create: Radars 0.4.9.4 for Minecraft 1.21.1 NeoForge** as the physical radar frontend. DrewCraft does not duplicate its dish, bearing, Create kinetic operation, native entity scanning, filters, network/controller system, monitor blocks, models or textures.

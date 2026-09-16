@@ -1,5 +1,7 @@
 # DrewCraft V1 Hostile Strategic Forces
 
+> **Post-V1 design archive (2026-09-16):** this completed design is not part of the focused V1 shipping profile. See `FURTHER_IDEAS.md`.
+
 This document is the BP5 implementation contract for factions, patrols, hordes, raids, armies, and reinforcements. It builds on `STRATEGIC_WORLD_MODEL.md`, `STRATEGIC_MATERIALIZATION.md`, and `SOURCE_CORE_SPEC.md`.
 
 ## Core rule

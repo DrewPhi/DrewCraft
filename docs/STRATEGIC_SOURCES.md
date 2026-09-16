@@ -1,5 +1,7 @@
 # DrewCraft V1 Strategic Sources — BP4 Contract
 
+> **Post-V1 design archive (2026-09-16):** this completed design is not part of the focused V1 shipping profile. See `FURTHER_IDEAS.md`.
+
 **Status:** BP4 implementation contract.  
 **Superseded by:** nothing; this document narrows `SOURCE_CORE_SPEC.md` into the implemented V1 architecture.
 

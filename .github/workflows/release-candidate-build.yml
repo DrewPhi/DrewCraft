@@ -91,7 +91,7 @@ jobs:
       - name: Rebuild exact verified upstream client/server profile
         run: |
           python tools/build_verified_profile.py \
-            --profile source_structures_first_spike \
+            --profile v1_survival_exploration \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
             --output-dir build/verified-pack \
             --evidence-output build/verified-pack-evidence.json
