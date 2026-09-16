@@ -1,0 +1,44 @@
+# Playtest notes — DrewCraft pre-V1 session
+
+## Scope decisions (owner, 2026-09-15/16)
+
+- **Aircraft-affected-by-weather DEMOTED to post-V1.** The
+  aviation-weather bridge (MTS wind-frame coupling, turbulence,
+  visibility effects on flight) is deferred. Flying still works;
+  weather simply does not push planes around yet.
+- **PROPOSED (not yet implemented): disable Project Atmosphere for
+  pre-V1, keep Simple Clouds.** Rationale: PA + full storm simulation
+  is too performance-heavy for the first playtest round. Simple Clouds
+  stays for sky visuals only.
+  - Consequences if adopted: no live storms, no handheld Weather Radar
+    readings, no radar weather overlay, no weather-driven flak modifiers.
+    Flak keeps working on altitude/distance math. The DrewCraft weather
+    adapter is already fail-closed, so code needs no changes — only the
+    pack (remove projectatmosphere + gaboulibs from the release set)
+    and a fresh dev payload + Pages publish.
+  - Decision needed before the session: run WITH PA (heavy but complete)
+    or WITHOUT PA (light, weather items above skipped).
+
+## Still to test (assuming PA-disabled lightweight session)
+
+1. One-click install on Windows/Mac/Linux; login; update; repair.
+2. Join `150.136.96.174:25565`; first-login Standard grant (exactly one).
+3. Drive (car/truck), Create train ride, aircraft takeoff/circuit/landing.
+4. Covenant patrol contact; scripture fragment drops; X+Z combine.
+5. Army behavior; unload + server restart (strength persists, no dupes).
+6. Source Core clear (stays cleared; Flightstone marker; sealed archive drops).
+7. Siege: open gate used first; sealed wall gets bounded breach only.
+8. Herd encounter; persistence; owned animals untouched.
+9. Ordinary spawning/farms/spawners unaffected.
+10. Flak: bursts near predicted track, altitude-sensitive, bounded damage,
+    zero block damage; killing the tower ends it.
+11. Ops: mid-combat restart; backup/restore; failed-update rollback.
+12. Evidence: TPS/MSPT p50/p95/p99, CPU, heap/GC, entity counts,
+    client FPS per OS, clean logs.
+
+## Deferred to post-V1 (do NOT test for pass/fail now)
+
+- Weather pushing aircraft; storm flying; visibility effects on flight.
+- (If PA disabled) handheld Weather Radar readings, radar weather
+  overlay, storm-vs-radar agreement checks.
+- Recipe/economy/fuel balance; spawn-rate/difficulty tuning.
