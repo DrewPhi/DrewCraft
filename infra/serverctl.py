@@ -43,7 +43,11 @@ def _atomic_json(path: pathlib.Path, value: dict) -> None:
 
 
 def ensure_layout(root: pathlib.Path) -> None:
-    for rel in ("releases", "staging", "persistent/world", "backups", "logs", "state"):
+    for rel in (
+        "releases", "staging", "persistent/world",
+        "persistent/terrain-diffusion-models", "persistent/terrain-diffusion-cache",
+        "backups", "logs", "state",
+    ):
         (root / rel).mkdir(parents=True, exist_ok=True)
 
 
@@ -119,7 +123,12 @@ def _current_target(root: pathlib.Path) -> pathlib.Path | None:
 
 
 def _wire_persistent_paths(root: pathlib.Path, release: pathlib.Path) -> None:
-    for name, target in (("world", root / "persistent" / "world"), ("logs", root / "logs")):
+    for name, target in (
+        ("world", root / "persistent" / "world"),
+        ("logs", root / "logs"),
+        ("terrain-diffusion-models", root / "persistent" / "terrain-diffusion-models"),
+        ("terrain-diffusion-cache", root / "persistent" / "terrain-diffusion-cache"),
+    ):
         link = release / name
         if link.exists() or link.is_symlink():
             if link.is_symlink() and link.resolve() == target.resolve():

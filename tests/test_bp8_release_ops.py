@@ -229,6 +229,8 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertTrue((active / "mods" / "shared.jar").is_file())
         self.assertTrue((active / "config" / "server.txt").is_file())
         self.assertFalse((active / "config" / "client.txt").exists())
+        self.assertTrue((active / "terrain-diffusion-models").is_symlink())
+        self.assertTrue((active / "terrain-diffusion-cache").is_symlink())
         self.assertEqual([], release_contract.verify_tree(active, manifest, "server"))
         self.assertEqual(b"world-state", (server_root / "persistent" / "world" / "level.dat").read_bytes())
 

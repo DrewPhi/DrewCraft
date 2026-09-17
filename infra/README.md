@@ -33,6 +33,8 @@ If a paid OCI tenancy is used, create a dedicated DrewCraft compartment and enfo
   releases/<packVersion>/     immutable application releases
   current -> releases/...     atomic application pointer
   persistent/world/           authoritative Minecraft world + DrewCraft SavedData
+  persistent/terrain-diffusion-models/ reusable pinned model downloads
+  persistent/terrain-diffusion-cache/  reusable Terrain Diffusion runtime cache
   backups/                    checksummed persistent-state archives
   logs/                       persistent logs
   state/                      active-release.json + health.json
