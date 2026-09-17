@@ -39,6 +39,8 @@ V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain
 
 ## BP-V1B
 
-Pack `0.1.2-dev-local` is published from `v1_survival_exploration` and live on OCI. The ARM64 host generated a fresh Diffusion spawn, reached `Done`, stopped cleanly, reopened the same persistent world, and reached `Done` again. Post-start manifest verification was exact, the fatal-log scan was clean, both systemd services are enabled, and the public health endpoint reports the matching pack ready. The public website points at manifest SHA-256 `b7706a74bacbae1ede53ba4b6547715fae32bbf09badee4978219f6169146bb6`.
+Pack `0.1.3-dev-local` is published from `v1_survival_exploration` and live on OCI. The ARM64 host generated a fresh Diffusion spawn, reached `Done`, stopped cleanly, reopened the same persistent world, and reached `Done` again. Post-start manifest verification was exact, the fatal-log scan was clean, and the public website points at manifest SHA-256 `c50bf7cc391e998ad69a944b0831f40059841913a79fdd3662d173f7cec0a136`.
+
+An Overworld-only Chunky pass is active with a 40,000,000,000-byte target. The completed 1,024-block benchmark selected an 11,520-block production radius centered at the Diffusion spawn. A dedicated controller persists progress, retries a lost Chunky task after restart, expands once if the result is under 90% of target, and pauses at 45 GB or 25 GB remaining disk. Its dimension-aware boundary applies only to the Overworld; vanilla's shared border remains at its maximum so Nether and End generate normally. Public health intentionally reports `updating` until the pass completes.
 
 Next, launch through DrewCraft 0.1.8 and complete the hands-on gameplay checklist: join, normal survival, vehicle, aircraft, representative Create content, and a WDA dungeon. Then run platform acceptance, a small multiplayer soak, and the retained backup restore drill. Do not require production world pregeneration or post-V1 features.

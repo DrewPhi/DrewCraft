@@ -14,7 +14,7 @@
 | Create + selected compatible Create family | Included |
 | Complete upstream WDA structure set with mobs/loot | Included |
 | Performance and diagnostics | Included |
-| One-manifest server/client release | Exact `0.1.2-dev-local` published and deployed |
+| One-manifest server/client release | Exact `0.1.3-dev-local` published and deployed |
 | Windows/macOS/Linux launchers | 0.1.8 aliases live; clean platform acceptance pending |
 | Weather/clouds/seasons | Post-V1 |
 | Custom radar/weather coupling | Post-V1 |
@@ -52,8 +52,8 @@ No post-V1 feature is part of these gates.
 
 ## Published evidence
 
-- Focused live pack and manifest: `0.1.2-dev-local` published from commit `bea900d` with no Covenant or weather payload paths.
+- Focused live pack and manifest: `0.1.3-dev-local` published from commit `c047739` with no Covenant or weather payload paths.
 - Launcher 0.1.8: Windows, Apple Silicon macOS, and Ubuntu/Linux builds passed and are the website's latest release aliases.
 - Server application layout and native ARM64 DrewCraft build passed.
 - Dedicated-server run `35147504223` passed fresh Diffusion-world boot, clean stop, same-world restart, and fatal-error scanning with the focused profile.
-- OCI production host repeated fresh-world boot and same-world restart with exact post-start manifest verification, active/enabled server and health services, a checksummed pre-update backup, and public `ready` health for `0.1.2-dev-local`.
+- OCI production host repeated fresh-world boot and same-world restart with exact post-start manifest verification, active/enabled server and health services, and checksummed pre-update backups. A guarded 40 GB Overworld-only pregeneration is active; health remains `updating` until it finishes.
