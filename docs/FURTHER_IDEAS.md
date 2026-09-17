@@ -45,11 +45,18 @@ the exact-artifact checks:
 - Golden Airport Pack (GAP), whose published files target 1.16.5/1.12.2 Forge.
 
 These are MTS content archives (JSON definitions, models, textures, sounds, and
-recipes) rather than ordinary feature-heavy gameplay mods, so a port is expected
-to be feasible. They are **not** assumed to be drop-in compatible, however. The
-MTS NeoForge porting checklist includes replacing the Forge descriptor, removing
-legacy loader classes and MTL files, generating item models, flattening item
-textures, and migrating language/recipe paths and formats.
+recipes) rather than ordinary feature-heavy gameplay mods. Community reports and
+developer discussions indicate that 1.21-era vehicle packs often continue to
+work on newer NeoForge releases because most of the pack is data and assets
+rather than executable Java code. This is a strong compatibility expectation,
+not a blanket guarantee: packs can still contain loader metadata or
+version-specific paths. They must therefore be tested as exact client/server
+artifacts in a disposable world before shipping.
+
+If a pack does need conversion, the MTS NeoForge porting checklist includes
+replacing the Forge descriptor, removing legacy loader classes and MTL files,
+generating item models, flattening item textures, and migrating language/recipe
+paths and formats.
 
 The preferred path is still a native 1.21.1 NeoForge release from the authors.
 If none exists, porting is a separate compatibility project requiring
