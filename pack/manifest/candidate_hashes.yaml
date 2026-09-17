@@ -111,6 +111,11 @@ artifacts:
     filename: xaerominimap-neoforge-1.21.1-26.1.0.jar
     sha256: 6bd6cbab01ff57b9ba2fbfee18f9605593101f15d80e8d19dc59c385d2535ccc
     size: 2138254
+  xaero_lib:
+    provider: xaero-maven
+    filename: xaerolib-neoforge-1.21.1-1.1.0.jar
+    sha256: 822db84929c7f1928ce1b8d5e00a909b94da925960850802cf284074f1cdc3fe
+    size: 541451
   embeddium:
     provider: curseforge
     project_id: 908741
@@ -330,10 +335,10 @@ artifacts:
   ntgl:
     provider: curseforge
     project_id: 998474
-    file_id: 8585353
-    filename: ntgl-1.21.1-3.2.0.jar
-    sha256: 38c3a93426c44195b7cdb0773b2d4554496bcc57f994f19779714e03b0bf0122
-    size: 3965533
+    file_id: 8501185
+    filename: ntgl-1.21.1-3.1.8.jar
+    sha256: f395e740fe8186a58c9c03d0382609003e5ec995c3e598dffc7ff3aa9bb48f88
+    size: 3966979
   playeranimator:
     provider: curseforge
     project_id: 658587

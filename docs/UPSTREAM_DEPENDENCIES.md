@@ -104,7 +104,7 @@ This lets DrewCraft test newer or experimental builds without pretending they ar
 
 These versions are **candidates**, not the final lock. Artifact SHA-256 values are intentionally still unset until DrewCraft's resolver downloads and verifies the actual files.
 
-Project Atmosphere's selected candidate declares Serene Seasons and Gabou's Libs as required content, while Simple Clouds is optional upstream. DrewCraft nevertheless intends to include Simple Clouds as part of the V1 weather/rendering stack, subject to compatibility testing.
+Project Atmosphere, Simple Clouds, Serene Seasons, and their libraries remain recorded here as historical/post-V1 candidates only. They are not selected by `v1_survival_exploration` and must not enter a V1 client or server layout.
 
 Serene Seasons requires GlitchCore, so GlitchCore is explicitly tracked rather than left as an invisible transitive dependency.
 

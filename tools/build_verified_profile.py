@@ -81,6 +81,20 @@ def verify_source_build(cid: str, src: Path, evidence: dict, spec: dict) -> dict
     if expected_filename and src.name != expected_filename:
         raise pack.PackError(f"{cid}: source-build filename mismatch expected={expected_filename} got={src.name}")
 
+    # Some upstream source builds are ordinary jars without DrewCraft's
+    # embedded model-assets manifest (for example the Create Radar upstream
+    # development build). Those artifacts are locked by their raw SHA-256.
+    expected_artifact_hash = evidence.get("artifact_sha256")
+    if expected_artifact_hash:
+        if pack.sha256(src).lower() != str(expected_artifact_hash).lower():
+            raise pack.PackError(
+                f"{cid}: source artifact hash mismatch expected={expected_artifact_hash} got={pack.sha256(src)}"
+            )
+        return {
+            "raw_sha256": pack.sha256(src),
+            "verification_mode": "source_ref_plus_raw_sha256",
+        }
+
     expected_manifest_hash = evidence.get("model_assets_manifest_sha256")
     if not isinstance(expected_manifest_hash, str) or len(expected_manifest_hash) != 64:
         raise pack.PackError(f"{cid}: missing model-assets manifest hash evidence")

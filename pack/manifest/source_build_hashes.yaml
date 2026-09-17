@@ -6,6 +6,12 @@ evidence:
   head_sha: 53594260228692cab601b5e47d411f7cdb32751f
   generated_at: '2026-09-12'
 artifacts:
+  create_radars:
+    source_repository: "Arsenalists-of-Create/Create-Radar"
+    source_ref: "e637e83f7af85de450e4149679075ef055077371"
+    filename: "create_radar-5.0-EA-2.0.2-1.21.1.jar"
+    artifact_sha256: "29edeee8d0141b86725cbaa148be8419d08ceb6530f77fe89c95f7c1bd4f33fa"
+
   terrain_diffusion_plus:
     provider: source_build
     source_repository: derekvawdrey/terrain-diffusion-plus

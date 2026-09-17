@@ -156,6 +156,31 @@ upstreams:
     notes:
       - "Client-side navigation aid; no server installation is required for the V1 minimap."
 
+  xaero_lib:
+    display_name: "XaeroLib"
+    kind: library
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: xaero-maven
+      url: "https://chocolateminecraft.com/maven/xaero/lib/xaerolib-neoforge-1.21.1/1.1.0/xaerolib-neoforge-1.21.1-1.1.0.jar"
+      candidate_ref: "1.1.0"
+    artifact:
+      provider: xaero-maven
+      candidate_version: "1.1.0"
+      filename: "xaerolib-neoforge-1.21.1-1.1.0.jar"
+      download_url: "https://chocolateminecraft.com/maven/xaero/lib/xaerolib-neoforge-1.21.1/1.1.0/xaerolib-neoforge-1.21.1-1.1.0.jar"
+      release_status: release
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "All Rights Reserved"
+    redistribution: "Acquire through the official Xaero Maven path; common library installed on client and server."
+    notes:
+      - "The minimap remains client-facing; this common library supplies the optional server-side Xaero protocol and removes the client reset warning."
+
   create:
     display_name: "Create"
     kind: mod

@@ -23,6 +23,7 @@
 - Create Aeronautics
 - Create High Seas
 - Create: Radars as ordinary Create content
+- Create: Gunsmithing firearm stack, including Sable, NTGL, GeckoLib, Player Animator, and Ritchie's Projectile Library
 - required runtime libraries resolved transitively by the manifest
 
 ### Performance
@@ -35,8 +36,9 @@ Embeddium and ScalableLux are not selected because the current Aeronautics/Sable
 
 - CBC Firepower Components: tested release hard-crashes with the selected Create: Radars release.
 - Project Atmosphere, Simple Clouds, Serene Seasons, and their libraries: post-V1.
+- DrewCraft-specific radar-height changes, weather returns, weather overlays, terrain masking, cockpit/airborne radar integration, and radar/weather coupling: post-V1. Native Create: Radars functionality remains enabled.
 - Illager Invasion/Covenant content and tactical horde/herd candidates: post-V1 research.
-- Additional terrain, weather, technology, vehicle, dungeon, and combat ecosystems: excluded unless a measured gap justifies them.
+- Additional terrain, weather, technology, vehicle, dungeon, and combat ecosystems: excluded unless a measured gap justifies them. The selected NTGL/Gunsmithing firearm stack is the V1 exception and is explicitly in scope above.
 - UNU Parts/Vehicles, WarBorn Military Pack, and Golden Airport Pack (GAP): post-V1 compatibility/porting goals. They are expected to be port candidates because MTS packs are largely content archives, but their published Forge jars are not yet validated as drop-in 1.21.1 NeoForge artifacts.
 
 ## Dependency policy

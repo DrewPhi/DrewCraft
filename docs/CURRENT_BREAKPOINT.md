@@ -6,7 +6,7 @@
 
 ## Decision
 
-V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain Diffusion, Distant Horizons, MTS vehicles/planes, the compatible Create stack, and the complete upstream WDA dungeon set. Weather and the custom strategic/endgame systems are post-V1.
+V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain Diffusion, Distant Horizons, MTS vehicles/planes, the compatible Create stack (including Create: Radars and the NTGL/Gunsmithing firearm stack), and the complete upstream WDA dungeon set. Weather and DrewCraft-specific radar/strategic/endgame systems are post-V1.
 
 ## BP-V1A implementation
 
@@ -14,7 +14,7 @@ V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain
 - Kept the selected compatible Create family and excluded the known-incompatible CBC Firepower Components release.
 - Included WDA through the existing narrow dependency override and restored its complete upstream structure set.
 - Removed Atmosphere, clouds, seasons, Covenant, armies, sources, sieges, and herds from the shipping dependency chain.
-- Defaulted DrewCraft's deferred weather/radar/strategic feature flags off.
+- Defaulted DrewCraft's deferred weather/radar/strategic feature flags off while retaining ordinary upstream Create: Radars behavior.
 - Repointed dev release, RC, server smoke, full-profile verification, validation, and hash workflows to the shipping profile.
 - Updated website messaging while retaining stable Windows/Mac/Linux launcher aliases.
 - Retired the Covenant resource pack from V1 release injection; launcher 0.1.8 removes only that formerly managed pack while preserving user resource packs.

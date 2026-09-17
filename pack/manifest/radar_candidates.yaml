@@ -11,12 +11,10 @@ create_radars:
   required_for_v1: true
   ownership_class: UPSTREAM_BINARY
   side: common
-  provider: modrinth
-  project_id: "BLu2Yqfq"
-  version_id: "AntNFNAx"
-  candidate_version: "0.4.9.4-1.21.1"
-  filename: "create_radar-0.4.9.4-1.21.1.jar"
-  release_status: release
+  provider: source_build
+  candidate_version: "5.0-EA-2.0.2-1.21.1-dev"
+  filename: "create_radar-5.0-EA-2.0.2-1.21.1.jar"
+  release_status: experimental
   sha256: null
   required_dependencies:
     - create
@@ -29,11 +27,12 @@ create_radars:
   redistribution: "Use the official unmodified provider artifact. Do not copy protected source/assets into DrewCraft."
   integration_policy: "Optional runtime compatibility through isolated reflection and @Pseudo mixins; no DrewCraft fork."
   notes:
-    - "Official 0.4.9.4 release is the V1 physical radar frontend."
+    - "The official upstream 1.21.1 development branch is built at a pinned commit because the published 0.4.9.4 artifact contains empty blockstate/model resources."
+    - "This is an upstream build, not DrewCraft radar code; promote it only after the combined client/server smoke test passes."
     - "Its 1.21.1 NeoForge metadata requires Create Big Cannons >=5.11.2; this dependency is resolved explicitly rather than discovered only at server boot."
     - "Create: Radars owns dish construction, Create kinetic operation, native tracks, filters, networks and monitors."
-    - "DrewCraft contributes cached Project Atmosphere weather returns and Terrain Diffusion terrain masking only."
-    - "Project Atmosphere's existing handheld Weather Radar remains the V1 pilot/explorer weather device."
+    - "V1 uses this only as the unmodified upstream Create radar: native dishes, tracks, filters, networks, and monitors are in scope."
+    - "DrewCraft radar-height changes, weather returns, weather overlays, terrain masking, cockpit/airborne integration, and all custom radar coupling are explicitly disabled for V1 and deferred post-V1."
     - "MTS cockpit/airborne radar integration is deferred to V1.1+."
 
 create_big_cannons:

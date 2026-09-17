@@ -14,7 +14,7 @@ The authoritative shipping profile is `v1_survival_exploration`:
 - one-click Windows, Apple Silicon macOS, and Ubuntu/Linux launchers;
 - one immutable release manifest shared by clients and the server.
 
-Weather, clouds, seasons, custom armies, sources, sieges, herds, radar/weather coupling, and a custom endgame are intentionally deferred until after V1. Existing implementations are preserved but disabled by default. See [Further Ideas](docs/FURTHER_IDEAS.md).
+Native Create: Radars functionality is included in V1. DrewCraft-specific radar-height changes, weather returns, weather overlays, terrain masking, cockpit radar integration, weather/clouds, seasons, custom armies, sources, sieges, herds, and a custom endgame are intentionally deferred until after V1. Existing implementations are preserved but disabled by default. See [Further Ideas](docs/FURTHER_IDEAS.md).
 
 ## Platform
 

@@ -31,7 +31,7 @@ It currently defines:
 - C2ME as an isolated world-build experiment;
 - Structure Essentials as optional world-build/source-debug tooling.
 
-The cult/endgame and weather/strategic stacks are post-V1. Use explicit research profiles and never silently change the frozen shipping profile.
+The cult/endgame and weather/strategic stacks are post-V1. Native Create: Radars and the selected NTGL/Gunsmithing firearm stack are part of V1; DrewCraft-specific radar-height/weather extensions remain deferred. Use explicit research profiles and never silently change the frozen shipping profile.
 
 Profiles are development inputs, **not release locks**. Production releases contain exact promoted dependencies and hashes.
 

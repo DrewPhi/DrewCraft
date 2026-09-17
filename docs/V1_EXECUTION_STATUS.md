@@ -12,12 +12,14 @@
 | Normal multiplayer survival | Included |
 | MTS vehicles and aircraft | Included |
 | Create + selected compatible Create family | Included |
+| Native Create: Radars | Included; upstream behavior only |
+| Create: Gunsmithing firearm stack (NTGL/Sable and required libraries) | Included; requires dedicated crash/compatibility validation |
 | Complete upstream WDA structure set with mobs/loot | Included |
 | Performance and diagnostics | Included |
 | One-manifest server/client release | Exact `0.1.3-dev-local` published and deployed |
 | Windows/macOS/Linux launchers | 0.1.8 aliases live; clean platform acceptance pending |
 | Weather/clouds/seasons | Post-V1 |
-| Custom radar/weather coupling | Post-V1 |
+| DrewCraft radar-height/weather/terrain coupling and overlays | Post-V1; disabled |
 | Sources/armies/sieges/herds/Covenant endgame | Post-V1; code preserved and disabled by default |
 
 ## Reusable completed work

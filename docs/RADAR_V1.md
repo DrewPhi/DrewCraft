@@ -1,6 +1,6 @@
 # DrewCraft V1 Radar Contract
 
-> **Post-V1 design archive (2026-09-16):** Create: Radars remains ordinary V1 content, but DrewCraft weather/terrain radar coupling is deferred. See `FURTHER_IDEAS.md`.
+> **Post-V1 design archive (2026-09-16):** Native Create: Radars is V1 content. Everything described below beyond the upstream radar itself—weather products, radar-height behavior, terrain masking, and overlays—is deferred and disabled in V1. See `FURTHER_IDEAS.md`.
 
 ## V1 scope
 
@@ -8,13 +8,11 @@ DrewCraft V1 uses **Create: Radars 0.4.9.4 for Minecraft 1.21.1 NeoForge** as th
 
 The official unmodified Create: Radars artifact remains an upstream dependency. DrewCraft integrates externally through an isolated fail-closed compatibility bridge and optional `@Pseudo` mixins; no upstream source or art is copied into this repository.
 
-Create: Radars declares **Create Big Cannons >=5.11.2** as a required runtime dependency. DrewCraft pins the current stable **Create Big Cannons 5.11.7** for 1.21.1 NeoForge, which in turn requires **Ritchie's Projectile Library 2.1.2**. These are treated as ordinary pinned upstream dependencies; their presence does not expand 8B into cannon progression/balance work.
+Create: Radars declares **Create Big Cannons >=5.11.2** as a required runtime dependency. DrewCraft pins the current stable **Create Big Cannons 5.11.7** for 1.21.1 NeoForge, which in turn requires **Ritchie's Projectile Library 2.1.2**. These are treated as ordinary pinned upstream dependencies.
 
-### Ground radar behavior
+### Deferred DrewCraft radar extensions (post-V1)
 
-Create: Radars remains authoritative for whether the ground radar is assembled/running and for the hardware range returned by its dish construction. DrewCraft uses that exact range for its weather product.
-
-DrewCraft adds:
+The following concepts are retained as design notes only. They must remain disabled and absent from the V1 runtime path:
 
 - a cached 9x9 Project Atmosphere precipitation/storm product centered on the radar;
 - Terrain Diffusion realized-world terrain masking along each weather beam;
@@ -27,27 +25,27 @@ Weather sampling is server-authoritative and cached for 20 ticks. Every monitor 
 
 Terrain samples that are unavailable remain `UNKNOWN`; a positive realized-terrain obstruction masks the weather return. This preserves the V1 rule that a larger dish increases potential hardware range while a higher/better-sited antenna determines how much of that range is usable through terrain. The final representative pre-generated-world acceptance run is the authority for the practical low-site/high-site coverage behavior.
 
-### Native contacts
+### Native contacts (V1)
 
 Create: Radars continues to render and filter its own players/mobs/animals/contraptions/other supported contacts. DrewCraft's weather is a background layer; it does not replace or reimplement native contact scanning.
 
-### Portable weather radar
+### Portable weather radar (post-V1)
 
 Project Atmosphere already provides the V1 handheld **Weather Radar** item and screen. DrewCraft does not add a second handheld radar.
 
-### Aviation boundary
+### Aviation boundary (post-V1)
 
 MTS cockpit radar and a dedicated airborne traffic/weather instrument are **post-V1 (V1.1+)**. V1 pilots use Project Atmosphere's handheld weather radar and communicate with player-operated ATC/ground radar stations for traffic/contact information.
 
 The Create: Radars compatibility bridge deliberately ignores its `nonspinning` aircraft/ship radar type in V1 so this boundary is explicit.
 
-## Failure behavior
+## Failure behavior for the deferred bridge
 
 If Create: Radars is absent or its implementation shape changes, the optional mixins do not make DrewCraft fail to compile. If runtime reflection cannot bind, the weather extension fails closed and logs the compatibility failure once. Create: Radars' normal behavior is not replaced.
 
 If Project Atmosphere or Terrain Diffusion data is unavailable, no fabricated meteorological/terrain values are generated. Native Create: Radars contacts continue independently.
 
-## Final in-game acceptance checklist
+## Post-V1 acceptance checklist
 
 The final V1 full-stack acceptance run must verify, in one representative world/build:
 

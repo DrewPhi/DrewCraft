@@ -2,6 +2,32 @@ schema_version: 1
 last_researched: "2026-09-12"
 
 source_builds:
+  create_radars:
+    display_name: "Create: Radars upstream development build"
+    source:
+      provider: github
+      repository: "Arsenalists-of-Create/Create-Radar"
+      ref: "e637e83f7af85de450e4149679075ef055077371"
+    target:
+      minecraft: "1.21.1"
+      loader: neoforge
+      java: 21
+    upstream_version: "5.0-EA-2.0.2-1.21.1"
+    variant: neoforge-1.21.1-DEV
+    rationale: "The published 0.4.9.4 artifact contains empty blockstate/model resources; this pinned upstream development build contains the corresponding resource fixes."
+    build:
+      working_directory: "."
+      command: "bash gradlew build --no-daemon"
+      output_directory: "build/libs"
+      output_rule: "Exactly one production jar after excluding *-sources.jar and *-dev.jar."
+      gradle_heap: "4G"
+    licensing:
+      source: "Arsenalists-of-Create Source-Available License"
+      note: "Built from the official upstream commit; preserve upstream license and attribution."
+    lock_requirements:
+      - "Build from the exact source ref with Java 21."
+      - "Verify no zero-byte JSON resources and record the raw jar SHA-256."
+
   terrain_diffusion_plus:
     display_name: "Terrain Diffusion Plus"
     source:
