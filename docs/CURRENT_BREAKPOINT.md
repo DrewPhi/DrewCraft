@@ -35,7 +35,7 @@ V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain
 - The published evidence names `v1_survival_core` and `v1_survival_exploration`; the release manifest contains no Covenant or weather paths.
 - Launcher **0.1.8** was published as GitHub's latest release with the exact Windows EXE, Apple Silicon DMG, and Linux DEB filenames used by the website.
 - The existing website buttons therefore download 0.1.8, and existing launchers converge through the corrected `live.json`.
-- The next focused pack is versioned `0.1.1-dev-local`, requires launcher 0.1.8, and carries the OCI server address plus health endpoint so DrewCraft launches directly into the matching server.
+- The focused pack is versioned `0.1.2-dev-local`, requires launcher 0.1.8, and carries the OCI server address plus health endpoint so DrewCraft launches directly into the matching server. This revision canonicalizes NeoForge's full `fml.toml` so startup does not create managed-file hash drift.
 
 ## BP-V1B
 
