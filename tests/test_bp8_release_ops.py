@@ -46,6 +46,9 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertEqual(10240, radius)
         with self.assertRaises(ValueError):
             pregen.estimate_radius(1024, 5_000_000, 5_000_000, 40_000_000_000)
+        self.assertEqual(39.29, pregen.Controller.progress_percent(
+            "[Chunky] Task running. Processed: 6538 chunks (39.29%), ETA: 0:40:26"))
+        self.assertIsNone(pregen.Controller.progress_percent("No tasks are currently running."))
 
     def build_release(self, version="0.8.0-test", generation_pack_version="worldgen-v1"):
         publish = self.tmp / "publish"

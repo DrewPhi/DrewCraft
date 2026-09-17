@@ -7,6 +7,7 @@ import json
 import math
 import os
 import pathlib
+import re
 import shutil
 import tempfile
 import time
@@ -96,7 +97,7 @@ class Controller:
             "radiusBlocks": radius,
         })
 
-    def configure_and_start(self, radius: int) -> None:
+    def configure_and_start(self, radius: int, *, resume: bool = False) -> None:
         commands = (
             ("chunky", "world", "minecraft:overworld"),
             ("chunky", "shape", "circle"),
@@ -108,11 +109,16 @@ class Controller:
         for command in commands:
             response = self.rcon(*command)
             print(response, flush=True)
-        self.save(activeRadius=radius)
+        self.save(activeRadius=radius, **({} if resume else {"resumeAttempts": 0}))
 
     @staticmethod
     def running(progress: str) -> bool:
         return "Task running" in progress
+
+    @staticmethod
+    def progress_percent(progress: str) -> float | None:
+        match = re.search(r"\((\d+(?:\.\d+)?)%\)", progress)
+        return float(match.group(1)) if match else None
 
     def stop_for_safety(self, reason: str) -> int:
         try:
@@ -142,12 +148,25 @@ class Controller:
                 time.sleep(self.args.poll_seconds)
                 continue
             print(progress, flush=True)
+            previous_progress = self.state.get("lastProgress", "")
             self.save(lastProgress=progress)
             if self.running(progress):
                 time.sleep(self.args.poll_seconds)
                 continue
 
             phase = self.state["phase"]
+            previous_percent = self.progress_percent(previous_progress)
+            if (phase in {"benchmark", "generate"}
+                    and self.running(previous_progress)
+                    and previous_percent is not None and previous_percent < 95.0
+                    and self.state.get("resumeAttempts", 0) == 0):
+                # Chunky 1.4.23 can report no resumable tasks after a clean server
+                # restart even with continueOnRestart enabled. Re-submit the exact
+                # same selection once; already generated chunks are skipped.
+                self.save(resumeAttempts=1, resumeReason="Chunky task absent before 95%")
+                self.configure_and_start(self.state["activeRadius"], resume=True)
+                time.sleep(self.args.poll_seconds)
+                continue
             if phase == "benchmark":
                 radius = min(
                     self.args.maximum_radius,
