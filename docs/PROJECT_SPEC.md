@@ -23,7 +23,7 @@ DrewCraft V1 is a seamless multiplayer survival pack whose fun comes from explor
 | Industry, logistics, and trains | Create |
 | Practical ground vehicles and aircraft | Immersive Vehicles/MTS |
 | Engineered craft, ships, artillery, and firearms | Selected Create add-ons |
-| Dungeon exploration | Five approved When Dungeons Arise structures |
+| Dungeon exploration | Complete upstream When Dungeons Arise structure set |
 | Ordinary survival ecology | Minecraft and selected upstream defaults |
 | Release/update/deployment integration | DrewCraft tooling and integration mod |
 

@@ -276,6 +276,10 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         (old_mc / "resourcepacks" / "mine.zip").write_bytes(b"resourcepack")
         (old_mc / "terrain-diffusion-models").mkdir(parents=True)
         (old_mc / "terrain-diffusion-models" / "base_model.onnx").write_bytes(b"cached model")
+        (old_mc / "mods").mkdir(exist_ok=True)
+        (old_mc / "mods" / "removed-from-manifest.jar").write_bytes(b"obsolete mod")
+        (old_mc / "config").mkdir(exist_ok=True)
+        (old_mc / "config" / "removed-from-manifest.toml").write_text("obsolete=true\n", encoding="utf-8")
         (old_mc / "options.txt").write_text("fov:0.5\n", encoding="utf-8")
 
         _, _, live_b = self.build_release("0.8.0-b")
@@ -289,6 +293,8 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
             (new_mc / "terrain-diffusion-models" / "base_model.onnx").read_bytes(),
         )
         self.assertEqual("fov:0.5\n", (new_mc / "options.txt").read_text("utf-8"))
+        self.assertFalse((new_mc / "mods" / "removed-from-manifest.jar").exists())
+        self.assertFalse((new_mc / "config" / "removed-from-manifest.toml").exists())
         self.assertEqual([], launcher.verify_local(app))
 
     def test_launcher_minimum_version_is_enforced(self):

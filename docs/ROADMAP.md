@@ -4,7 +4,7 @@
 
 1. Converge every build/release path on `v1_survival_exploration`.
 2. Prove exact dependency resolution and a fresh/restarted dedicated server.
-3. Test survival, vehicles, aircraft, Create, and an approved WDA dungeon.
+3. Test survival, vehicles, aircraft, Create, and a WDA dungeon.
 4. Deploy and measure the multiplayer server; test backup and restore.
 5. Pass Windows/macOS/Linux clean launcher and update acceptance.
 6. Freeze, soak, promote, and tag `1.0.0`.

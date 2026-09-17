@@ -19,7 +19,7 @@ Archived strategic/weather/endgame documents are design references for post-V1 o
 
 The one shipping profile is `v1_survival_exploration`.
 
-V1 includes Terrain Diffusion Plus, Distant Horizons, normal multiplayer survival, MTS vehicles and aircraft, Create and the compatible selected Create family, five approved When Dungeons Arise dungeons, conservative performance mods, one-manifest client/server releases, and one-click Windows/macOS/Linux launchers.
+V1 includes Terrain Diffusion Plus, Distant Horizons, normal multiplayer survival, MTS vehicles and aircraft, Create and the compatible selected Create family, the complete upstream When Dungeons Arise structure set, conservative performance mods, one-manifest client/server releases, and one-click Windows/macOS/Linux launchers.
 
 V1 excludes weather/clouds/seasons, custom radar/weather coupling, strategic sources/armies/sieges/herds, Covenant invasion/endgame, and broad balance redesign. Preserve existing work, but keep it disabled by default and out of the shipping profile.
 

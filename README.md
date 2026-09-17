@@ -9,7 +9,7 @@ The authoritative shipping profile is `v1_survival_exploration`:
 - Terrain Diffusion Plus, Distant Horizons, and normal survival Minecraft;
 - Immersive Vehicles/MTS with its official vehicle and aircraft pack;
 - Create, Create Big Cannons, Create: Gunsmithing, Create Aeronautics, Create High Seas, and Create: Radars;
-- When Dungeons Arise with only five approved dungeons enabled, retaining their normal mobs and loot;
+- When Dungeons Arise with its complete upstream default dungeon set, mobs, loot, spacing, and separation;
 - a conservative performance/diagnostic stack;
 - one-click Windows, Apple Silicon macOS, and Ubuntu/Linux launchers;
 - one immutable release manifest shared by clients and the server.

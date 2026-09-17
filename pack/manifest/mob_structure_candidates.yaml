@@ -140,10 +140,9 @@ candidate_sets:
         notes:
           - "Exact Modrinth version and SHA-256 verified 2026-09-13."
           - "The jar declares Minecraft [1.21,1.21.1), so the spike uses FML's dependency override; a real 1.21.1 runtime boot remains mandatory."
-          - "Enable only the approved generation allow-list and disable every other WDA structure."
-          - "Each enabled structure keeps its intended dungeon mobs and loot while also serving as a DrewCraft strategic source."
-          - "Increase spacing aggressively."
-          - "Terrain Diffusion World Scale 2 placement and density are hard gates."
+          - "Focused V1 uses the complete upstream default WDA structure set, mobs, loot, spacing and separation."
+          - "Strategic source mappings are archived post-V1 metadata and do not activate Source Cores or strategic behavior."
+          - "Terrain Diffusion placement and density remain hands-on playtest observations, not a launch-time override."
     alternatives_not_additive_by_default:
       - id: ctov
         provider: curseforge

@@ -12,7 +12,7 @@
 | Normal multiplayer survival | Included |
 | MTS vehicles and aircraft | Included |
 | Create + selected compatible Create family | Included |
-| Five approved WDA dungeons with mobs/loot | Included |
+| Complete upstream WDA structure set with mobs/loot | Included |
 | Performance and diagnostics | Included |
 | One-manifest server/client release | Implemented; revised profile evidence pending |
 | Windows/macOS/Linux launchers | Implemented; revised live-pack publication and clean acceptance pending |
@@ -28,7 +28,7 @@
 - Staged server update, backup, activation, health, and application rollback.
 - Managed Java/Prism launchers for Windows, Apple Silicon macOS, and Ubuntu/Linux.
 - Automatic managed-instance launch, repair, self-update, streaming progress, rate, ETA, and resumable downloads.
-- WDA five-structure allow-list and runtime compatibility override.
+- WDA runtime compatibility override; upstream structure generation is otherwise unmodified.
 - Strategic/weather systems retained for future releases behind feature flags.
 - Launcher 0.1.8 retires the old Covenant resource pack from V1 and removes only that DrewCraft-managed directory from existing installs.
 

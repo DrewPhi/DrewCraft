@@ -1,4 +1,4 @@
-name: Source structure smoke test
+name: WDA default-structure smoke test
 
 on:
   workflow_dispatch:
@@ -48,9 +48,8 @@ jobs:
           registry = yaml.safe_load(pathlib.Path('pack/manifest/mob_structure_candidates.yaml').read_text('utf-8'))
           selected = {}
           for item in registry['candidate_sets']['hostile_source_structures']['recommended_first_spike']:
-              if item.get('id') in {'towns_and_towers', 'when_dungeons_arise'}:
+              if item.get('id') == 'when_dungeons_arise':
                   selected[item['id']] = item
-          selected['cristel_lib'] = registry['libraries']['cristel_lib']
 
           mods = pathlib.Path('/tmp/drewcraft-structure-smoke/mods')
           mods.mkdir(parents=True, exist_ok=True)
@@ -132,7 +131,7 @@ jobs:
           fi
           wait "$PID"
           grep -q "Dependency overrides for mod 'dungeons_arise'" server.log
-          grep -q 'mod/drewcraft:data/drewcraft/datapacks/source_worldgen' server.log
+          ! grep -q 'mod/drewcraft:data/drewcraft/datapacks/source_worldgen' server.log
           ! grep -Eqi 'Mod loading has failed|Failed to start the minecraft server|Missing or unsupported mandatory dependencies|Failed to load registries' server.log
 
       - name: Upload runtime evidence

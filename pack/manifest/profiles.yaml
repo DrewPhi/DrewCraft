@@ -66,10 +66,10 @@ profiles:
       - when_dungeons_arise
     overlays:
       - pack/overlays/source_structures_first_spike
-    purpose: "Authoritative shipping profile for V1: beautiful large-scale survival, vehicles and planes, Create engineering, and selected WDA dungeon exploration."
+    purpose: "Authoritative shipping profile for V1: beautiful large-scale survival, vehicles and planes, Create engineering, and the complete upstream WDA dungeon set."
     worldgen_policy:
-      - "The built-in DrewCraft datapack enables only the five approved WDA dungeons; all other WDA structures remain disabled."
-      - "WDA dungeons keep their upstream mobs and loot, but have no V1 strategic-source or Source Core behavior."
+      - "Use When Dungeons Arise's complete upstream default structure set; DrewCraft must not replace its major or minor structure sets."
+      - "WDA dungeons keep their upstream generation, mobs, and loot, but have no V1 strategic-source or Source Core behavior."
       - "Vanilla structures, villages, caves, mobs, farms, redstone, and survival progression remain available."
     requirements:
       - "Fresh-world boot, same-world restart, and multiplayer client join must pass with this exact profile."

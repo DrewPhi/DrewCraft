@@ -6,13 +6,13 @@
 
 ## Decision
 
-V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain Diffusion, Distant Horizons, MTS vehicles/planes, the compatible Create stack, and selected WDA dungeons. Weather and the custom strategic/endgame systems are post-V1.
+V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain Diffusion, Distant Horizons, MTS vehicles/planes, the compatible Create stack, and the complete upstream WDA dungeon set. Weather and the custom strategic/endgame systems are post-V1.
 
 ## BP-V1A implementation
 
 - Added authoritative `v1_survival_exploration` and lean `v1_survival_core` profiles.
 - Kept the selected compatible Create family and excluded the known-incompatible CBC Firepower Components release.
-- Included WDA through the existing narrow dependency override and five-structure allow-list.
+- Included WDA through the existing narrow dependency override and restored its complete upstream structure set.
 - Removed Atmosphere, clouds, seasons, Covenant, armies, sources, sieges, and herds from the shipping dependency chain.
 - Defaulted DrewCraft's deferred weather/radar/strategic feature flags off.
 - Repointed dev release, RC, server smoke, full-profile verification, validation, and hash workflows to the shipping profile.
@@ -35,7 +35,8 @@ V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain
 - The published evidence names `v1_survival_core` and `v1_survival_exploration`; the release manifest contains no Covenant or weather paths.
 - Launcher **0.1.8** was published as GitHub's latest release with the exact Windows EXE, Apple Silicon DMG, and Linux DEB filenames used by the website.
 - The existing website buttons therefore download 0.1.8, and existing launchers converge through the corrected `live.json`.
+- The next focused pack is versioned `0.1.1-dev-local`, requires launcher 0.1.8, and carries the OCI server address plus health endpoint so DrewCraft launches directly into the matching server.
 
 ## BP-V1B
 
-Dedicated-server run `35147504223` passed the exact-profile rebuild, NeoForge install, fresh Diffusion-world boot, clean stop, same-world restart, and fatal-error scan. The remaining BP-V1B work is the hands-on gameplay checklist: survival, vehicle, aircraft, Create, and one approved WDA dungeon. Do not require production world pregeneration or post-V1 features.
+Dedicated-server run `35147504223` passed the previous focused-profile build. Because the WDA generation policy has now changed, repeat the server build/boot/restart gate, deploy that exact build to OCI, then complete the hands-on gameplay checklist: survival, vehicle, aircraft, Create, and a WDA dungeon. Do not require production world pregeneration or post-V1 features.

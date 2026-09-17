@@ -39,7 +39,7 @@ This checklist tests the focused `v1_survival_exploration` build. Use a disposab
 
 ## Dungeon exploration
 
-- [ ] Locate or encounter one of the five enabled WDA dungeons.
+- [ ] Locate or encounter a WDA dungeon from the complete upstream structure set.
 - [ ] Confirm the structure generates cleanly and contains expected mobs and loot.
 - [ ] Confirm WDA structures do not create a Source Core or launch strategic forces.
 

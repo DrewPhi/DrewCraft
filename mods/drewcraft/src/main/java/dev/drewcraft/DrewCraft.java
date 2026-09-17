@@ -5,7 +5,6 @@ import dev.drewcraft.command.DrewCraftCommands;
 import dev.drewcraft.config.DrewCraftConfig;
 import dev.drewcraft.flak.FlakRuntime;
 import dev.drewcraft.content.DrewCraftBlocks;
-import dev.drewcraft.content.DrewCraftBuiltinPacks;
 import dev.drewcraft.net.DrewCraftProtocol;
 import dev.drewcraft.persistence.DrewCraftSavedData;
 import dev.drewcraft.standard.StandardGrantRuntime;
@@ -32,7 +31,6 @@ public final class DrewCraft {
     public DrewCraft(IEventBus modEventBus, ModContainer modContainer) {
         modVersion = modContainer.getModInfo().getVersion().toString();
         DrewCraftBlocks.register(modEventBus);
-        modEventBus.addListener(DrewCraftBuiltinPacks::register);
         modContainer.registerConfig(ModConfig.Type.SERVER, DrewCraftConfig.SPEC);
         NeoForge.EVENT_BUS.addListener(DrewCraftCommands::register);
         NeoForge.EVENT_BUS.addListener(StandardGrantRuntime::onPlayerLoggedIn);

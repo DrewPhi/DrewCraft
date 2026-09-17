@@ -9,7 +9,7 @@
 - Terrain Diffusion Plus
 - Chunky
 - Distant Horizons
-- When Dungeons Arise, restricted to five approved dungeon structures
+- When Dungeons Arise with its complete upstream default structure set
 - Vanilla survival systems and structures
 
 ### Vehicles and Create

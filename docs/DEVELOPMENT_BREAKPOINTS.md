@@ -10,7 +10,7 @@ Pass when the resolver, CI workflows, server build, launcher live release, and w
 
 ## BP-V1B — Server and gameplay proof
 
-Pass when the exact profile boots and restarts a server and a player can complete the focused smoke test: survival, vehicle, aircraft, Create, and an approved WDA dungeon.
+Pass when the exact profile boots and restarts a server and a player can complete the focused smoke test: survival, vehicle, aircraft, Create, and a WDA dungeon.
 
 ## BP-V1C — Distribution and operations proof
 

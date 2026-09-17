@@ -19,7 +19,7 @@ V1 prioritizes seamless installation, reliable launching, server/client parity, 
 - Immersive Vehicles/MTS plus the official content pack provide practical cars, trucks, and aircraft.
 - Create provides machinery, logistics, factories, and trains.
 - The compatible selected Create family is included: Create Big Cannons, Create: Gunsmithing, Create Aeronautics, Create High Seas, and Create: Radars.
-- When Dungeons Arise provides explorable dungeons with its intended mobs and loot. Only the five repository-approved structures are enabled.
+- When Dungeons Arise provides its complete upstream default set of explorable structures with its intended generation, mobs, and loot.
 - The conservative, verified performance suite is included. Embeddium and ScalableLux remain excluded because of the selected Aeronautics/Sable compatibility constraints.
 
 ## Required friend experience
@@ -59,5 +59,5 @@ V1 is complete when one exact `v1_survival_exploration` release:
 1. passes resolver/hash checks and fresh-server/restart smoke tests;
 2. installs and launches from the DrewCraft entry point on all three supported operating systems;
 3. lets matching clients join the matching server without manual mod or instance work;
-4. supports a stable multiplayer survival session featuring Diffusion terrain, vehicles/planes, Create, and an approved WDA dungeon;
+4. supports a stable multiplayer survival session featuring Diffusion terrain, vehicles/planes, Create, and a WDA dungeon;
 5. passes update, repair, backup, and recovery checks with no V1-blocking defect.

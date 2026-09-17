@@ -26,7 +26,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PACK_VERSION: 0.1.0-dev-local
+  PACK_VERSION: 0.1.1-dev-local
   DEV_RELEASE_TAG: drewcraft-dev-pack
 
 jobs:
@@ -120,7 +120,9 @@ jobs:
             --generation-pack-version drewcraft-worldgen-1 \
             --minecraft-version 1.21.1 \
             --neoforge-version 21.1.250 \
-            --minimum-launcher-version 0.1.0 \
+            --minimum-launcher-version 0.1.8 \
+            --server-address 150.136.96.174:25565 \
+            --health-url http://150.136.96.174:25566/health \
             --runtime-lock launcher/runtime-lock.json
           python tools/apply_release_acquisition.py build/release-manifest.raw.json \
             --output build/release-manifest.json

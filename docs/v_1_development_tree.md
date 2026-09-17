@@ -21,7 +21,7 @@ V1 scope/profile lock
 - [x] Define the focused V1 product in `docs/v_1_requirements.md`.
 - [x] Add the single shipping profile `v1_survival_exploration`.
 - [x] Include Terrain Diffusion, Distant Horizons, MTS vehicles/planes, the compatible Create stack, WDA, and performance essentials.
-- [x] Keep only the five approved WDA structures through the built-in allow-list.
+- [x] Restore the complete upstream WDA structure set by removing DrewCraft's former allow-list datapack.
 - [x] Remove weather/seasons and custom strategic/endgame content from the shipping inheritance chain.
 - [x] Default deferred DrewCraft systems off while preserving their implementation.
 - [x] Point CI, dev releases, RC builds, server smoke tests, and hash jobs at the shipping profile.
@@ -44,7 +44,7 @@ No production-scale pregeneration is required for this gate. A disposable test w
 - [ ] Drive one MTS ground vehicle and fly one MTS aircraft.
 - [ ] Build and operate representative Create machinery and a train.
 - [ ] Smoke-test Big Cannons, Gunsmithing, Aeronautics, High Seas, and Radars as ordinary Create content.
-- [ ] Find or locate one enabled WDA dungeon and verify mobs and loot.
+- [ ] Find or locate a WDA dungeon and verify generation, mobs, and loot.
 - [ ] Confirm no deferred weather, strategic army, siege, herd, Source Core, or Covenant behavior activates.
 - [ ] Record FPS, memory, server MSPT, and any crash/log warnings from a small multiplayer session.
 

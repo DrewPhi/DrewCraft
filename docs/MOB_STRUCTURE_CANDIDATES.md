@@ -243,9 +243,8 @@ Shiraz Palace    -> CITY / major kingdom source
 
 Its structures can be made extremely rare rather than accepting default density.
 
-The audited 2.1.68 registry namespace is `dungeons_arise`. DrewCraft's required
-built-in datapack replaces `dungeons_arise:major_structures` with exactly five
-structures and disables `dungeons_arise:minor_structures`:
+The audited 2.1.68 registry namespace is `dungeons_arise`. An earlier development
+profile replaced the major set with five structures and disabled the minor set:
 
 ```text
 dungeons_arise:illager_campsite -> CAMP / raiders
@@ -255,9 +254,10 @@ dungeons_arise:plague_asylum    -> RUIN / undead
 dungeons_arise:shiraz_palace    -> CITY / undead
 ```
 
-The major-set spacing is initially 128 chunks with 96-chunk separation. This is
-a deliberately sparse test value for Terrain Diffusion World Scale 2 and must be
-validated by representative pregeneration counts before production promotion.
+That allow-list experiment is archived. Focused V1 removes the DrewCraft override
+entirely and uses WDA's complete upstream default structure sets, spacing,
+separation, mobs, and loot. Strategic mappings below remain post-V1 design data
+and do not activate Source Cores or strategic simulation.
 
 WDA 2.1.68's embedded NeoForge metadata declares Minecraft
 `[1.21,1.21.1)`, even though its provider artifact is published for 1.21.1.

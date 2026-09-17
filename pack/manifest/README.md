@@ -20,7 +20,7 @@ These files are discovery/evaluation registries, **not production lockfiles**.
 
 It currently defines:
 
-- `v1_survival_exploration` — the authoritative focused V1 stack: Diffusion terrain, MTS vehicles/planes, compatible Create family, selected WDA dungeons, and performance essentials;
+- `v1_survival_exploration` — the authoritative focused V1 stack: Diffusion terrain, MTS vehicles/planes, compatible Create family, the complete upstream WDA dungeon set, and performance essentials;
 - `stage2_base_performance` — foundational stack + conservative optimization baseline;
 - `stage2_create_combat_mobility` — selected firearms/artillery/Sable/Aeronautics/High Seas interaction stack;
 - separate Enhanced Hordes/Tweaks and Zombie Hordes hostile-AI branches;
