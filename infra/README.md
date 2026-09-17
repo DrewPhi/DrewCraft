@@ -25,6 +25,7 @@ If a paid OCI tenancy is used, create a dedicated DrewCraft compartment and enfo
 - `drewcraft.service` — Minecraft systemd unit;
 - `drewcraft-health.service` + `health_server.py` — read-only client compatibility endpoint;
 - `serverctl.py` — staged releases, exact hash verification, world-identity guard, backup, activation, application-only rollback, and restore.
+- `start-server.sh`, `server.properties`, `user_jvm_args.txt`, and `eula.txt` — production runtime templates. `allow-flight=true` is intentional so legitimate MTS aircraft do not trigger vanilla's flying-player kick.
 
 ## Filesystem contract
 
@@ -35,6 +36,7 @@ If a paid OCI tenancy is used, create a dedicated DrewCraft compartment and enfo
   persistent/world/           authoritative Minecraft world + DrewCraft SavedData
   persistent/terrain-diffusion-models/ reusable pinned model downloads
   persistent/terrain-diffusion-cache/  reusable Terrain Diffusion runtime cache
+  persistent/operator/        whitelist, operators, and ban lists
   backups/                    checksummed persistent-state archives
   logs/                       persistent logs
   state/                      active-release.json + health.json
@@ -42,7 +44,7 @@ If a paid OCI tenancy is used, create a dedicated DrewCraft compartment and enfo
   bin/                        stable host helper scripts
 ```
 
-`current/world` and `current/logs` are symlinked to the persistent trees at activation/startup. Application rollback changes only `current`; it never restores an older world automatically.
+`current/world`, `current/logs`, model caches, whitelist, operators, and ban lists are symlinked to persistent storage at activation/startup. Application rollback changes only `current`; it never restores an older world automatically.
 
 ## Deployment transaction
 

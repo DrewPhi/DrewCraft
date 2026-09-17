@@ -24,7 +24,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-cer
 if ! id drewcraft >/dev/null 2>&1; then
   useradd --system --create-home --home-dir /srv/drewcraft --shell /usr/sbin/nologin drewcraft
 fi
-install -d -o drewcraft -g drewcraft /srv/drewcraft/{releases,staging,persistent/world,persistent/terrain-diffusion-models,persistent/terrain-diffusion-cache,backups,logs,state,bin}
+install -d -o drewcraft -g drewcraft /srv/drewcraft/{releases,staging,persistent/world,persistent/terrain-diffusion-models,persistent/terrain-diffusion-cache,persistent/operator,backups,logs,state,bin}
 install -d -o root -g root /opt/drewcraft/runtime/java-21.0.12.1+1
 
 tmp="$(mktemp)"
@@ -44,10 +44,17 @@ cat >/srv/drewcraft/bin/start-server.sh <<'EOF'
 set -euo pipefail
 cd /srv/drewcraft/current
 rm -rf world logs terrain-diffusion-models terrain-diffusion-cache
+rm -f ops.json whitelist.json banned-ips.json banned-players.json
 ln -s /srv/drewcraft/persistent/world world
 ln -s /srv/drewcraft/logs logs
 ln -s /srv/drewcraft/persistent/terrain-diffusion-models terrain-diffusion-models
 ln -s /srv/drewcraft/persistent/terrain-diffusion-cache terrain-diffusion-cache
+for file in ops.json whitelist.json banned-ips.json banned-players.json; do
+  if [[ ! -f "/srv/drewcraft/persistent/operator/$file" ]]; then
+    printf '[]\n' >"/srv/drewcraft/persistent/operator/$file"
+  fi
+  ln -s "/srv/drewcraft/persistent/operator/$file" "$file"
+done
 export JAVA_HOME=/opt/drewcraft/java
 export PATH="$JAVA_HOME/bin:$PATH"
 exec ./run.sh nogui

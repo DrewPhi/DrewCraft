@@ -46,6 +46,7 @@ def ensure_layout(root: pathlib.Path) -> None:
     for rel in (
         "releases", "staging", "persistent/world",
         "persistent/terrain-diffusion-models", "persistent/terrain-diffusion-cache",
+        "persistent/operator",
         "backups", "logs", "state",
     ):
         (root / rel).mkdir(parents=True, exist_ok=True)
@@ -135,6 +136,16 @@ def _wire_persistent_paths(root: pathlib.Path, release: pathlib.Path) -> None:
                 continue
             raise RuntimeError(f"release contains reserved persistent path {name!r}")
         os.symlink(target.resolve(), link, target_is_directory=True)
+    for name in ("ops.json", "whitelist.json", "banned-ips.json", "banned-players.json"):
+        target = root / "persistent" / "operator" / name
+        if not target.exists():
+            target.write_text("[]\n", encoding="utf-8")
+        link = release / name
+        if link.exists() or link.is_symlink():
+            if link.is_symlink() and link.resolve() == target.resolve():
+                continue
+            raise RuntimeError(f"release contains reserved persistent path {name!r}")
+        os.symlink(target.resolve(), link)
 
 
 def _active_state(root: pathlib.Path, release: pathlib.Path, manifest: dict, previous: pathlib.Path | None) -> dict:
