@@ -37,7 +37,7 @@ Embeddium and ScalableLux are not selected because the current Aeronautics/Sable
 - Project Atmosphere, Simple Clouds, Serene Seasons, and their libraries: post-V1.
 - Illager Invasion/Covenant content and tactical horde/herd candidates: post-V1 research.
 - Additional terrain, weather, technology, vehicle, dungeon, and combat ecosystems: excluded unless a measured gap justifies them.
-- UNU Parts/Vehicles, WarBorn Military Pack, and Golden Airport Pack (GAP): post-V1 compatibility/porting goals; their published versions are not compatible with the 1.21.1 NeoForge V1 lock.
+- UNU Parts/Vehicles, WarBorn Military Pack, and Golden Airport Pack (GAP): post-V1 compatibility/porting goals. They are expected to be port candidates because MTS packs are largely content archives, but their published Forge jars are not yet validated as drop-in 1.21.1 NeoForge artifacts.
 
 ## Dependency policy
 

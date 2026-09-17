@@ -44,11 +44,19 @@ the exact-artifact checks:
 - WarBorn Military Pack, currently published for older Forge/Minecraft versions.
 - Golden Airport Pack (GAP), whose published files target 1.16.5/1.12.2 Forge.
 
-The preferred path is a native 1.21.1 NeoForge release from the authors. If none
-exists, porting is a separate compatibility project requiring author/licensing
-review, exact client/server artifacts, a disposable-world test, vehicle spawn and
-save/reload coverage, and a rollback path. The official 1.21.1 Immersive Vehicles
-content pack already remains part of V1.
+These are MTS content archives (JSON definitions, models, textures, sounds, and
+recipes) rather than ordinary feature-heavy gameplay mods, so a port is expected
+to be feasible. They are **not** assumed to be drop-in compatible, however. The
+MTS NeoForge porting checklist includes replacing the Forge descriptor, removing
+legacy loader classes and MTL files, generating item models, flattening item
+textures, and migrating language/recipe paths and formats.
+
+The preferred path is still a native 1.21.1 NeoForge release from the authors.
+If none exists, porting is a separate compatibility project requiring
+author/licensing review, exact client/server artifacts, a disposable-world test,
+vehicle spawn and save/reload coverage, and a rollback path. Prioritize UNU
+Parts/Vehicles first, then WarBorn, with GAP as the most legacy-heavy candidate.
+The official 1.21.1 Immersive Vehicles content pack already remains part of V1.
 
 ## Re-entry rule
 
