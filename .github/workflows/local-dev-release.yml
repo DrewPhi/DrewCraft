@@ -26,7 +26,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PACK_VERSION: 0.1.4-dev-local
+  PACK_VERSION: 0.1.5-dev-local
   DEV_RELEASE_TAG: drewcraft-dev-pack
 
 jobs:
@@ -100,11 +100,37 @@ jobs:
           python tools/drewcraft_pack.py verify build/verified-pack/client
           python tools/drewcraft_pack.py verify build/verified-pack/server
 
+      - name: Install pinned NeoForge server runtime
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, urllib.request, yaml
+          loader = yaml.safe_load(open('pack/manifest/platform.yaml'))['loader']
+          out = pathlib.Path('/tmp/neoforge-installer.jar')
+          req = urllib.request.Request(loader['installer_url'], headers={'User-Agent': 'DrewCraft-Release/1'})
+          with urllib.request.urlopen(req, timeout=180) as response:
+              out.write_bytes(response.read())
+          got = hashlib.sha256(out.read_bytes()).hexdigest()
+          expected = loader.get('installer_sha256')
+          if expected and got.lower() != expected.lower():
+              raise SystemExit(f'NeoForge installer hash mismatch expected={expected} got={got}')
+          print('NeoForge installer SHA-256:', got)
+          PY
+          rm -rf /tmp/drewcraft-server-runtime
+          mkdir -p /tmp/drewcraft-server-runtime
+          java -jar /tmp/neoforge-installer.jar --installServer /tmp/drewcraft-server-runtime
+
+      - name: Assemble complete verified server application
+        run: |
+          python tools/assemble_server_application.py \
+            --runtime /tmp/drewcraft-server-runtime \
+            --pack build/verified-pack/server \
+            --output build/verified-pack/server-application
+
       - name: Assemble local-dev release layout
         run: |
           python tools/assemble_release_layout.py \
             --client build/verified-pack/client \
-            --server build/verified-pack/server \
+            --server build/verified-pack/server-application \
             --output build/release-layout
 
       - name: Build provider-aware local-dev manifest

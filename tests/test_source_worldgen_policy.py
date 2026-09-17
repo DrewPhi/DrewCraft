@@ -28,7 +28,7 @@ def test_every_shipping_and_combined_smoke_workflow_builds_the_source_profile():
 def test_focused_v1_live_release_does_not_inject_covenant_resource_pack():
     text = (ROOT / ".github/workflows/local-dev-release.yml").read_text(encoding="utf-8")
     assert "inject_resourcepack.py" not in text
-    assert "PACK_VERSION: 0.1.4-dev-local" in text
+    assert "PACK_VERSION: 0.1.5-dev-local" in text
     assert "--minimum-launcher-version 0.1.8" in text
     assert "--server-address 150.136.96.174:25565" in text
     assert "--health-url http://150.136.96.174:25566/health" in text
