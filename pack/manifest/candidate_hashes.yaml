@@ -104,6 +104,13 @@ artifacts:
     filename: DistantHorizons-3.2.0-b-1.21.1-fabric-neoforge.jar
     sha256: d6a7a963f794501678113e2545d8b25c90e123ef6b9256bb5716907d059e1ef5
     size: 30207268
+  xaeros_minimap:
+    provider: modrinth
+    project_id: 1bokaNcj
+    version_id: w8HSmbC3
+    filename: xaerominimap-neoforge-1.21.1-26.1.0.jar
+    sha256: 6bd6cbab01ff57b9ba2fbfee18f9605593101f15d80e8d19dc59c385d2535ccc
+    size: 2138254
   embeddium:
     provider: curseforge
     project_id: 908741

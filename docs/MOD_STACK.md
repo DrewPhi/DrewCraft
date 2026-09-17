@@ -9,6 +9,7 @@
 - Terrain Diffusion Plus
 - Chunky
 - Distant Horizons
+- Xaero's Minimap (client-only)
 - When Dungeons Arise with its complete upstream default structure set
 - Vanilla survival systems and structures
 
