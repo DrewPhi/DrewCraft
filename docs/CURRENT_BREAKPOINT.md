@@ -1,6 +1,6 @@
 # DrewCraft Current Development Breakpoint
 
-**Updated:** 2026-09-16
+**Updated:** 2026-09-17
 **Last completed breakpoint:** **BP-V1A — focused profile convergence**
 **Current breakpoint:** **BP-V1B — server and gameplay proof**
 
@@ -39,4 +39,6 @@ V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain
 
 ## BP-V1B
 
-Dedicated-server run `35147504223` passed the previous focused-profile build. Because the WDA generation policy has now changed, repeat the server build/boot/restart gate, deploy that exact build to OCI, then complete the hands-on gameplay checklist: survival, vehicle, aircraft, Create, and a WDA dungeon. Do not require production world pregeneration or post-V1 features.
+Pack `0.1.2-dev-local` is published from `v1_survival_exploration` and live on OCI. The ARM64 host generated a fresh Diffusion spawn, reached `Done`, stopped cleanly, reopened the same persistent world, and reached `Done` again. Post-start manifest verification was exact, the fatal-log scan was clean, both systemd services are enabled, and the public health endpoint reports the matching pack ready. The public website points at manifest SHA-256 `b7706a74bacbae1ede53ba4b6547715fae32bbf09badee4978219f6169146bb6`.
+
+Next, launch through DrewCraft 0.1.8 and complete the hands-on gameplay checklist: join, normal survival, vehicle, aircraft, representative Create content, and a WDA dungeon. Then run platform acceptance, a small multiplayer soak, and the retained backup restore drill. Do not require production world pregeneration or post-V1 features.

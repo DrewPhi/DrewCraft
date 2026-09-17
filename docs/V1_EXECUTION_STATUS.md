@@ -1,6 +1,6 @@
 # DrewCraft V1 Execution Status
 
-**Updated:** 2026-09-16
+**Updated:** 2026-09-17
 **Shipping profile:** `v1_survival_exploration`
 **Phase:** server/gameplay proof
 
@@ -14,8 +14,8 @@
 | Create + selected compatible Create family | Included |
 | Complete upstream WDA structure set with mobs/loot | Included |
 | Performance and diagnostics | Included |
-| One-manifest server/client release | Implemented; revised profile evidence pending |
-| Windows/macOS/Linux launchers | Implemented; revised live-pack publication and clean acceptance pending |
+| One-manifest server/client release | Exact `0.1.2-dev-local` published and deployed |
+| Windows/macOS/Linux launchers | 0.1.8 aliases live; clean platform acceptance pending |
 | Weather/clouds/seasons | Post-V1 |
 | Custom radar/weather coupling | Post-V1 |
 | Sources/armies/sieges/herds/Covenant endgame | Post-V1; code preserved and disabled by default |
@@ -37,7 +37,7 @@
 1. ~~Validate and publish the focused profile.~~ Complete.
 2. ~~Pass fresh-server boot and same-world restart.~~ Complete in run `35147504223`.
 3. Pass focused hands-on gameplay smoke and small multiplayer performance evidence.
-4. Deploy the exact server application and complete backup/restore.
+4. ~~Deploy the exact server application.~~ Complete; backup restore drill remains.
 5. Pass clean install/login/launch/update on all three client platforms.
 6. Freeze, soak, promote, and tag the exact tested release.
 
@@ -52,7 +52,8 @@ No post-V1 feature is part of these gates.
 
 ## Published evidence
 
-- Focused live pack and manifest: published from commit `3ac388a` with no Covenant or weather payload paths.
+- Focused live pack and manifest: `0.1.2-dev-local` published from commit `bea900d` with no Covenant or weather payload paths.
 - Launcher 0.1.8: Windows, Apple Silicon macOS, and Ubuntu/Linux builds passed and are the website's latest release aliases.
 - Server application layout and native ARM64 DrewCraft build passed.
 - Dedicated-server run `35147504223` passed fresh Diffusion-world boot, clean stop, same-world restart, and fatal-error scanning with the focused profile.
+- OCI production host repeated fresh-world boot and same-world restart with exact post-start manifest verification, active/enabled server and health services, a checksummed pre-update backup, and public `ready` health for `0.1.2-dev-local`.
