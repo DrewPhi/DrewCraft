@@ -33,7 +33,23 @@ Primary archived designs: `STRATEGIC_WORLD_MODEL.md`, `STRATEGIC_MATERIALIZATION
 - Re-evaluation of currently incompatible Create add-ons only after upstream compatibility changes.
 - Larger hosting shape only if measured multiplayer performance requires it.
 
+## Post-V1 Immersive Vehicles compatibility goals
+
+These content packs are explicitly deferred until the focused 1.21.1 NeoForge V1
+is stable. They must not be added to the shipping profile by renaming or bypassing
+the exact-artifact checks:
+
+- UNU Parts / Vehicles packs, beginning with a compatibility investigation against
+  the current 1.21.1 MTS release.
+- WarBorn Military Pack, currently published for older Forge/Minecraft versions.
+- Golden Airport Pack (GAP), whose published files target 1.16.5/1.12.2 Forge.
+
+The preferred path is a native 1.21.1 NeoForge release from the authors. If none
+exists, porting is a separate compatibility project requiring author/licensing
+review, exact client/server artifacts, a disposable-world test, vehicle spawn and
+save/reload coverage, and a rollback path. The official 1.21.1 Immersive Vehicles
+content pack already remains part of V1.
+
 ## Re-entry rule
 
 A post-V1 idea may enter a later release only with a narrow player-facing goal, an explicit dependency/profile change, server/client compatibility evidence, a performance budget, and a rollback path. Completed custom code remains disabled by default until such a release adopts it.
-
