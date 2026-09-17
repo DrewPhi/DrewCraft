@@ -7,6 +7,7 @@ import json
 import math
 import os
 import pathlib
+import pwd
 import re
 import shutil
 import tempfile
@@ -35,6 +36,10 @@ def atomic_json(path: pathlib.Path, value: dict) -> None:
             json.dump(value, fh, sort_keys=True, indent=2)
             fh.write("\n")
         os.replace(temp, path)
+        os.chmod(path, 0o644)
+        if os.geteuid() == 0:
+            account = pwd.getpwnam("drewcraft")
+            os.chown(path, account.pw_uid, account.pw_gid)
     finally:
         if os.path.exists(temp):
             os.unlink(temp)
