@@ -55,6 +55,32 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ steps.td.outputs.ref }}"
           ./gradlew -p versions/1.21.1 buildNeoForgeCpu --no-daemon
 
+      - name: Build pinned Create Radar upstream fix
+        id: radar
+        run: |
+          readarray -t RADAR_SOURCE < <(python - <<'PY'
+          import yaml
+          item = yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['create_radars']
+          print(item['source']['repository'])
+          print(item['source']['ref'])
+          PY
+          )
+          rm -rf /tmp/create-radar-upstream
+          git clone "https://github.com/${RADAR_SOURCE[0]}.git" /tmp/create-radar-upstream
+          cd /tmp/create-radar-upstream
+          git checkout --detach "${RADAR_SOURCE[1]}"
+          test "$(git rev-parse HEAD)" = "${RADAR_SOURCE[1]}"
+          bash gradlew build --no-daemon
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import pathlib, yaml
+          spec=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['create_radars']
+          libs=pathlib.Path('/tmp/create-radar-upstream')/spec['build']['output_directory']
+          jars=[p for p in sorted(libs.glob('*.jar')) if not p.name.lower().endswith(('-sources.jar','-source.jar','-javadoc.jar','-dev.jar'))]
+          if len(jars) != 1:
+              raise SystemExit(f'Expected one production Create Radar jar, found {[p.name for p in jars]}')
+          print('path=' + str(jars[0]))
+          PY
+
       - name: Locate exact Terrain Diffusion Plus production jar
         id: tdjar
         run: |
@@ -78,6 +104,7 @@ jobs:
           python tools/build_verified_profile.py \
             --profile v1_survival_exploration \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
+            --source-artifact "create_radars=${{ steps.radar.outputs.path }}" \
             --output-dir build/verified-pack \
             --evidence-output build/full-profile-verification.json
 
