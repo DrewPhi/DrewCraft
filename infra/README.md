@@ -26,6 +26,7 @@ If a paid OCI tenancy is used, create a dedicated DrewCraft compartment and enfo
 - `drewcraft-health.service` + `health_server.py` — read-only client compatibility endpoint;
 - `serverctl.py` — staged releases, exact hash verification, world-identity guard, backup, activation, application-only rollback, and restore.
 - `start-server.sh`, `server.properties`, `user_jvm_args.txt`, and `eula.txt` — production runtime templates. `allow-flight=true` is intentional so legitimate MTS aircraft do not trigger vanilla's flying-player kick.
+- `pregen_controller.py` + `drewcraft-pregen.service` — resumable, size-targeted Overworld-only Chunky generation with maximum-size and free-space safety stops. Nether and End are never selected or bordered by this controller.
 
 ## Filesystem contract
 

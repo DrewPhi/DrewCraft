@@ -7,9 +7,9 @@ dist/
 *.part
 
 # Minecraft runtime state
-world/
-world_nether/
-world_the_end/
+/world/
+/world_nether/
+/world_the_end/
 backups/
 logs/
 crash-reports/

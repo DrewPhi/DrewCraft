@@ -31,6 +31,7 @@ world_index = load_module("world_seed_index", "tools/world_seed_index.py")
 world_bundle = load_module("world_bundle", "tools/world_bundle.py")
 world_extract = load_module("extract_world_index", "tools/extract_world_index.py")
 release_layout = load_module("assemble_release_layout", "tools/assemble_release_layout.py")
+pregen = load_module("pregen_controller", "infra/pregen_controller.py")
 
 
 class Bp8ReleaseOperationsTest(unittest.TestCase):
@@ -39,6 +40,12 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_pregen_radius_scales_with_measured_world_growth(self):
+        radius = pregen.estimate_radius(1024, 5_000_000, 405_000_000, 40_000_000_000)
+        self.assertEqual(10240, radius)
+        with self.assertRaises(ValueError):
+            pregen.estimate_radius(1024, 5_000_000, 5_000_000, 40_000_000_000)
 
     def build_release(self, version="0.8.0-test", generation_pack_version="worldgen-v1"):
         publish = self.tmp / "publish"

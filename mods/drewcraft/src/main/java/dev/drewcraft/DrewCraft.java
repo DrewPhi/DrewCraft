@@ -14,6 +14,7 @@ import dev.drewcraft.strategic.production.ProductionStrategicSeedRuntime;
 import dev.drewcraft.strategic.siege.SiegeRuntime;
 import dev.drewcraft.strategic.simulation.StrategicScheduler;
 import dev.drewcraft.strategic.source.SourceProductionScheduler;
+import dev.drewcraft.world.OverworldBoundaryRuntime;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -34,6 +35,7 @@ public final class DrewCraft {
         modContainer.registerConfig(ModConfig.Type.SERVER, DrewCraftConfig.SPEC);
         NeoForge.EVENT_BUS.addListener(DrewCraftCommands::register);
         NeoForge.EVENT_BUS.addListener(StandardGrantRuntime::onPlayerLoggedIn);
+        NeoForge.EVENT_BUS.addListener(OverworldBoundaryRuntime::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(StrategicScheduler::onServerTick);
         NeoForge.EVENT_BUS.addListener(StrategicMaterializationRuntime::onServerTick);
         NeoForge.EVENT_BUS.addListener(StrategicMaterializationRuntime::onLivingDeath);
