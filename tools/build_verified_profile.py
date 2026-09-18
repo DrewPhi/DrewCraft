@@ -95,6 +95,21 @@ def verify_source_build(cid: str, src: Path, evidence: dict, spec: dict) -> dict
             "verification_mode": "source_ref_plus_raw_sha256",
         }
 
+    if evidence.get("required_checks"):
+        try:
+            with zipfile.ZipFile(src) as jar:
+                names = [n for n in jar.namelist() if n.lower().endswith(".json") and not n.endswith("/")]
+                empty = [n for n in names if len(jar.read(n)) == 0]
+        except zipfile.BadZipFile as exc:
+            raise pack.PackError(f"{cid}: source-built artifact is not a valid jar") from exc
+        if "all-json-resources-nonempty" in evidence["required_checks"] and empty:
+            raise pack.PackError(f"{cid}: empty JSON resources: {empty[:10]}")
+        return {
+            "raw_sha256": pack.sha256(src),
+            "verification_mode": "source_ref_plus_structural_checks",
+            "checks": {"all-json-resources-nonempty": not empty},
+        }
+
     expected_manifest_hash = evidence.get("model_assets_manifest_sha256")
     if not isinstance(expected_manifest_hash, str) or len(expected_manifest_hash) != 64:
         raise pack.PackError(f"{cid}: missing model-assets manifest hash evidence")

@@ -26,7 +26,7 @@ source_builds:
       note: "Built from the official upstream commit; preserve upstream license and attribution."
     lock_requirements:
       - "Build from the exact source ref with Java 21."
-      - "Verify no zero-byte JSON resources and record the raw jar SHA-256."
+      - "Verify no zero-byte JSON resources; Gradle archive metadata is not used as a cross-run identity."
 
   terrain_diffusion_plus:
     display_name: "Terrain Diffusion Plus"

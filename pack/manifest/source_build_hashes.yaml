@@ -10,7 +10,8 @@ artifacts:
     source_repository: "Arsenalists-of-Create/Create-Radar"
     source_ref: "e637e83f7af85de450e4149679075ef055077371"
     filename: "create_radar-5.0-EA-2.0.2-1.21.1.jar"
-    artifact_sha256: "29edeee8d0141b86725cbaa148be8419d08ceb6530f77fe89c95f7c1bd4f33fa"
+    required_checks:
+      - "all-json-resources-nonempty"
 
   terrain_diffusion_plus:
     provider: source_build
