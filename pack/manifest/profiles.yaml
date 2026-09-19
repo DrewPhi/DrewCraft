@@ -30,6 +30,8 @@ profiles:
       - distant_horizons
       - xaeros_minimap
       - xaero_lib
+      - exposure
+      - exposure_polaroid
       - create
       - create_radars
       - immersive_vehicles
@@ -76,7 +78,8 @@ profiles:
       - pack/overlays/source_structures_first_spike
     purpose: "Authoritative shipping profile for V1: beautiful large-scale survival, vehicles and planes, Create engineering, and the complete upstream WDA dungeon set."
     worldgen_policy:
-      - "Use When Dungeons Arise's complete upstream default structure set; DrewCraft must not replace its major or minor structure sets."
+      - "Use the complete upstream When Dungeons Arise structure set with DrewCraft-owned sparse placement overrides."
+      - "Major WDA placement uses 10x upstream spacing/separation; minor placement uses 5x upstream spacing/separation."
       - "WDA dungeons keep their upstream generation, mobs, and loot, but have no V1 strategic-source or Source Core behavior."
       - "Vanilla structures, villages, caves, mobs, farms, redstone, and survival progression remain available."
     requirements:
@@ -85,6 +88,7 @@ profiles:
       - "Create contraptions, trains, artillery, firearms, Aeronautics craft, and High Seas ships require basic survival smoke coverage."
       - "Launcher and server releases must be generated from this same profile."
     notes:
+      - "Exposure and Exposure: Polaroid are common-side V1 photography content and must be installed on both client and server."
       - "Create: Radars is included as ordinary upstream Create content for V1. Its native radar blocks, tracks, filters, networks, and monitors are allowed."
       - "DrewCraft radar-height changes, weather returns, weather overlays, terrain masking, cockpit radar integration, and other custom radar coupling are disabled and deferred to post-V1."
       - "The NTGL/Gunsmithing firearm stack is part of V1; it must be resolved and tested as a first-class shipping dependency, not inherited accidentally from a research profile."

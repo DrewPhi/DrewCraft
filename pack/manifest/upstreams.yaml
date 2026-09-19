@@ -181,6 +181,66 @@ upstreams:
     notes:
       - "The minimap remains client-facing; this common library supplies the optional server-side Xaero protocol and removes the client reset warning."
 
+  exposure:
+    display_name: "Exposure"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: modrinth
+      project: "hB899VmG"
+      url: "https://modrinth.com/mod/exposure"
+      branch: null
+      candidate_ref: "KZR7AUbh"
+    artifact:
+      provider: modrinth
+      project_id: "hB899VmG"
+      version_id: "KZR7AUbh"
+      candidate_version: "neoforge-1.21.1-1.9.18"
+      filename: "exposure-neoforge-1.21.1-1.9.18.jar"
+      download_url: "https://cdn.modrinth.com/data/hB899VmG/versions/KZR7AUbh/exposure-neoforge-1.21.1-1.9.18.jar"
+      release_status: release
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "MIT"
+    redistribution: "Acquire through the permitted original-provider path and verify hash locally."
+    fork:
+      required: false
+      trigger: "Only if a hard compatibility issue cannot be resolved through upstream configuration."
+
+  exposure_polaroid:
+    display_name: "Exposure: Polaroid"
+    kind: mod_addon
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: modrinth
+      project: "WEWiqYkW"
+      url: "https://modrinth.com/mod/exposure-polaroid"
+      branch: null
+      candidate_ref: "WfVyzdJL"
+    artifact:
+      provider: modrinth
+      project_id: "WEWiqYkW"
+      version_id: "WfVyzdJL"
+      candidate_version: "neoforge-1.21.1-1.1.6"
+      filename: "exposure_polaroid-neoforge-1.21.1-1.1.6.jar"
+      download_url: "https://cdn.modrinth.com/data/WEWiqYkW/versions/WfVyzdJL/exposure_polaroid-neoforge-1.21.1-1.1.6.jar"
+      release_status: release
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "MIT"
+    redistribution: "Acquire through the permitted original-provider path and verify hash locally."
+    fork:
+      required: false
+      trigger: "Only if a hard compatibility issue cannot be resolved through upstream configuration."
+
   create:
     display_name: "Create"
     kind: mod

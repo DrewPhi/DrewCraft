@@ -166,7 +166,10 @@ class Controller:
     def write_boundary(self, radius: int) -> None:
         atomic_json(self.boundary_path, {
             "schemaVersion": 1,
-            "enabled": True,
+            # The V1 world is intentionally not gameplay-bounded.  This file
+            # remains as telemetry for the currently pregenerated frontier,
+            # while players may explore beyond it and generate normally.
+            "enabled": False,
             "dimension": "minecraft:overworld",
             "centerX": self.state["centerX"],
             "centerZ": self.state["centerZ"],
@@ -406,7 +409,7 @@ def main() -> int:
     parser.add_argument("--target-bytes", type=int, default=40_000_000_000)
     parser.add_argument("--maximum-bytes", type=int, default=45_000_000_000)
     parser.add_argument("--minimum-free-bytes", type=int, default=25_000_000_000)
-    parser.add_argument("--maximum-radius", type=int, default=16_384)
+    parser.add_argument("--maximum-radius", type=int, default=1_000_000)
     parser.add_argument("--maximum-expansions", type=int, default=3)
     parser.add_argument("--poll-seconds", type=int, default=60)
     parser.add_argument("--generation-batch-blocks", type=int, default=1024)

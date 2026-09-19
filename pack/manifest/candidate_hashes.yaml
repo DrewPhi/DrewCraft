@@ -116,6 +116,20 @@ artifacts:
     filename: xaerolib-neoforge-1.21.1-1.1.0.jar
     sha256: 822db84929c7f1928ce1b8d5e00a909b94da925960850802cf284074f1cdc3fe
     size: 541451
+  exposure:
+    provider: modrinth
+    project_id: hB899VmG
+    version_id: KZR7AUbh
+    filename: exposure-neoforge-1.21.1-1.9.18.jar
+    sha256: 674c537a99f69b2bae53521c95dae59bc5f4eb2eb15418eec0ecbaf36b53d888
+    size: 2192415
+  exposure_polaroid:
+    provider: modrinth
+    project_id: WEWiqYkW
+    version_id: WfVyzdJL
+    filename: exposure_polaroid-neoforge-1.21.1-1.1.6.jar
+    sha256: a39485de154de47422671b763677814bfe09227214775c78a0052e5b22b30e61
+    size: 361404
   embeddium:
     provider: curseforge
     project_id: 908741
