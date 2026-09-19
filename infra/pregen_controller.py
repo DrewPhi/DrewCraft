@@ -118,7 +118,17 @@ class Controller:
         atomic_json(self.state_path, self.state)
 
     def health(self, status: str, message: str) -> None:
-        value = json.loads(self.health_path.read_text("utf-8"))
+        try:
+            value = json.loads(self.health_path.read_text("utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError):
+            value = {
+                "schemaVersion": 1,
+                "packVersion": "unknown",
+                "protocolVersion": 1,
+                "minecraftVersion": "1.21.1",
+                "worldId": "drewcraft-production",
+                "worldRevision": 1,
+            }
         value.update(status=status, message=message)
         atomic_json(self.health_path, value)
 
