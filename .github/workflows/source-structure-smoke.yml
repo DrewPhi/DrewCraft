@@ -83,7 +83,19 @@ jobs:
           import inject_drewcraft_mod as inject
 
           jar = inject.production_jar(pathlib.Path('mods/drewcraft/build/libs'))
-          shutil.copy2(jar, pathlib.Path('/tmp/drewcraft-structure-smoke/mods') / jar.name)
+          isolated_jar = pathlib.Path('/tmp/drewcraft-structure-smoke/mods') / jar.name
+          shutil.copy2(jar, isolated_jar)
+          # This WDA-only fixture intentionally omits Terrain Diffusion and its
+          # dimension registry. Remove only the production TD world preset from
+          # this isolated jar; the shipping profile retains the exact jar.
+          import zipfile
+          staged = isolated_jar.with_suffix('.tmp')
+          preset = 'data/drewcraft/worldgen/world_preset/terrain_diffusion_scale_3.json'
+          with zipfile.ZipFile(isolated_jar) as source, zipfile.ZipFile(staged, 'w') as target:
+              for item in source.infolist():
+                  if item.filename != preset:
+                      target.writestr(item, source.read(item.filename))
+          staged.replace(isolated_jar)
           PY
           mkdir -p /tmp/drewcraft-structure-smoke/config
           cp pack/overlays/source_structures_first_spike/config/fml.toml /tmp/drewcraft-structure-smoke/config/fml.toml
