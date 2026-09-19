@@ -62,6 +62,8 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
     def test_pregen_service_alternates_chunky_then_dh_during_idle_windows(self):
         service = (ROOT / "infra/drewcraft-pregen.service").read_text("utf-8")
         self.assertIn("--idle-grace-seconds 600", service)
+        self.assertIn("--generation-batch-blocks 1024", service)
+        self.assertIn("--dh-lag-blocks 512", service)
         self.assertIn("--dh-maintenance-interval-seconds 3600", service)
         controller = (ROOT / "infra/pregen_controller.py").read_text("utf-8")
         self.assertIn('"dh", "pregen", "start", "overworld"', controller)

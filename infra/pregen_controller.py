@@ -79,7 +79,14 @@ class Controller:
 
     def _load_state(self) -> dict:
         if self.state_path.is_file():
-            return json.loads(self.state_path.read_text("utf-8"))
+            state = json.loads(self.state_path.read_text("utf-8"))
+            # Migrate the original whole-radius controller state. An in-flight
+            # task keeps its existing radius; future expansions use batches.
+            state.setdefault("chunkyRadius", state.get("activeRadius", self.args.benchmark_radius))
+            state.setdefault("dhRadius", 0)
+            state.setdefault("dhTargetRadius", 0)
+            state.setdefault("phaseAfterDh", "complete")
+            return state
         state = {
             "schemaVersion": 2,
             "phase": "benchmark",
@@ -95,6 +102,10 @@ class Controller:
             "dhMaintenanceIntervalSeconds": self.args.dh_maintenance_interval_seconds,
             "dhMaintenanceActive": False,
             "maintenancePaused": False,
+            "chunkyRadius": self.args.benchmark_radius,
+            "dhRadius": 0,
+            "dhTargetRadius": 0,
+            "phaseAfterDh": "complete",
         }
         atomic_json(self.state_path, state)
         return state
@@ -149,7 +160,7 @@ class Controller:
                 # `/dh pregen stop` is intentionally used on player join.  A
                 # fresh start is resumable because DH skips already indexed
                 # LODs, and avoids treating the deliberate pause as completion.
-                self.start_dh(self.state["activeRadius"])
+                self.start_dh(self.state.get("dhTargetRadius", self.state["dhRadius"]))
         return True
 
     def write_boundary(self, radius: int) -> None:
@@ -193,10 +204,34 @@ class Controller:
         self.save(
             phase="dh",
             dhRadiusChunks=radius_chunks,
+            dhTargetRadius=radius,
             dhMaintenanceActive=True,
             dhStarted=True,
             maintenancePaused=False,
         )
+
+    def start_next_chunky_batch(self) -> bool:
+        current = int(self.state.get("chunkyRadius", self.state["benchmarkRadius"]))
+        target = int(self.state["activeRadius"])
+        batch = max(16, int(self.args.generation_batch_blocks))
+        next_radius = min(target, current + batch)
+        if next_radius <= current:
+            return False
+        self.save(chunkyRadius=next_radius, phase="generate")
+        self.configure_and_start(next_radius, resume=False)
+        return True
+
+    def start_dh_trailing_pass(self, *, final: bool = False) -> bool:
+        chunky_radius = int(self.state.get("chunkyRadius", self.state["activeRadius"]))
+        existing_dh = int(self.state.get("dhRadius", 0))
+        lag = max(0, int(self.args.dh_lag_blocks))
+        target = chunky_radius if final else max(0, chunky_radius - lag)
+        target = max(existing_dh, target)
+        if target <= existing_dh:
+            return False
+        self.save(phase="dh", phaseAfterDh="complete" if final else "generate")
+        self.start_dh(target)
+        return True
 
     def dh_finished(self) -> bool:
         try:
@@ -249,12 +284,19 @@ class Controller:
 
             if self.state["phase"] == "dh":
                 if self.dh_finished():
+                    dh_target = int(self.state.get("dhTargetRadius", self.state.get("dhRadius", 0)))
+                    next_phase = self.state.get("phaseAfterDh", "complete")
                     self.save(
-                        phase="complete", dhMaintenanceActive=False,
+                        phase=next_phase,
+                        dhRadius=max(int(self.state.get("dhRadius", 0)), dh_target),
+                        dhMaintenanceActive=False,
                         lastDhMaintenanceEpoch=time.time(),
                         lastDhMaintenanceUtc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                     )
-                    self.health("ready", "Overworld and Distant Horizons pregeneration complete")
+                    if next_phase == "generate":
+                        self.start_next_chunky_batch()
+                    else:
+                        self.health("ready", "Overworld and Distant Horizons pregeneration complete")
                 time.sleep(self.args.poll_seconds)
                 continue
 
@@ -294,7 +336,7 @@ class Controller:
                 # restart even with continueOnRestart enabled. Re-submit the exact
                 # same selection once; already generated chunks are skipped.
                 self.save(resumeAttempts=1, resumeReason="Chunky task absent before 95%")
-                self.configure_and_start(self.state["activeRadius"], resume=True)
+                self.configure_and_start(self.state.get("chunkyRadius", self.state["activeRadius"]), resume=True)
                 time.sleep(self.args.poll_seconds)
                 continue
             if phase == "benchmark":
@@ -305,12 +347,17 @@ class Controller:
                         size, self.state["targetBytes"],
                     ),
                 )
-                self.save(phase="generate", benchmarkBytes=size, estimatedRadius=radius)
-                self.configure_and_start(radius)
+                self.save(
+                    phase="generate", benchmarkBytes=size, estimatedRadius=radius,
+                    activeRadius=radius, chunkyRadius=self.state["benchmarkRadius"],
+                )
+                self.start_next_chunky_batch()
                 time.sleep(self.args.poll_seconds)
                 continue
 
-            if phase == "generate" and size < int(self.state["targetBytes"] * 0.90):
+            if (phase == "generate"
+                    and size < int(self.state["targetBytes"] * 0.90)
+                    and self.state.get("chunkyRadius", 0) >= self.state["activeRadius"]):
                 if self.state["expansions"] >= self.args.maximum_expansions:
                     return self.stop_for_safety("target undershot after maximum automatic expansions")
                 radius = min(
@@ -323,12 +370,25 @@ class Controller:
                 if radius <= self.state["activeRadius"]:
                     return self.stop_for_safety("unable to calculate a larger safe radius")
                 self.save(expansions=self.state["expansions"] + 1)
-                self.configure_and_start(radius)
+                self.save(activeRadius=radius)
+                if not self.start_dh_trailing_pass(final=False):
+                    self.start_next_chunky_batch()
                 time.sleep(self.args.poll_seconds)
                 continue
 
-            self.save(phase="dh", completedBytes=size, dhStarted=False, lastDhMaintenanceEpoch=time.time())
-            self.start_dh(self.state["activeRadius"])
+            # Chunky completed this batch. DH may trail by a fixed margin, then
+            # Chunky advances to the next batch. The final pass reaches the
+            # Chunky frontier exactly.
+            final = (
+                self.state.get("chunkyRadius", 0) >= self.state["activeRadius"]
+                and size >= int(self.state["targetBytes"] * 0.90)
+            )
+            self.save(completedBytes=size, dhStarted=False, lastDhMaintenanceEpoch=time.time())
+            if not self.start_dh_trailing_pass(final=final):
+                if final:
+                    self.save(phase="complete")
+                else:
+                    self.start_next_chunky_batch()
             time.sleep(self.args.poll_seconds)
 
 
@@ -349,6 +409,8 @@ def main() -> int:
     parser.add_argument("--maximum-radius", type=int, default=16_384)
     parser.add_argument("--maximum-expansions", type=int, default=3)
     parser.add_argument("--poll-seconds", type=int, default=60)
+    parser.add_argument("--generation-batch-blocks", type=int, default=1024)
+    parser.add_argument("--dh-lag-blocks", type=int, default=512)
     parser.add_argument("--idle-grace-seconds", type=int, default=600)
     parser.add_argument(
         "--dh-maintenance-interval-seconds", type=int, default=3600,
