@@ -55,17 +55,8 @@ def assemble(runtime_root: pathlib.Path, pack_root: pathlib.Path, output: pathli
     jvm_args = output / "user_jvm_args.txt"
     jvm_args.write_text("-Xms4G\n-Xmx8G\n", encoding="utf-8")
     (output / "eula.txt").write_text("eula=true\n", encoding="utf-8")
-    (output / "server.properties").write_text(
-        "white-list=true\n"
-        "enforce-whitelist=true\n"
-        "enforce-secure-profile=true\n"
-        "online-mode=true\n"
-        "enable-rcon=true\n"
-        "rcon.port=25575\n"
-        "rcon.ip=127.0.0.1\n"
-        "# rcon.password is injected from /etc/drewcraft/rcon-password at host startup.\n",
-        encoding="utf-8",
-    )
+    shutil.copy2(pathlib.Path(__file__).resolve().parents[1] / "infra" / "server.properties",
+                 output / "server.properties")
     return {
         "runtimeFiles": len(_files(runtime_root)),
         "packFiles": len(_files(pack_root)),

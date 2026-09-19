@@ -79,7 +79,7 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
 
         dh = (minecraft / "config/DistantHorizons.toml").read_text("utf-8")
         self.assertIn("[client.advanced.graphics.quality]", dh)
-        self.assertIn("lodChunkRenderDistanceRadius = 64", dh)
+        self.assertIn("lodChunkRenderDistanceRadius = 32", dh)
 
         marker = json.loads(
             (self.app / "user-data/client-defaults.json").read_text("utf-8")

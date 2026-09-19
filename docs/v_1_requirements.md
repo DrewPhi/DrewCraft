@@ -14,6 +14,7 @@ V1 prioritizes seamless installation, reliable launching, server/client parity, 
 - Minecraft 1.21.1, NeoForge 21.1.250, and Java 21.
 - Terrain Diffusion Plus owns overworld terrain and caves.
 - Distant Horizons provides long-distance terrain presentation.
+- JEI provides item and recipe lookup, with server-side recipe synchronization.
 - Chunky is available for controlled offline/admin pregeneration; it must not silently generate the live world.
 - Normal survival, vanilla structures and villages, mobs, farms, redstone, and multiplayer remain intact.
 - Immersive Vehicles/MTS plus the official content pack provide practical cars, trucks, and aircraft.

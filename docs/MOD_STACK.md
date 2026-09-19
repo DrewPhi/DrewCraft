@@ -9,6 +9,7 @@
 - Terrain Diffusion Plus
 - Chunky
 - Distant Horizons
+- Just Enough Items (JEI), on both client and server for recipe synchronization
 - Xaero's Minimap (client-only)
 - When Dungeons Arise with its complete upstream default structure set
 - Vanilla survival systems and structures
@@ -30,7 +31,7 @@
 
 The shipping profile selects ModernFix, FerriteCore, Lithium, ServerCore, Chunk Sending, AllTheLeaks, FastSuite, FastWorkbench, FastFurnace, Clumps, Connectivity, Spark, ImmediatelyFast, Entity Culling, and More Culling.
 
-Embeddium and ScalableLux are not selected because the current Aeronautics/Sable stack declares incompatibilities. C2ME remains an isolated world-build experiment.
+Embeddium and ScalableLux are not selected because the current Aeronautics/Sable stack declares incompatibilities. C2ME remains an isolated world-build experiment. New-client DH LOD radius defaults to 32; the launcher preserves user-edited graphics settings.
 
 ## Held out or deferred
 

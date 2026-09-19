@@ -32,6 +32,30 @@ policy:
     - "Third-party binaries and model assets are not committed to this repository by default."
 
 upstreams:
+  jei:
+    display_name: "Just Enough Items (JEI)"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: common
+    source:
+      provider: github
+      repository: "mezz/JustEnoughItems"
+      url: "https://github.com/mezz/JustEnoughItems"
+    artifact:
+      provider: modrinth
+      project_id: u6dRKJwZ
+      version_id: ufHUqt9b
+      candidate_version: "19.51.0.418"
+      filename: "jei-1.21.1-neoforge-19.51.0.418.jar"
+      release_status: release
+      sha256: 8bc3936d869e4040a5649c58b7e8be1c78c82a245c0dc07bdd68ab49121a222c
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: MIT
+    redistribution: "Use original Modrinth artifact URL."
+
   terrain_diffusion_plus:
     display_name: "Terrain Diffusion Plus"
     kind: mod
@@ -62,7 +86,7 @@ upstreams:
       trigger: "Only if the public integration surface cannot expose the climate/elevation/worldgen data DrewCraft requires, or an upstream fix must be carried."
     notes:
       - "GitHub currently exposes no Release objects for this repository; source ref is therefore only a compatibility candidate, not a production release lock."
-      - "World Scale 2 remains the DrewCraft target."
+      - "DrewCraft dedicated-server preset uses World Scale 3."
 
   chunky:
     display_name: "Chunky"

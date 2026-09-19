@@ -26,6 +26,7 @@ profiles:
     description: "Focused DrewCraft V1 base: Diffusion terrain, practical vehicles, Create, distant terrain, and conservative performance fixes."
     foundation:
       - terrain_diffusion_plus
+      - jei
       - chunky
       - distant_horizons
       - xaeros_minimap
@@ -79,7 +80,7 @@ profiles:
     purpose: "Authoritative shipping profile for V1: beautiful large-scale survival, vehicles and planes, Create engineering, and the complete upstream WDA dungeon set."
     worldgen_policy:
       - "Use the complete upstream When Dungeons Arise structure set with DrewCraft-owned sparse placement overrides."
-      - "Major WDA placement uses 10x upstream spacing/separation; minor placement uses 5x upstream spacing/separation."
+      - "Major WDA placement uses 1,500/1,350 chunk spacing/separation; minor uses 675/600, three times the previous DrewCraft overrides."
       - "WDA dungeons keep their upstream generation, mobs, and loot, but have no V1 strategic-source or Source Core behavior."
       - "Vanilla structures, villages, caves, mobs, farms, redstone, and survival progression remain available."
     requirements:

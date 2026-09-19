@@ -6,6 +6,13 @@ evidence:
   head_sha: d55c7458fba86fa55ac9cb07c5ebcea2679568fd
   generated_at: '2026-09-12'
 artifacts:
+  jei:
+    provider: modrinth
+    project_id: u6dRKJwZ
+    version_id: ufHUqt9b
+    filename: jei-1.21.1-neoforge-19.51.0.418.jar
+    sha256: 8bc3936d869e4040a5649c58b7e8be1c78c82a245c0dc07bdd68ab49121a222c
+    size: 1804792
   cristel_lib:
     provider: modrinth
     project_id: cl223EMc

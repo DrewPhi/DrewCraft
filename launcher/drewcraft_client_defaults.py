@@ -82,7 +82,7 @@ POTATO_DEFAULT_FILES = {
         "_version = 4\n"
         "\n"
         "[client.advanced.graphics.quality]\n"
-        "lodChunkRenderDistanceRadius = 64\n"
+        "lodChunkRenderDistanceRadius = 32\n"
     ),
 }
 

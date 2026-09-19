@@ -23,13 +23,16 @@ import time
 import urllib.request
 import zipfile
 
-APP_VERSION = "0.1.8"
+from drewcraft_server_list import ensure_server
+
+APP_VERSION = "0.1.9"
 PRESERVED_USER_PATHS = (
     "screenshots",
     "resourcepacks",
     "shaderpacks",
     "saves",
     "options.txt",
+    "servers.dat",
     # Terrain Diffusion downloads multi-gigabyte model assets during mod
     # construction. They are runtime cache data, not pack-managed content, and
     # must survive the launcher's versioned-instance convergence.
@@ -412,6 +415,15 @@ def _copy_preserved_user_data(previous_minecraft: pathlib.Path | None, target_mi
             shutil.copy2(source, target)
 
 
+def _ensure_server_entry(minecraft_dir: pathlib.Path, address: str) -> None:
+    try:
+        ensure_server(minecraft_dir / "servers.dat", address)
+    except (OSError, ValueError) as exc:
+        # A damaged or third-party servers.dat belongs to the player. Never
+        # overwrite it or turn a launcher update into a failed game launch.
+        print(f"DrewCraft could not add its Multiplayer entry: {exc}", file=sys.stderr)
+
+
 def configure_prism_instance(instance_root: pathlib.Path, java_path: str | None, manifest: dict) -> str:
     instance_root.mkdir(parents=True, exist_ok=True)
     instance_id = instance_root.name
@@ -482,6 +494,9 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
                     pathlib.Path(existing_state["prismRoot"]) / "instances" / existing_state["instanceId"])
                 _remove_deprecated_managed_resource_packs(
                     pathlib.Path(existing_state["prismRoot"]) / "instances" / existing_state["instanceId"] / "minecraft")
+                _ensure_server_entry(
+                    pathlib.Path(existing_state["prismRoot"]) / "instances" / existing_state["instanceId"]
+                    / "minecraft", (existing_state.get("server") or {}).get("address", ""))
                 if progress: progress({"phase": "complete", "label": "DrewCraft is already up to date"})
                 return existing_state
         except Exception:
@@ -509,6 +524,7 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
         shutil.rmtree(managed_instance)
     _replace_path(stage_instance, managed_instance)
     _ensure_managed_resource_packs(managed_instance / "minecraft")
+    _ensure_server_entry(managed_instance / "minecraft", (manifest.get("server") or {}).get("address", ""))
 
     state = {
         "launcherVersion": APP_VERSION,

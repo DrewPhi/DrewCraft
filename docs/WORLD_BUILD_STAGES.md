@@ -14,7 +14,7 @@ Target footprint: approximately **4,000 x 4,000 blocks**.
 
 Purpose:
 
-- prove the current Minecraft 1.21.1 / NeoForge / Java 21 profile boots with Terrain Diffusion World Scale 2;
+- prove the current Minecraft 1.21.1 / NeoForge / Java 21 profile boots with Terrain Diffusion World Scale 3;
 - test selected structures and DrewCraft Source Core binding;
 - test Covenant lore/drop plumbing;
 - test Create, MTS, weather and new Create combat/mobility dependencies together;
@@ -56,7 +56,7 @@ Before generating the large production artifact, freeze and record:
 - Java version;
 - Terrain Diffusion Plus source/artifact identity;
 - Terrain Diffusion model/config identity;
-- World Scale 2;
+- World Scale 3;
 - production seed;
 - generation radius/border plan;
 - every worldgen-affecting mod/datapack and exact hash;

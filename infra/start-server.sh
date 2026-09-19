@@ -19,6 +19,9 @@ if [[ -z "$rcon_password" ]]; then
 fi
 sed -i -E '/^(enable-rcon|rcon\.port|rcon\.ip|rcon\.password)=/d' /srv/drewcraft/persistent/server.properties
 printf 'enable-rcon=true\nrcon.port=25575\nrcon.ip=127.0.0.1\nrcon.password=%s\n' "$rcon_password" >>/srv/drewcraft/persistent/server.properties
+sed -i -E '/^level-type=/d' /srv/drewcraft/persistent/server.properties
+printf 'level-type=drewcraft\\:terrain_diffusion_scale_3\n' >>/srv/drewcraft/persistent/server.properties
+python3 /srv/drewcraft/bin/worldgen_guard.py --prepare
 rm -f server.properties
 ln -s /srv/drewcraft/persistent/server.properties server.properties
 ln -s /srv/drewcraft/persistent/world world

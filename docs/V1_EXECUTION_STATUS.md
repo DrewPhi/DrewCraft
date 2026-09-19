@@ -1,6 +1,6 @@
 # DrewCraft V1 Execution Status
 
-**Updated:** 2026-09-17
+**Updated:** 2026-09-19
 **Shipping profile:** `v1_survival_exploration`
 **Phase:** server/gameplay proof
 
@@ -57,5 +57,5 @@ No post-V1 feature is part of these gates.
 - Focused live pack and manifest: `0.1.3-dev-local` published from commit `c047739` with no Covenant or weather payload paths.
 - Launcher 0.1.8: Windows, Apple Silicon macOS, and Ubuntu/Linux builds passed and are the website's latest release aliases.
 - Server application layout and native ARM64 DrewCraft build passed.
-- Dedicated-server run `35147504223` passed fresh Diffusion-world boot, clean stop, same-world restart, and fatal-error scanning with the focused profile.
-- OCI production host repeated fresh-world boot and same-world restart with exact post-start manifest verification, active/enabled server and health services, and checksummed pre-update backups. A guarded 40 GB Overworld-only pregeneration is active; health remains `updating` until it finishes.
+- Dedicated-server run `35147504223` passed boot and restart, but its world generator was not verified; the production save was subsequently found to use Minecraft's normal Overworld. That run is **not** Terrain Diffusion evidence.
+- World revision 2 must prove a Terrain Diffusion scale-3 saved generator before Chunky/DH pre-generation resumes. The current world reset and matched release deployment are tracked in `CURRENT_BREAKPOINT.md`.

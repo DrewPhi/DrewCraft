@@ -1,6 +1,6 @@
 # DrewCraft Current Development Breakpoint
 
-**Updated:** 2026-09-17
+**Updated:** 2026-09-19
 **Last completed breakpoint:** **BP-V1A — focused profile convergence**
 **Current breakpoint:** **BP-V1B — server and gameplay proof**
 
@@ -39,8 +39,8 @@ V1 has been deliberately narrowed to fun, reliable multiplayer survival: Terrain
 
 ## BP-V1B
 
-Pack `0.1.3-dev-local` is published from `v1_survival_exploration` and live on OCI. The ARM64 host generated a fresh Diffusion spawn, reached `Done`, stopped cleanly, reopened the same persistent world, and reached `Done` again. Post-start manifest verification was exact, the fatal-log scan was clean, and the public website points at manifest SHA-256 `c50bf7cc391e998ad69a944b0831f40059841913a79fdd3662d173f7cec0a136`.
+**Correction:** The prior fresh-world server smoke reached `Done` but did not prove Terrain Diffusion world selection. On 2026-09-19, the live `server.properties` was found to contain `level-type=minecraft\\:normal`, and the saved Overworld uses Minecraft's normal biome source and noise settings. Thus the existing generated world is not a Terrain Diffusion world. Do not reuse the old worldgen claim as evidence.
 
-An Overworld-only generation pass is active with a 40,000,000,000-byte target. The completed 1,024-block benchmark selected an 11,520-block production radius centered at the Diffusion spawn. A dedicated idle-only controller persists progress, retries a lost Chunky task after restart, expands when the requested target increases, pauses at 45 GB or 25 GB remaining disk, and runs Distant Horizons `/dh pregen` 512 blocks behind each confirmed 1,024-block Chunky frontier. Any player join pauses both jobs safely; after the target is reached, hourly idle windows refresh DH LODs without running Chunky again. Its dimension-aware boundary applies only to the Overworld; vanilla's shared border remains at its maximum so Nether and End generate normally. Public health reports `ready` while players are online or while the controller is waiting for an idle window.
+The next release is `0.1.6-dev-local` / world revision 2. It pins JEI, uses a DrewCraft-owned dedicated-server preset backed by the upstream Terrain Diffusion scale-3 dimension, seeds the upstream per-world scale SavedData before first boot, restores full inference-window overlap, and triples the previous WDA major/minor spacing. A guard checks the saved generator and scale before the pregen controller can generate chunks. The controller centers the new world at its actual saved spawn. The launcher adds the server to the multiplayer list and preserves user entries; client DH radius defaults to 32 on new installs.
 
-Next, launch through DrewCraft 0.1.8 and complete the hands-on gameplay checklist: join, normal survival, vehicle, aircraft, representative Create content, and a WDA dungeon. Then run platform acceptance, a small multiplayer soak, and the retained backup restore drill. Do not require production world pregeneration or post-V1 features.
+The owner authorized deleting the old production world without a backup. This is a one-time world reset; normal future application updates retain the existing backup policy. After publishing the matched release, deploy it, reset only the identified old world and pregen state, and let the production world generate under the idle-only controller. User visual verification and gameplay smoke remain pending; no separate preview world is required.

@@ -19,6 +19,8 @@ import shutil
 import tempfile
 import time
 
+from worldgen_guard import read_nbt, verify as verify_worldgen
+
 
 def estimate_radius(current_radius: int, baseline_bytes: int, measured_bytes: int,
                     target_bytes: int) -> int:
@@ -92,7 +94,10 @@ class Controller:
             "phase": "benchmark",
             "centerX": self.args.center_x,
             "centerZ": self.args.center_z,
-            "baselineBytes": self.args.baseline_bytes,
+            # A replacement world has a different baseline from the previous
+            # generation. Measure the new world instead of trusting a stale
+            # value baked into the systemd unit.
+            "baselineBytes": tree_bytes(self.world),
             "benchmarkRadius": self.args.benchmark_radius,
             "activeRadius": self.args.benchmark_radius,
             "targetBytes": self.args.target_bytes,
@@ -284,10 +289,24 @@ class Controller:
             if self.state.get("phase") == "complete":
                 self.save(phase="generate", completedBytes=None, dhStarted=False)
         self.write_boundary(self.state["activeRadius"])
+        world_verified = False
         while True:
             if not self.idle_window():
                 time.sleep(self.args.poll_seconds)
                 continue
+            if not world_verified:
+                try:
+                    print(verify_worldgen(self.world, pathlib.Path("/srv/drewcraft/persistent/server.properties")),
+                          flush=True)
+                    if self.state.get("phase") == "benchmark" and not self.state.get("centerSource"):
+                        saved = read_nbt(self.world / "level.dat")["Data"]
+                        self.save(centerX=int(saved["SpawnX"]), centerZ=int(saved["SpawnZ"]),
+                                  centerSource="world-spawn")
+                    world_verified = True
+                except (OSError, KeyError, ValueError, RuntimeError) as exc:
+                    self.health("failed", f"Pregeneration blocked: {exc}")
+                    print(f"Pregeneration blocked: {exc}", flush=True)
+                    return 2
             size = tree_bytes(self.world)
             free = shutil.disk_usage(self.world).free
             if size >= self.state["maximumBytes"]:

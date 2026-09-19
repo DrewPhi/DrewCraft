@@ -21,6 +21,7 @@ def load_module(name, path):
 
 release_contract = load_module("release_contract", "tools/release_contract.py")
 serverctl = load_module("serverctl", "infra/serverctl.py")
+load_module("drewcraft_server_list", "launcher/drewcraft_server_list.py")
 launcher = load_module("drewcraft_bootstrap", "launcher/drewcraft_bootstrap.py")
 # drewcraft_entry.py imports its sibling drewcraft_client_defaults module.
 # Pre-register it so this module also passes in isolation instead of only
@@ -31,6 +32,7 @@ world_index = load_module("world_seed_index", "tools/world_seed_index.py")
 world_bundle = load_module("world_bundle", "tools/world_bundle.py")
 world_extract = load_module("extract_world_index", "tools/extract_world_index.py")
 release_layout = load_module("assemble_release_layout", "tools/assemble_release_layout.py")
+load_module("worldgen_guard", "infra/worldgen_guard.py")
 pregen = load_module("pregen_controller", "infra/pregen_controller.py")
 
 
