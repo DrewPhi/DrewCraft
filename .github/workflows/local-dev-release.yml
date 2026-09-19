@@ -26,7 +26,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PACK_VERSION: 0.1.6-dev-local
+  PACK_VERSION: 0.1.7-dev-local
   DEV_RELEASE_TAG: drewcraft-dev-pack
 
 jobs:
@@ -174,8 +174,8 @@ jobs:
             --pack-version "$PACK_VERSION" \
             --protocol-version 1 \
             --world-id drewcraft-production \
-            --world-revision 2 \
-            --generation-pack-version drewcraft-worldgen-2 \
+            --world-revision 3 \
+            --generation-pack-version drewcraft-worldgen-3 \
             --minecraft-version 1.21.1 \
             --neoforge-version 21.1.250 \
             --minimum-launcher-version 0.1.8 \

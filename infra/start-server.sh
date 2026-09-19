@@ -21,6 +21,19 @@ sed -i -E '/^(enable-rcon|rcon\.port|rcon\.ip|rcon\.password)=/d' /srv/drewcraft
 printf 'enable-rcon=true\nrcon.port=25575\nrcon.ip=127.0.0.1\nrcon.password=%s\n' "$rcon_password" >>/srv/drewcraft/persistent/server.properties
 sed -i -E '/^level-type=/d' /srv/drewcraft/persistent/server.properties
 printf 'level-type=drewcraft\\:terrain_diffusion_scale_3\n' >>/srv/drewcraft/persistent/server.properties
+managed_datapack=/srv/drewcraft/current/datapacks/drewcraft-structures
+world_datapack=/srv/drewcraft/persistent/world/datapacks/drewcraft-structures
+if [[ ! -f "$managed_datapack/pack.mcmeta" ]]; then
+  echo "missing managed DrewCraft structures datapack" >&2
+  exit 1
+fi
+mkdir -p /srv/drewcraft/persistent/world/datapacks
+if [[ ! -e "$world_datapack" ]]; then
+  cp -a "$managed_datapack" "$world_datapack"
+elif ! diff -rq "$managed_datapack" "$world_datapack" >/dev/null; then
+  echo "DrewCraft structures datapack differs from the world; refusing mixed worldgen" >&2
+  exit 1
+fi
 python3 /srv/drewcraft/bin/worldgen_guard.py --prepare
 rm -f server.properties
 ln -s /srv/drewcraft/persistent/server.properties server.properties

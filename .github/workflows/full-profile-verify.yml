@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   verify-v1-shipping-profile:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -33,6 +33,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: "9.2.1"
 
       - name: Install pack tooling
         run: python -m pip install -r tools/requirements-pack.txt

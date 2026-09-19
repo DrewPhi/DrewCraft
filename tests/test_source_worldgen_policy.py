@@ -28,7 +28,7 @@ def test_every_shipping_and_combined_smoke_workflow_builds_the_source_profile():
 def test_focused_v1_live_release_does_not_inject_covenant_resource_pack():
     text = (ROOT / ".github/workflows/local-dev-release.yml").read_text(encoding="utf-8")
     assert "inject_resourcepack.py" not in text
-    assert "PACK_VERSION: 0.1.6-dev-local" in text
+    assert "PACK_VERSION: 0.1.7-dev-local" in text
     assert "--minimum-launcher-version 0.1.8" in text
     assert "--server-address 150.136.96.174:25565" in text
     assert "--health-url http://150.136.96.174:25566/health" in text
@@ -37,3 +37,17 @@ def test_focused_v1_live_release_does_not_inject_covenant_resource_pack():
 def test_ancient_city_is_not_silently_repurposed_as_an_undead_factory():
     mappings = load_json(ROOT / "world/source-mappings.json")
     assert "minecraft:ancient_city" not in {item["structureId"] for item in mappings["sources"]}
+
+
+def test_sparse_dungeon_placements_ship_as_a_world_datapack():
+    overlay = ROOT / "pack/overlays/source_structures_first_spike"
+    datapack = overlay / "datapacks/drewcraft-structures"
+    assert load_json(datapack / "pack.mcmeta")["pack"]["pack_format"] == 48
+    assert not any((overlay / "data/dungeons_arise").rglob("*.json"))
+    for name, spacing, separation in (("major_structures", 1500, 1350), ("minor_structures", 675, 600)):
+        structure_set = load_json(datapack / f"data/dungeons_arise/worldgen/structure_set/{name}.json")
+        assert structure_set["placement"]["spacing"] == spacing
+        assert structure_set["placement"]["separation"] == separation
+    startup = (ROOT / "infra/start-server.sh").read_text(encoding="utf-8")
+    assert "world/datapacks/drewcraft-structures" in startup
+    assert "refusing mixed worldgen" in startup

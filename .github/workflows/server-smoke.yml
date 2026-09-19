@@ -28,6 +28,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: "9.2.1"
+
       - name: Install pack tooling
         run: python -m pip install -r tools/requirements-pack.txt
 
@@ -63,13 +67,36 @@ jobs:
           print('path=' + str(jars[0]))
           PY
 
+      - name: Build pinned Create Radar upstream fix
+        id: radar
+        run: |
+          git clone https://github.com/Arsenalists-of-Create/Create-Radar.git /tmp/create-radar-upstream
+          cd /tmp/create-radar-upstream
+          git checkout --detach e637e83f7af85de450e4149679075ef055077371
+          test "$(git rev-parse HEAD)" = e637e83f7af85de450e4149679075ef055077371
+          bash gradlew build --no-daemon
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import pathlib
+          jars = [p for p in pathlib.Path('/tmp/create-radar-upstream/build/libs').glob('*.jar')
+                  if not p.name.lower().endswith(('-sources.jar','-source.jar','-javadoc.jar','-dev.jar'))]
+          if len(jars) != 1:
+              raise SystemExit(f'expected one radar jar: {jars}')
+          print('path=' + str(jars[0]))
+          PY
+
       - name: Rebuild verified server mod tree
         run: |
           python tools/build_verified_profile.py \
             --profile v1_survival_exploration \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
+            --source-artifact "create_radars=${{ steps.radar.outputs.path }}" \
             --output-dir build/verified-pack \
             --evidence-output build/verified-pack-evidence.json
+
+      - name: Build and inject DrewCraft mod
+        run: |
+          gradle -p mods/drewcraft clean test build --no-daemon
+          python tools/inject_drewcraft_mod.py --client build/verified-pack/client --server build/verified-pack/server
 
       - name: Install pinned NeoForge server
         run: |
@@ -93,9 +120,13 @@ jobs:
         run: |
           rm -rf /tmp/drewcraft-server/mods
           cp -a build/verified-pack/server/mods /tmp/drewcraft-server/mods
+          cp -a build/verified-pack/server/config /tmp/drewcraft-server/config
+          mkdir -p /tmp/drewcraft-server/world/datapacks
+          cp -a build/verified-pack/server/datapacks/drewcraft-structures /tmp/drewcraft-server/world/datapacks/
           printf 'eula=true\n' > /tmp/drewcraft-server/eula.txt
           cat > /tmp/drewcraft-server/server.properties <<'EOF'
           online-mode=false
+          level-type=drewcraft\:terrain_diffusion_scale_3
           max-tick-time=-1
           view-distance=4
           simulation-distance=4
@@ -105,6 +136,7 @@ jobs:
           EOF
           printf '%s\n' '-Xms2G' '-Xmx6G' > /tmp/drewcraft-server/user_jvm_args.txt
           chmod +x /tmp/drewcraft-server/run.sh || true
+          python infra/worldgen_guard.py --world /tmp/drewcraft-server/world --properties /tmp/drewcraft-server/server.properties --prepare
 
       - name: Boot new world, wait for readiness, stop cleanly
         working-directory: /tmp/drewcraft-server
@@ -142,6 +174,7 @@ jobs:
           if kill -0 "$PID" 2>/dev/null; then echo 'Server failed to stop cleanly'; kill "$PID" || true; exit 1; fi
           wait "$PID"
           test -d world
+          python "$GITHUB_WORKSPACE/infra/worldgen_guard.py" --world world --properties server.properties
           grep -q 'Done (' server-first.log
           echo 'FIRST BOOT OK'
 
