@@ -17,6 +17,13 @@ import tempfile
 PROFILE_SCHEMA_VERSION = 1
 PROFILE_NAME = "potato"
 
+ENTITY_CULLING_PATH = "config/entityculling.json"
+IV_ENTITY_WHITELIST = (
+    "mts:builder_existing",
+    "mts:builder_rendering",
+    "mts:builder_seat",
+)
+
 # options.txt is already preserved by drewcraft_bootstrap. These mod configs
 # need the same treatment, but must stay outside the immutable release truth so
 # users can turn graphics up without the repair path resetting them.
@@ -180,6 +187,32 @@ def _cache_current_graphics(app_dir: pathlib.Path, minecraft_dir: pathlib.Path) 
             shutil.copy2(source, cached)
 
 
+def ensure_vehicle_entity_culling_whitelist(minecraft_dir: pathlib.Path) -> bool:
+    """Keep Immersive Vehicles visible without removing user culling entries."""
+    path = minecraft_dir / pathlib.Path(ENTITY_CULLING_PATH)
+    try:
+        payload = json.loads(path.read_text("utf-8")) if path.is_file() else {}
+    except (OSError, ValueError, TypeError):
+        # Never destroy a hand-edited or partially-written config. Entity
+        # Culling will recreate it on the next client start.
+        return False
+    changed = False
+    for key in ("entityWhitelist", "tickCullingWhitelist"):
+        values = payload.get(key)
+        if not isinstance(values, list):
+            values = []
+            payload[key] = values
+            changed = True
+        for identifier in IV_ENTITY_WHITELIST:
+            if identifier not in values:
+                values.append(identifier)
+                changed = True
+    if changed or not path.is_file():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    return changed
+
+
 def apply_client_defaults(app_dir: pathlib.Path, state: dict) -> bool:
     """Restore user graphics settings and seed Potato exactly once.
 
@@ -193,6 +226,7 @@ def apply_client_defaults(app_dir: pathlib.Path, state: dict) -> bool:
     minecraft_dir.mkdir(parents=True, exist_ok=True)
 
     _restore_cached_graphics(app_dir, minecraft_dir)
+    ensure_vehicle_entity_culling_whitelist(minecraft_dir)
 
     marker = _marker_path(app_dir)
     seeded = False

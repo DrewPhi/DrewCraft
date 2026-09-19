@@ -154,6 +154,28 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
         client_defaults.snapshot_user_graphics(self.app)
         self.assertFalse(cached.exists())
 
+    def test_immersive_vehicles_are_entity_culling_whitelisted(self):
+        _, minecraft = self.state()
+        config = minecraft / "config/entityculling.json"
+        config.parent.mkdir(parents=True, exist_ok=True)
+        config.write_text(
+            json.dumps(
+                {
+                    "entityWhitelist": ["my:custom_entity"],
+                    "tickCullingWhitelist": [],
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        self.assertTrue(client_defaults.ensure_vehicle_entity_culling_whitelist(minecraft))
+        payload = json.loads(config.read_text("utf-8"))
+        for identifier in client_defaults.IV_ENTITY_WHITELIST:
+            self.assertIn(identifier, payload["entityWhitelist"])
+            self.assertIn(identifier, payload["tickCullingWhitelist"])
+        self.assertIn("my:custom_entity", payload["entityWhitelist"])
+        self.assertFalse(client_defaults.ensure_vehicle_entity_culling_whitelist(minecraft))
+
 
 if __name__ == "__main__":
     unittest.main()
