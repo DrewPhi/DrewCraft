@@ -50,6 +50,25 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
             "[Chunky] Task running. Processed: 6538 chunks (39.29%), ETA: 0:40:26"))
         self.assertIsNone(pregen.Controller.progress_percent("No tasks are currently running."))
 
+    def test_pregen_idle_and_dh_status_parsers_are_fail_closed(self):
+        self.assertEqual(0, pregen.online_players("There are 0 of a max of 10 players online"))
+        self.assertEqual(2, pregen.online_players("There are 2 of a max of 10 players online"))
+        self.assertIsNone(pregen.online_players("RCON unavailable"))
+        self.assertTrue(pregen.task_running("[Chunky] Task running. Processed: 12 chunks (4.0%)"))
+        self.assertFalse(pregen.task_running("No tasks are currently running."))
+        self.assertFalse(pregen.dh_task_running("No pre-generation task is running"))
+        self.assertTrue(pregen.dh_task_running("Distant Horizons pre-generation running (12%)"))
+
+    def test_pregen_service_alternates_chunky_then_dh_during_idle_windows(self):
+        service = (ROOT / "infra/drewcraft-pregen.service").read_text("utf-8")
+        self.assertIn("--idle-grace-seconds 600", service)
+        self.assertIn("--dh-maintenance-interval-seconds 3600", service)
+        controller = (ROOT / "infra/pregen_controller.py").read_text("utf-8")
+        self.assertIn('"dh", "pregen", "start", "overworld"', controller)
+        self.assertIn('"dh", "config", "generation.mode", "PRE_EXISTING_ONLY"', controller)
+        self.assertIn('self.rcon("dh", "pregen", "status")', controller)
+        self.assertIn('(\"dh\", \"pregen\", \"stop\")', controller)
+
     def build_release(self, version="0.8.0-test", generation_pack_version="worldgen-v1"):
         publish = self.tmp / "publish"
         layout = publish / version

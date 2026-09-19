@@ -1,6 +1,6 @@
 """BP9: DH LOD pregen is part of the production-world pipeline by default.
 
-Chunky pregenerates the bounded world offline; DH PRE_EXISTING then converts
+Chunky pregenerates the bounded world offline; DH PRE_EXISTING_ONLY then converts
 those exact chunks to LODs (no double worldgen, visuals match the indexed
 source/structure geography). The resulting world/data/DistantHorizons.sqlite
 travels inside the world archive, so first-join clients pull ready-made LODs
@@ -104,7 +104,7 @@ class DhPipelineWiringTest(unittest.TestCase):
         text = (ROOT / "tools/build_production_world.py").read_text("utf-8")
         self.assertIn("--dh-pregen-command", text)
         self.assertIn("--dh-pregen-mode", text)
-        self.assertIn("PRE_EXISTING", text)
+        self.assertIn("PRE_EXISTING_ONLY", text)
         self.assertIn("--require-dh-cache", text)
         self.assertIn("dh_cache_info", text)
         self.assertIn("dhCachePresent", text)

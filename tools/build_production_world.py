@@ -39,15 +39,16 @@ def main() -> int:
         help=(
             "shell command that prebuilds Distant Horizons LODs into "
             "--world/data/DistantHorizons.sqlite (e.g. boot the exact pack server and run "
-            "`/dh pregen start overworld 0 0 <radiusChunks> PRE_EXISTING`, then stop cleanly); "
+            "`/dh pregen start overworld 0 0 <radiusChunks>`, with DH configured not to "
+            "generate missing terrain, then stop cleanly); "
             "omitted to skip execution and only record/verify the cache"
         ),
     )
     parser.add_argument(
         "--dh-pregen-mode",
-        default="PRE_EXISTING",
-        choices=("PRE_EXISTING", "FEATURES", "INTERNAL_SERVER"),
-        help="recorded DH pregen mode; PRE_EXISTING converts already-Chunky-generated chunks (default, exact visuals, no double worldgen)",
+        default="PRE_EXISTING_ONLY",
+        choices=("PRE_EXISTING_ONLY", "FEATURES", "INTERNAL_SERVER"),
+        help="recorded DH pregen mode; PRE_EXISTING_ONLY converts already-Chunky-generated chunks (default, exact visuals, no double worldgen)",
     )
     parser.add_argument(
         "--require-dh-cache",
@@ -82,7 +83,7 @@ def main() -> int:
         if args.require_dh_cache and not dh_cache["present"]:
             raise RuntimeError(
                 "DH LOD cache missing at world/data/DistantHorizons.sqlite; "
-                "run the server `/dh pregen start <dimension> 0 0 <radiusChunks> PRE_EXISTING` "
+                "run the server `/dh pregen start <dimension> 0 0 <radiusChunks>` "
                 "on top of the Chunky-pregenerated world, stop cleanly, then rerun"
             )
         state["dhPregenMode"] = args.dh_pregen_mode

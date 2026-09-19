@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Drive a size-targeted, Overworld-only Chunky pregeneration safely."""
+"""Drive idle-only Chunky and Distant Horizons pregeneration safely.
+
+Chunky owns terrain expansion.  Distant Horizons is run afterwards, over the
+same already-generated radius, so the two generators never compete for the
+same chunks.  Both jobs are paused when a player joins and resume from their
+last checkpoint when the server is empty again.
+"""
 from __future__ import annotations
 
 import argparse
@@ -45,6 +51,22 @@ def atomic_json(path: pathlib.Path, value: dict) -> None:
             os.unlink(temp)
 
 
+def online_players(response: str) -> int | None:
+    """Parse vanilla's RCON ``list`` response without assuming its locale."""
+    match = re.search(r"(?:There are\s+|players online:?\s*)(\d+)", response, re.IGNORECASE)
+    return int(match.group(1)) if match else None
+
+
+def task_running(response: str) -> bool:
+    text = response.lower()
+    return "task running" in text or "generating" in text or "generation running" in text
+
+
+def dh_task_running(response: str) -> bool:
+    text = response.lower()
+    return task_running(response) and "not running" not in text and "no pre-generation" not in text
+
+
 class Controller:
     def __init__(self, args: argparse.Namespace):
         self.args = args
@@ -59,7 +81,7 @@ class Controller:
         if self.state_path.is_file():
             return json.loads(self.state_path.read_text("utf-8"))
         state = {
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "phase": "benchmark",
             "centerX": self.args.center_x,
             "centerZ": self.args.center_z,
@@ -70,6 +92,9 @@ class Controller:
             "maximumBytes": self.args.maximum_bytes,
             "minimumFreeBytes": self.args.minimum_free_bytes,
             "expansions": 0,
+            "dhMaintenanceIntervalSeconds": self.args.dh_maintenance_interval_seconds,
+            "dhMaintenanceActive": False,
+            "maintenancePaused": False,
         }
         atomic_json(self.state_path, state)
         return state
@@ -91,6 +116,41 @@ class Controller:
         password = self.password_path.read_text("utf-8").strip()
         with Client("127.0.0.1", self.args.rcon_port, passwd=password, timeout=10) as client:
             return client.run(*command)
+
+    def idle_window(self) -> bool:
+        """Return true only after the server has been empty for the grace period."""
+        try:
+            count = online_players(self.rcon("list"))
+        except Exception as exc:
+            self.health("unknown", f"Pregeneration waiting for player status: {exc}")
+            return False
+        if count is None:
+            self.health("unknown", "Pregeneration waiting: could not parse player count")
+            return False
+        if count > 0:
+            if not self.state.get("maintenancePaused"):
+                for command in (("chunky", "pause"), ("dh", "pregen", "stop")):
+                    try:
+                        print(self.rcon(*command), flush=True)
+                    except Exception as exc:
+                        print(f"Could not pause {' '.join(command)}: {exc}", flush=True)
+            self.save(maintenancePaused=True, idleSince=None, onlinePlayers=count)
+            self.health("ready", f"Players online ({count}); pregeneration paused")
+            return False
+        now = time.time()
+        idle_since = self.state.get("idleSince") or now
+        self.save(idleSince=idle_since, onlinePlayers=0)
+        if now - idle_since < self.args.idle_grace_seconds:
+            self.health("ready", "Server empty; pregeneration starts after idle grace period")
+            return False
+        if self.state.get("maintenancePaused"):
+            self.save(maintenancePaused=False)
+            if self.state.get("phase") == "dh" and self.state.get("dhStarted"):
+                # `/dh pregen stop` is intentionally used on player join.  A
+                # fresh start is resumable because DH skips already indexed
+                # LODs, and avoids treating the deliberate pause as completion.
+                self.start_dh(self.state["activeRadius"])
+        return True
 
     def write_boundary(self, radius: int) -> None:
         atomic_json(self.boundary_path, {
@@ -116,9 +176,44 @@ class Controller:
             print(response, flush=True)
         self.save(activeRadius=radius, **({} if resume else {"resumeAttempts": 0}))
 
+    def start_dh(self, radius: int) -> None:
+        radius_chunks = max(1, math.ceil(radius / 16))
+        # DH's documented command surface calls this setting generation.mode;
+        # PRE_EXISTING_ONLY prevents the LOD pass from creating a second copy
+        # of terrain that Chunky owns.
+        mode_response = self.rcon("dh", "config", "generation.mode", "PRE_EXISTING_ONLY")
+        if any(word in mode_response.lower() for word in ("unknown", "invalid", "error")):
+            raise RuntimeError(f"Distant Horizons refused PRE_EXISTING_ONLY mode: {mode_response}")
+        print(mode_response, flush=True)
+        response = self.rcon(
+            "dh", "pregen", "start", "overworld",
+            str(self.state["centerX"]), str(self.state["centerZ"]), str(radius_chunks),
+        )
+        print(response, flush=True)
+        self.save(
+            phase="dh",
+            dhRadiusChunks=radius_chunks,
+            dhMaintenanceActive=True,
+            dhStarted=True,
+            maintenancePaused=False,
+        )
+
+    def dh_finished(self) -> bool:
+        try:
+            response = self.rcon("dh", "pregen", "status")
+        except Exception as exc:
+            print(f"DH status unavailable: {exc}", flush=True)
+            return False
+        print(response, flush=True)
+        if dh_task_running(response):
+            return False
+        # Once a DH task has been started, a status response reporting no task
+        # means the bounded pass completed (or was already fully cached).
+        return bool(self.state.get("dhStarted"))
+
     @staticmethod
     def running(progress: str) -> bool:
-        return "Task running" in progress
+        return task_running(progress)
 
     @staticmethod
     def progress_percent(progress: str) -> float | None:
@@ -128,23 +223,53 @@ class Controller:
     def stop_for_safety(self, reason: str) -> int:
         try:
             print(self.rcon("chunky", "pause"), flush=True)
+            print(self.rcon("dh", "pregen", "stop"), flush=True)
         finally:
             self.save(phase="safety_paused", reason=reason)
             self.health("updating", f"Overworld pregeneration paused safely: {reason}")
         return 2
 
     def run(self) -> int:
-        if self.state["phase"] == "complete":
-            return 0
+        # Allow an operator to increase --target-bytes without deleting state.
+        if self.args.target_bytes > self.state.get("targetBytes", 0):
+            self.save(targetBytes=self.args.target_bytes)
+            if self.state.get("phase") == "complete":
+                self.save(phase="generate", completedBytes=None, dhStarted=False)
         self.write_boundary(self.state["activeRadius"])
-        self.health("updating", "Overworld pregeneration is running; Nether and End remain real-time")
         while True:
+            if not self.idle_window():
+                time.sleep(self.args.poll_seconds)
+                continue
             size = tree_bytes(self.world)
             free = shutil.disk_usage(self.world).free
             if size >= self.state["maximumBytes"]:
                 return self.stop_for_safety("maximum world-size threshold reached")
             if free <= self.state["minimumFreeBytes"]:
                 return self.stop_for_safety("minimum free-space reserve reached")
+
+            if self.state["phase"] == "dh":
+                if self.dh_finished():
+                    self.save(
+                        phase="complete", dhMaintenanceActive=False,
+                        lastDhMaintenanceEpoch=time.time(),
+                        lastDhMaintenanceUtc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    )
+                    self.health("ready", "Overworld and Distant Horizons pregeneration complete")
+                time.sleep(self.args.poll_seconds)
+                continue
+
+            if self.state["phase"] == "complete":
+                last = self.state.get("lastDhMaintenanceEpoch", 0)
+                if time.time() - last >= self.args.dh_maintenance_interval_seconds:
+                    self.save(
+                        phase="dh", dhStarted=False,
+                        lastDhMaintenanceEpoch=time.time(),
+                    )
+                    self.start_dh(self.state["activeRadius"])
+                else:
+                    self.health("ready", "World complete; waiting for the next DH maintenance window")
+                time.sleep(self.args.poll_seconds)
+                continue
 
             try:
                 progress = self.rcon("chunky", "progress")
@@ -202,11 +327,9 @@ class Controller:
                 time.sleep(self.args.poll_seconds)
                 continue
 
-            self.save(phase="complete", completedBytes=size)
-            gb = size / 1_000_000_000
-            self.health("ready", f"Overworld pregeneration complete ({gb:.1f} GB); Nether and End remain real-time")
-            print(f"Pregeneration complete: {size} bytes", flush=True)
-            return 0
+            self.save(phase="dh", completedBytes=size, dhStarted=False, lastDhMaintenanceEpoch=time.time())
+            self.start_dh(self.state["activeRadius"])
+            time.sleep(self.args.poll_seconds)
 
 
 def main() -> int:
@@ -226,6 +349,11 @@ def main() -> int:
     parser.add_argument("--maximum-radius", type=int, default=16_384)
     parser.add_argument("--maximum-expansions", type=int, default=3)
     parser.add_argument("--poll-seconds", type=int, default=60)
+    parser.add_argument("--idle-grace-seconds", type=int, default=600)
+    parser.add_argument(
+        "--dh-maintenance-interval-seconds", type=int, default=3600,
+        help="minimum idle interval between DH refresh passes after Chunky reaches the target",
+    )
     return Controller(parser.parse_args()).run()
 
 
