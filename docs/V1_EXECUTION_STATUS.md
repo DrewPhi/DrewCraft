@@ -58,4 +58,4 @@ No post-V1 feature is part of these gates.
 - Launcher 0.1.8: Windows, Apple Silicon macOS, and Ubuntu/Linux builds passed and are the website's latest release aliases.
 - Server application layout and native ARM64 DrewCraft build passed.
 - Dedicated-server run `35147504223` passed boot and restart, but its world generator was not verified; the production save was subsequently found to use Minecraft's normal Overworld. That run is **not** Terrain Diffusion evidence.
-- World revision 2 must prove a Terrain Diffusion scale-3 saved generator before Chunky/DH pre-generation resumes. The current world reset and matched release deployment are tracked in `CURRENT_BREAKPOINT.md`.
+- World revision 3 has a verified Terrain Diffusion scale-3 saved generator and lists the sparse WDA structure datapack as enabled. Revision 2 saved the correct generator but was stopped before any region generation because its WDA overrides were not loadable. First-spawn readiness and gameplay remain unverified; see `CURRENT_BREAKPOINT.md`.
