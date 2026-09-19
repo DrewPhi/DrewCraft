@@ -25,6 +25,15 @@ if ! id drewcraft >/dev/null 2>&1; then
   useradd --system --create-home --home-dir /srv/drewcraft --shell /usr/sbin/nologin drewcraft
 fi
 install -d -o drewcraft -g drewcraft /srv/drewcraft/{releases,staging,persistent/world,persistent/terrain-diffusion-models,persistent/terrain-diffusion-cache,persistent/operator,backups,logs,state,bin}
+# The live server owns this small mutable properties file; world data remains
+# under the same persistent tree but is managed by the release activator.
+chown drewcraft:drewcraft /srv/drewcraft/persistent
+install -d -o root -g drewcraft -m 0750 /etc/drewcraft
+if [[ ! -f /etc/drewcraft/rcon-password ]]; then
+  python3 -c 'import secrets; print(secrets.token_urlsafe(32))' >/etc/drewcraft/rcon-password
+fi
+chown root:drewcraft /etc/drewcraft/rcon-password
+chmod 0640 /etc/drewcraft/rcon-password
 install -d -o root -g root /opt/drewcraft/runtime/java-21.0.12.1+1
 
 tmp="$(mktemp)"
@@ -45,6 +54,18 @@ set -euo pipefail
 cd /srv/drewcraft/current
 rm -rf world logs terrain-diffusion-models terrain-diffusion-cache
 rm -f ops.json whitelist.json banned-ips.json banned-players.json
+if [[ ! -f /srv/drewcraft/persistent/server.properties ]]; then
+  cp server.properties /srv/drewcraft/persistent/server.properties
+fi
+rcon_password="$(tr -d '\r\n' </etc/drewcraft/rcon-password)"
+if [[ -z "$rcon_password" ]]; then
+  echo "missing /etc/drewcraft/rcon-password" >&2
+  exit 1
+fi
+sed -i -E '/^(enable-rcon|rcon\.port|rcon\.ip|rcon\.password)=/d' /srv/drewcraft/persistent/server.properties
+printf 'enable-rcon=true\nrcon.port=25575\nrcon.ip=127.0.0.1\nrcon.password=%s\n' "$rcon_password" >>/srv/drewcraft/persistent/server.properties
+rm -f server.properties
+ln -s /srv/drewcraft/persistent/server.properties server.properties
 ln -s /srv/drewcraft/persistent/world world
 ln -s /srv/drewcraft/logs logs
 ln -s /srv/drewcraft/persistent/terrain-diffusion-models terrain-diffusion-models

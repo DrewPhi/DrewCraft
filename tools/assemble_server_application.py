@@ -59,7 +59,11 @@ def assemble(runtime_root: pathlib.Path, pack_root: pathlib.Path, output: pathli
         "white-list=true\n"
         "enforce-whitelist=true\n"
         "enforce-secure-profile=true\n"
-        "online-mode=true\n",
+        "online-mode=true\n"
+        "enable-rcon=true\n"
+        "rcon.port=25575\n"
+        "rcon.ip=127.0.0.1\n"
+        "# rcon.password is injected from /etc/drewcraft/rcon-password at host startup.\n",
         encoding="utf-8",
     )
     return {
