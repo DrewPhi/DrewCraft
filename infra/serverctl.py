@@ -7,6 +7,7 @@ import datetime as dt
 import json
 import os
 import pathlib
+import pwd
 import shutil
 import subprocess
 import sys
@@ -64,6 +65,24 @@ def require_free_space(root: pathlib.Path, required_bytes: int, operation: str) 
         raise RuntimeError(f"insufficient disk space for {operation}: need {required_bytes + 1024 ** 3}, free {free}")
 
 
+def _prepare_service_permissions(release: pathlib.Path) -> None:
+    """Keep executable modes and service ownership after HTTP artifact staging."""
+    runner = release / "run.sh"
+    if runner.is_file():
+        runner.chmod(0o755)
+    if os.name != "posix" or os.geteuid() != 0:
+        return
+    try:
+        account = pwd.getpwnam("drewcraft")
+    except KeyError:
+        return  # CI fixtures have no production service account.
+    for current, directories, files in os.walk(release, followlinks=False):
+        os.chown(current, account.pw_uid, account.pw_gid)
+        for name in directories + files:
+            os.chown(pathlib.Path(current) / name, account.pw_uid, account.pw_gid,
+                     follow_symlinks=False)
+
+
 def read_world_identity(root: pathlib.Path) -> dict:
     path = root / "persistent" / "world" / WORLD_INFO
     if not path.is_file():
@@ -95,6 +114,7 @@ def stage_release(root: pathlib.Path, manifest: dict) -> pathlib.Path:
         failures = verify_tree(final, manifest, "server")
         if failures:
             raise RuntimeError(f"existing release {version} is corrupt: {failures}")
+        _prepare_service_permissions(final)
         return final
 
     staging = root / "staging" / f"{version}.partial"
@@ -106,6 +126,8 @@ def stage_release(root: pathlib.Path, manifest: dict) -> pathlib.Path:
         _download(entry["url"], target)
         if target.stat().st_size != entry["size"] or sha256_file(target) != entry["sha256"]:
             raise RuntimeError(f"download verification failed for {entry['path']}")
+        if entry["path"] == "run.sh":
+            target.chmod(0o755)
     failures = verify_tree(staging, manifest, "server")
     if failures:
         raise RuntimeError(f"staged release verification failed: {failures}")
@@ -113,6 +135,7 @@ def stage_release(root: pathlib.Path, manifest: dict) -> pathlib.Path:
         json.dumps(manifest, sort_keys=True, indent=2) + "\n", encoding="utf-8"
     )
     os.replace(staging, final)
+    _prepare_service_permissions(final)
     return final
 
 

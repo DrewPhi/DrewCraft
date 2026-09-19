@@ -125,7 +125,13 @@ def verify(world: Path, properties: Path, *, prepare: bool = False) -> str:
             raise RuntimeError("world has generated chunks but no level.dat; refusing to seed scale")
         scale_file.parent.mkdir(parents=True, exist_ok=True)
         if scale_file.exists():
-            raise RuntimeError("scale SavedData already exists without level.dat")
+            try:
+                settings = read_nbt(scale_file)["data"]
+            except (OSError, KeyError, ValueError) as exc:
+                raise RuntimeError("existing scale SavedData is invalid") from exc
+            if settings.get("scale") != SCALE or settings.get("explicit_settings") != 1:
+                raise RuntimeError("existing scale SavedData does not select World Scale 3")
+            return "new Terrain Diffusion scale-3 world already prepared"
         fd, temp = tempfile.mkstemp(prefix=".scale-", dir=scale_file.parent)
         try:
             with os.fdopen(fd, "wb") as fh:

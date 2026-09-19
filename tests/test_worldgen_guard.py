@@ -21,8 +21,7 @@ def test_prepares_scale_three_only_for_new_world():
         properties.write_text("level-type=drewcraft\\:terrain_diffusion_scale_3\n", encoding="utf-8")
         assert "prepared" in guard.verify(world, properties, prepare=True)
         assert guard.read_nbt(world / "data" / guard.SCALE_FILE)["data"]["scale"] == 3
-        with pytest.raises(RuntimeError, match="already exists"):
-            guard.verify(world, properties, prepare=True)
+        assert "already prepared" in guard.verify(world, properties, prepare=True)
 
 
 def test_rejects_normal_world_even_when_properties_are_correct():
