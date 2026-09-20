@@ -130,12 +130,13 @@ upstreams:
       branch: null
       candidate_ref: null
     artifact:
-      provider: curseforge
-      project_id: 508933
-      file_id: 8389148
-      candidate_version: "3.2.0-b"
-      filename: "DistantHorizons-3.2.0-b-1.21.1-fabric-neoforge.jar"
-      release_status: beta
+      provider: modrinth
+      project_id: "uCdwusMi"
+      version_id: "IcOcoekl"
+      candidate_version: "3.3.1-1.21.1"
+      filename: "DistantHorizons-3.3.1-1.21.1-fabric-neoforge.jar"
+      download_url: "https://cdn.modrinth.com/data/uCdwusMi/versions/IcOcoekl/DistantHorizons-3.3.1-1.21.1-fabric-neoforge.jar"
+      release_status: release
       sha256: null
     target:
       minecraft: "1.21.1"
@@ -146,7 +147,7 @@ upstreams:
       required: false
       trigger: "Only if a critical DrewCraft compatibility patch is required; official source is GitLab, so do not create a fake GitHub source-of-truth mirror for convenience."
     notes:
-      - "3.2.0-b is the newest 1.21.1 NeoForge candidate found, but upstream marks it Beta; it must earn promotion through the compatibility matrix."
+      - "3.3.1-1.21.1 is the current 1.21.1 NeoForge release; update client and server together because DH's network protocol and LOD database behavior are shared."
 
   xaeros_minimap:
     display_name: "Xaero's Minimap"
@@ -159,14 +160,14 @@ upstreams:
       project: "1bokaNcj"
       url: "https://modrinth.com/mod/xaeros-minimap"
       branch: null
-      candidate_ref: "w8HSmbC3"
+      candidate_ref: "Q1tuMQBB"
     artifact:
       provider: modrinth
       project_id: "1bokaNcj"
-      version_id: "w8HSmbC3"
-      candidate_version: "neoforge-1.21.1-26.1.0"
-      filename: "xaerominimap-neoforge-1.21.1-26.1.0.jar"
-      download_url: "https://cdn.modrinth.com/data/1bokaNcj/versions/w8HSmbC3/xaerominimap-neoforge-1.21.1-26.1.0.jar"
+      version_id: "Q1tuMQBB"
+      candidate_version: "neoforge-1.21.1-26.5.0"
+      filename: "xaerominimap-neoforge-1.21.1-26.5.0.jar"
+      download_url: "https://cdn.modrinth.com/data/1bokaNcj/versions/Q1tuMQBB/xaerominimap-neoforge-1.21.1-26.5.0.jar"
       release_status: release
       sha256: null
     target:
@@ -188,13 +189,13 @@ upstreams:
     side: common
     source:
       provider: xaero-maven
-      url: "https://chocolateminecraft.com/maven/xaero/lib/xaerolib-neoforge-1.21.1/1.1.0/xaerolib-neoforge-1.21.1-1.1.0.jar"
-      candidate_ref: "1.1.0"
+      url: "https://chocolateminecraft.com/maven/xaero/lib/xaerolib-neoforge-1.21.1/1.1.15/xaerolib-neoforge-1.21.1-1.1.15.jar"
+      candidate_ref: "1.1.15"
     artifact:
       provider: xaero-maven
-      candidate_version: "1.1.0"
-      filename: "xaerolib-neoforge-1.21.1-1.1.0.jar"
-      download_url: "https://chocolateminecraft.com/maven/xaero/lib/xaerolib-neoforge-1.21.1/1.1.0/xaerolib-neoforge-1.21.1-1.1.0.jar"
+      candidate_version: "1.1.15"
+      filename: "xaerolib-neoforge-1.21.1-1.1.15.jar"
+      download_url: "https://chocolateminecraft.com/maven/xaero/lib/xaerolib-neoforge-1.21.1/1.1.15/xaerolib-neoforge-1.21.1-1.1.15.jar"
       release_status: release
       sha256: null
     target:

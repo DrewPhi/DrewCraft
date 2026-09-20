@@ -105,24 +105,24 @@ artifacts:
     sha256: 7d3f1bcca3acf2e7b1f3d359d5e0691cbb5a0f95869064752e7612b2d13e5b9e
     size: 30206
   distant_horizons:
-    provider: curseforge
-    project_id: 508933
-    file_id: 8389148
-    filename: DistantHorizons-3.2.0-b-1.21.1-fabric-neoforge.jar
-    sha256: d6a7a963f794501678113e2545d8b25c90e123ef6b9256bb5716907d059e1ef5
-    size: 30207268
+    provider: modrinth
+    project_id: uCdwusMi
+    version_id: IcOcoekl
+    filename: DistantHorizons-3.3.1-1.21.1-fabric-neoforge.jar
+    sha256: b12931cc0c680914e461b478f6a361285870a489bedd3985dee52cd3ce3590c0
+    size: 28220041
   xaeros_minimap:
     provider: modrinth
     project_id: 1bokaNcj
-    version_id: w8HSmbC3
-    filename: xaerominimap-neoforge-1.21.1-26.1.0.jar
-    sha256: 6bd6cbab01ff57b9ba2fbfee18f9605593101f15d80e8d19dc59c385d2535ccc
-    size: 2138254
+    version_id: Q1tuMQBB
+    filename: xaerominimap-neoforge-1.21.1-26.5.0.jar
+    sha256: 667105d8fdca64b27b29d8e0b88e67e7342038d3fb4edc4129bf452b601c6d20
+    size: 2185559
   xaero_lib:
     provider: xaero-maven
-    filename: xaerolib-neoforge-1.21.1-1.1.0.jar
-    sha256: 822db84929c7f1928ce1b8d5e00a909b94da925960850802cf284074f1cdc3fe
-    size: 541451
+    filename: xaerolib-neoforge-1.21.1-1.1.15.jar
+    sha256: f9f883c6cb5b7f2885d357c079f60f5bcc669b172faaea862df28541716360c1
+    size: 541744
   exposure:
     provider: modrinth
     project_id: hB899VmG
