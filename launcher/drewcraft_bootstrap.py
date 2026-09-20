@@ -710,13 +710,15 @@ def server_ready(state: dict) -> tuple[bool, str]:
         health = fetch_json(health_url)
     except Exception as exc:
         return False, f"server offline/unreachable: {exc}"
-    if health.get("status") != "ready":
+    if health.get("status") != "ready" and not health.get("joinable", False):
         return False, f"server status is {health.get('status', 'unknown')}"
     if health.get("protocolVersion") != state["protocolVersion"]:
         return False, "server/client protocol mismatch"
     if health.get("packVersion") != state["packVersion"]:
         return False, "server/client pack mismatch"
-    return True, "ready"
+    if health.get("status") == "ready":
+        return True, "ready"
+    return True, "joinable while server maintenance is paused/coordinated"
 
 
 def launch(app_dir: pathlib.Path) -> int:

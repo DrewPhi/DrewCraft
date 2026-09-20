@@ -122,7 +122,7 @@ class Controller:
         self.state["updatedUtc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         atomic_json(self.state_path, self.state)
 
-    def health(self, status: str, message: str) -> None:
+    def health(self, status: str, message: str, *, joinable: bool = False) -> None:
         try:
             value = json.loads(self.health_path.read_text("utf-8"))
         except (FileNotFoundError, json.JSONDecodeError):
@@ -134,7 +134,19 @@ class Controller:
                 "worldId": "drewcraft-production",
                 "worldRevision": 1,
             }
-        value.update(status=status, message=message)
+        # Keep health metadata aligned with the release actually serving the
+        # world.  A stale previous-release health file must not block clients
+        # after a successful server rollout.
+        manifest_path = pathlib.Path("/srv/drewcraft/current/.drewcraft-release-manifest.json")
+        try:
+            manifest = json.loads(manifest_path.read_text("utf-8"))
+            value.update(
+                packVersion=manifest.get("packVersion", value.get("packVersion")),
+                protocolVersion=manifest.get("protocolVersion", value.get("protocolVersion", 1)),
+            )
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            pass
+        value.update(status=status, message=message, joinable=joinable)
         atomic_json(self.health_path, value)
 
     def rcon(self, *command: str) -> str:
@@ -161,13 +173,13 @@ class Controller:
                     except Exception as exc:
                         print(f"Could not pause {' '.join(command)}: {exc}", flush=True)
             self.save(maintenancePaused=True, idleSince=None, onlinePlayers=count)
-            self.health("ready", f"Players online ({count}); pregeneration paused")
+            self.health("ready", f"Players online ({count}); pregeneration paused", joinable=True)
             return False
         now = time.time()
         idle_since = self.state.get("idleSince") or now
         self.save(idleSince=idle_since, onlinePlayers=0)
         if now - idle_since < self.args.idle_grace_seconds:
-            self.health("ready", "Server empty; pregeneration starts after idle grace period")
+            self.health("ready", "Server empty; pregeneration starts after idle grace period", joinable=True)
             return False
         if self.state.get("maintenancePaused"):
             self.save(maintenancePaused=False)
@@ -279,7 +291,11 @@ class Controller:
             print(self.rcon("dh", "pregen", "stop"), flush=True)
         finally:
             self.save(phase="safety_paused", reason=reason)
-            self.health("updating", f"Overworld pregeneration paused safely: {reason}")
+            # A target undershoot is an administrative pause, not a server
+            # deployment.  Minecraft remains joinable while an operator
+            # decides whether to resume with a larger expansion budget.
+            status = "ready" if reason == "target undershot after maximum automatic expansions" else "updating"
+            self.health(status, f"Overworld pregeneration paused safely: {reason}", joinable=(status == "ready"))
         return 2
 
     def run(self) -> int:
@@ -294,6 +310,7 @@ class Controller:
             if not self.idle_window():
                 time.sleep(self.args.poll_seconds)
                 continue
+            self.health("updating", "Pregeneration active; server remains joinable", joinable=True)
             if not world_verified:
                 try:
                     print(verify_worldgen(self.world, pathlib.Path("/srv/drewcraft/persistent/server.properties")),
