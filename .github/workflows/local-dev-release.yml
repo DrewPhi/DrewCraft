@@ -9,6 +9,8 @@ on:
       - 'pack/manifest/**'
       - 'pack/overlays/**'
       - 'mods/drewcraft/**'
+      - 'launcher/**'
+      - 'infra/**'
       - 'tools/apply_release_acquisition.py'
       - 'tools/assemble_release_layout.py'
       - 'tools/build_release_manifest.py'
