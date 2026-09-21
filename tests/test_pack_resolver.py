@@ -175,3 +175,29 @@ def test_v1_shipping_profile_is_focused_and_complete():
         "cbc_firepower_components",
     }.isdisjoint(ids)
     assert resolved["overlays"] == ["pack/overlays/source_structures_first_spike"]
+
+
+def test_v1_1_integration_profile_is_additive_and_worldgen_safe():
+    root = MODULE.parents[1]
+    profiles = pack.load_yaml(root / "pack/manifest/profiles.yaml")
+    catalog = pack.collect_catalog(root, profiles)
+
+    current = pack.resolve(["v1_survival_exploration"], profiles, catalog)
+    integration_profile = pack.resolve(["v1_1_integration"], profiles, catalog)
+    current_ids = set(current["ordered_ids"])
+    ids = set(integration_profile["ordered_ids"])
+
+    additions = {
+        "create_crafts_additions", "steam_n_rails", "create_enchantment_industry",
+        "create_stuff_additions", "create_connected", "lootr", "create_dragons_plus",
+        "create_additions_sable_compat", "stuff_additions_sable_aeronautics_compat",
+    }
+    assert current_ids <= ids
+    assert additions <= ids
+    assert additions.isdisjoint(current_ids)
+    assert integration_profile["overlays"] == [
+        "pack/overlays/source_structures_first_spike",
+        "pack/overlays/v1_1_integration",
+    ]
+    for dep_id in additions:
+        assert catalog[dep_id].get("worldgen_resources") is False
