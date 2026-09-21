@@ -201,3 +201,19 @@ def test_v1_1_integration_profile_is_additive_and_worldgen_safe():
     ]
     for dep_id in additions:
         assert catalog[dep_id].get("worldgen_resources") is False
+
+
+def test_runtime_smoke_profiles_only_remove_terrain_diffusion():
+    root = MODULE.parents[1]
+    profiles = pack.load_yaml(root / "pack/manifest/profiles.yaml")
+    catalog = pack.collect_catalog(root, profiles)
+
+    current = set(pack.resolve(["v1_survival_exploration"], profiles, catalog)["ordered_ids"])
+    current_smoke = set(pack.resolve(["v1_runtime_smoke"], profiles, catalog)["ordered_ids"])
+    integration = set(pack.resolve(["v1_1_integration"], profiles, catalog)["ordered_ids"])
+    integration_smoke = set(pack.resolve(["v1_1_runtime_smoke"], profiles, catalog)["ordered_ids"])
+
+    assert current - current_smoke == {"terrain_diffusion_plus"}
+    assert integration - integration_smoke == {"terrain_diffusion_plus"}
+    assert current_smoke == current - {"terrain_diffusion_plus"}
+    assert integration_smoke == integration - {"terrain_diffusion_plus"}
