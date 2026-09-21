@@ -53,6 +53,9 @@ jobs:
       - name: Install pack tooling
         run: python -m pip install --disable-pip-version-check -r tools/requirements-pack.txt
 
+      - name: Prepare exact V1.1 integration evidence
+        run: python tools/prepare_integration_profile.py
+
       - name: Build repository DrewCraft integration mod
         run: gradle -p mods/drewcraft clean test build --stacktrace --no-daemon
 
@@ -91,7 +94,7 @@ jobs:
       - name: Rebuild exact verified upstream client/server profile
         run: |
           python tools/build_verified_profile.py \
-            --profile v1_survival_exploration \
+            --profile v1_1_integration \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
             --output-dir build/verified-pack \
             --evidence-output build/verified-pack-evidence.json
