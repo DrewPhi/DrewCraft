@@ -35,6 +35,9 @@ jobs:
       - name: Install pack tooling
         run: python -m pip install -r tools/requirements-pack.txt
 
+      - name: Prepare exact V1.1 integration evidence
+        run: python tools/prepare_integration_profile.py
+
       - name: Read pinned Terrain Diffusion Plus source
         id: td
         run: |
@@ -87,7 +90,7 @@ jobs:
       - name: Rebuild verified server mod tree
         run: |
           python tools/build_verified_profile.py \
-            --profile v1_survival_exploration \
+            --profile v1_1_integration \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
             --source-artifact "create_radars=${{ steps.radar.outputs.path }}" \
             --output-dir build/verified-pack \
