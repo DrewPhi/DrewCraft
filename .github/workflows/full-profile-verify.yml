@@ -86,8 +86,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "${RADAR_SOURCE[1]}"
           bash gradlew build --no-daemon
           python - <<'PY' >> "$GITHUB_OUTPUT"
-          import pathlib, yaml
-          spec=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['create_radars']
+          import os, pathlib, yaml
+          spec=yaml.safe_load((pathlib.Path(os.environ['GITHUB_WORKSPACE']) / 'pack/manifest/source_builds.yaml').read_text())['source_builds']['create_radars']
           libs=pathlib.Path('/tmp/create-radar-upstream')/spec['build']['output_directory']
           jars=[p for p in sorted(libs.glob('*.jar')) if not p.name.lower().endswith(('-sources.jar','-source.jar','-javadoc.jar','-dev.jar'))]
           if len(jars) != 1:
