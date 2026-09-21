@@ -21,19 +21,26 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate-pack:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Install resolver dependencies
         run: python -m pip install -r tools/requirements-pack.txt
-      - name: Unit tests
+      - name: Unit tests before provider preparation
+        run: python -m pytest -q tests/test_pack_resolver.py tests/test_source_worldgen_policy.py tests/test_mts_create_integration.py
+      - name: Prepare exact V1.1 provider/hash/recipe evidence
+        run: python tools/prepare_integration_profile.py
+      - name: Unit tests against generated exact integration
         run: python -m pytest -q tests/test_pack_resolver.py tests/test_source_worldgen_policy.py tests/test_mts_create_integration.py
       - name: Validate V1 shipping profile graph
         run: python tools/drewcraft_pack.py validate --profile v1_survival_exploration --output build/v1-shipping-plan.json
@@ -49,6 +56,18 @@ jobs:
               if not d['exact_identity_ready']:
                   print(f"- {d['id']}: {', '.join(d['identity_issues'])}")
           PY
+      - name: Commit generated integration evidence to audit branch
+        if: github.event_name == 'pull_request' && github.head_ref == '0.1.8-dev-integration'
+        run: |
+          git config user.name "DrewCraft Integration Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add             pack/manifest/candidate_hashes.yaml             pack/manifest/integration_mts_v29_balance.json             pack/overlays/v1_1_integration/config/mtscraftingoverrides.json             pack/overlays/v1_1_integration/datapacks/drewcraft-integration
+          if git diff --cached --quiet; then
+            echo "Generated integration evidence already current."
+          else
+            git commit -m "integration: lock exact artifacts and generated V29 integration"
+            git push origin HEAD:0.1.8-dev-integration
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: v1-shipping-plan
