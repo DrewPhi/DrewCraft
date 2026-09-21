@@ -2,7 +2,7 @@ schema_version: 1
 pack:
   id: drewcraft
   display_name: DrewCraft
-  version: 0.1.0-dev
+  version: 0.1.8-dev-integration
   channel: development
 platform:
   minecraft: "1.21.1"
@@ -16,7 +16,7 @@ world:
   world_revision: 1
   strategic_persistence_schema: 4
 profiles:
-  default_development: v1_survival_exploration
+  default_development: v1_1_integration
   source: pack/manifest/profiles.yaml
 policy:
   exact_hash_required_for_lock: true
