@@ -9,12 +9,14 @@ on:
       - "pack/**"
       - "tools/**"
       - "tests/**"
+      - "infra/**"
   push:
     branches: [main]
     paths:
       - ".github/workflows/server-smoke.yml"
       - "pack/manifest/**"
       - "tools/**"
+      - "infra/**"
 
 permissions:
   contents: read
