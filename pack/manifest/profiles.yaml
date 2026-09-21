@@ -141,6 +141,23 @@ profiles:
       - new_resource_worldgen
     gate: "Audit this branch and promote/merge only after the full 0.1.8 integration acceptance suite passes."
 
+
+  v1_runtime_smoke:
+    extends:
+      - v1_survival_exploration
+    exclude_dependencies:
+      - terrain_diffusion_plus
+    purpose: "CI-only current-V1 runtime profile. Omits Terrain Diffusion solely to make add-on migration/registry/restart smoke tests fast; never ship this profile."
+    gate: "CI only; production worldgen evidence comes from v1_survival_exploration."
+
+  v1_1_runtime_smoke:
+    extends:
+      - v1_1_integration
+    exclude_dependencies:
+      - terrain_diffusion_plus
+    purpose: "CI-only V1.1 runtime profile for in-place current-V1 -> V1.1 migration testing without Terrain Diffusion model startup."
+    gate: "CI only; exact production dependency assembly is verified separately with v1_1_integration."
+
   stage2_base_performance:
     description: "Foundational DrewCraft stack plus conservative performance baseline and the V1 physical radar frontend."
     foundation:
