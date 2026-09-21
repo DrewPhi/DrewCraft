@@ -9,10 +9,12 @@
 5. Pass Windows/macOS/Linux clean launcher and update acceptance.
 6. Freeze, soak, promote, and tag `1.0.0`.
 
-## V1.1 — polish from real play
+## V1.1 — coherent integration / polish from real play
 
 - Fix observed performance, compatibility, UX, progression, recipe, vehicle, dungeon-density, and server-operation issues.
-- Add no major system unless the V1 group clearly needs it.
+- Unify Create/Crafts & Additions manufacturing with MTS vehicle crafting while preserving approximate raw-material costs.
+- Add the no-worldgen integration candidates in `docs/NEXT_UPDATE_PLAN.md` only after compatibility gates: bioethanol/MTS fuel bridge, Lootr, Create: Connected, Create: Enchantment Industry, Steam 'n' Rails, and Create Stuff 'N Additions.
+- Add no unrelated major gameplay axis; weather and strategic/endgame systems remain later work.
 
 ## Later releases
 
