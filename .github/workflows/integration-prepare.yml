@@ -2,6 +2,18 @@ name: Prepare 0.1.8 integration branch
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/integration-prepare.yml"
+      - "tools/generate_mts_create_integration.py"
+      - "tools/drewcraft_pack.py"
+      - "tools/hash_profile.py"
+      - "pack/manifest/integration_candidates.yaml"
+      - "pack/manifest/profiles.yaml"
+      - "pack/manifest/pack.yaml"
+      - "tests/test_mts_create_integration.py"
+      - "tests/test_pack_resolver.py"
   push:
     branches:
       - "0.1.8-dev-integration"
