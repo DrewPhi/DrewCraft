@@ -1,0 +1,263 @@
+name: V1.1 integration runtime smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/integration-runtime-smoke.yml"
+      - "pack/**"
+      - "tools/**"
+      - "mods/drewcraft/**"
+      - "tests/**"
+
+permissions:
+  contents: read
+
+jobs:
+  integration-runtime-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: "9.2.1"
+
+      - name: Install pack tooling
+        run: python -m pip install -r tools/requirements-pack.txt
+
+      - name: Prepare exact V1.1 integration evidence
+        run: python tools/prepare_integration_profile.py
+
+      - name: Read pinned Terrain Diffusion Plus source
+        id: td
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import yaml
+          d=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
+          print('repository=' + d['source']['repository'])
+          print('ref=' + d['source']['ref'])
+          PY
+
+      - name: Build exact Terrain Diffusion Plus jar
+        run: |
+          git clone "https://github.com/${{ steps.td.outputs.repository }}.git" /tmp/terrain-diffusion-plus
+          cd /tmp/terrain-diffusion-plus
+          git checkout --detach "${{ steps.td.outputs.ref }}"
+          test "$(git rev-parse HEAD)" = "${{ steps.td.outputs.ref }}"
+          ./gradlew -p versions/1.21.1 buildNeoForgeCpu --no-daemon
+
+      - name: Locate Terrain Diffusion Plus jar
+        id: tdjar
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          from pathlib import Path
+          import yaml
+          d=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
+          libs=Path('/tmp/terrain-diffusion-plus')/d['build']['output_directory']
+          jars=[p for p in sorted(libs.glob('*.jar')) if not any(x in p.name.lower() for x in ('-sources.jar','-javadoc.jar','-dev.jar','-test.jar','-tests.jar'))]
+          if len(jars) != 1:
+              raise SystemExit(f'Expected one production jar, got {[str(p) for p in jars]}')
+          print('path=' + str(jars[0]))
+          PY
+
+      - name: Build pinned Create Radar upstream fix
+        id: radar
+        run: |
+          git clone https://github.com/Arsenalists-of-Create/Create-Radar.git /tmp/create-radar-upstream
+          cd /tmp/create-radar-upstream
+          git checkout --detach e637e83f7af85de450e4149679075ef055077371
+          test "$(git rev-parse HEAD)" = e637e83f7af85de450e4149679075ef055077371
+          bash gradlew build --no-daemon
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import pathlib
+          jars = [p for p in pathlib.Path('/tmp/create-radar-upstream/build/libs').glob('*.jar')
+                  if not p.name.lower().endswith(('-sources.jar','-source.jar','-javadoc.jar','-dev.jar'))]
+          if len(jars) != 1:
+              raise SystemExit(f'expected one radar jar: {jars}')
+          print('path=' + str(jars[0]))
+          PY
+
+      - name: Rebuild verified server mod tree
+        run: |
+          python tools/build_verified_profile.py \
+            --profile v1_1_integration \
+            --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
+            --source-artifact "create_radars=${{ steps.radar.outputs.path }}" \
+            --output-dir build/verified-pack \
+            --evidence-output build/verified-pack-evidence.json
+
+      - name: Build and inject DrewCraft mod
+        run: |
+          gradle -p mods/drewcraft clean test build --no-daemon
+          python tools/inject_drewcraft_mod.py --client build/verified-pack/client --server build/verified-pack/server
+
+      - name: Install pinned NeoForge server
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib, urllib.request, yaml
+          p=yaml.safe_load(open('pack/manifest/platform.yaml'))['loader']
+          url=p['installer_url']
+          expected=p.get('installer_sha256')
+          out=pathlib.Path('/tmp/neoforge-installer.jar')
+          with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent':'DrewCraft-IntegrationSmoke/0.1'}), timeout=180) as r:
+              out.write_bytes(r.read())
+          got=hashlib.sha256(out.read_bytes()).hexdigest()
+          if expected and got.lower()!=expected.lower():
+              raise SystemExit(f'NeoForge installer hash mismatch expected={expected} got={got}')
+          print('NeoForge installer SHA-256:', got)
+          PY
+          mkdir -p /tmp/drewcraft-server
+          java -jar /tmp/neoforge-installer.jar --installServer /tmp/drewcraft-server
+
+      - name: Inject verified server mods and configure fast integration world
+        run: |
+          rm -rf /tmp/drewcraft-server/mods /tmp/drewcraft-server/config
+          cp -a build/verified-pack/server/mods /tmp/drewcraft-server/mods
+          cp -a build/verified-pack/server/config /tmp/drewcraft-server/config
+          mkdir -p /tmp/drewcraft-server/world/datapacks
+          cp -a build/verified-pack/server/datapacks/drewcraft-structures /tmp/drewcraft-server/world/datapacks/
+          cp -a build/verified-pack/server/datapacks/drewcraft-integration /tmp/drewcraft-server/world/datapacks/
+          test -f /tmp/drewcraft-server/config/mtsconfig.json
+          test -f /tmp/drewcraft-server/config/mtscraftingoverrides.json
+          test -f /tmp/drewcraft-server/world/datapacks/drewcraft-integration/pack.mcmeta
+          printf 'eula=true\n' > /tmp/drewcraft-server/eula.txt
+          cat > /tmp/drewcraft-server/server.properties <<'EOF'
+          online-mode=false
+          level-type=minecraft\:flat
+          max-tick-time=-1
+          view-distance=4
+          simulation-distance=4
+          spawn-protection=0
+          allow-flight=true
+          motd=DrewCraft V1.1 integration CI smoke
+          EOF
+          printf '%s\n' '-Xms2G' '-Xmx6G' > /tmp/drewcraft-server/user_jvm_args.txt
+          chmod +x /tmp/drewcraft-server/run.sh || true
+
+      - name: Boot new world, wait for readiness, stop cleanly
+        working-directory: /tmp/drewcraft-server
+        run: |
+          set -euo pipefail
+          rm -f server.stdin server-first.log
+          mkfifo server.stdin
+          exec 3<>server.stdin
+          bash ./run.sh nogui < server.stdin > server-first.log 2>&1 &
+          PID=$!
+          READY=0
+          # Terrain Diffusion Plus performs expensive one-time model loading and
+          # initial terrain/spawn analysis on a fresh world. Give that real work
+          # enough room to complete instead of treating a healthy long first boot
+          # as a compatibility failure.
+          for i in $(seq 1 120); do
+            if grep -q 'Done (' server-first.log 2>/dev/null; then READY=1; break; fi
+            if ! kill -0 "$PID" 2>/dev/null; then
+              echo 'Server exited before readiness'; cat server-first.log; exit 1
+            fi
+            if [ $((i % 12)) -eq 0 ]; then
+              echo "Still waiting for first-world readiness ($((i * 5))s elapsed)..."
+              tail -n 8 server-first.log || true
+            fi
+            sleep 5
+          done
+          if [ "$READY" -ne 1 ]; then
+            echo 'Timed out waiting for integration server readiness after 10 minutes'; tail -n 300 server-first.log; kill "$PID" || true; exit 1
+          fi
+          printf 'datapack list\n' >&3
+          sleep 3
+          grep -q 'drewcraft-integration' server-first.log
+          python - <<'PY'
+          import json
+          cfg=json.load(open('config/mtsconfig.json'))
+          fuels=cfg['fuel']['fuels']
+          assert fuels['gasoline']['bioethanol'] == 0.85
+          assert fuels['avgas']['bioethanol'] == 0.85
+          overrides=json.load(open('config/mtscraftingoverrides.json'))['overrides']['mtsofficialpack']
+          assert len(overrides) >= 200
+          raw=json.dumps(overrides)
+          assert 'mts:mtsofficialpack.plating:' not in raw
+          assert 'mts:mtsofficialpack.screws:' not in raw
+          assert 'mts:mtsofficialpack.metaltube:' not in raw
+          assert 'mts:mtsofficialpack.copperwire:' not in raw
+          PY
+          printf 'stop\n' >&3
+          for i in $(seq 1 60); do
+            if ! kill -0 "$PID" 2>/dev/null; then break; fi
+            sleep 2
+          done
+          if kill -0 "$PID" 2>/dev/null; then echo 'Server failed to stop cleanly'; kill "$PID" || true; exit 1; fi
+          wait "$PID"
+          test -d world
+          grep -q 'Done (' server-first.log
+          echo 'FIRST BOOT OK'
+
+      - name: Restart same world and stop cleanly
+        working-directory: /tmp/drewcraft-server
+        run: |
+          set -euo pipefail
+          rm -f server.stdin server-restart.log
+          mkfifo server.stdin
+          exec 3<>server.stdin
+          bash ./run.sh nogui < server.stdin > server-restart.log 2>&1 &
+          PID=$!
+          READY=0
+          # Restart should be substantially cheaper because the world and model
+          # files already exist, but still allow enough time to catch slow real
+          # initialization rather than an arbitrary CI timeout.
+          for i in $(seq 1 120); do
+            if grep -q 'Done (' server-restart.log 2>/dev/null; then READY=1; break; fi
+            if ! kill -0 "$PID" 2>/dev/null; then
+              echo 'Server exited before restart readiness'; cat server-restart.log; exit 1
+            fi
+            if [ $((i % 12)) -eq 0 ]; then
+              echo "Still waiting for restart readiness ($((i * 5))s elapsed)..."
+              tail -n 8 server-restart.log || true
+            fi
+            sleep 5
+          done
+          if [ "$READY" -ne 1 ]; then
+            echo 'Timed out waiting for integration restart readiness after 10 minutes'; tail -n 300 server-restart.log; kill "$PID" || true; exit 1
+          fi
+          printf 'stop\n' >&3
+          for i in $(seq 1 60); do
+            if ! kill -0 "$PID" 2>/dev/null; then break; fi
+            sleep 2
+          done
+          if kill -0 "$PID" 2>/dev/null; then echo 'Server failed to stop cleanly after restart'; kill "$PID" || true; exit 1; fi
+          wait "$PID"
+          grep -q 'Done (' server-restart.log
+          echo 'RESTART OK'
+
+      - name: Reject obvious fatal errors
+        if: always()
+        run: |
+          if [ -f /tmp/drewcraft-server/server-first.log ]; then
+            ! grep -Eqi 'Mod loading has failed|Failed to start the minecraft server|Exception in server tick loop|Missing or unsupported mandatory dependencies' /tmp/drewcraft-server/server-first.log
+          fi
+          if [ -f /tmp/drewcraft-server/server-restart.log ]; then
+            ! grep -Eqi 'Mod loading has failed|Failed to start the minecraft server|Exception in server tick loop|Missing or unsupported mandatory dependencies' /tmp/drewcraft-server/server-restart.log
+          fi
+
+      - name: Upload smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v1-1-integration-runtime-smoke-evidence
+          if-no-files-found: warn
+          path: |
+            build/verified-pack-evidence.json
+            /tmp/drewcraft-server/server-first.log
+            /tmp/drewcraft-server/server-restart.log
+            /tmp/drewcraft-server/crash-reports/**
+            /tmp/drewcraft-server/logs/**
