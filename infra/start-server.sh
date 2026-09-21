@@ -34,6 +34,18 @@ elif ! diff -rq "$managed_datapack" "$world_datapack" >/dev/null; then
   echo "DrewCraft structures datapack differs from the world; refusing mixed worldgen" >&2
   exit 1
 fi
+
+# The V1.1 integration datapack is intentionally non-worldgen. Unlike the
+# structure datapack above, it is safe and expected to update in-place between
+# integration builds because it only owns recipes and loot-table augmentation.
+integration_datapack=/srv/drewcraft/current/datapacks/drewcraft-integration
+world_integration_datapack=/srv/drewcraft/persistent/world/datapacks/drewcraft-integration
+if [[ -f "$integration_datapack/pack.mcmeta" ]]; then
+  rm -rf "$world_integration_datapack.tmp"
+  cp -a "$integration_datapack" "$world_integration_datapack.tmp"
+  rm -rf "$world_integration_datapack"
+  mv "$world_integration_datapack.tmp" "$world_integration_datapack"
+fi
 python3 /srv/drewcraft/bin/worldgen_guard.py --prepare
 rm -f server.properties
 ln -s /srv/drewcraft/persistent/server.properties server.properties
