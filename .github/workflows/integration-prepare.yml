@@ -1,0 +1,122 @@
+name: Prepare 0.1.8 integration branch
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "0.1.8-dev-integration"
+    paths:
+      - ".github/workflows/integration-prepare.yml"
+      - "tools/generate_mts_create_integration.py"
+      - "tools/drewcraft_pack.py"
+      - "tools/hash_profile.py"
+      - "pack/manifest/integration_candidates.yaml"
+      - "pack/manifest/profiles.yaml"
+      - "pack/manifest/pack.yaml"
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 0.1.8-dev-integration
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pack tooling
+        run: python -m pip install -r tools/requirements-pack.txt pytest
+
+      - name: Resolve and hash exact integration profile
+        run: |
+          python tools/hash_profile.py \
+            --profile v1_1_integration \
+            --output build/integration-hashes.json
+
+      - name: Merge exact provider hashes into candidate evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import yaml
+
+          report = json.loads(Path("build/integration-hashes.json").read_text())
+          path = Path("pack/manifest/candidate_hashes.yaml")
+          doc = yaml.safe_load(path.read_text()) or {}
+          artifacts = doc.setdefault("artifacts", {})
+          for a in report["artifacts"]:
+              entry = {
+                  "provider": a["provider"],
+                  "filename": a["filename"],
+                  "sha256": a["sha256"],
+                  "size": a["size"],
+              }
+              for key in ("project_id", "file_id", "version_id"):
+                  if a.get(key) is not None:
+                      entry[key] = a[key]
+              artifacts[a["id"]] = entry
+          doc["profile"] = "v1_1_integration"
+          doc["evidence"] = {
+              "workflow": "integration-prepare.yml",
+              "generated_at": "2026-09-20",
+              "note": "Exact provider hashes acquired on the isolated 0.1.8-dev-integration branch; no release was published.",
+          }
+          path.write_text(yaml.safe_dump(doc, sort_keys=False), encoding="utf-8")
+          PY
+
+      - name: Fetch pinned MTS V29 and WDA jars for integration generation
+        run: |
+          mkdir -p build/integration-inputs
+          python - <<'PY'
+          import json
+          import urllib.request
+          from pathlib import Path
+
+          report = json.loads(Path("build/integration-hashes.json").read_text())
+          by_id = {x["id"]: x for x in report["artifacts"]}
+          wanted = {
+              "mts_official_pack": Path("build/integration-inputs/mts-official-v29.jar"),
+              "when_dungeons_arise": Path("build/integration-inputs/wda.jar"),
+          }
+          for dep_id, out in wanted.items():
+              src = by_id[dep_id]["source_url"]
+              print(f"downloading {dep_id} from pinned provider")
+              req = urllib.request.Request(src, headers={"User-Agent": "DrewCraft-integration-prep/0.1.8"})
+              with urllib.request.urlopen(req, timeout=180) as response:
+                  out.write_bytes(response.read())
+          PY
+
+      - name: Generate exact MTS V29 overrides and WDA loot integration
+        run: |
+          rm -rf pack/overlays/v1_1_integration/datapacks/drewcraft-integration
+          rm -f pack/overlays/v1_1_integration/config/mtscraftingoverrides.json
+          python tools/generate_mts_create_integration.py \
+            --official-pack build/integration-inputs/mts-official-v29.jar \
+            --wda-jar build/integration-inputs/wda.jar \
+            --overlay pack/overlays/v1_1_integration \
+            --report pack/manifest/integration_mts_v29_balance.json
+
+      - name: Run resolver and integration tests
+        run: python -m pytest -q tests/test_pack_resolver.py tests/test_mts_create_integration.py
+
+      - name: Commit generated audit artifacts to integration branch
+        run: |
+          git config user.name "DrewCraft Integration Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add \
+            pack/manifest/candidate_hashes.yaml \
+            pack/manifest/integration_mts_v29_balance.json \
+            pack/overlays/v1_1_integration/config/mtscraftingoverrides.json \
+            pack/overlays/v1_1_integration/datapacks/drewcraft-integration
+          if git diff --cached --quiet; then
+            echo "Generated integration artifacts are already current."
+            exit 0
+          fi
+          git commit -m "integration: generate exact V29 recipes and hash evidence"
+          git push origin HEAD:0.1.8-dev-integration
