@@ -1,0 +1,193 @@
+# DrewCraft V1.1 integration candidates
+#
+# These additions deepen the existing Create / MTS / WDA loop without requiring
+# new world-generation resources. They are selected for the 0.1.8 integration
+# branch and remain compatibility candidates until the branch acceptance suite passes.
+
+schema_version: 1
+last_researched: "2026-09-20"
+target:
+  minecraft: "1.21.1"
+  loader: neoforge
+  java: 21
+
+policy:
+  no_new_worldgen_resources: true
+  preserve_existing_world: true
+  create_owns_generic_industrial_stock: true
+  mts_owns_vehicle_specific_components: true
+  notes:
+    - "The current V1 profile remains untouched; this registry is consumed only by v1_1_integration."
+    - "Support/compatibility mods below add no intended gameplay axis of their own."
+    - "All artifacts must receive exact SHA-256 evidence before a verified integration build is accepted."
+
+components:
+  create_crafts_additions:
+    display_name: "Create Crafts & Additions"
+    kind: mod
+    side: common
+    provider: modrinth
+    project_id: kU1G12Nn
+    version_id: qPr8V4G2
+    candidate_version: "1.6.0"
+    filename: "createaddition-1.6.0.jar"
+    download_url: "https://cdn.modrinth.com/data/kU1G12Nn/versions/qPr8V4G2/createaddition-1.6.0.jar"
+    release_status: release
+    required_dependencies:
+      - create
+    role: "Renewable biomass/bioethanol, rolling mill stock, and optional kinetic/electric bridge."
+    worldgen_resources: false
+    notes:
+      - "DrewCraft uses bioethanol, rods/wires, and selected factory utilities; electricity is not made a mandatory new progression axis."
+      - "Upstream 1.6.0 includes Sable compatibility improvements; DrewCraft also selects the dedicated Sable compatibility shim."
+
+  steam_n_rails:
+    display_name: "Create: Steam 'n' Rails (NeoForge 1.21.1 port)"
+    kind: mod
+    side: common
+    provider: modrinth
+    project_id: L3Jv0QZI
+    version_id: czVeSmZo
+    candidate_version: "0.3.0-beta.2+neoforge-mc1.21.1"
+    filename: "railways-0.3.0-beta.2+neoforge-mc1.21.1.jar"
+    download_url: "https://cdn.modrinth.com/data/L3Jv0QZI/versions/czVeSmZo/railways-0.3.0-beta.2%2Bneoforge-mc1.21.1.jar"
+    release_status: beta
+    required_dependencies:
+      - create
+    role: "Richer long-distance railway infrastructure, signaling, conductors and coupling."
+    worldgen_resources: false
+    notes:
+      - "Unofficial 1.21.1 port; dedicated-server restart, train chunk-crossing, Sable and High Seas coexistence are hard gates."
+
+  create_enchantment_industry:
+    display_name: "Create: Enchantment Industry"
+    kind: mod
+    side: common
+    provider: modrinth
+    project_id: JWGBpFUP
+    version_id: Y6ZGWuZr
+    candidate_version: "2.5.3"
+    filename: "create-enchantment-industry-2.5.3.jar"
+    download_url: "https://cdn.modrinth.com/data/JWGBpFUP/versions/Y6ZGWuZr/create-enchantment-industry-2.5.3.jar"
+    release_status: beta
+    required_dependencies:
+      - create
+      - create_dragons_plus
+    role: "Connect dungeon XP and enchanted loot to Create processing, storage and repair."
+    worldgen_resources: false
+    notes:
+      - "Selected 2.5.3 targets Create 6.0.10 and includes current Sable integration fixes."
+
+  create_stuff_additions:
+    display_name: "Create Stuff 'N Additions"
+    kind: mod
+    side: common
+    provider: modrinth
+    project_id: aq9qUUQG
+    version_id: gMWQ1LX9
+    candidate_version: "2.1.4.b"
+    filename: "create-stuff-additions1.21.1_v2.1.4b.jar"
+    download_url: "https://cdn.modrinth.com/data/aq9qUUQG/versions/gMWQ1LX9/create-stuff-additions1.21.1_v2.1.4b.jar"
+    release_status: release
+    required_dependencies:
+      - create
+    role: "Create-native engineering equipment, exoskeletons, jetpacks and utility gear."
+    worldgen_resources: false
+    notes:
+      - "Gear must not trivialize MTS aircraft, WDA combat or normal survival progression."
+
+  create_connected:
+    display_name: "Create: Connected"
+    kind: mod
+    side: common
+    provider: modrinth
+    project_id: Vg5TIO6d
+    version_id: EHyCRpCV
+    candidate_version: "1.1.16-mc1.21.1"
+    filename: "create_connected-1.1.16-mc1.21.1.jar"
+    download_url: "https://cdn.modrinth.com/data/Vg5TIO6d/versions/EHyCRpCV/create_connected-1.1.16-mc1.21.1.jar"
+    release_status: release
+    required_dependencies:
+      - create
+    role: "Small configurable Create factory/automation quality-of-life additions."
+    worldgen_resources: false
+
+  lootr:
+    display_name: "Lootr"
+    kind: mod
+    side: common
+    provider: modrinth
+    project_id: EltpO5cN
+    version_id: Trh49IZt
+    candidate_version: "1.21.1-1.11.38.124"
+    filename: "lootr-neoforge-1.21.1-1.11.38.124.jar"
+    download_url: "https://cdn.modrinth.com/data/EltpO5cN/versions/Trh49IZt/lootr-neoforge-1.21.1-1.11.38.124.jar"
+    release_status: release
+    role: "Per-player dungeon loot so sparse WDA exploration remains rewarding in multiplayer."
+    worldgen_resources: false
+
+libraries:
+  create_dragons_plus:
+    display_name: "Create: Dragons Plus"
+    kind: create_addon_library
+    side: common
+    provider: modrinth
+    project_id: dzb1a5WV
+    version_id: PsnDvjPV
+    candidate_version: "1.11.4"
+    filename: "CreateDragonsPlus-1.11.4.jar"
+    download_url: "https://cdn.modrinth.com/data/dzb1a5WV/versions/PsnDvjPV/CreateDragonsPlus-1.11.4.jar"
+    release_status: release
+    required_dependencies:
+      - create
+    required_by:
+      - create_enchantment_industry
+    worldgen_resources: false
+
+  create_additions_sable_compat:
+    display_name: "Create Additions - Sable Compat"
+    kind: compatibility_mod
+    side: common
+    provider: modrinth
+    project_id: 5njdnAZ8
+    version_id: x7OaOLDX
+    candidate_version: "0.1.13"
+    filename: "sable_createaddition_compat-0.1.13.jar"
+    download_url: "https://cdn.modrinth.com/data/5njdnAZ8/versions/x7OaOLDX/sable_createaddition_compat-0.1.13.jar"
+    release_status: beta
+    required_dependencies:
+      - create
+      - create_crafts_additions
+      - sable
+    role: "Makes C&A wires, rolling mill and related block entities behave/render on Sable sublevels."
+    worldgen_resources: false
+
+  stuff_additions_sable_aeronautics_compat:
+    display_name: "Create Stuff 'N Additions x Sable & Aeronautics Compat"
+    kind: compatibility_mod
+    side: common
+    provider: modrinth
+    project_id: gsAqDfOu
+    version_id: oOYLBz7M
+    candidate_version: "1.0.3"
+    filename: "SableStuffAdditionsCompat v1.0.3-1.21.1.jar"
+    download_url: "https://cdn.modrinth.com/data/gsAqDfOu/versions/oOYLBz7M/SableStuffAdditionsCompat%20v1.0.3-1.21.1.jar"
+    release_status: release
+    required_dependencies:
+      - create_stuff_additions
+      - create_aeronautics
+      - sable
+    role: "Fixes jetpack/grappling/block-picker behavior on Aeronautics/Sable moving sublevels."
+    worldgen_resources: false
+
+compatibility_gates:
+  - "Exact provider artifacts and SHA-256 evidence resolve deterministically."
+  - "Fresh dedicated-server boot and same-world restart pass."
+  - "Existing production world loads without regeneration or missing-registry failures."
+  - "C&A rolling mill/wires work on static Create builds and Sable sublevels."
+  - "Bioethanol reaches an MTS fuel pump/tank and powers gasoline/avgas engines."
+  - "MTS vehicles remain final-assembled through MTS workbenches."
+  - "Steam 'n' Rails trains survive long chunk crossings, unload/reload and restart."
+  - "Enchantment Industry has no XP duplication path."
+  - "Stuff 'N Additions equipment does not invalidate MTS aircraft or normal survival."
+  - "Lootr converts/handles representative WDA loot containers and preserves per-player state across restart."
