@@ -20,6 +20,7 @@ registries:
   runtime_libraries: "pack/manifest/runtime_candidates.yaml"
   radar_integrations: "pack/manifest/radar_candidates.yaml"
   create_combat_mobility: "pack/manifest/create_combat_mobility_candidates.yaml"
+  integration: "pack/manifest/integration_candidates.yaml"
 
 profiles:
   v1_survival_core:
@@ -96,6 +97,49 @@ profiles:
       - "CBC Firepower Components remains held out because its tested release hard-crashes with Create: Radars."
       - "WDA's metadata excludes Minecraft 1.21.1 incorrectly; the narrowly scoped FML dependency override remains a runtime-gated compatibility measure."
     gate: "This is the only V1 shipping profile. Research profiles below must never replace it implicitly."
+
+
+  v1_1_integration:
+    extends:
+      - v1_survival_exploration
+    create_expansion_components:
+      - create_crafts_additions
+      - steam_n_rails
+      - create_enchantment_industry
+      - create_stuff_additions
+      - create_connected
+    create_expansion_libraries:
+      - create_dragons_plus
+      - create_additions_sable_compat
+      - stuff_additions_sable_aeronautics_compat
+    gameplay_components:
+      - lootr
+    overlays:
+      - pack/overlays/v1_1_integration
+    purpose: "DrewCraft 0.1.8 integration branch: deepen the existing Create/MTS/WDA survival loop without adding worldgen resources or a new story/strategy axis."
+    integration_policy:
+      - "Create owns generic industrial stock; MTS owns vehicle-specific parts and final assembly."
+      - "MTS workbenches remain the final vehicle/part crafting interface."
+      - "C&A bioethanol is accepted as gasoline/avgas fuel at MTS ethanol-equivalent potency."
+      - "Exact MTS V29 material lists are transformed into Create/C&A stock while conserving raw iron burden."
+      - "WDA loot receives a small optional industrial bonus pool; ordinary manufacturing remains the reliable progression path."
+      - "No selected dependency may require new ore/deposit/structure world generation for progression."
+    requirements:
+      - "Existing DrewCraft world must load unchanged; no regeneration or world reset."
+      - "Exact artifact hashes must be recorded before verified pack build."
+      - "Exact MTS Official Pack V29 overrides and balance report must be generated from the pinned V29 artifact."
+      - "Vehicle-body generic iron-equivalent deltas should stay within ±10%, preferably ±5%."
+      - "Fresh boot, same-world restart, Windows/macOS client join, MTS/Create/Aeronautics interaction, WDA+Lootr and train chunk-crossing smoke tests must pass."
+    explicit_deferments:
+      - weather_and_clouds
+      - covenant_story
+      - strategic_armies
+      - sieges
+      - herds
+      - source_cores
+      - new_dimensions
+      - new_resource_worldgen
+    gate: "Audit this branch and promote/merge only after the full 0.1.8 integration acceptance suite passes."
 
   stage2_base_performance:
     description: "Foundational DrewCraft stack plus conservative performance baseline and the V1 physical radar frontend."
