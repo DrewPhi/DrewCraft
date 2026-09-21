@@ -42,6 +42,7 @@ def test_generator_uses_exact_pack_material_lists_and_keeps_mts_functional_parts
             "materialLists": [[
                 "mts:mtsofficialpack.plating:24",
                 "mts:mtsofficialpack.screws:24",
+                "mts:mtsofficialpack.metaltube:2",
                 "mts:mtsofficialpack.circuit:2",
                 "minecraft:glass_pane:4",
             ]]
