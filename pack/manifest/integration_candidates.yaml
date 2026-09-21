@@ -5,7 +5,7 @@
 # branch and remain compatibility candidates until the branch acceptance suite passes.
 
 schema_version: 1
-last_researched: "2026-09-20"
+last_researched: "2026-09-21"
 target:
   minecraft: "1.21.1"
   loader: neoforge
