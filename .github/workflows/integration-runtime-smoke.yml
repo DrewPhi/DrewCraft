@@ -10,6 +10,7 @@ on:
       - "tools/**"
       - "mods/drewcraft/**"
       - "tests/**"
+      - "infra/**"
 
 permissions:
   contents: read
