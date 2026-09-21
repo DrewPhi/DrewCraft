@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "mts:mtsofficialpack.blowtorch"
+    },
+    {
+      "item": "mts:mts.wrench"
+    },
+    {
+      "item": "minecraft:diamond"
+    },
+    {
+      "item": "createaddition:iron_rod"
+    },
+    {
+      "item": "createaddition:copper_wire"
+    },
+    {
+      "item": "minecraft:chest"
+    }
+  ],
+  "result": {
+    "id": "mts:mtsofficialpack.repairkit",
+    "count": 1
+  }
+}

@@ -1,0 +1,4086 @@
+{
+  "schema_version": 1,
+  "source": "mts-official-v29.jar",
+  "policy": "Create owns generic stock; MTS owns functional vehicle components and final assembly.",
+  "legacy_costs": {
+    "plating_iron_equivalent": 0.5444444444444444,
+    "screw_iron_equivalent": 0.1111111111111111,
+    "tube_iron_equivalent": 0.5444444444444444
+  },
+  "vehicle_balance_gate_percent": 10.0,
+  "overridden_item_count": 206,
+  "rows": [
+    {
+      "classification": "bullets",
+      "system_name": "basicbomb",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 3.2667,
+          "new_generic_iron_equivalent": 3.5,
+          "generic_iron_delta_percent": 7.14
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 7.14
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bomblet",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bullet3700he",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bullet3700he_mag",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bullet3700proxy",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bullet3700proxy_mag",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bullet3700solid",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bullet3700solid_mag",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bullet762",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bulletflare_blue",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bulletflare_green",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bulletflare_rainbow",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bulletflare_red",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bulletflare_white",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bulletflare_yellow",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "bullets",
+      "system_name": "bulletrocket",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "bullets",
+      "system_name": "extinguisherfoam",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "heavy_bomb",
+      "variants": [
+        {
+          "legacy_plating": 12,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 6,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 6.5333,
+          "new_generic_iron_equivalent": 6.5,
+          "generic_iron_delta_percent": -0.51
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.51
+    },
+    {
+      "classification": "bullets",
+      "system_name": "paint_black",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "paint_blue",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "paint_glow",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "paint_red",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "paint_yellow",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "bullets",
+      "system_name": "watercannon_proj",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "beacon_top",
+      "variants": [
+        {
+          "legacy_plating": 8,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 5,
+          "create_iron_sheets": 4,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 5,
+          "old_generic_iron_equivalent": 4.3556,
+          "new_generic_iron_equivalent": 4.5,
+          "generic_iron_delta_percent": 3.32
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 3.32
+    },
+    {
+      "classification": "decors",
+      "system_name": "beacon_tower",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "crashbarrier",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "fluidloader",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 4,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 4,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 2.1778,
+          "new_generic_iron_equivalent": 2.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "decors",
+      "system_name": "fluidunloader",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 4,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 4,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 2.1778,
+          "new_generic_iron_equivalent": 2.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "decors",
+      "system_name": "fuelpump",
+      "variants": [
+        {
+          "legacy_plating": 8,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 4,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 4.3556,
+          "new_generic_iron_equivalent": 4.5,
+          "generic_iron_delta_percent": 3.32
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 3.32
+    },
+    {
+      "classification": "decors",
+      "system_name": "itemloader",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "itemunloader",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "prop1",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "prop2",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "prop3",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "prop4",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "prop5",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "signalcontroller",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 3.2667,
+          "new_generic_iron_equivalent": 3.5,
+          "generic_iron_delta_percent": 7.14
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 7.14
+    },
+    {
+      "classification": "decors",
+      "system_name": "telephonebooth",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "decors",
+      "system_name": "trafficcone",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_adf",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_airspeed",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_altimeter",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_attitude",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_beacon_distance",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_clock",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_coordinate",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_electric",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_enginetemp",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_flaps",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_fuelflow",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_fuelqty",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_heading",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_ils",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_liftreserve",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_oilpressure",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_tachometer",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_trim",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_turncoord",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_turnslip",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_aircraft_verticalspeed",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_clock",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_electric",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_enginetemp_c",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_enginetemp_f",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_fuelqty",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_gear",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 4,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.9889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": 1.12
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.12
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_oilpressure_b",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_oilpressure_p",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_spedometer_blk",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_spedometer_kph",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_spedometer_mph",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_car_tachometer",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "instruments",
+      "system_name": "instrument_misc_mud",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 1,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.6556,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -23.73
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 23.73
+    },
+    {
+      "classification": "items",
+      "system_name": "mre",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "items",
+      "system_name": "nuts",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "items",
+      "system_name": "ocpbutter",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "items",
+      "system_name": "rods",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "aa_base",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 4,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.4444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": 12.5
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 12.5
+    },
+    {
+      "classification": "parts",
+      "system_name": "aa_turret_37",
+      "variants": [
+        {
+          "legacy_plating": 12,
+          "legacy_screws": 10,
+          "legacy_tubes": 4,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 6,
+          "createaddition_iron_rods": 8,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 9.8222,
+          "new_generic_iron_equivalent": 10.0,
+          "generic_iron_delta_percent": 1.81
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.81
+    },
+    {
+      "classification": "parts",
+      "system_name": "aa_turret_762",
+      "variants": [
+        {
+          "legacy_plating": 12,
+          "legacy_screws": 10,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 6,
+          "createaddition_iron_rods": 3,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 7.6444,
+          "new_generic_iron_equivalent": 7.5,
+          "generic_iron_delta_percent": -1.89
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.89
+    },
+    {
+      "classification": "parts",
+      "system_name": "ammocrate_bomb_250",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "ammocrate_rocket",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "ammocrate_shell37",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "auxiliary_tank",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 4,
+          "legacy_tubes": 2,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 3,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.5333,
+          "new_generic_iron_equivalent": 1.5,
+          "generic_iron_delta_percent": -2.17
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 2.17
+    },
+    {
+      "classification": "parts",
+      "system_name": "barrel",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 3.2667,
+          "new_generic_iron_equivalent": 3.5,
+          "generic_iron_delta_percent": 7.14
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 7.14
+    },
+    {
+      "classification": "parts",
+      "system_name": "barrelbell47g",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 4,
+          "legacy_tubes": 6,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 7,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 3.7111,
+          "new_generic_iron_equivalent": 3.5,
+          "generic_iron_delta_percent": -5.69
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 5.69
+    },
+    {
+      "classification": "parts",
+      "system_name": "basicbomb_hardpoint",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 2,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.2222,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": 125.0
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 125.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "bomblet_bombrack",
+      "variants": [
+        {
+          "legacy_plating": 12,
+          "legacy_screws": 24,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 6,
+          "createaddition_iron_rods": 6,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 9.2,
+          "new_generic_iron_equivalent": 9.0,
+          "generic_iron_delta_percent": -2.17
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 2.17
+    },
+    {
+      "classification": "parts",
+      "system_name": "brigbedbox",
+      "variants": [
+        {
+          "legacy_plating": 24,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 12,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 13.0667,
+          "new_generic_iron_equivalent": 13.0,
+          "generic_iron_delta_percent": -0.51
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.51
+    },
+    {
+      "classification": "parts",
+      "system_name": "brigbeddump",
+      "variants": [
+        {
+          "legacy_plating": 28,
+          "legacy_screws": 0,
+          "legacy_tubes": 4,
+          "legacy_copper_wire": 6,
+          "create_iron_sheets": 14,
+          "createaddition_iron_rods": 7,
+          "createaddition_copper_wire": 6,
+          "old_generic_iron_equivalent": 17.4222,
+          "new_generic_iron_equivalent": 17.5,
+          "generic_iron_delta_percent": 0.45
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.45
+    },
+    {
+      "classification": "parts",
+      "system_name": "brigbedflat",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 3.2667,
+          "new_generic_iron_equivalent": 3.5,
+          "generic_iron_delta_percent": 7.14
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 7.14
+    },
+    {
+      "classification": "parts",
+      "system_name": "brigbedlogs",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 3.2667,
+          "new_generic_iron_equivalent": 3.5,
+          "generic_iron_delta_percent": 7.14
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 7.14
+    },
+    {
+      "classification": "parts",
+      "system_name": "brigbedstake",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 10,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 3,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 4.3778,
+          "new_generic_iron_equivalent": 4.5,
+          "generic_iron_delta_percent": 2.79
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 2.79
+    },
+    {
+      "classification": "parts",
+      "system_name": "brigbedtanker",
+      "variants": [
+        {
+          "legacy_plating": 12,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 6,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 6.5333,
+          "new_generic_iron_equivalent": 6.5,
+          "generic_iron_delta_percent": -0.51
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.51
+    },
+    {
+      "classification": "parts",
+      "system_name": "brigbedtransport",
+      "variants": [
+        {
+          "legacy_plating": 18,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 9,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 9.8,
+          "new_generic_iron_equivalent": 10.0,
+          "generic_iron_delta_percent": 2.04
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 2.04
+    },
+    {
+      "classification": "parts",
+      "system_name": "bumpersticker",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "camera_vulcanair",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 8,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 8,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 8,
+          "old_generic_iron_equivalent": 4.1556,
+          "new_generic_iron_equivalent": 4.0,
+          "generic_iron_delta_percent": -3.74
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 3.74
+    },
+    {
+      "classification": "parts",
+      "system_name": "carseat",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "crate",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "cratebell47g",
+      "variants": [
+        {
+          "legacy_plating": 4,
+          "legacy_screws": 4,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 2,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 2.6222,
+          "new_generic_iron_equivalent": 2.5,
+          "generic_iron_delta_percent": -4.66
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 4.66
+    },
+    {
+      "classification": "parts",
+      "system_name": "don_icon",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "double_bombrack",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 6,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.7556,
+          "new_generic_iron_equivalent": 2.0,
+          "generic_iron_delta_percent": 13.92
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 13.92
+    },
+    {
+      "classification": "parts",
+      "system_name": "drill",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "engineallison250",
+      "variants": [
+        {
+          "legacy_plating": 16,
+          "legacy_screws": 24,
+          "legacy_tubes": 6,
+          "legacy_copper_wire": 16,
+          "create_iron_sheets": 8,
+          "createaddition_iron_rods": 13,
+          "createaddition_copper_wire": 16,
+          "old_generic_iron_equivalent": 14.6444,
+          "new_generic_iron_equivalent": 14.5,
+          "generic_iron_delta_percent": -0.99
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.99
+    },
+    {
+      "classification": "parts",
+      "system_name": "engineamci4",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 4,
+          "legacy_copper_wire": 2,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 4,
+          "createaddition_copper_wire": 2,
+          "old_generic_iron_equivalent": 2.1778,
+          "new_generic_iron_equivalent": 2.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "enginebristolmercury",
+      "variants": [
+        {
+          "legacy_plating": 8,
+          "legacy_screws": 20,
+          "legacy_tubes": 3,
+          "legacy_copper_wire": 4,
+          "create_iron_sheets": 4,
+          "createaddition_iron_rods": 8,
+          "createaddition_copper_wire": 4,
+          "old_generic_iron_equivalent": 8.2111,
+          "new_generic_iron_equivalent": 8.0,
+          "generic_iron_delta_percent": -2.57
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 2.57
+    },
+    {
+      "classification": "parts",
+      "system_name": "enginedetroitdiesel",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 6,
+          "legacy_copper_wire": 4,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 7,
+          "createaddition_copper_wire": 4,
+          "old_generic_iron_equivalent": 3.2667,
+          "new_generic_iron_equivalent": 3.5,
+          "generic_iron_delta_percent": 7.14
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 7.14
+    },
+    {
+      "classification": "parts",
+      "system_name": "enginefordfe428",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 10,
+          "legacy_copper_wire": 4,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 11,
+          "createaddition_copper_wire": 4,
+          "old_generic_iron_equivalent": 5.4444,
+          "new_generic_iron_equivalent": 5.5,
+          "generic_iron_delta_percent": 1.02
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.02
+    },
+    {
+      "classification": "parts",
+      "system_name": "enginefranklin0335",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 10,
+          "legacy_copper_wire": 8,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 11,
+          "createaddition_copper_wire": 8,
+          "old_generic_iron_equivalent": 5.4444,
+          "new_generic_iron_equivalent": 5.5,
+          "generic_iron_delta_percent": 1.02
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.02
+    },
+    {
+      "classification": "parts",
+      "system_name": "enginelycomingo360",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 16,
+          "legacy_tubes": 3,
+          "legacy_copper_wire": 4,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 7,
+          "createaddition_copper_wire": 4,
+          "old_generic_iron_equivalent": 6.6778,
+          "new_generic_iron_equivalent": 6.5,
+          "generic_iron_delta_percent": -2.66
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 2.66
+    },
+    {
+      "classification": "parts",
+      "system_name": "enginemercedesm102",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 6,
+          "legacy_tubes": 4,
+          "legacy_copper_wire": 2,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 6,
+          "createaddition_copper_wire": 2,
+          "old_generic_iron_equivalent": 3.9333,
+          "new_generic_iron_equivalent": 4.0,
+          "generic_iron_delta_percent": 1.69
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.69
+    },
+    {
+      "classification": "parts",
+      "system_name": "enginepw610f",
+      "variants": [
+        {
+          "legacy_plating": 12,
+          "legacy_screws": 32,
+          "legacy_tubes": 3,
+          "legacy_copper_wire": 10,
+          "create_iron_sheets": 6,
+          "createaddition_iron_rods": 11,
+          "createaddition_copper_wire": 10,
+          "old_generic_iron_equivalent": 11.7222,
+          "new_generic_iron_equivalent": 11.5,
+          "generic_iron_delta_percent": -1.9
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.9
+    },
+    {
+      "classification": "parts",
+      "system_name": "enginequad",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 6,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 1.2111,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -17.43
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 17.43
+    },
+    {
+      "classification": "parts",
+      "system_name": "ft17track",
+      "variants": [
+        {
+          "legacy_plating": 15,
+          "legacy_screws": 10,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 8,
+          "createaddition_iron_rods": 3,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 9.2778,
+          "new_generic_iron_equivalent": 9.5,
+          "generic_iron_delta_percent": 2.4
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 2.4
+    },
+    {
+      "classification": "parts",
+      "system_name": "grilleornament",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 2,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.2222,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": 125.0
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 125.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "gunconfetti",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "gunfireextinguisher",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 1,
+          "legacy_tubes": 4,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 5,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 2.2889,
+          "new_generic_iron_equivalent": 2.5,
+          "generic_iron_delta_percent": 9.22
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 9.22
+    },
+    {
+      "classification": "parts",
+      "system_name": "gunflaregun",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 2,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.7667,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": 30.43
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 30.43
+    },
+    {
+      "classification": "parts",
+      "system_name": "gunft17turret",
+      "variants": [
+        {
+          "legacy_plating": 10,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 5,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 5.9889,
+          "new_generic_iron_equivalent": 6.0,
+          "generic_iron_delta_percent": 0.19
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.19
+    },
+    {
+      "classification": "parts",
+      "system_name": "gunm1919",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 4,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.9889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": 1.12
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.12
+    },
+    {
+      "classification": "parts",
+      "system_name": "gunobserver",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "gunrocketlauncher",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 4,
+          "legacy_tubes": 2,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 3,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.5333,
+          "new_generic_iron_equivalent": 1.5,
+          "generic_iron_delta_percent": -2.17
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 2.17
+    },
+    {
+      "classification": "parts",
+      "system_name": "gunrocketpod",
+      "variants": [
+        {
+          "legacy_plating": 3,
+          "legacy_screws": 10,
+          "legacy_tubes": 6,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 2,
+          "createaddition_iron_rods": 8,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 6.0111,
+          "new_generic_iron_equivalent": 6.0,
+          "generic_iron_delta_percent": -0.18
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.18
+    },
+    {
+      "classification": "parts",
+      "system_name": "heavy_bombrack",
+      "variants": [
+        {
+          "legacy_plating": 4,
+          "legacy_screws": 6,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 2,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 2.8444,
+          "new_generic_iron_equivalent": 3.0,
+          "generic_iron_delta_percent": 5.47
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 5.47
+    },
+    {
+      "classification": "parts",
+      "system_name": "hoist_bell206",
+      "variants": [
+        {
+          "legacy_plating": 4,
+          "legacy_screws": 0,
+          "legacy_tubes": 4,
+          "legacy_copper_wire": 16,
+          "create_iron_sheets": 2,
+          "createaddition_iron_rods": 5,
+          "createaddition_copper_wire": 16,
+          "old_generic_iron_equivalent": 4.3556,
+          "new_generic_iron_equivalent": 4.5,
+          "generic_iron_delta_percent": 3.32
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 3.32
+    },
+    {
+      "classification": "parts",
+      "system_name": "mirrorornament",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "pontoon",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 0,
+          "legacy_tubes": 2,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 3,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 4.3556,
+          "new_generic_iron_equivalent": 4.5,
+          "generic_iron_delta_percent": 3.32
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 3.32
+    },
+    {
+      "classification": "parts",
+      "system_name": "propellerlarge2blade",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 2,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "propellerrotor",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 3,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 3,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.6333,
+          "new_generic_iron_equivalent": 1.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "propellerrotor206",
+      "variants": [
+        {
+          "legacy_plating": 20,
+          "legacy_screws": 0,
+          "legacy_tubes": 6,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 10,
+          "createaddition_iron_rods": 8,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 14.1556,
+          "new_generic_iron_equivalent": 14.0,
+          "generic_iron_delta_percent": -1.1
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.1
+    },
+    {
+      "classification": "parts",
+      "system_name": "propellersmall2blade",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "propellersmall3blade",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 2,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "salesign",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "scoutbedpickup",
+      "variants": [
+        {
+          "legacy_plating": 12,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 4,
+          "create_iron_sheets": 6,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 4,
+          "old_generic_iron_equivalent": 6.5333,
+          "new_generic_iron_equivalent": 6.5,
+          "generic_iron_delta_percent": -0.51
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.51
+    },
+    {
+      "classification": "parts",
+      "system_name": "scouthardtop",
+      "variants": [
+        {
+          "legacy_plating": 10,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 5,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 5.4444,
+          "new_generic_iron_equivalent": 5.5,
+          "generic_iron_delta_percent": 1.02
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.02
+    },
+    {
+      "classification": "parts",
+      "system_name": "scoutpickuproof",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 3.2667,
+          "new_generic_iron_equivalent": 3.5,
+          "generic_iron_delta_percent": 7.14
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 7.14
+    },
+    {
+      "classification": "parts",
+      "system_name": "seat",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 0,
+          "legacy_tubes": 2,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 2.1778,
+          "new_generic_iron_equivalent": 2.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "seat_harness",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "skidhelicopter",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 2,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.2222,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": 125.0
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 125.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "smokecan_blue",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "smokecan_green",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "smokecan_polychrome",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "smokecan_red",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "smokecan_white",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "snail_sculpture",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "spotlight",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 10,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.1111,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -10.0
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 10.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "spotlight_bell206",
+      "variants": [
+        {
+          "legacy_plating": 4,
+          "legacy_screws": 4,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 8,
+          "create_iron_sheets": 2,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 8,
+          "old_generic_iron_equivalent": 2.6222,
+          "new_generic_iron_equivalent": 2.5,
+          "generic_iron_delta_percent": -4.66
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 4.66
+    },
+    {
+      "classification": "parts",
+      "system_name": "spraycan_black",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "spraycan_blue",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "spraycan_glow",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "spraycan_red",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "spraycan_yellow",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "testingmodule1",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.0,
+          "new_generic_iron_equivalent": 0.0,
+          "generic_iron_delta_percent": null
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.0
+    },
+    {
+      "classification": "parts",
+      "system_name": "watercannon",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 10,
+          "legacy_tubes": 2,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 4,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 2.2,
+          "new_generic_iron_equivalent": 2.0,
+          "generic_iron_delta_percent": -9.09
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 9.09
+    },
+    {
+      "classification": "parts",
+      "system_name": "wheelhuge",
+      "variants": [
+        {
+          "legacy_plating": 4,
+          "legacy_screws": 0,
+          "legacy_tubes": 2,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 2,
+          "createaddition_iron_rods": 3,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 3.2667,
+          "new_generic_iron_equivalent": 3.5,
+          "generic_iron_delta_percent": 7.14
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 7.14
+    },
+    {
+      "classification": "parts",
+      "system_name": "wheellarge",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "wheelmedium",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "parts",
+      "system_name": "wheelsmall",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "pole_core",
+      "variants": [
+        {
+          "legacy_plating": 0,
+          "legacy_screws": 0,
+          "legacy_tubes": 1,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "pole_crossingsignal",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "pole_flashingsignal_red",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "pole_flashingsignal_yellow",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "pole_streetlight",
+      "variants": [
+        {
+          "legacy_plating": 2,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 1,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 1,
+          "old_generic_iron_equivalent": 1.0889,
+          "new_generic_iron_equivalent": 1.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "pole_trafficsignal",
+      "variants": [
+        {
+          "legacy_plating": 4,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 2,
+          "create_iron_sheets": 2,
+          "createaddition_iron_rods": 0,
+          "createaddition_copper_wire": 2,
+          "old_generic_iron_equivalent": 2.1778,
+          "new_generic_iron_equivalent": 2.0,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_bump",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_cow",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_crosswalk",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_deadend",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_donotenter",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_entryforbidden",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_highway",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_highwayend",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_left_direction",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_mts",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_noparking",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_oneway_left",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_oneway_right",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_priority",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_priorityend",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_restrictionsend",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_right_direction",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_route",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_speedlimit",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_stop",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_turn_left",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_turn_right",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_wrongway",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "poles",
+      "system_name": "sign_yield",
+      "variants": [
+        {
+          "legacy_plating": 1,
+          "legacy_screws": 0,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 1,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 0.5444,
+          "new_generic_iron_equivalent": 0.5,
+          "generic_iron_delta_percent": -8.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 8.16
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "bell206",
+      "variants": [
+        {
+          "legacy_plating": 42,
+          "legacy_screws": 48,
+          "legacy_tubes": 24,
+          "legacy_copper_wire": 48,
+          "create_iron_sheets": 21,
+          "createaddition_iron_rods": 41,
+          "createaddition_copper_wire": 48,
+          "old_generic_iron_equivalent": 41.2667,
+          "new_generic_iron_equivalent": 41.5,
+          "generic_iron_delta_percent": 0.57
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.57
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "bell47g",
+      "variants": [
+        {
+          "legacy_plating": 24,
+          "legacy_screws": 24,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 24,
+          "create_iron_sheets": 12,
+          "createaddition_iron_rods": 7,
+          "createaddition_copper_wire": 24,
+          "old_generic_iron_equivalent": 15.7333,
+          "new_generic_iron_equivalent": 15.5,
+          "generic_iron_delta_percent": -1.48
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.48
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "comanche",
+      "variants": [
+        {
+          "legacy_plating": 64,
+          "legacy_screws": 48,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 32,
+          "create_iron_sheets": 32,
+          "createaddition_iron_rods": 16,
+          "createaddition_copper_wire": 32,
+          "old_generic_iron_equivalent": 40.1778,
+          "new_generic_iron_equivalent": 40.0,
+          "generic_iron_delta_percent": -0.44
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.44
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "e500",
+      "variants": [
+        {
+          "legacy_plating": 64,
+          "legacy_screws": 64,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 48,
+          "create_iron_sheets": 32,
+          "createaddition_iron_rods": 20,
+          "createaddition_copper_wire": 48,
+          "old_generic_iron_equivalent": 41.9556,
+          "new_generic_iron_equivalent": 42.0,
+          "generic_iron_delta_percent": 0.11
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.11
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "firetruck",
+      "variants": [
+        {
+          "legacy_plating": 64,
+          "legacy_screws": 58,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 14,
+          "create_iron_sheets": 32,
+          "createaddition_iron_rods": 19,
+          "createaddition_copper_wire": 14,
+          "old_generic_iron_equivalent": 41.2889,
+          "new_generic_iron_equivalent": 41.5,
+          "generic_iron_delta_percent": 0.51
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.51
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "fordmustang69",
+      "variants": [
+        {
+          "legacy_plating": 36,
+          "legacy_screws": 48,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 12,
+          "create_iron_sheets": 18,
+          "createaddition_iron_rods": 14,
+          "createaddition_copper_wire": 12,
+          "old_generic_iron_equivalent": 24.9333,
+          "new_generic_iron_equivalent": 25.0,
+          "generic_iron_delta_percent": 0.27
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.27
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "ft17",
+      "variants": [
+        {
+          "legacy_plating": 80,
+          "legacy_screws": 120,
+          "legacy_tubes": 4,
+          "legacy_copper_wire": 0,
+          "create_iron_sheets": 40,
+          "createaddition_iron_rods": 38,
+          "createaddition_copper_wire": 0,
+          "old_generic_iron_equivalent": 59.0667,
+          "new_generic_iron_equivalent": 59.0,
+          "generic_iron_delta_percent": -0.11
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.11
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "gmcbrig",
+      "variants": [
+        {
+          "legacy_plating": 20,
+          "legacy_screws": 32,
+          "legacy_tubes": 10,
+          "legacy_copper_wire": 18,
+          "create_iron_sheets": 10,
+          "createaddition_iron_rods": 20,
+          "createaddition_copper_wire": 18,
+          "old_generic_iron_equivalent": 19.8889,
+          "new_generic_iron_equivalent": 20.0,
+          "generic_iron_delta_percent": 0.56
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.56
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "mc172",
+      "variants": [
+        {
+          "legacy_plating": 6,
+          "legacy_screws": 24,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 6,
+          "create_iron_sheets": 3,
+          "createaddition_iron_rods": 6,
+          "createaddition_copper_wire": 6,
+          "old_generic_iron_equivalent": 5.9333,
+          "new_generic_iron_equivalent": 6.0,
+          "generic_iron_delta_percent": 1.12
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.12
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "merc230",
+      "variants": [
+        {
+          "legacy_plating": 38,
+          "legacy_screws": 36,
+          "legacy_tubes": 6,
+          "legacy_copper_wire": 12,
+          "create_iron_sheets": 19,
+          "createaddition_iron_rods": 18,
+          "createaddition_copper_wire": 12,
+          "old_generic_iron_equivalent": 27.9556,
+          "new_generic_iron_equivalent": 28.0,
+          "generic_iron_delta_percent": 0.16
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.16
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "pzl37los",
+      "variants": [
+        {
+          "legacy_plating": 96,
+          "legacy_screws": 48,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 32,
+          "create_iron_sheets": 48,
+          "createaddition_iron_rods": 19,
+          "createaddition_copper_wire": 32,
+          "old_generic_iron_equivalent": 57.6,
+          "new_generic_iron_equivalent": 57.5,
+          "generic_iron_delta_percent": -0.17
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.17
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "pzlp11",
+      "variants": [
+        {
+          "legacy_plating": 38,
+          "legacy_screws": 32,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 12,
+          "create_iron_sheets": 19,
+          "createaddition_iron_rods": 10,
+          "createaddition_copper_wire": 12,
+          "old_generic_iron_equivalent": 24.2444,
+          "new_generic_iron_equivalent": 24.0,
+          "generic_iron_delta_percent": -1.01
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 1.01
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "quad",
+      "variants": [
+        {
+          "legacy_plating": 8,
+          "legacy_screws": 16,
+          "legacy_tubes": 0,
+          "legacy_copper_wire": 4,
+          "create_iron_sheets": 4,
+          "createaddition_iron_rods": 4,
+          "createaddition_copper_wire": 4,
+          "old_generic_iron_equivalent": 6.1333,
+          "new_generic_iron_equivalent": 6.0,
+          "generic_iron_delta_percent": -2.17
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 2.17
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "scout",
+      "variants": [
+        {
+          "legacy_plating": 30,
+          "legacy_screws": 45,
+          "legacy_tubes": 4,
+          "legacy_copper_wire": 6,
+          "create_iron_sheets": 15,
+          "createaddition_iron_rods": 17,
+          "createaddition_copper_wire": 6,
+          "old_generic_iron_equivalent": 23.5111,
+          "new_generic_iron_equivalent": 23.5,
+          "generic_iron_delta_percent": -0.05
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.05
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "skyhawk",
+      "variants": [
+        {
+          "legacy_plating": 48,
+          "legacy_screws": 42,
+          "legacy_tubes": 6,
+          "legacy_copper_wire": 24,
+          "create_iron_sheets": 24,
+          "createaddition_iron_rods": 20,
+          "createaddition_copper_wire": 24,
+          "old_generic_iron_equivalent": 34.0667,
+          "new_generic_iron_equivalent": 34.0,
+          "generic_iron_delta_percent": -0.2
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.2
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "trimotor",
+      "variants": [
+        {
+          "legacy_plating": 132,
+          "legacy_screws": 90,
+          "legacy_tubes": 16,
+          "legacy_copper_wire": 32,
+          "create_iron_sheets": 66,
+          "createaddition_iron_rods": 49,
+          "createaddition_copper_wire": 32,
+          "old_generic_iron_equivalent": 90.5778,
+          "new_generic_iron_equivalent": 90.5,
+          "generic_iron_delta_percent": -0.09
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.09
+    },
+    {
+      "classification": "vehicles",
+      "system_name": "vulcanair",
+      "variants": [
+        {
+          "legacy_plating": 70,
+          "legacy_screws": 64,
+          "legacy_tubes": 2,
+          "legacy_copper_wire": 32,
+          "create_iron_sheets": 35,
+          "createaddition_iron_rods": 23,
+          "createaddition_copper_wire": 32,
+          "old_generic_iron_equivalent": 46.3111,
+          "new_generic_iron_equivalent": 46.5,
+          "generic_iron_delta_percent": 0.41
+        }
+      ],
+      "max_abs_generic_iron_delta_percent": 0.41
+    }
+  ],
+  "wda_loot_integration": {
+    "modified_wda_loot_tables": 141,
+    "paths": [
+      "data/dungeons_arise/loot_table/chests/abandoned_temple/abandoned_temple_entrance.json",
+      "data/dungeons_arise/loot_table/chests/abandoned_temple/abandoned_temple_map.json",
+      "data/dungeons_arise/loot_table/chests/abandoned_temple/abandoned_temple_top.json",
+      "data/dungeons_arise/loot_table/chests/aviary/aviary_barrels.json",
+      "data/dungeons_arise/loot_table/chests/aviary/aviary_normal.json",
+      "data/dungeons_arise/loot_table/chests/aviary/aviary_treasure.json",
+      "data/dungeons_arise/loot_table/chests/bandit_towers/bandit_towers_barrels.json",
+      "data/dungeons_arise/loot_table/chests/bandit_towers/bandit_towers_gardens.json",
+      "data/dungeons_arise/loot_table/chests/bandit_towers/bandit_towers_normal.json",
+      "data/dungeons_arise/loot_table/chests/bandit_towers/bandit_towers_rooms.json",
+      "data/dungeons_arise/loot_table/chests/bandit_towers/bandit_towers_supply.json",
+      "data/dungeons_arise/loot_table/chests/bandit_towers/bandit_towers_treasure.json",
+      "data/dungeons_arise/loot_table/chests/bandit_village/bandit_village_barrels.json",
+      "data/dungeons_arise/loot_table/chests/bandit_village/bandit_village_normal.json",
+      "data/dungeons_arise/loot_table/chests/bandit_village/bandit_village_supply.json",
+      "data/dungeons_arise/loot_table/chests/bandit_village/bandit_village_tents.json",
+      "data/dungeons_arise/loot_table/chests/bathhouse/bathhouse_barrels.json",
+      "data/dungeons_arise/loot_table/chests/bathhouse/bathhouse_normal.json",
+      "data/dungeons_arise/loot_table/chests/ceryneian_hind/ceryneian_hind_treasure.json",
+      "data/dungeons_arise/loot_table/chests/fishing_hut/fishing_hut_barrels.json",
+      "data/dungeons_arise/loot_table/chests/foundry/foundry_chains.json",
+      "data/dungeons_arise/loot_table/chests/foundry/foundry_lava_pit.json",
+      "data/dungeons_arise/loot_table/chests/foundry/foundry_normal.json",
+      "data/dungeons_arise/loot_table/chests/foundry/foundry_passage_exterior.json",
+      "data/dungeons_arise/loot_table/chests/foundry/foundry_passage_normal.json",
+      "data/dungeons_arise/loot_table/chests/foundry/foundry_treasure.json",
+      "data/dungeons_arise/loot_table/chests/greenwood_pub/greenwood_pub_barrels_hallways.json",
+      "data/dungeons_arise/loot_table/chests/greenwood_pub/greenwood_pub_barrels_normal.json",
+      "data/dungeons_arise/loot_table/chests/greenwood_pub/greenwood_pub_normal.json",
+      "data/dungeons_arise/loot_table/chests/heavenly_challenger/heavenly_challenger_normal.json",
+      "data/dungeons_arise/loot_table/chests/heavenly_challenger/heavenly_challenger_supply.json",
+      "data/dungeons_arise/loot_table/chests/heavenly_challenger/heavenly_challenger_theater.json",
+      "data/dungeons_arise/loot_table/chests/heavenly_challenger/heavenly_challenger_treasure.json",
+      "data/dungeons_arise/loot_table/chests/heavenly_conqueror/heavenly_conqueror_barrels.json",
+      "data/dungeons_arise/loot_table/chests/heavenly_conqueror/heavenly_conqueror_normal.json",
+      "data/dungeons_arise/loot_table/chests/heavenly_conqueror/heavenly_conqueror_treasure.json",
+      "data/dungeons_arise/loot_table/chests/heavenly_rider/heavenly_rider_barrels.json",
+      "data/dungeons_arise/loot_table/chests/heavenly_rider/heavenly_rider_normal.json",
+      "data/dungeons_arise/loot_table/chests/heavenly_rider/heavenly_rider_treasure.json",
+      "data/dungeons_arise/loot_table/chests/illager_campsite/illager_campsite_map.json",
+      "data/dungeons_arise/loot_table/chests/illager_campsite/illager_campsite_supply.json",
+      "data/dungeons_arise/loot_table/chests/illager_campsite/illager_campsite_tent.json",
+      "data/dungeons_arise/loot_table/chests/illager_corsair/illager_corsair_barrels.json",
+      "data/dungeons_arise/loot_table/chests/illager_corsair/illager_corsair_supply.json",
+      "data/dungeons_arise/loot_table/chests/illager_corsair/illager_corsair_treasure.json",
+      "data/dungeons_arise/loot_table/chests/illager_fort/illager_fort_barrels.json",
+      "data/dungeons_arise/loot_table/chests/illager_fort/illager_fort_normal.json",
+      "data/dungeons_arise/loot_table/chests/illager_fort/illager_fort_treasure.json",
+      "data/dungeons_arise/loot_table/chests/illager_galley/illager_galley_barrels.json",
+      "data/dungeons_arise/loot_table/chests/illager_galley/illager_galley_supply.json",
+      "data/dungeons_arise/loot_table/chests/illager_galley/illager_galley_treasure.json",
+      "data/dungeons_arise/loot_table/chests/illager_windmill/illager_windmill_barrels.json",
+      "data/dungeons_arise/loot_table/chests/illager_windmill/illager_windmill_treasure.json",
+      "data/dungeons_arise/loot_table/chests/infested_temple/infested_temple_room_bookshelf.json",
+      "data/dungeons_arise/loot_table/chests/infested_temple/infested_temple_room_forge.json",
+      "data/dungeons_arise/loot_table/chests/infested_temple/infested_temple_room_garden.json",
+      "data/dungeons_arise/loot_table/chests/infested_temple/infested_temple_room_normal.json",
+      "data/dungeons_arise/loot_table/chests/infested_temple/infested_temple_room_supply.json",
+      "data/dungeons_arise/loot_table/chests/infested_temple/infested_temple_room_table.json",
+      "data/dungeons_arise/loot_table/chests/infested_temple/infested_temple_top_treasure.json",
+      "data/dungeons_arise/loot_table/chests/infested_temple/infested_temple_vault_normal.json",
+      "data/dungeons_arise/loot_table/chests/infested_temple/infested_temple_vault_ominous.json",
+      "data/dungeons_arise/loot_table/chests/infested_temple/infested_temple_vault_treasure.json",
+      "data/dungeons_arise/loot_table/chests/jungle_tree_house/jungle_tree_house_barrels.json",
+      "data/dungeons_arise/loot_table/chests/jungle_tree_house/jungle_tree_house_normal.json",
+      "data/dungeons_arise/loot_table/chests/jungle_tree_house/jungle_tree_house_treasure.json",
+      "data/dungeons_arise/loot_table/chests/keep_kayra/keep_kayra_garden_normal.json",
+      "data/dungeons_arise/loot_table/chests/keep_kayra/keep_kayra_garden_treasure.json",
+      "data/dungeons_arise/loot_table/chests/keep_kayra/keep_kayra_library_normal.json",
+      "data/dungeons_arise/loot_table/chests/keep_kayra/keep_kayra_library_treasure.json",
+      "data/dungeons_arise/loot_table/chests/keep_kayra/keep_kayra_normal.json",
+      "data/dungeons_arise/loot_table/chests/keep_kayra/keep_kayra_treasure.json",
+      "data/dungeons_arise/loot_table/chests/kisegi_sanctuary/kisegi_sanctuary_basement.json",
+      "data/dungeons_arise/loot_table/chests/kisegi_sanctuary/kisegi_sanctuary_normal.json",
+      "data/dungeons_arise/loot_table/chests/kisegi_sanctuary/kisegi_sanctuary_top.json",
+      "data/dungeons_arise/loot_table/chests/kisegi_sanctuary/kisegi_sanctuary_treasure.json",
+      "data/dungeons_arise/loot_table/chests/kisegi_sanctuary/kisegi_sanctuary_vault_normal.json",
+      "data/dungeons_arise/loot_table/chests/kisegi_sanctuary/kisegi_sanctuary_vault_normal_treasure.json",
+      "data/dungeons_arise/loot_table/chests/kisegi_sanctuary/kisegi_sanctuary_vault_ominous.json",
+      "data/dungeons_arise/loot_table/chests/kisegi_sanctuary/kisegi_sanctuary_vault_ominous_treasure.json",
+      "data/dungeons_arise/loot_table/chests/lighthouse/lighthouse_top.json",
+      "data/dungeons_arise/loot_table/chests/mechanical_nest/mechanical_nest_equipment.json",
+      "data/dungeons_arise/loot_table/chests/mechanical_nest/mechanical_nest_normal.json",
+      "data/dungeons_arise/loot_table/chests/mechanical_nest/mechanical_nest_supply.json",
+      "data/dungeons_arise/loot_table/chests/mechanical_nest/mechanical_nest_treasure.json",
+      "data/dungeons_arise/loot_table/chests/merchant_campsite/merchant_campsite_map.json",
+      "data/dungeons_arise/loot_table/chests/merchant_campsite/merchant_campsite_supply.json",
+      "data/dungeons_arise/loot_table/chests/merchant_campsite/merchant_campsite_tent.json",
+      "data/dungeons_arise/loot_table/chests/mines_treasure_big.json",
+      "data/dungeons_arise/loot_table/chests/mines_treasure_medium.json",
+      "data/dungeons_arise/loot_table/chests/mines_treasure_small.json",
+      "data/dungeons_arise/loot_table/chests/mining_complex/mining_complex_barrel.json",
+      "data/dungeons_arise/loot_table/chests/mining_complex/mining_complex_dripstone_normal.json",
+      "data/dungeons_arise/loot_table/chests/mining_complex/mining_complex_facility_normal.json",
+      "data/dungeons_arise/loot_table/chests/mining_complex/mining_complex_lush_normal.json",
+      "data/dungeons_arise/loot_table/chests/mining_complex/mining_complex_treasure.json",
+      "data/dungeons_arise/loot_table/chests/mining_system/mining_system_barrels.json",
+      "data/dungeons_arise/loot_table/chests/mining_system/mining_system_treasure.json",
+      "data/dungeons_arise/loot_table/chests/monastery/monastery_barrels.json",
+      "data/dungeons_arise/loot_table/chests/monastery/monastery_bridges.json",
+      "data/dungeons_arise/loot_table/chests/monastery/monastery_map.json",
+      "data/dungeons_arise/loot_table/chests/mushroom_house/mushroom_house_barrels.json",
+      "data/dungeons_arise/loot_table/chests/mushroom_house/mushroom_house_normal.json",
+      "data/dungeons_arise/loot_table/chests/mushroom_house/mushroom_house_treasure.json",
+      "data/dungeons_arise/loot_table/chests/mushroom_mines/mushroom_mines_barrels.json",
+      "data/dungeons_arise/loot_table/chests/mushroom_mines/mushroom_mines_ores.json",
+      "data/dungeons_arise/loot_table/chests/mushroom_mines/mushroom_mines_tools.json",
+      "data/dungeons_arise/loot_table/chests/mushroom_mines/mushroom_mines_treasure.json",
+      "data/dungeons_arise/loot_table/chests/mushroom_village/mushroom_village_barrels.json",
+      "data/dungeons_arise/loot_table/chests/mushroom_village/mushroom_village_treasure.json",
+      "data/dungeons_arise/loot_table/chests/plague_asylum/plague_asylum_barrels.json",
+      "data/dungeons_arise/loot_table/chests/plague_asylum/plague_asylum_cells.json",
+      "data/dungeons_arise/loot_table/chests/plague_asylum/plague_asylum_normal.json",
+      "data/dungeons_arise/loot_table/chests/plague_asylum/plague_asylum_potions.json",
+      "data/dungeons_arise/loot_table/chests/plague_asylum/plague_asylum_storage.json",
+      "data/dungeons_arise/loot_table/chests/plague_asylum/plague_asylum_treasure.json",
+      "data/dungeons_arise/loot_table/chests/scorched_mines/scorched_mines_barrels.json",
+      "data/dungeons_arise/loot_table/chests/scorched_mines/scorched_mines_housing.json",
+      "data/dungeons_arise/loot_table/chests/scorched_mines/scorched_mines_hub.json",
+      "data/dungeons_arise/loot_table/chests/scorched_mines/scorched_mines_normal.json",
+      "data/dungeons_arise/loot_table/chests/scorched_mines/scorched_mines_treasure.json",
+      "data/dungeons_arise/loot_table/chests/shiraz_palace/shiraz_palace_elite.json",
+      "data/dungeons_arise/loot_table/chests/shiraz_palace/shiraz_palace_gardens.json",
+      "data/dungeons_arise/loot_table/chests/shiraz_palace/shiraz_palace_library.json",
+      "data/dungeons_arise/loot_table/chests/shiraz_palace/shiraz_palace_normal.json",
+      "data/dungeons_arise/loot_table/chests/shiraz_palace/shiraz_palace_rooms.json",
+      "data/dungeons_arise/loot_table/chests/shiraz_palace/shiraz_palace_supply.json",
+      "data/dungeons_arise/loot_table/chests/shiraz_palace/shiraz_palace_towers.json",
+      "data/dungeons_arise/loot_table/chests/shiraz_palace/shiraz_palace_treasure.json",
+      "data/dungeons_arise/loot_table/chests/small_blimp/small_blimp_coal_storage.json",
+      "data/dungeons_arise/loot_table/chests/small_blimp/small_blimp_redstone_chamber.json",
+      "data/dungeons_arise/loot_table/chests/small_blimp/small_blimp_treasure.json",
+      "data/dungeons_arise/loot_table/chests/thornborn_towers/thornborn_towers_barrels.json",
+      "data/dungeons_arise/loot_table/chests/thornborn_towers/thornborn_towers_rooms.json",
+      "data/dungeons_arise/loot_table/chests/thornborn_towers/thornborn_towers_top_rooms.json",
+      "data/dungeons_arise/loot_table/chests/thornborn_towers/thornborn_towers_top_treasure.json",
+      "data/dungeons_arise/loot_table/chests/typhon/typhon_treasure.json",
+      "data/dungeons_arise/loot_table/chests/undead_pirate_ship/undead_pirate_ship_barrels.json",
+      "data/dungeons_arise/loot_table/chests/undead_pirate_ship/undead_pirate_ship_enchants.json",
+      "data/dungeons_arise/loot_table/chests/undead_pirate_ship/undead_pirate_ship_supply.json",
+      "data/dungeons_arise/loot_table/chests/undead_pirate_ship/undead_pirate_ship_treasure.json"
+    ]
+  },
+  "component_recipe_overrides": [
+    "piston",
+    "spring",
+    "sparkplug",
+    "headlight",
+    "circuit",
+    "processor",
+    "blowtorch",
+    "repairkit",
+    "hydraulics",
+    "armorplate"
+  ]
+}

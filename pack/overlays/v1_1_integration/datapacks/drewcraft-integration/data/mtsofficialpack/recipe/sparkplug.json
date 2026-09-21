@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "createaddition:iron_rod"
+    },
+    {
+      "item": "createaddition:iron_rod"
+    },
+    {
+      "item": "createaddition:copper_wire"
+    },
+    {
+      "tag": "c:gems/quartz"
+    }
+  ],
+  "result": {
+    "id": "mts:mtsofficialpack.sparkplug",
+    "count": 2
+  }
+}

@@ -1,18 +1,18 @@
 schema_version: 1
-profile: stage2_base_performance
+profile: v1_1_integration
 evidence:
-  workflow: pack-hash.yml
-  run_id: 34724313143
-  head_sha: d55c7458fba86fa55ac9cb07c5ebcea2679568fd
-  generated_at: '2026-09-12'
+  workflow: 0.1.8 integration audit
+  generated_at: '2026-09-21'
+  note: Exact provider hashes acquired for isolated integration branch; no release
+    publication implied.
 artifacts:
   jei:
     provider: modrinth
-    project_id: u6dRKJwZ
-    version_id: ufHUqt9b
     filename: jei-1.21.1-neoforge-19.51.0.418.jar
     sha256: 8bc3936d869e4040a5649c58b7e8be1c78c82a245c0dc07bdd68ab49121a222c
     size: 1804792
+    project_id: u6dRKJwZ
+    version_id: ufHUqt9b
   cristel_lib:
     provider: modrinth
     project_id: cl223EMc
@@ -29,18 +29,18 @@ artifacts:
     size: 3553006
   when_dungeons_arise:
     provider: modrinth
-    project_id: 8DfbfASn
-    version_id: XIRJSFQ0
     filename: DungeonsArise-1.21.1-2.1.68-release.jar
     sha256: 7eee1eca7e3b2c6c1bede055934f391ae2e8349ffe33e106f451176d2cfcf0e4
     size: 11842679
+    project_id: 8DfbfASn
+    version_id: XIRJSFQ0
   alltheleaks:
     provider: curseforge
-    project_id: 1091339
-    file_id: 8648639
     filename: alltheleaks-1.1.12+1.21.1-neoforge.jar
     sha256: ca64ec07c29cadb0e7703e993fbaad26029ebc4203626d2638aefe989e5be74f
     size: 562895
+    project_id: 1091339
+    file_id: 8648639
   architectury:
     provider: curseforge
     project_id: 419699
@@ -50,46 +50,46 @@ artifacts:
     size: 584734
   chunk_sending:
     provider: curseforge
-    project_id: 831663
-    file_id: 8752593
     filename: chunksending-1.21-3.9.jar
     sha256: b3154f9d2f531cbc21d5add8b050d75f6605907a19294d5d4ecccc9ff3dd9982
     size: 26277
+    project_id: 831663
+    file_id: 8752593
   chunky:
     provider: curseforge
-    project_id: 485681
-    file_id: 6383261
     filename: Chunky-NeoForge-1.4.23.jar
     sha256: d72f235cf1f56f2c374f52c00bdda5034524b28142305a84cfc123a3f92ad274
     size: 340572
+    project_id: 485681
+    file_id: 6383261
   clumps:
     provider: curseforge
-    project_id: 256717
-    file_id: 5623731
     filename: Clumps-neoforge-1.21.1-19.0.0.1.jar
     sha256: b524ccdace2ef8fd19f5b2074f7de1103ac5065c52553f064c00e098346c293e
     size: 18382
+    project_id: 256717
+    file_id: 5623731
   connectivity:
     provider: curseforge
-    project_id: 470193
-    file_id: 7367221
     filename: connectivity-1.21.1-7.6.jar
     sha256: 2366973ddae5ba00b9ba15a26e5b610a6648038b9f2549bf81b9ae61342b281a
     size: 114165
+    project_id: 470193
+    file_id: 7367221
   create:
     provider: curseforge
-    project_id: 328085
-    file_id: 7963363
     filename: create-1.21.1-6.0.10.jar
     sha256: ef87fe5709f1ba1f5b8bb20a2925b5afb4669e178fd6d8bf10c167759eefe37a
     size: 19123767
+    project_id: 328085
+    file_id: 7963363
   create_big_cannons:
     provider: curseforge
-    project_id: 646668
-    file_id: 8303106
     filename: createbigcannons-5.11.7+mc.1.21.1.jar
     sha256: ea017ab94637032d039899d88404838d173fa0e6286657cae6a6c3af459e87ca
     size: 3771506
+    project_id: 646668
+    file_id: 8303106
   create_radars:
     provider: modrinth
     project_id: BLu2Yqfq
@@ -99,25 +99,25 @@ artifacts:
     size: 2990812
   cupboard:
     provider: curseforge
-    project_id: 326652
-    file_id: 8749806
     filename: cupboard-1.21.1-4.1.jar
     sha256: 7d3f1bcca3acf2e7b1f3d359d5e0691cbb5a0f95869064752e7612b2d13e5b9e
     size: 30206
+    project_id: 326652
+    file_id: 8749806
   distant_horizons:
     provider: modrinth
-    project_id: uCdwusMi
-    version_id: IcOcoekl
     filename: DistantHorizons-3.3.1-1.21.1-fabric-neoforge.jar
     sha256: b12931cc0c680914e461b478f6a361285870a489bedd3985dee52cd3ce3590c0
     size: 28220041
+    project_id: uCdwusMi
+    version_id: IcOcoekl
   xaeros_minimap:
     provider: modrinth
-    project_id: 1bokaNcj
-    version_id: w8HSmbC3
     filename: xaerominimap-neoforge-1.21.1-26.1.0.jar
     sha256: 6bd6cbab01ff57b9ba2fbfee18f9605593101f15d80e8d19dc59c385d2535ccc
     size: 2138254
+    project_id: 1bokaNcj
+    version_id: w8HSmbC3
   xaero_lib:
     provider: xaero-maven
     filename: xaerolib-neoforge-1.21.1-1.1.0.jar
@@ -125,18 +125,18 @@ artifacts:
     size: 541451
   exposure:
     provider: modrinth
-    project_id: hB899VmG
-    version_id: KZR7AUbh
     filename: exposure-neoforge-1.21.1-1.9.18.jar
     sha256: 674c537a99f69b2bae53521c95dae59bc5f4eb2eb15418eec0ecbaf36b53d888
     size: 2192415
+    project_id: hB899VmG
+    version_id: KZR7AUbh
   exposure_polaroid:
     provider: modrinth
-    project_id: WEWiqYkW
-    version_id: WfVyzdJL
     filename: exposure_polaroid-neoforge-1.21.1-1.1.6.jar
     sha256: a39485de154de47422671b763677814bfe09227214775c78a0052e5b22b30e61
     size: 361404
+    project_id: WEWiqYkW
+    version_id: WfVyzdJL
   embeddium:
     provider: curseforge
     project_id: 908741
@@ -146,39 +146,39 @@ artifacts:
     size: 1048745
   entity_culling:
     provider: curseforge
-    project_id: 448233
-    file_id: 8287097
     filename: entityculling-neoforge-1.10.5-mc1.21.1.jar
     sha256: 2eacd2bada39bf1d1ef695736646790c619c0e6cdeaf3d7e3cfc9139d26fae02
     size: 1585287
+    project_id: 448233
+    file_id: 8287097
   fastfurnace:
     provider: curseforge
-    project_id: 299540
-    file_id: 6751551
     filename: FastFurnace-1.21.1-9.0.1.jar
     sha256: 4a8743c5d870aa9885d65e20d728c76fec894e01e81d1b49ef0f4459a67f0eea
     size: 4623
+    project_id: 299540
+    file_id: 6751551
   fastsuite:
     provider: curseforge
-    project_id: 475117
-    file_id: 7527945
     filename: FastSuite-1.21.1-6.0.7.jar
     sha256: 3e274cd01bdc27dff8e2514213f1c45306c86fe38e4271a4209bc1471de6c70d
     size: 28193
+    project_id: 475117
+    file_id: 7527945
   fastworkbench:
     provider: curseforge
-    project_id: 288885
-    file_id: 6751534
     filename: FastWorkbench-1.21.1-9.1.3.jar
     sha256: abf593ba1584c761f198989008d334c95932afe0a7c6b16af4baa16b54fd1449
     size: 28635
+    project_id: 288885
+    file_id: 6751534
   ferritecore:
     provider: curseforge
-    project_id: 429235
-    file_id: 7524151
     filename: ferritecore-7.0.3-neoforge.jar
     sha256: d87ea28262715ebff45b8a82d493e6b468e7a4521bc021df5d88302196d030a8
     size: 121559
+    project_id: 429235
+    file_id: 7524151
   gabous_libs:
     provider: curseforge
     project_id: 1367332
@@ -195,60 +195,60 @@ artifacts:
     size: 90717
   immediatelyfast:
     provider: curseforge
-    project_id: 686911
-    file_id: 8749421
     filename: ImmediatelyFast-NeoForge-1.6.13+1.21.1.jar
     sha256: fa3aec87e9880d0a8ab9663c96ad0206fd59de5e71acfccbebc264f7ad0ae153
     size: 362740
+    project_id: 686911
+    file_id: 8749421
   immersive_vehicles:
     provider: curseforge
-    project_id: 286703
-    file_id: 7926606
     filename: Immersive Vehicles-1.21.1-24.0.0.jar
     sha256: 1d2f7512604636265703b29fdf13d7f8ef2323694b6435f4392973da6e78d251
     size: 6131756
+    project_id: 286703
+    file_id: 7926606
   lithium:
     provider: curseforge
-    project_id: 360438
-    file_id: 8330365
     filename: lithium-neoforge-0.15.4+mc1.21.1.jar
     sha256: 488f33216030c1cb0baa33e59de3d657d08d5795a6c2080c8c8bbbc133fc8757
     size: 774220
+    project_id: 360438
+    file_id: 8330365
   modernfix:
     provider: curseforge
-    project_id: 790626
-    file_id: 8774737
     filename: modernfix-neoforge-5.27.24+mc1.21.1.jar
     sha256: e6e9446890f0feb3aab3f6e73ae18cb17575c370f232179fef7baa30e61538fe
     size: 604333
+    project_id: 790626
+    file_id: 8774737
   moreculling:
     provider: curseforge
-    project_id: 630104
-    file_id: 8833217
     filename: moreculling-neoforge-1.21.1-1.0.10.jar
     sha256: 008068af65deec86382b4fdde61e7f495e54861cc28d5a5b000c32b435213ed3
     size: 335699
+    project_id: 630104
+    file_id: 8833217
   cloth_config:
     provider: curseforge
-    project_id: 348521
-    file_id: 5729127
     filename: cloth-config-15.0.140-neoforge.jar
     sha256: 65e722e0d98431a07c45f8bdd8d529a217cc8c175fde1740248bd5c1b4f3c0d4
     size: 1163890
+    project_id: 348521
+    file_id: 5729127
   mts_official_pack:
     provider: curseforge
-    project_id: 292217
-    file_id: 7933734
     filename: MTS Official Pack-1.21.1-V29.jar
     sha256: f82e67f6c0cf85f79c6b295ef874890e0dc4460204d7768a4a46354d87a0b5d8
     size: 70999728
+    project_id: 292217
+    file_id: 7933734
   placebo:
     provider: curseforge
-    project_id: 283644
-    file_id: 8463693
     filename: Placebo-1.21.1-9.9.2.jar
     sha256: 1a844a5b081813b1edb82656329e54d38389ed470f6a6516a5887f5303d7daad
     size: 324058
+    project_id: 283644
+    file_id: 8463693
   project_atmosphere:
     provider: modrinth
     project_id: qIWoLcKJ
@@ -258,11 +258,11 @@ artifacts:
     size: 14254631
   ritchies_projectile_library:
     provider: curseforge
-    project_id: 1279407
-    file_id: 7587771
     filename: ritchiesprojectilelib-2.1.2-mc.1.21.1-neoforge.jar
     sha256: cc509060833736fb650aa4c36b1ce33a7eeeb9ca6e9f8e80a7c951c9e7487b24
     size: 76369
+    project_id: 1279407
+    file_id: 7587771
   scalablelux:
     provider: curseforge
     project_id: 1055925
@@ -279,11 +279,11 @@ artifacts:
     size: 159205
   servercore:
     provider: curseforge
-    project_id: 550579
-    file_id: 8312220
     filename: servercore-neoforge-1.5.19+1.21.1.jar
     sha256: a5706aa0bb3a47c5f1adab44306685736688ec03414f60beb4fcbe05b99f5a82
     size: 1462674
+    project_id: 550579
+    file_id: 8312220
   simple_clouds:
     provider: curseforge
     project_id: 1121215
@@ -293,11 +293,11 @@ artifacts:
     size: 2207822
   spark:
     provider: curseforge
-    project_id: 361579
-    file_id: 6225208
     filename: spark-1.10.124-neoforge.jar
     sha256: 647e8a81afbe414dba1df4ba15fd06c5d32d4cb544e68828405e8e074c2e16db
     size: 3642581
+    project_id: 361579
+    file_id: 6225208
   illager_invasion:
     provider: modrinth
     project_id: jSV9w0J5
@@ -318,56 +318,118 @@ artifacts:
     size: 1054197
   geckolib:
     provider: modrinth
-    project_id: 8BmcQJ2H
-    version_id: RVIo5f6E
-    candidate_version: 4.8.2
     filename: geckolib-neoforge-1.21.1-4.8.2.jar
-    download_url: https://cdn.modrinth.com/data/8BmcQJ2H/versions/RVIo5f6E/geckolib-neoforge-1.21.1-4.8.2.jar
     sha256: a733757157bd914b56a24c09d2797c522f0f339eb5e45ec1d70a8a9326ecd9df
     size: 621848
+    project_id: 8BmcQJ2H
+    version_id: RVIo5f6E
   create_aeronautics:
     provider: curseforge
-    project_id: 676721
-    file_id: 8763471
     filename: create-aeronautics-bundled-1.21.1-1.3.2.jar
     sha256: a3f330d4757640f8715d991a43eedb826e4d0e51558d859c843ae6693bd35f1e
     size: 33123131
+    project_id: 676721
+    file_id: 8763471
   create_high_seas:
     provider: curseforge
-    project_id: 1539377
-    file_id: 8741659
     filename: highseas-0.2.2.jar
     sha256: 81c084703bae5347021e96044de16fa010c16d5f6c2f5df92ad33b4b38ca7663
     size: 52088
+    project_id: 1539377
+    file_id: 8741659
   create_gunsmithing:
     provider: curseforge
-    project_id: 1194036
-    file_id: 8501347
     filename: create-gunsmithing-1.21.1-1.4.9.jar
     sha256: d9e00c7e9cc5dec11455d42dd0f6d78418ce2213c4740ca8bec6b1e0e73adf1d
     size: 1819221
+    project_id: 1194036
+    file_id: 8501347
   sable:
     provider: curseforge
-    project_id: 1312371
-    file_id: 8673825
     filename: sable-neoforge-1.21.1-2.0.5.jar
     sha256: c8710f85bc780bbf523e6726ceaaf76dd0b8c61479db497b382c6bb34317e7ab
     size: 12986136
+    project_id: 1312371
+    file_id: 8673825
   ntgl:
     provider: curseforge
-    project_id: 998474
-    file_id: 8501185
     filename: ntgl-1.21.1-3.1.8.jar
     sha256: f395e740fe8186a58c9c03d0382609003e5ec995c3e598dffc7ff3aa9bb48f88
     size: 3966979
+    project_id: 998474
+    file_id: 8501185
   playeranimator:
     provider: curseforge
-    project_id: 658587
-    file_id: 7389814
     filename: player-animation-lib-forge-2.0.4+1.21.1.jar
     sha256: dbe5de45f5cd60c0e5e47af14e6d564534a98456e973cf670cb881f6938eee92
     size: 203149
+    project_id: 658587
+    file_id: 7389814
+  create_additions_sable_compat:
+    provider: modrinth
+    filename: sable_createaddition_compat-0.1.13.jar
+    sha256: 67f1d87010c41b06dc280437b82dc7da85ffba03fa7d602b582565097be2259c
+    size: 23908
+    project_id: 5njdnAZ8
+    version_id: x7OaOLDX
+  create_connected:
+    provider: modrinth
+    filename: create_connected-1.1.16-mc1.21.1.jar
+    sha256: 624415b891764ef57e6979520e0656f1b429f8b4ed69505aee91274c56c4a7fc
+    size: 6608605
+    project_id: Vg5TIO6d
+    version_id: EHyCRpCV
+  create_crafts_additions:
+    provider: modrinth
+    filename: createaddition-1.6.0.jar
+    sha256: 41876c3780b70365a1848994d146a73423cc19fbe86485885795d9e7d855e7e9
+    size: 1661802
+    project_id: kU1G12Nn
+    version_id: qPr8V4G2
+  create_dragons_plus:
+    provider: modrinth
+    filename: CreateDragonsPlus-1.11.4.jar
+    sha256: 80687f22daa95fa6240631097688f1e0295a5d31473d9aa56a14d360d863e98b
+    size: 1029344
+    project_id: dzb1a5WV
+    version_id: PsnDvjPV
+  create_enchantment_industry:
+    provider: modrinth
+    filename: create-enchantment-industry-2.5.3.jar
+    sha256: 717afae8004ddfb8f44c442704d93fcc0fa5e8099ab778249fc8d48c8ac9dd4b
+    size: 1606404
+    project_id: JWGBpFUP
+    version_id: Y6ZGWuZr
+  create_stuff_additions:
+    provider: modrinth
+    filename: create-stuff-additions1.21.1_v2.1.4b.jar
+    sha256: 4aee9a1af2754609ab31bfebf13dc0d7d648e61e440232dbf9bb3459941e23d5
+    size: 1347181
+    project_id: aq9qUUQG
+    version_id: gMWQ1LX9
+  lootr:
+    provider: modrinth
+    filename: lootr-neoforge-1.21.1-1.11.38.124.jar
+    sha256: 2d51854171dfbee4f19b43030d021d25557535ff601e521ea5899dc8d9c61717
+    size: 994918
+    project_id: EltpO5cN
+    version_id: Trh49IZt
+  steam_n_rails:
+    provider: modrinth
+    filename: railways-0.3.0-beta.2+neoforge-mc1.21.1.jar
+    sha256: 64b74ddad661deae1cfe7e8334cfa3d39bb8ef7b761f83595ba0476c4a9bb1d5
+    size: 18728584
+    project_id: L3Jv0QZI
+    version_id: czVeSmZo
+  stuff_additions_sable_aeronautics_compat:
+    provider: modrinth
+    filename: SableStuffAdditionsCompat v1.0.3-1.21.1.jar
+    sha256: 4fbe277b75c5094a85cad86fde1e93f719b24876e3ecd62f614fe882d3223bf1
+    size: 30346
+    project_id: gsAqDfOu
+    version_id: oOYLBz7M
 source_builds_pending:
 - terrain_diffusion_plus
 notes:
-- Hashes are computed from artifacts acquired from the pinned original-provider identities; candidate hashes are verification evidence, not Stage 2 compatibility approval.
+- Hashes are computed from artifacts acquired from the pinned original-provider identities;
+  candidate hashes are verification evidence, not Stage 2 compatibility approval.

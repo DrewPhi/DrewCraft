@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "create:electron_tube"
+    },
+    {
+      "item": "createaddition:copper_wire"
+    },
+    {
+      "item": "mts:mtsofficialpack.plastic"
+    }
+  ],
+  "result": {
+    "id": "mts:mtsofficialpack.circuit",
+    "count": 2
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "create:precision_mechanism"
+    },
+    {
+      "item": "mts:mtsofficialpack.circuit"
+    },
+    {
+      "item": "mts:mtsofficialpack.circuit"
+    },
+    {
+      "item": "createaddition:iron_rod"
+    }
+  ],
+  "result": {
+    "id": "mts:mtsofficialpack.processor",
+    "count": 2
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "create:fluid_pipe"
+    },
+    {
+      "item": "create:copper_sheet"
+    },
+    {
+      "item": "create:copper_sheet"
+    },
+    {
+      "item": "createaddition:iron_rod"
+    },
+    {
+      "item": "createaddition:iron_rod"
+    },
+    {
+      "item": "create:andesite_alloy"
+    }
+  ],
+  "result": {
+    "id": "mts:mtsofficialpack.hydraulics",
+    "count": 1
+  }
+}

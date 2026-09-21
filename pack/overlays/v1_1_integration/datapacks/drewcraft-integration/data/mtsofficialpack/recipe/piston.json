@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "create:iron_sheet"
+    },
+    {
+      "item": "createaddition:iron_rod"
+    }
+  ],
+  "result": {
+    "id": "mts:mtsofficialpack.piston",
+    "count": 2
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "create:iron_sheet"
+    },
+    {
+      "item": "create:iron_sheet"
+    },
+    {
+      "item": "createaddition:copper_wire"
+    },
+    {
+      "item": "minecraft:redstone_lamp"
+    },
+    {
+      "tag": "c:glass_panes/colorless"
+    }
+  ],
+  "result": {
+    "id": "mts:mtsofficialpack.headlight",
+    "count": 2
+  }
+}
