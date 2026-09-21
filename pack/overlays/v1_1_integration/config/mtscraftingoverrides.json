@@ -10,7 +10,7 @@
             "mts:mtsofficialpack.fuzeimpact:1",
             "minecraft:tnt:1",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -19,7 +19,8 @@
           [
             "mts:mtsofficialpack.fuzeimpact:1",
             "minecraft:gunpowder:1",
-            "create:iron_sheet:1"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -166,7 +167,7 @@
             "minecraft:tnt:4",
             "tags:ingots/iron:3",
             "create:iron_sheet:6",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:5"
           ]
         ]
       },
@@ -209,7 +210,7 @@
             "minecraft:compass:1",
             "tags:dusts/redstone:15",
             "create:iron_sheet:4",
-            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:3",
             "createaddition:copper_wire:5"
           ]
         ]
@@ -238,7 +239,8 @@
             "mts:mtsofficialpack.barrel_blank:2",
             "minecraft:hopper:1",
             "minecraft:stone_slab:16",
-            "createaddition:iron_rod:4"
+            "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -249,7 +251,8 @@
             "mts:mtsofficialpack.barrel_blank:2",
             "minecraft:hopper:1",
             "minecraft:stone_slab:16",
-            "createaddition:iron_rod:4"
+            "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -260,7 +263,7 @@
             "minecraft:glass_pane:2",
             "tags:dyes/yellow:1",
             "create:iron_sheet:4",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:3"
           ]
         ]
       },
@@ -323,7 +326,7 @@
             "minecraft:stone_slab:1",
             "mts:mtsofficialpack.circuit:1",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -364,7 +367,8 @@
             "tags:dyes/yellow:1",
             "tags:dyes/red:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -373,7 +377,8 @@
           [
             "tags:dyes/white:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -395,7 +400,8 @@
           [
             "mts:mtsofficialpack.circuit:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -404,7 +410,8 @@
           [
             "tags:dyes/black:1",
             "tags:dyes/white:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -413,7 +420,8 @@
           [
             "mts:mtsofficialpack.circuit:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -444,7 +452,8 @@
           [
             "tags:dyes/white:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -510,7 +519,8 @@
             "tags:dyes/yellow:1",
             "tags:dyes/red:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -532,7 +542,8 @@
             "tags:dyes/white:1",
             "oredict:dyeGreen:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -561,7 +572,8 @@
           [
             "tags:dyes/white:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -571,7 +583,8 @@
             "tags:dyes/black:1",
             "tags:dyes/white:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -626,7 +639,8 @@
             "tags:dyes/blue:1",
             "tags:dyes/white:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:2"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:4"
           ]
         ]
       },
@@ -661,7 +675,8 @@
             "tags:dyes/white:1",
             "tags:dyes/red:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -672,7 +687,8 @@
             "tags:dyes/white:1",
             "tags:dyes/red:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -682,7 +698,8 @@
             "tags:dyes/white:1",
             "tags:dyes/red:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -702,7 +719,8 @@
           [
             "mts:mtsofficialpack.circuit:1",
             "minecraft:glass_pane:1",
-            "createaddition:iron_rod:1"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -745,7 +763,7 @@
           [
             "tags:ingots/iron:5",
             "minecraft:redstone_block:1",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:4"
           ]
         ]
       },
@@ -759,7 +777,8 @@
             "tags:dusts/redstone:20",
             "mts:mtsofficialpack.spring:4",
             "create:iron_sheet:6",
-            "createaddition:iron_rod:8"
+            "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:16"
           ]
         ]
       },
@@ -774,7 +793,7 @@
             "mts:mtsofficialpack.spring:2",
             "mts:mtsofficialpack.gunm1919:2",
             "create:iron_sheet:6",
-            "createaddition:iron_rod:3"
+            "minecraft:iron_nugget:15"
           ]
         ]
       },
@@ -783,7 +802,8 @@
           [
             "minecraft:chest:1",
             "tags:dyes/gray:1",
-            "create:iron_sheet:1"
+            "create:iron_sheet:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -792,7 +812,8 @@
           [
             "minecraft:chest:2",
             "tags:dyes/green:1",
-            "create:iron_sheet:1"
+            "create:iron_sheet:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -800,7 +821,8 @@
         "commonMaterialLists": [
           [
             "minecraft:chest:1",
-            "create:iron_sheet:1"
+            "create:iron_sheet:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -808,7 +830,8 @@
         "commonMaterialLists": [
           [
             "mts:mtsofficialpack.barrel:1",
-            "createaddition:iron_rod:3"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:5"
           ]
         ]
       },
@@ -817,7 +840,7 @@
           [
             "minecraft:cauldron:1",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -825,7 +848,8 @@
         "commonMaterialLists": [
           [
             "mts:mtsofficialpack.auxiliary_tank:1",
-            "createaddition:iron_rod:7"
+            "createaddition:iron_rod:6",
+            "minecraft:iron_nugget:6"
           ]
         ]
       },
@@ -834,7 +858,7 @@
           [
             "tags:ingots/iron:6",
             "minecraft:tripwire_hook:2",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -844,7 +868,7 @@
             "tags:ingots/iron:10",
             "minecraft:tripwire_hook:3",
             "create:iron_sheet:6",
-            "createaddition:iron_rod:6"
+            "minecraft:iron_nugget:29"
           ]
         ]
       },
@@ -856,7 +880,7 @@
             "minecraft:iron_ingot:5",
             "minecraft:paper:20",
             "create:iron_sheet:12",
-            "createaddition:iron_rod:2"
+            "minecraft:iron_nugget:10"
           ]
         ]
       },
@@ -865,7 +889,8 @@
           [
             "mts:mtsofficialpack.hydraulics:1",
             "create:iron_sheet:14",
-            "createaddition:iron_rod:7",
+            "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:13",
             "createaddition:copper_wire:6"
           ]
         ]
@@ -876,7 +901,7 @@
             "tags:wooden_slabs:24",
             "minecraft:iron_bars:4",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -886,7 +911,7 @@
             "minecraft:iron_bars:4",
             "tags:logs:10",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -896,7 +921,7 @@
             "tags:wooden_slabs:32",
             "minecraft:iron_bars:4",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:3"
+            "minecraft:iron_nugget:12"
           ]
         ]
       },
@@ -906,7 +931,7 @@
             "mts:mtsofficialpack.barrel_blank:10",
             "minecraft:iron_bars:16",
             "create:iron_sheet:6",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:5"
           ]
         ]
       },
@@ -917,7 +942,7 @@
             "minecraft:iron_bars:16",
             "tags:wool:6",
             "create:iron_sheet:9",
-            "createaddition:iron_rod:2"
+            "minecraft:iron_nugget:7"
           ]
         ]
       },
@@ -935,7 +960,7 @@
             "mts:mtsofficialpack.irsensor:1",
             "minecraft:glass:6",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:10",
             "createaddition:copper_wire:8"
           ]
         ]
@@ -944,7 +969,8 @@
         "commonMaterialLists": [
           [
             "minecraft:leather:1",
-            "create:iron_sheet:1"
+            "create:iron_sheet:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -960,7 +986,7 @@
           [
             "mts:mtsofficialpack.crate:1",
             "create:iron_sheet:2",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:6"
           ]
         ]
       },
@@ -975,7 +1001,7 @@
             "tags:ingots/iron:10",
             "minecraft:tripwire_hook:6",
             "create:iron_sheet:1",
-            "createaddition:iron_rod:2"
+            "minecraft:iron_nugget:7"
           ]
         ]
       },
@@ -996,7 +1022,8 @@
             "minecraft:iron_block:1",
             "minecraft:gold_nugget:8",
             "create:iron_sheet:8",
-            "createaddition:iron_rod:13",
+            "createaddition:iron_rod:6",
+            "minecraft:iron_nugget:33",
             "createaddition:copper_wire:16"
           ]
         ]
@@ -1009,6 +1036,7 @@
             "minecraft:obsidian:4",
             "minecraft:iron_block:1",
             "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:2",
             "createaddition:copper_wire:2"
           ]
         ]
@@ -1020,7 +1048,8 @@
             "mts:mtsofficialpack.sparkplug:18",
             "minecraft:iron_block:1",
             "create:iron_sheet:4",
-            "createaddition:iron_rod:8",
+            "createaddition:iron_rod:3",
+            "minecraft:iron_nugget:24",
             "createaddition:copper_wire:4"
           ]
         ]
@@ -1031,7 +1060,8 @@
             "mts:mtsofficialpack.piston:6",
             "minecraft:obsidian:5",
             "minecraft:iron_block:1",
-            "createaddition:iron_rod:7",
+            "createaddition:iron_rod:6",
+            "minecraft:iron_nugget:2",
             "createaddition:copper_wire:4"
           ]
         ]
@@ -1044,7 +1074,8 @@
             "minecraft:obsidian:8",
             "minecraft:iron_block:2",
             "minecraft:blaze_powder:8",
-            "createaddition:iron_rod:11",
+            "createaddition:iron_rod:10",
+            "minecraft:iron_nugget:4",
             "createaddition:copper_wire:4"
           ]
         ]
@@ -1058,7 +1089,8 @@
             "tags:ingots/iron:10",
             "minecraft:iron_block:1",
             "minecraft:blaze_powder:6",
-            "createaddition:iron_rod:11",
+            "createaddition:iron_rod:10",
+            "minecraft:iron_nugget:4",
             "createaddition:copper_wire:8"
           ]
         ]
@@ -1070,7 +1102,8 @@
             "mts:mtsofficialpack.sparkplug:8",
             "minecraft:iron_block:1",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:7",
+            "createaddition:iron_rod:3",
+            "minecraft:iron_nugget:20",
             "createaddition:copper_wire:4"
           ]
         ]
@@ -1084,7 +1117,8 @@
             "minecraft:iron_block:1",
             "mts:mtsofficialpack.plastic:2",
             "create:iron_sheet:1",
-            "createaddition:iron_rod:6",
+            "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:8",
             "createaddition:copper_wire:2"
           ]
         ]
@@ -1097,7 +1131,8 @@
             "minecraft:redstone_block:2",
             "minecraft:blaze_powder:8",
             "create:iron_sheet:6",
-            "createaddition:iron_rod:11",
+            "createaddition:iron_rod:3",
+            "minecraft:iron_nugget:38",
             "createaddition:copper_wire:10"
           ]
         ]
@@ -1108,7 +1143,8 @@
             "mts:mtsofficialpack.sparkplug:1",
             "mts:mtsofficialpack.piston:1",
             "minecraft:iron_ingot:4",
-            "createaddition:iron_rod:2",
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:6",
             "createaddition:copper_wire:1"
           ]
         ]
@@ -1117,15 +1153,16 @@
         "commonMaterialLists": [
           [
             "tags:ingots/iron:2",
-            "create:iron_sheet:8",
-            "createaddition:iron_rod:3"
+            "create:iron_sheet:7",
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:16"
           ]
         ]
       },
       "grilleornament": {
         "commonMaterialLists": [
           [
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -1148,7 +1185,8 @@
             "minecraft:lever:1",
             "minecraft:sand:10",
             "minecraft:water_bucket:1",
-            "createaddition:iron_rod:5"
+            "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:3"
           ]
         ]
       },
@@ -1157,7 +1195,8 @@
           [
             "mts:mtsofficialpack.plastic:1",
             "tags:dyes/red:1",
-            "createaddition:iron_rod:2"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -1170,7 +1209,8 @@
             "minecraft:lever:1",
             "minecraft:iron_trapdoor:1",
             "create:iron_sheet:5",
-            "createaddition:iron_rod:2"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:4"
           ]
         ]
       },
@@ -1181,7 +1221,8 @@
             "mts:mtsofficialpack.spring:1",
             "minecraft:flint:1",
             "minecraft:lever:1",
-            "createaddition:iron_rod:2"
+            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:4"
           ]
         ]
       },
@@ -1191,7 +1232,8 @@
             "minecraft:lever:1",
             "minecraft:tripwire_hook:1",
             "mts:mtsofficialpack.gunm1919:1",
-            "create:iron_sheet:1"
+            "create:iron_sheet:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -1200,7 +1242,8 @@
           [
             "mts:mtsofficialpack.bulletrocket:1",
             "minecraft:lever:1",
-            "createaddition:iron_rod:3"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:5"
           ]
         ]
       },
@@ -1209,8 +1252,9 @@
           [
             "minecraft:dispenser:1",
             "mts:mtsofficialpack.circuit:1",
-            "create:iron_sheet:2",
-            "createaddition:iron_rod:8"
+            "create:iron_sheet:1",
+            "createaddition:iron_rod:7",
+            "minecraft:iron_nugget:14"
           ]
         ]
       },
@@ -1221,7 +1265,7 @@
             "minecraft:stone_button:3",
             "minecraft:tripwire_hook:6",
             "create:iron_sheet:2",
-            "createaddition:iron_rod:2"
+            "minecraft:iron_nugget:8"
           ]
         ]
       },
@@ -1231,7 +1275,8 @@
             "minecraft:string:20",
             "minecraft:tripwire_hook:1",
             "create:iron_sheet:2",
-            "createaddition:iron_rod:5",
+            "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:3",
             "createaddition:copper_wire:16"
           ]
         ]
@@ -1248,7 +1293,8 @@
           [
             "minecraft:bucket:1",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:3"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:3"
           ]
         ]
       },
@@ -1257,7 +1303,8 @@
           [
             "minecraft:obsidian:2",
             "tags:ingots/iron:1",
-            "createaddition:iron_rod:2"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -1267,7 +1314,8 @@
             "tags:ingots/iron:2",
             "tags:dyes/red:2",
             "minecraft:iron_bars:2",
-            "createaddition:iron_rod:3"
+            "createaddition:iron_rod:3",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -1278,7 +1326,8 @@
             "mts:mtsofficialpack.hydraulics:1",
             "minecraft:iron_bars:2",
             "create:iron_sheet:10",
-            "createaddition:iron_rod:8"
+            "createaddition:iron_rod:6",
+            "minecraft:iron_nugget:10"
           ]
         ]
       },
@@ -1296,7 +1345,8 @@
             "tags:dyes/white:3",
             "tags:ingots/iron:1",
             "tags:dusts/redstone:3",
-            "createaddition:iron_rod:2"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -1313,7 +1363,7 @@
             "tags:ingots/iron:3",
             "minecraft:iron_bars:8",
             "create:iron_sheet:6",
-            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:5",
             "createaddition:copper_wire:4"
           ]
         ]
@@ -1324,7 +1374,7 @@
             "minecraft:iron_bars:2",
             "minecraft:glass_pane:6",
             "create:iron_sheet:5",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:4"
           ]
         ]
       },
@@ -1333,7 +1383,7 @@
           [
             "minecraft:glass_pane:2",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -1341,7 +1391,8 @@
         "commonMaterialLists": [
           [
             "create:iron_sheet:1",
-            "createaddition:iron_rod:2"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -1350,7 +1401,8 @@
           [
             "tags:wool:2",
             "minecraft:string:4",
-            "create:iron_sheet:1"
+            "create:iron_sheet:1",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -1358,7 +1410,7 @@
         "commonMaterialLists": [
           [
             "tags:ingots/iron:2",
-            "createaddition:iron_rod:1"
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -1426,7 +1478,7 @@
             "minecraft:glass:10",
             "tags:dusts/redstone:15",
             "mts:mtsofficialpack.headlight:4",
-            "createaddition:iron_rod:2"
+            "minecraft:iron_nugget:10"
           ]
         ]
       },
@@ -1436,7 +1488,7 @@
             "mts:mtsofficialpack.headlight:1",
             "minecraft:glass:1",
             "create:iron_sheet:2",
-            "createaddition:iron_rod:1",
+            "minecraft:iron_nugget:6",
             "createaddition:copper_wire:8"
           ]
         ]
@@ -1501,7 +1553,8 @@
             "tags:ingots/iron:2",
             "minecraft:lever:1",
             "tags:dusts/redstone:20",
-            "createaddition:iron_rod:4"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:11"
           ]
         ]
       },
@@ -1510,7 +1563,8 @@
           [
             "mts:mtsofficialpack.plastic:4",
             "create:iron_sheet:2",
-            "createaddition:iron_rod:3"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:2"
           ]
         ]
       },
@@ -1518,7 +1572,8 @@
         "commonMaterialLists": [
           [
             "mts:mtsofficialpack.plastic:3",
-            "create:iron_sheet:1"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -1526,7 +1581,8 @@
         "commonMaterialLists": [
           [
             "mts:mtsofficialpack.plastic:2",
-            "create:iron_sheet:1"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -1534,7 +1590,8 @@
         "commonMaterialLists": [
           [
             "mts:mtsofficialpack.plastic:1",
-            "create:iron_sheet:1"
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:1"
           ]
         ]
       },
@@ -1552,6 +1609,7 @@
             "tags:dyes/lime:1",
             "oredict:dustGlowstone:2",
             "create:iron_sheet:1",
+            "minecraft:iron_nugget:1",
             "createaddition:copper_wire:1"
           ]
         ]
@@ -1581,6 +1639,7 @@
           [
             "oredict:dustGlowstone:2",
             "create:iron_sheet:1",
+            "minecraft:iron_nugget:1",
             "createaddition:copper_wire:1"
           ]
         ]
@@ -1593,6 +1652,7 @@
             "tags:dyes/lime:1",
             "oredict:dustGlowstone:3",
             "create:iron_sheet:2",
+            "minecraft:iron_nugget:2",
             "createaddition:copper_wire:2"
           ]
         ]
@@ -1774,7 +1834,8 @@
             "minecraft:glass_pane:12",
             "mts:mtsofficialpack.headlight:2",
             "create:iron_sheet:21",
-            "createaddition:iron_rod:41",
+            "createaddition:iron_rod:24",
+            "minecraft:iron_nugget:74",
             "createaddition:copper_wire:48"
           ]
         ]
@@ -1788,7 +1849,7 @@
             "minecraft:glass_pane:16",
             "mts:mtsofficialpack.headlight:1",
             "create:iron_sheet:12",
-            "createaddition:iron_rod:7",
+            "minecraft:iron_nugget:34",
             "createaddition:copper_wire:24"
           ]
         ]
@@ -1803,7 +1864,7 @@
             "mts:mtsofficialpack.headlight:4",
             "minecraft:glass_pane:8",
             "create:iron_sheet:32",
-            "createaddition:iron_rod:16",
+            "minecraft:iron_nugget:74",
             "createaddition:copper_wire:32"
           ]
         ]
@@ -1820,7 +1881,7 @@
             "mts:mtsofficialpack.headlight:6",
             "minecraft:glass_pane:10",
             "create:iron_sheet:32",
-            "createaddition:iron_rod:20",
+            "minecraft:iron_nugget:90",
             "createaddition:copper_wire:48"
           ]
         ]
@@ -1840,7 +1901,7 @@
             "tags:dyes/red:5",
             "mts:mtsofficialpack.enginedetroitdiesel:1",
             "create:iron_sheet:32",
-            "createaddition:iron_rod:19",
+            "minecraft:iron_nugget:84",
             "createaddition:copper_wire:14"
           ]
         ]
@@ -1858,7 +1919,7 @@
             "mts:mtsofficialpack.headlight:4",
             "mts:mtsofficialpack.enginefordfe428:1",
             "create:iron_sheet:18",
-            "createaddition:iron_rod:14",
+            "minecraft:iron_nugget:62",
             "createaddition:copper_wire:12"
           ]
         ]
@@ -1874,7 +1935,8 @@
             "minecraft:tripwire_hook:3",
             "mts:mtsofficialpack.enginedetroitdiesel:1",
             "create:iron_sheet:40",
-            "createaddition:iron_rod:38"
+            "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:154"
           ]
         ]
       },
@@ -1888,7 +1950,8 @@
             "mts:mtsofficialpack.headlight:2",
             "mts:mtsofficialpack.enginedetroitdiesel:1",
             "create:iron_sheet:10",
-            "createaddition:iron_rod:20",
+            "createaddition:iron_rod:10",
+            "minecraft:iron_nugget:44",
             "createaddition:copper_wire:18"
           ]
         ]
@@ -1902,7 +1965,7 @@
             "minecraft:glass_pane:6",
             "mts:mtsofficialpack.headlight:2",
             "create:iron_sheet:3",
-            "createaddition:iron_rod:6",
+            "minecraft:iron_nugget:26",
             "createaddition:copper_wire:6"
           ]
         ]
@@ -1918,7 +1981,8 @@
             "mts:mtsofficialpack.headlight:2",
             "mts:mtsofficialpack.enginemercedesm102:1",
             "create:iron_sheet:19",
-            "createaddition:iron_rod:18",
+            "createaddition:iron_rod:6",
+            "minecraft:iron_nugget:54",
             "createaddition:copper_wire:12"
           ]
         ]
@@ -1933,7 +1997,7 @@
             "mts:mtsofficialpack.headlight:3",
             "minecraft:glass_pane:24",
             "create:iron_sheet:48",
-            "createaddition:iron_rod:19",
+            "minecraft:iron_nugget:86",
             "createaddition:copper_wire:32"
           ]
         ]
@@ -1946,7 +2010,7 @@
             "minecraft:string:10",
             "minecraft:glass_pane:3",
             "create:iron_sheet:19",
-            "createaddition:iron_rod:10",
+            "minecraft:iron_nugget:47",
             "createaddition:copper_wire:12"
           ]
         ]
@@ -1959,7 +2023,7 @@
             "mts:mtsofficialpack.wheelmedium:4",
             "mts:mtsofficialpack.enginequad:1",
             "create:iron_sheet:4",
-            "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:19",
             "createaddition:copper_wire:4"
           ]
         ]
@@ -1974,7 +2038,8 @@
             "mts:mtsofficialpack.headlight:2",
             "mts:mtsofficialpack.engineamci4:1",
             "create:iron_sheet:15",
-            "createaddition:iron_rod:17",
+            "createaddition:iron_rod:4",
+            "minecraft:iron_nugget:59",
             "createaddition:copper_wire:6"
           ]
         ]
@@ -1988,7 +2053,8 @@
             "mts:mtsofficialpack.headlight:2",
             "minecraft:glass_pane:6",
             "create:iron_sheet:24",
-            "createaddition:iron_rod:20",
+            "createaddition:iron_rod:6",
+            "minecraft:iron_nugget:64",
             "createaddition:copper_wire:24"
           ]
         ]
@@ -2002,7 +2068,8 @@
             "mts:mtsofficialpack.headlight:6",
             "minecraft:glass_pane:24",
             "create:iron_sheet:66",
-            "createaddition:iron_rod:49",
+            "createaddition:iron_rod:16",
+            "minecraft:iron_nugget:149",
             "createaddition:copper_wire:32"
           ]
         ]
@@ -2017,7 +2084,8 @@
             "mts:mtsofficialpack.headlight:4",
             "minecraft:glass_pane:16",
             "create:iron_sheet:35",
-            "createaddition:iron_rod:23",
+            "createaddition:iron_rod:2",
+            "minecraft:iron_nugget:93",
             "createaddition:copper_wire:32"
           ]
         ]

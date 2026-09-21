@@ -7,6 +7,7 @@
     "screw_iron_equivalent": 0.1111111111111111,
     "tube_iron_equivalent": 0.5444444444444444
   },
+  "recipe_balance_gate_percent": 10.0,
   "vehicle_balance_gate_percent": 10.0,
   "overridden_item_count": 206,
   "rows": [
@@ -20,14 +21,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 3.2667,
-          "new_generic_iron_equivalent": 3.5,
-          "generic_iron_delta_percent": 7.14
+          "new_generic_iron_equivalent": 3.2222,
+          "generic_iron_delta_percent": -1.36
         }
       ],
-      "max_abs_generic_iron_delta_percent": 7.14
+      "max_abs_generic_iron_delta_percent": 1.36
     },
     {
       "classification": "bullets",
@@ -38,15 +41,17 @@
           "legacy_screws": 0,
           "legacy_tubes": 1,
           "legacy_copper_wire": 0,
-          "create_iron_sheets": 1,
-          "createaddition_iron_rods": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "bullets",
@@ -59,6 +64,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -78,6 +85,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -97,6 +106,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -116,6 +127,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -135,6 +148,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -154,6 +169,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -173,6 +190,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -192,6 +211,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -211,6 +232,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -230,6 +253,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -249,6 +274,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -268,6 +295,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -287,6 +316,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -306,6 +337,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -325,6 +358,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -343,14 +378,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 6,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 5,
+          "plating_tube_compensation_nuggets": 5,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 6.5333,
-          "new_generic_iron_equivalent": 6.5,
-          "generic_iron_delta_percent": -0.51
+          "new_generic_iron_equivalent": 6.5556,
+          "generic_iron_delta_percent": 0.34
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.51
+      "max_abs_generic_iron_delta_percent": 0.34
     },
     {
       "classification": "bullets",
@@ -363,6 +400,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -382,6 +421,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -401,6 +442,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -420,6 +463,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -439,6 +484,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -458,6 +505,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -476,14 +525,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 5,
           "create_iron_sheets": 4,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 3,
+          "plating_tube_compensation_nuggets": 3,
           "createaddition_copper_wire": 5,
           "old_generic_iron_equivalent": 4.3556,
-          "new_generic_iron_equivalent": 4.5,
-          "generic_iron_delta_percent": 3.32
+          "new_generic_iron_equivalent": 4.3333,
+          "generic_iron_delta_percent": -0.51
         }
       ],
-      "max_abs_generic_iron_delta_percent": 3.32
+      "max_abs_generic_iron_delta_percent": 0.51
     },
     {
       "classification": "decors",
@@ -496,6 +547,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -515,6 +568,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -534,13 +589,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 4,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 2.1778,
-          "new_generic_iron_equivalent": 2.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 2.2222,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "decors",
@@ -553,13 +610,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 4,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 2.1778,
-          "new_generic_iron_equivalent": 2.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 2.2222,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "decors",
@@ -571,14 +630,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 4,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 3,
+          "plating_tube_compensation_nuggets": 3,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 4.3556,
-          "new_generic_iron_equivalent": 4.5,
-          "generic_iron_delta_percent": 3.32
+          "new_generic_iron_equivalent": 4.3333,
+          "generic_iron_delta_percent": -0.51
         }
       ],
-      "max_abs_generic_iron_delta_percent": 3.32
+      "max_abs_generic_iron_delta_percent": 0.51
     },
     {
       "classification": "decors",
@@ -591,6 +652,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -610,6 +673,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -629,6 +694,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -648,6 +715,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -667,6 +736,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -686,6 +757,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -705,6 +778,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -723,14 +798,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 3.2667,
-          "new_generic_iron_equivalent": 3.5,
-          "generic_iron_delta_percent": 7.14
+          "new_generic_iron_equivalent": 3.2222,
+          "generic_iron_delta_percent": -1.36
         }
       ],
-      "max_abs_generic_iron_delta_percent": 7.14
+      "max_abs_generic_iron_delta_percent": 1.36
     },
     {
       "classification": "decors",
@@ -743,6 +820,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -762,6 +841,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -781,6 +862,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -800,13 +883,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -819,13 +904,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -838,6 +925,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -857,13 +946,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -876,13 +967,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -895,13 +988,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -914,6 +1009,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -933,6 +1030,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -952,13 +1051,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -971,6 +1072,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -990,6 +1093,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1009,6 +1114,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1028,6 +1135,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1047,6 +1156,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1066,13 +1177,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -1085,6 +1198,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1104,13 +1219,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -1123,6 +1240,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1142,6 +1261,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1161,13 +1282,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -1180,13 +1303,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -1199,6 +1324,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1218,6 +1345,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1237,6 +1366,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1256,6 +1387,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1274,14 +1407,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 4,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.9889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": 1.12
+          "new_generic_iron_equivalent": 0.9444,
+          "generic_iron_delta_percent": -4.49
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.12
+      "max_abs_generic_iron_delta_percent": 4.49
     },
     {
       "classification": "instruments",
@@ -1294,6 +1429,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1313,6 +1450,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1332,13 +1471,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -1351,13 +1492,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -1370,13 +1513,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "instruments",
@@ -1389,6 +1534,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -1408,13 +1555,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.6556,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": -23.73
+          "new_generic_iron_equivalent": 0.6111,
+          "generic_iron_delta_percent": -6.78
         }
       ],
-      "max_abs_generic_iron_delta_percent": 23.73
+      "max_abs_generic_iron_delta_percent": 6.78
     },
     {
       "classification": "items",
@@ -1427,6 +1576,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -1446,6 +1597,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -1465,6 +1618,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -1484,6 +1639,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -1502,14 +1659,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 4,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.4444,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": 12.5
+          "new_generic_iron_equivalent": 0.4444,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 12.5
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "parts",
@@ -1521,14 +1680,16 @@
           "legacy_tubes": 4,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 6,
-          "createaddition_iron_rods": 8,
+          "createaddition_iron_rods": 4,
+          "minecraft_iron_nuggets": 16,
+          "plating_tube_compensation_nuggets": 6,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 9.8222,
-          "new_generic_iron_equivalent": 10.0,
-          "generic_iron_delta_percent": 1.81
+          "new_generic_iron_equivalent": 9.7778,
+          "generic_iron_delta_percent": -0.45
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.81
+      "max_abs_generic_iron_delta_percent": 0.45
     },
     {
       "classification": "parts",
@@ -1540,14 +1701,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 6,
-          "createaddition_iron_rods": 3,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 15,
+          "plating_tube_compensation_nuggets": 5,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 7.6444,
-          "new_generic_iron_equivalent": 7.5,
-          "generic_iron_delta_percent": -1.89
+          "new_generic_iron_equivalent": 7.6667,
+          "generic_iron_delta_percent": 0.29
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.89
+      "max_abs_generic_iron_delta_percent": 0.29
     },
     {
       "classification": "parts",
@@ -1560,13 +1723,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 1,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -1579,13 +1744,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 1,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -1598,13 +1765,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 1,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -1616,14 +1785,16 @@
           "legacy_tubes": 2,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 3,
+          "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 5,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.5333,
-          "new_generic_iron_equivalent": 1.5,
-          "generic_iron_delta_percent": -2.17
+          "new_generic_iron_equivalent": 1.5556,
+          "generic_iron_delta_percent": 1.45
         }
       ],
-      "max_abs_generic_iron_delta_percent": 2.17
+      "max_abs_generic_iron_delta_percent": 1.45
     },
     {
       "classification": "parts",
@@ -1635,14 +1806,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 3.2667,
-          "new_generic_iron_equivalent": 3.5,
-          "generic_iron_delta_percent": 7.14
+          "new_generic_iron_equivalent": 3.2222,
+          "generic_iron_delta_percent": -1.36
         }
       ],
-      "max_abs_generic_iron_delta_percent": 7.14
+      "max_abs_generic_iron_delta_percent": 1.36
     },
     {
       "classification": "parts",
@@ -1654,14 +1827,16 @@
           "legacy_tubes": 6,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 7,
+          "createaddition_iron_rods": 6,
+          "minecraft_iron_nuggets": 6,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 3.7111,
-          "new_generic_iron_equivalent": 3.5,
-          "generic_iron_delta_percent": -5.69
+          "new_generic_iron_equivalent": 3.6667,
+          "generic_iron_delta_percent": -1.2
         }
       ],
-      "max_abs_generic_iron_delta_percent": 5.69
+      "max_abs_generic_iron_delta_percent": 1.2
     },
     {
       "classification": "parts",
@@ -1673,14 +1848,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.2222,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": 125.0
+          "new_generic_iron_equivalent": 0.2222,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 125.0
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "parts",
@@ -1692,14 +1869,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 6,
-          "createaddition_iron_rods": 6,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 29,
+          "plating_tube_compensation_nuggets": 5,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 9.2,
-          "new_generic_iron_equivalent": 9.0,
-          "generic_iron_delta_percent": -2.17
+          "new_generic_iron_equivalent": 9.2222,
+          "generic_iron_delta_percent": 0.24
         }
       ],
-      "max_abs_generic_iron_delta_percent": 2.17
+      "max_abs_generic_iron_delta_percent": 0.24
     },
     {
       "classification": "parts",
@@ -1711,14 +1890,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 12,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 10,
+          "plating_tube_compensation_nuggets": 10,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 13.0667,
-          "new_generic_iron_equivalent": 13.0,
-          "generic_iron_delta_percent": -0.51
+          "new_generic_iron_equivalent": 13.1111,
+          "generic_iron_delta_percent": 0.34
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.51
+      "max_abs_generic_iron_delta_percent": 0.34
     },
     {
       "classification": "parts",
@@ -1730,14 +1911,16 @@
           "legacy_tubes": 4,
           "legacy_copper_wire": 6,
           "create_iron_sheets": 14,
-          "createaddition_iron_rods": 7,
+          "createaddition_iron_rods": 4,
+          "minecraft_iron_nuggets": 13,
+          "plating_tube_compensation_nuggets": 13,
           "createaddition_copper_wire": 6,
           "old_generic_iron_equivalent": 17.4222,
-          "new_generic_iron_equivalent": 17.5,
-          "generic_iron_delta_percent": 0.45
+          "new_generic_iron_equivalent": 17.4444,
+          "generic_iron_delta_percent": 0.13
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.45
+      "max_abs_generic_iron_delta_percent": 0.13
     },
     {
       "classification": "parts",
@@ -1749,14 +1932,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 3.2667,
-          "new_generic_iron_equivalent": 3.5,
-          "generic_iron_delta_percent": 7.14
+          "new_generic_iron_equivalent": 3.2222,
+          "generic_iron_delta_percent": -1.36
         }
       ],
-      "max_abs_generic_iron_delta_percent": 7.14
+      "max_abs_generic_iron_delta_percent": 1.36
     },
     {
       "classification": "parts",
@@ -1768,14 +1953,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 3.2667,
-          "new_generic_iron_equivalent": 3.5,
-          "generic_iron_delta_percent": 7.14
+          "new_generic_iron_equivalent": 3.2222,
+          "generic_iron_delta_percent": -1.36
         }
       ],
-      "max_abs_generic_iron_delta_percent": 7.14
+      "max_abs_generic_iron_delta_percent": 1.36
     },
     {
       "classification": "parts",
@@ -1787,14 +1974,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 3,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 12,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 4.3778,
-          "new_generic_iron_equivalent": 4.5,
-          "generic_iron_delta_percent": 2.79
+          "new_generic_iron_equivalent": 4.3333,
+          "generic_iron_delta_percent": -1.02
         }
       ],
-      "max_abs_generic_iron_delta_percent": 2.79
+      "max_abs_generic_iron_delta_percent": 1.02
     },
     {
       "classification": "parts",
@@ -1806,14 +1995,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 6,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 5,
+          "plating_tube_compensation_nuggets": 5,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 6.5333,
-          "new_generic_iron_equivalent": 6.5,
-          "generic_iron_delta_percent": -0.51
+          "new_generic_iron_equivalent": 6.5556,
+          "generic_iron_delta_percent": 0.34
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.51
+      "max_abs_generic_iron_delta_percent": 0.34
     },
     {
       "classification": "parts",
@@ -1825,14 +2016,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 9,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 7,
+          "plating_tube_compensation_nuggets": 7,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 9.8,
-          "new_generic_iron_equivalent": 10.0,
-          "generic_iron_delta_percent": 2.04
+          "new_generic_iron_equivalent": 9.7778,
+          "generic_iron_delta_percent": -0.23
         }
       ],
-      "max_abs_generic_iron_delta_percent": 2.04
+      "max_abs_generic_iron_delta_percent": 0.23
     },
     {
       "classification": "parts",
@@ -1845,6 +2038,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -1863,14 +2058,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 8,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 10,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 8,
           "old_generic_iron_equivalent": 4.1556,
-          "new_generic_iron_equivalent": 4.0,
-          "generic_iron_delta_percent": -3.74
+          "new_generic_iron_equivalent": 4.1111,
+          "generic_iron_delta_percent": -1.07
         }
       ],
-      "max_abs_generic_iron_delta_percent": 3.74
+      "max_abs_generic_iron_delta_percent": 1.07
     },
     {
       "classification": "parts",
@@ -1883,13 +2080,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 1,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -1902,6 +2101,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -1920,14 +2121,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 2,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 6,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 2.6222,
-          "new_generic_iron_equivalent": 2.5,
-          "generic_iron_delta_percent": -4.66
+          "new_generic_iron_equivalent": 2.6667,
+          "generic_iron_delta_percent": 1.69
         }
       ],
-      "max_abs_generic_iron_delta_percent": 4.66
+      "max_abs_generic_iron_delta_percent": 1.69
     },
     {
       "classification": "parts",
@@ -1940,6 +2143,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -1958,14 +2163,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 1,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 7,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.7556,
-          "new_generic_iron_equivalent": 2.0,
-          "generic_iron_delta_percent": 13.92
+          "new_generic_iron_equivalent": 1.7778,
+          "generic_iron_delta_percent": 1.27
         }
       ],
-      "max_abs_generic_iron_delta_percent": 13.92
+      "max_abs_generic_iron_delta_percent": 1.27
     },
     {
       "classification": "parts",
@@ -1978,6 +2185,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -1996,14 +2205,16 @@
           "legacy_tubes": 6,
           "legacy_copper_wire": 16,
           "create_iron_sheets": 8,
-          "createaddition_iron_rods": 13,
+          "createaddition_iron_rods": 6,
+          "minecraft_iron_nuggets": 33,
+          "plating_tube_compensation_nuggets": 9,
           "createaddition_copper_wire": 16,
           "old_generic_iron_equivalent": 14.6444,
-          "new_generic_iron_equivalent": 14.5,
-          "generic_iron_delta_percent": -0.99
+          "new_generic_iron_equivalent": 14.6667,
+          "generic_iron_delta_percent": 0.15
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.99
+      "max_abs_generic_iron_delta_percent": 0.15
     },
     {
       "classification": "parts",
@@ -2016,13 +2227,15 @@
           "legacy_copper_wire": 2,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 4,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 2,
           "old_generic_iron_equivalent": 2.1778,
-          "new_generic_iron_equivalent": 2.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 2.2222,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -2034,14 +2247,16 @@
           "legacy_tubes": 3,
           "legacy_copper_wire": 4,
           "create_iron_sheets": 4,
-          "createaddition_iron_rods": 8,
+          "createaddition_iron_rods": 3,
+          "minecraft_iron_nuggets": 24,
+          "plating_tube_compensation_nuggets": 4,
           "createaddition_copper_wire": 4,
           "old_generic_iron_equivalent": 8.2111,
-          "new_generic_iron_equivalent": 8.0,
-          "generic_iron_delta_percent": -2.57
+          "new_generic_iron_equivalent": 8.1667,
+          "generic_iron_delta_percent": -0.54
         }
       ],
-      "max_abs_generic_iron_delta_percent": 2.57
+      "max_abs_generic_iron_delta_percent": 0.54
     },
     {
       "classification": "parts",
@@ -2053,14 +2268,16 @@
           "legacy_tubes": 6,
           "legacy_copper_wire": 4,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 7,
+          "createaddition_iron_rods": 6,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 4,
           "old_generic_iron_equivalent": 3.2667,
-          "new_generic_iron_equivalent": 3.5,
-          "generic_iron_delta_percent": 7.14
+          "new_generic_iron_equivalent": 3.2222,
+          "generic_iron_delta_percent": -1.36
         }
       ],
-      "max_abs_generic_iron_delta_percent": 7.14
+      "max_abs_generic_iron_delta_percent": 1.36
     },
     {
       "classification": "parts",
@@ -2072,14 +2289,16 @@
           "legacy_tubes": 10,
           "legacy_copper_wire": 4,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 11,
+          "createaddition_iron_rods": 10,
+          "minecraft_iron_nuggets": 4,
+          "plating_tube_compensation_nuggets": 4,
           "createaddition_copper_wire": 4,
           "old_generic_iron_equivalent": 5.4444,
-          "new_generic_iron_equivalent": 5.5,
-          "generic_iron_delta_percent": 1.02
+          "new_generic_iron_equivalent": 5.4444,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.02
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "parts",
@@ -2091,14 +2310,16 @@
           "legacy_tubes": 10,
           "legacy_copper_wire": 8,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 11,
+          "createaddition_iron_rods": 10,
+          "minecraft_iron_nuggets": 4,
+          "plating_tube_compensation_nuggets": 4,
           "createaddition_copper_wire": 8,
           "old_generic_iron_equivalent": 5.4444,
-          "new_generic_iron_equivalent": 5.5,
-          "generic_iron_delta_percent": 1.02
+          "new_generic_iron_equivalent": 5.4444,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.02
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "parts",
@@ -2110,14 +2331,16 @@
           "legacy_tubes": 3,
           "legacy_copper_wire": 4,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 7,
+          "createaddition_iron_rods": 3,
+          "minecraft_iron_nuggets": 20,
+          "plating_tube_compensation_nuggets": 4,
           "createaddition_copper_wire": 4,
           "old_generic_iron_equivalent": 6.6778,
-          "new_generic_iron_equivalent": 6.5,
-          "generic_iron_delta_percent": -2.66
+          "new_generic_iron_equivalent": 6.7222,
+          "generic_iron_delta_percent": 0.67
         }
       ],
-      "max_abs_generic_iron_delta_percent": 2.66
+      "max_abs_generic_iron_delta_percent": 0.67
     },
     {
       "classification": "parts",
@@ -2129,14 +2352,16 @@
           "legacy_tubes": 4,
           "legacy_copper_wire": 2,
           "create_iron_sheets": 1,
-          "createaddition_iron_rods": 6,
+          "createaddition_iron_rods": 4,
+          "minecraft_iron_nuggets": 8,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 2,
           "old_generic_iron_equivalent": 3.9333,
-          "new_generic_iron_equivalent": 4.0,
-          "generic_iron_delta_percent": 1.69
+          "new_generic_iron_equivalent": 3.8889,
+          "generic_iron_delta_percent": -1.13
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.69
+      "max_abs_generic_iron_delta_percent": 1.13
     },
     {
       "classification": "parts",
@@ -2148,14 +2373,16 @@
           "legacy_tubes": 3,
           "legacy_copper_wire": 10,
           "create_iron_sheets": 6,
-          "createaddition_iron_rods": 11,
+          "createaddition_iron_rods": 3,
+          "minecraft_iron_nuggets": 38,
+          "plating_tube_compensation_nuggets": 6,
           "createaddition_copper_wire": 10,
           "old_generic_iron_equivalent": 11.7222,
-          "new_generic_iron_equivalent": 11.5,
-          "generic_iron_delta_percent": -1.9
+          "new_generic_iron_equivalent": 11.7222,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.9
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "parts",
@@ -2167,14 +2394,16 @@
           "legacy_tubes": 1,
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 6,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 1.2111,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -17.43
+          "new_generic_iron_equivalent": 1.1667,
+          "generic_iron_delta_percent": -3.67
         }
       ],
-      "max_abs_generic_iron_delta_percent": 17.43
+      "max_abs_generic_iron_delta_percent": 3.67
     },
     {
       "classification": "parts",
@@ -2185,15 +2414,17 @@
           "legacy_screws": 10,
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
-          "create_iron_sheets": 8,
-          "createaddition_iron_rods": 3,
+          "create_iron_sheets": 7,
+          "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 16,
+          "plating_tube_compensation_nuggets": 6,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 9.2778,
-          "new_generic_iron_equivalent": 9.5,
-          "generic_iron_delta_percent": 2.4
+          "new_generic_iron_equivalent": 9.2778,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 2.4
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "parts",
@@ -2205,14 +2436,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.2222,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": 125.0
+          "new_generic_iron_equivalent": 0.2222,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 125.0
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "parts",
@@ -2225,6 +2458,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2243,14 +2478,16 @@
           "legacy_tubes": 4,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 5,
+          "createaddition_iron_rods": 4,
+          "minecraft_iron_nuggets": 3,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 2.2889,
-          "new_generic_iron_equivalent": 2.5,
-          "generic_iron_delta_percent": 9.22
+          "new_generic_iron_equivalent": 2.3333,
+          "generic_iron_delta_percent": 1.94
         }
       ],
-      "max_abs_generic_iron_delta_percent": 9.22
+      "max_abs_generic_iron_delta_percent": 1.94
     },
     {
       "classification": "parts",
@@ -2262,14 +2499,16 @@
           "legacy_tubes": 1,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.7667,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": 30.43
+          "new_generic_iron_equivalent": 0.7222,
+          "generic_iron_delta_percent": -5.8
         }
       ],
-      "max_abs_generic_iron_delta_percent": 30.43
+      "max_abs_generic_iron_delta_percent": 5.8
     },
     {
       "classification": "parts",
@@ -2281,14 +2520,16 @@
           "legacy_tubes": 1,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 5,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 4,
+          "plating_tube_compensation_nuggets": 4,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 5.9889,
-          "new_generic_iron_equivalent": 6.0,
-          "generic_iron_delta_percent": 0.19
+          "new_generic_iron_equivalent": 5.9444,
+          "generic_iron_delta_percent": -0.74
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.19
+      "max_abs_generic_iron_delta_percent": 0.74
     },
     {
       "classification": "parts",
@@ -2300,14 +2541,16 @@
           "legacy_tubes": 1,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 4,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.9889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": 1.12
+          "new_generic_iron_equivalent": 0.9444,
+          "generic_iron_delta_percent": -4.49
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.12
+      "max_abs_generic_iron_delta_percent": 4.49
     },
     {
       "classification": "parts",
@@ -2320,13 +2563,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 1,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -2338,14 +2583,16 @@
           "legacy_tubes": 2,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 3,
+          "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 5,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.5333,
-          "new_generic_iron_equivalent": 1.5,
-          "generic_iron_delta_percent": -2.17
+          "new_generic_iron_equivalent": 1.5556,
+          "generic_iron_delta_percent": 1.45
         }
       ],
-      "max_abs_generic_iron_delta_percent": 2.17
+      "max_abs_generic_iron_delta_percent": 1.45
     },
     {
       "classification": "parts",
@@ -2356,15 +2603,17 @@
           "legacy_screws": 10,
           "legacy_tubes": 6,
           "legacy_copper_wire": 0,
-          "create_iron_sheets": 2,
-          "createaddition_iron_rods": 8,
+          "create_iron_sheets": 1,
+          "createaddition_iron_rods": 7,
+          "minecraft_iron_nuggets": 14,
+          "plating_tube_compensation_nuggets": 4,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 6.0111,
-          "new_generic_iron_equivalent": 6.0,
-          "generic_iron_delta_percent": -0.18
+          "new_generic_iron_equivalent": 6.0556,
+          "generic_iron_delta_percent": 0.74
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.18
+      "max_abs_generic_iron_delta_percent": 0.74
     },
     {
       "classification": "parts",
@@ -2376,14 +2625,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 2,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 8,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 2.8444,
-          "new_generic_iron_equivalent": 3.0,
-          "generic_iron_delta_percent": 5.47
+          "new_generic_iron_equivalent": 2.8889,
+          "generic_iron_delta_percent": 1.56
         }
       ],
-      "max_abs_generic_iron_delta_percent": 5.47
+      "max_abs_generic_iron_delta_percent": 1.56
     },
     {
       "classification": "parts",
@@ -2395,14 +2646,16 @@
           "legacy_tubes": 4,
           "legacy_copper_wire": 16,
           "create_iron_sheets": 2,
-          "createaddition_iron_rods": 5,
+          "createaddition_iron_rods": 4,
+          "minecraft_iron_nuggets": 3,
+          "plating_tube_compensation_nuggets": 3,
           "createaddition_copper_wire": 16,
           "old_generic_iron_equivalent": 4.3556,
-          "new_generic_iron_equivalent": 4.5,
-          "generic_iron_delta_percent": 3.32
+          "new_generic_iron_equivalent": 4.3333,
+          "generic_iron_delta_percent": -0.51
         }
       ],
-      "max_abs_generic_iron_delta_percent": 3.32
+      "max_abs_generic_iron_delta_percent": 0.51
     },
     {
       "classification": "parts",
@@ -2415,6 +2668,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -2433,14 +2688,16 @@
           "legacy_tubes": 2,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 3,
+          "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 3,
+          "plating_tube_compensation_nuggets": 3,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 4.3556,
-          "new_generic_iron_equivalent": 4.5,
-          "generic_iron_delta_percent": 3.32
+          "new_generic_iron_equivalent": 4.3333,
+          "generic_iron_delta_percent": -0.51
         }
       ],
-      "max_abs_generic_iron_delta_percent": 3.32
+      "max_abs_generic_iron_delta_percent": 0.51
     },
     {
       "classification": "parts",
@@ -2453,13 +2710,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -2472,13 +2731,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 3,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.6333,
-          "new_generic_iron_equivalent": 1.5,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.6111,
+          "generic_iron_delta_percent": -1.36
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 1.36
     },
     {
       "classification": "parts",
@@ -2490,14 +2751,16 @@
           "legacy_tubes": 6,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 10,
-          "createaddition_iron_rods": 8,
+          "createaddition_iron_rods": 6,
+          "minecraft_iron_nuggets": 10,
+          "plating_tube_compensation_nuggets": 10,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 14.1556,
-          "new_generic_iron_equivalent": 14.0,
-          "generic_iron_delta_percent": -1.1
+          "new_generic_iron_equivalent": 14.1111,
+          "generic_iron_delta_percent": -0.31
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.1
+      "max_abs_generic_iron_delta_percent": 0.31
     },
     {
       "classification": "parts",
@@ -2510,6 +2773,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2529,13 +2794,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -2548,6 +2815,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -2566,14 +2835,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 4,
           "create_iron_sheets": 6,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 5,
+          "plating_tube_compensation_nuggets": 5,
           "createaddition_copper_wire": 4,
           "old_generic_iron_equivalent": 6.5333,
-          "new_generic_iron_equivalent": 6.5,
-          "generic_iron_delta_percent": -0.51
+          "new_generic_iron_equivalent": 6.5556,
+          "generic_iron_delta_percent": 0.34
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.51
+      "max_abs_generic_iron_delta_percent": 0.34
     },
     {
       "classification": "parts",
@@ -2585,14 +2856,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 5,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 4,
+          "plating_tube_compensation_nuggets": 4,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 5.4444,
-          "new_generic_iron_equivalent": 5.5,
-          "generic_iron_delta_percent": 1.02
+          "new_generic_iron_equivalent": 5.4444,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.02
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "parts",
@@ -2604,14 +2877,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 3.2667,
-          "new_generic_iron_equivalent": 3.5,
-          "generic_iron_delta_percent": 7.14
+          "new_generic_iron_equivalent": 3.2222,
+          "generic_iron_delta_percent": -1.36
         }
       ],
-      "max_abs_generic_iron_delta_percent": 7.14
+      "max_abs_generic_iron_delta_percent": 1.36
     },
     {
       "classification": "parts",
@@ -2624,13 +2899,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 1,
           "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 2.1778,
-          "new_generic_iron_equivalent": 2.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 2.2222,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -2643,13 +2920,15 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 1,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -2661,14 +2940,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.2222,
-          "new_generic_iron_equivalent": 0.5,
-          "generic_iron_delta_percent": 125.0
+          "new_generic_iron_equivalent": 0.2222,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 125.0
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "parts",
@@ -2681,6 +2962,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2700,6 +2983,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2719,6 +3004,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2738,6 +3025,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2757,6 +3046,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2776,6 +3067,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -2794,14 +3087,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 2,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 10,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.1111,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -10.0
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 10.0
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "parts",
@@ -2813,14 +3108,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 8,
           "create_iron_sheets": 2,
-          "createaddition_iron_rods": 1,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 6,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 8,
           "old_generic_iron_equivalent": 2.6222,
-          "new_generic_iron_equivalent": 2.5,
-          "generic_iron_delta_percent": -4.66
+          "new_generic_iron_equivalent": 2.6667,
+          "generic_iron_delta_percent": 1.69
         }
       ],
-      "max_abs_generic_iron_delta_percent": 4.66
+      "max_abs_generic_iron_delta_percent": 1.69
     },
     {
       "classification": "parts",
@@ -2833,6 +3130,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2852,6 +3151,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2871,6 +3172,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2890,6 +3193,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2909,6 +3214,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -2928,6 +3235,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.0,
           "new_generic_iron_equivalent": 0.0,
@@ -2946,14 +3255,16 @@
           "legacy_tubes": 2,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
-          "createaddition_iron_rods": 4,
+          "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 11,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 2.2,
-          "new_generic_iron_equivalent": 2.0,
-          "generic_iron_delta_percent": -9.09
+          "new_generic_iron_equivalent": 2.2222,
+          "generic_iron_delta_percent": 1.01
         }
       ],
-      "max_abs_generic_iron_delta_percent": 9.09
+      "max_abs_generic_iron_delta_percent": 1.01
     },
     {
       "classification": "parts",
@@ -2965,14 +3276,16 @@
           "legacy_tubes": 2,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 2,
-          "createaddition_iron_rods": 3,
+          "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 3.2667,
-          "new_generic_iron_equivalent": 3.5,
-          "generic_iron_delta_percent": 7.14
+          "new_generic_iron_equivalent": 3.2222,
+          "generic_iron_delta_percent": -1.36
         }
       ],
-      "max_abs_generic_iron_delta_percent": 7.14
+      "max_abs_generic_iron_delta_percent": 1.36
     },
     {
       "classification": "parts",
@@ -2983,15 +3296,17 @@
           "legacy_screws": 0,
           "legacy_tubes": 1,
           "legacy_copper_wire": 0,
-          "create_iron_sheets": 1,
-          "createaddition_iron_rods": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -3002,15 +3317,17 @@
           "legacy_screws": 0,
           "legacy_tubes": 1,
           "legacy_copper_wire": 0,
-          "create_iron_sheets": 1,
-          "createaddition_iron_rods": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "parts",
@@ -3021,15 +3338,17 @@
           "legacy_screws": 0,
           "legacy_tubes": 1,
           "legacy_copper_wire": 0,
-          "create_iron_sheets": 1,
-          "createaddition_iron_rods": 0,
+          "create_iron_sheets": 0,
+          "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "poles",
@@ -3042,6 +3361,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3061,13 +3382,15 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 1,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "poles",
@@ -3080,6 +3403,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3099,6 +3424,8 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3118,13 +3445,15 @@
           "legacy_copper_wire": 1,
           "create_iron_sheets": 1,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 1,
+          "plating_tube_compensation_nuggets": 1,
           "createaddition_copper_wire": 1,
           "old_generic_iron_equivalent": 1.0889,
-          "new_generic_iron_equivalent": 1.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 1.1111,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "poles",
@@ -3137,13 +3466,15 @@
           "legacy_copper_wire": 2,
           "create_iron_sheets": 2,
           "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 2,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 2,
           "old_generic_iron_equivalent": 2.1778,
-          "new_generic_iron_equivalent": 2.0,
-          "generic_iron_delta_percent": -8.16
+          "new_generic_iron_equivalent": 2.2222,
+          "generic_iron_delta_percent": 2.04
         }
       ],
-      "max_abs_generic_iron_delta_percent": 8.16
+      "max_abs_generic_iron_delta_percent": 2.04
     },
     {
       "classification": "poles",
@@ -3156,6 +3487,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3175,6 +3508,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3194,6 +3529,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3213,6 +3550,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3232,6 +3571,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3251,6 +3592,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3270,6 +3613,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3289,6 +3634,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3308,6 +3655,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3327,6 +3676,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3346,6 +3697,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3365,6 +3718,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3384,6 +3739,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3403,6 +3760,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3422,6 +3781,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3441,6 +3802,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3460,6 +3823,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3479,6 +3844,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3498,6 +3865,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3517,6 +3886,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3536,6 +3907,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3555,6 +3928,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3574,6 +3949,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3593,6 +3970,8 @@
           "legacy_copper_wire": 0,
           "create_iron_sheets": 0,
           "createaddition_iron_rods": 1,
+          "minecraft_iron_nuggets": 0,
+          "plating_tube_compensation_nuggets": 0,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 0.5444,
           "new_generic_iron_equivalent": 0.5,
@@ -3611,14 +3990,16 @@
           "legacy_tubes": 24,
           "legacy_copper_wire": 48,
           "create_iron_sheets": 21,
-          "createaddition_iron_rods": 41,
+          "createaddition_iron_rods": 24,
+          "minecraft_iron_nuggets": 74,
+          "plating_tube_compensation_nuggets": 26,
           "createaddition_copper_wire": 48,
           "old_generic_iron_equivalent": 41.2667,
-          "new_generic_iron_equivalent": 41.5,
-          "generic_iron_delta_percent": 0.57
+          "new_generic_iron_equivalent": 41.2222,
+          "generic_iron_delta_percent": -0.11
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.57
+      "max_abs_generic_iron_delta_percent": 0.11
     },
     {
       "classification": "vehicles",
@@ -3630,14 +4011,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 24,
           "create_iron_sheets": 12,
-          "createaddition_iron_rods": 7,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 34,
+          "plating_tube_compensation_nuggets": 10,
           "createaddition_copper_wire": 24,
           "old_generic_iron_equivalent": 15.7333,
-          "new_generic_iron_equivalent": 15.5,
-          "generic_iron_delta_percent": -1.48
+          "new_generic_iron_equivalent": 15.7778,
+          "generic_iron_delta_percent": 0.28
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.48
+      "max_abs_generic_iron_delta_percent": 0.28
     },
     {
       "classification": "vehicles",
@@ -3649,14 +4032,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 32,
           "create_iron_sheets": 32,
-          "createaddition_iron_rods": 16,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 74,
+          "plating_tube_compensation_nuggets": 26,
           "createaddition_copper_wire": 32,
           "old_generic_iron_equivalent": 40.1778,
-          "new_generic_iron_equivalent": 40.0,
-          "generic_iron_delta_percent": -0.44
+          "new_generic_iron_equivalent": 40.2222,
+          "generic_iron_delta_percent": 0.11
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.44
+      "max_abs_generic_iron_delta_percent": 0.11
     },
     {
       "classification": "vehicles",
@@ -3668,7 +4053,9 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 48,
           "create_iron_sheets": 32,
-          "createaddition_iron_rods": 20,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 90,
+          "plating_tube_compensation_nuggets": 26,
           "createaddition_copper_wire": 48,
           "old_generic_iron_equivalent": 41.9556,
           "new_generic_iron_equivalent": 42.0,
@@ -3687,14 +4074,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 14,
           "create_iron_sheets": 32,
-          "createaddition_iron_rods": 19,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 84,
+          "plating_tube_compensation_nuggets": 26,
           "createaddition_copper_wire": 14,
           "old_generic_iron_equivalent": 41.2889,
-          "new_generic_iron_equivalent": 41.5,
-          "generic_iron_delta_percent": 0.51
+          "new_generic_iron_equivalent": 41.3333,
+          "generic_iron_delta_percent": 0.11
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.51
+      "max_abs_generic_iron_delta_percent": 0.11
     },
     {
       "classification": "vehicles",
@@ -3706,14 +4095,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 12,
           "create_iron_sheets": 18,
-          "createaddition_iron_rods": 14,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 62,
+          "plating_tube_compensation_nuggets": 14,
           "createaddition_copper_wire": 12,
           "old_generic_iron_equivalent": 24.9333,
-          "new_generic_iron_equivalent": 25.0,
-          "generic_iron_delta_percent": 0.27
+          "new_generic_iron_equivalent": 24.8889,
+          "generic_iron_delta_percent": -0.18
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.27
+      "max_abs_generic_iron_delta_percent": 0.18
     },
     {
       "classification": "vehicles",
@@ -3725,14 +4116,16 @@
           "legacy_tubes": 4,
           "legacy_copper_wire": 0,
           "create_iron_sheets": 40,
-          "createaddition_iron_rods": 38,
+          "createaddition_iron_rods": 4,
+          "minecraft_iron_nuggets": 154,
+          "plating_tube_compensation_nuggets": 34,
           "createaddition_copper_wire": 0,
           "old_generic_iron_equivalent": 59.0667,
-          "new_generic_iron_equivalent": 59.0,
-          "generic_iron_delta_percent": -0.11
+          "new_generic_iron_equivalent": 59.1111,
+          "generic_iron_delta_percent": 0.08
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.11
+      "max_abs_generic_iron_delta_percent": 0.08
     },
     {
       "classification": "vehicles",
@@ -3744,14 +4137,16 @@
           "legacy_tubes": 10,
           "legacy_copper_wire": 18,
           "create_iron_sheets": 10,
-          "createaddition_iron_rods": 20,
+          "createaddition_iron_rods": 10,
+          "minecraft_iron_nuggets": 44,
+          "plating_tube_compensation_nuggets": 12,
           "createaddition_copper_wire": 18,
           "old_generic_iron_equivalent": 19.8889,
-          "new_generic_iron_equivalent": 20.0,
-          "generic_iron_delta_percent": 0.56
+          "new_generic_iron_equivalent": 19.8889,
+          "generic_iron_delta_percent": 0.0
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.56
+      "max_abs_generic_iron_delta_percent": 0.0
     },
     {
       "classification": "vehicles",
@@ -3763,14 +4158,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 6,
           "create_iron_sheets": 3,
-          "createaddition_iron_rods": 6,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 26,
+          "plating_tube_compensation_nuggets": 2,
           "createaddition_copper_wire": 6,
           "old_generic_iron_equivalent": 5.9333,
-          "new_generic_iron_equivalent": 6.0,
-          "generic_iron_delta_percent": 1.12
+          "new_generic_iron_equivalent": 5.8889,
+          "generic_iron_delta_percent": -0.75
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.12
+      "max_abs_generic_iron_delta_percent": 0.75
     },
     {
       "classification": "vehicles",
@@ -3782,7 +4179,9 @@
           "legacy_tubes": 6,
           "legacy_copper_wire": 12,
           "create_iron_sheets": 19,
-          "createaddition_iron_rods": 18,
+          "createaddition_iron_rods": 6,
+          "minecraft_iron_nuggets": 54,
+          "plating_tube_compensation_nuggets": 18,
           "createaddition_copper_wire": 12,
           "old_generic_iron_equivalent": 27.9556,
           "new_generic_iron_equivalent": 28.0,
@@ -3801,14 +4200,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 32,
           "create_iron_sheets": 48,
-          "createaddition_iron_rods": 19,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 86,
+          "plating_tube_compensation_nuggets": 38,
           "createaddition_copper_wire": 32,
           "old_generic_iron_equivalent": 57.6,
-          "new_generic_iron_equivalent": 57.5,
-          "generic_iron_delta_percent": -0.17
+          "new_generic_iron_equivalent": 57.5556,
+          "generic_iron_delta_percent": -0.08
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.17
+      "max_abs_generic_iron_delta_percent": 0.08
     },
     {
       "classification": "vehicles",
@@ -3820,14 +4221,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 12,
           "create_iron_sheets": 19,
-          "createaddition_iron_rods": 10,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 47,
+          "plating_tube_compensation_nuggets": 15,
           "createaddition_copper_wire": 12,
           "old_generic_iron_equivalent": 24.2444,
-          "new_generic_iron_equivalent": 24.0,
-          "generic_iron_delta_percent": -1.01
+          "new_generic_iron_equivalent": 24.2222,
+          "generic_iron_delta_percent": -0.09
         }
       ],
-      "max_abs_generic_iron_delta_percent": 1.01
+      "max_abs_generic_iron_delta_percent": 0.09
     },
     {
       "classification": "vehicles",
@@ -3839,14 +4242,16 @@
           "legacy_tubes": 0,
           "legacy_copper_wire": 4,
           "create_iron_sheets": 4,
-          "createaddition_iron_rods": 4,
+          "createaddition_iron_rods": 0,
+          "minecraft_iron_nuggets": 19,
+          "plating_tube_compensation_nuggets": 3,
           "createaddition_copper_wire": 4,
           "old_generic_iron_equivalent": 6.1333,
-          "new_generic_iron_equivalent": 6.0,
-          "generic_iron_delta_percent": -2.17
+          "new_generic_iron_equivalent": 6.1111,
+          "generic_iron_delta_percent": -0.36
         }
       ],
-      "max_abs_generic_iron_delta_percent": 2.17
+      "max_abs_generic_iron_delta_percent": 0.36
     },
     {
       "classification": "vehicles",
@@ -3858,14 +4263,16 @@
           "legacy_tubes": 4,
           "legacy_copper_wire": 6,
           "create_iron_sheets": 15,
-          "createaddition_iron_rods": 17,
+          "createaddition_iron_rods": 4,
+          "minecraft_iron_nuggets": 59,
+          "plating_tube_compensation_nuggets": 14,
           "createaddition_copper_wire": 6,
           "old_generic_iron_equivalent": 23.5111,
-          "new_generic_iron_equivalent": 23.5,
-          "generic_iron_delta_percent": -0.05
+          "new_generic_iron_equivalent": 23.5556,
+          "generic_iron_delta_percent": 0.19
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.05
+      "max_abs_generic_iron_delta_percent": 0.19
     },
     {
       "classification": "vehicles",
@@ -3877,14 +4284,16 @@
           "legacy_tubes": 6,
           "legacy_copper_wire": 24,
           "create_iron_sheets": 24,
-          "createaddition_iron_rods": 20,
+          "createaddition_iron_rods": 6,
+          "minecraft_iron_nuggets": 64,
+          "plating_tube_compensation_nuggets": 22,
           "createaddition_copper_wire": 24,
           "old_generic_iron_equivalent": 34.0667,
-          "new_generic_iron_equivalent": 34.0,
-          "generic_iron_delta_percent": -0.2
+          "new_generic_iron_equivalent": 34.1111,
+          "generic_iron_delta_percent": 0.13
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.2
+      "max_abs_generic_iron_delta_percent": 0.13
     },
     {
       "classification": "vehicles",
@@ -3896,14 +4305,16 @@
           "legacy_tubes": 16,
           "legacy_copper_wire": 32,
           "create_iron_sheets": 66,
-          "createaddition_iron_rods": 49,
+          "createaddition_iron_rods": 16,
+          "minecraft_iron_nuggets": 149,
+          "plating_tube_compensation_nuggets": 59,
           "createaddition_copper_wire": 32,
           "old_generic_iron_equivalent": 90.5778,
-          "new_generic_iron_equivalent": 90.5,
-          "generic_iron_delta_percent": -0.09
+          "new_generic_iron_equivalent": 90.5556,
+          "generic_iron_delta_percent": -0.02
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.09
+      "max_abs_generic_iron_delta_percent": 0.02
     },
     {
       "classification": "vehicles",
@@ -3915,14 +4326,16 @@
           "legacy_tubes": 2,
           "legacy_copper_wire": 32,
           "create_iron_sheets": 35,
-          "createaddition_iron_rods": 23,
+          "createaddition_iron_rods": 2,
+          "minecraft_iron_nuggets": 93,
+          "plating_tube_compensation_nuggets": 29,
           "createaddition_copper_wire": 32,
           "old_generic_iron_equivalent": 46.3111,
-          "new_generic_iron_equivalent": 46.5,
-          "generic_iron_delta_percent": 0.41
+          "new_generic_iron_equivalent": 46.3333,
+          "generic_iron_delta_percent": 0.05
         }
       ],
-      "max_abs_generic_iron_delta_percent": 0.41
+      "max_abs_generic_iron_delta_percent": 0.05
     }
   ],
   "wda_loot_integration": {
