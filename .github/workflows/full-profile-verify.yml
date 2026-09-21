@@ -2,6 +2,13 @@ name: Verify DrewCraft V1.1 integration profile
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/full-profile-verify.yml"
+      - "pack/**"
+      - "tools/**"
+      - "tests/**"
   push:
     branches: [main]
     paths:
