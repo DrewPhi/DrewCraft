@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "fluid": "createaddition:bioethanol",
+  "mts_fluid_name": "bioethanol",
+  "fuel_categories": {
+    "gasoline": 0.85,
+    "avgas": 0.85
+  },
+  "diesel_policy": "Do not treat bioethanol as diesel. Keep MTS diesel engines on their existing diesel/biodiesel-compatible fuel categories until DrewCraft has a real renewable diesel path.",
+  "notes": [
+    "MTS matches configured fuels by fluid registry path; createaddition:bioethanol therefore uses the path bioethanol.",
+    "Potency 0.85 mirrors MTS's built-in ethanol potency for gasoline engines.",
+    "This patch is additive and must preserve any existing administrator fuel settings."
+  ]
+}
