@@ -1,0 +1,17 @@
+{
+  "fuel": {
+    "fuels": {
+      "gasoline": {
+        "lava": 1.0,
+        "gasoline": 1.0,
+        "ethanol": 0.85,
+        "bioethanol": 0.85
+      },
+      "avgas": {
+        "lava": 1.0,
+        "gasoline": 1.0,
+        "bioethanol": 0.85
+      }
+    }
+  }
+}
