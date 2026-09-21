@@ -12,7 +12,7 @@ on:
       - "tools/hash_profile.py"
       - "pack/manifest/integration_candidates.yaml"
       - "pack/manifest/profiles.yaml"
-      - "pack/manifest/pack.yaml"
+      - "pack/manifest/pack.yaml"\n      - "tests/test_mts_create_integration.py"\n      - "tests/test_pack_resolver.py"
 
 permissions:
   contents: write
