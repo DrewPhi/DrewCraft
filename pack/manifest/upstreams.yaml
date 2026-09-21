@@ -160,14 +160,14 @@ upstreams:
       project: "1bokaNcj"
       url: "https://modrinth.com/mod/xaeros-minimap"
       branch: null
-      candidate_ref: "Q1tuMQBB"
+      candidate_ref: "w8HSmbC3"
     artifact:
       provider: modrinth
       project_id: "1bokaNcj"
-      version_id: "Q1tuMQBB"
-      candidate_version: "neoforge-1.21.1-26.5.0"
-      filename: "xaerominimap-neoforge-1.21.1-26.5.0.jar"
-      download_url: "https://cdn.modrinth.com/data/1bokaNcj/versions/Q1tuMQBB/xaerominimap-neoforge-1.21.1-26.5.0.jar"
+      version_id: "w8HSmbC3"
+      candidate_version: "neoforge-1.21.1-26.1.0"
+      filename: "xaerominimap-neoforge-1.21.1-26.1.0.jar"
+      download_url: "https://cdn.modrinth.com/data/1bokaNcj/versions/w8HSmbC3/xaerominimap-neoforge-1.21.1-26.1.0.jar"
       release_status: release
       sha256: null
     target:
@@ -189,13 +189,13 @@ upstreams:
     side: common
     source:
       provider: xaero-maven
-      url: "https://chocolateminecraft.com/maven/xaero/lib/xaerolib-neoforge-1.21.1/1.1.15/xaerolib-neoforge-1.21.1-1.1.15.jar"
-      candidate_ref: "1.1.15"
+      url: "https://chocolateminecraft.com/maven/xaero/lib/xaerolib-neoforge-1.21.1/1.1.0/xaerolib-neoforge-1.21.1-1.1.0.jar"
+      candidate_ref: "1.1.0"
     artifact:
       provider: xaero-maven
-      candidate_version: "1.1.15"
-      filename: "xaerolib-neoforge-1.21.1-1.1.15.jar"
-      download_url: "https://chocolateminecraft.com/maven/xaero/lib/xaerolib-neoforge-1.21.1/1.1.15/xaerolib-neoforge-1.21.1-1.1.15.jar"
+      candidate_version: "1.1.0"
+      filename: "xaerolib-neoforge-1.21.1-1.1.0.jar"
+      download_url: "https://chocolateminecraft.com/maven/xaero/lib/xaerolib-neoforge-1.21.1/1.1.0/xaerolib-neoforge-1.21.1-1.1.0.jar"
       release_status: release
       sha256: null
     target:
