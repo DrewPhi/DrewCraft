@@ -41,38 +41,6 @@ jobs:
       - name: Prepare exact V1.1 integration evidence
         run: python tools/prepare_integration_profile.py
 
-      - name: Read pinned Terrain Diffusion Plus source
-        id: td
-        run: |
-          python - <<'PY' >> "$GITHUB_OUTPUT"
-          import yaml
-          d=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
-          print('repository=' + d['source']['repository'])
-          print('ref=' + d['source']['ref'])
-          PY
-
-      - name: Build exact Terrain Diffusion Plus jar
-        run: |
-          git clone "https://github.com/${{ steps.td.outputs.repository }}.git" /tmp/terrain-diffusion-plus
-          cd /tmp/terrain-diffusion-plus
-          git checkout --detach "${{ steps.td.outputs.ref }}"
-          test "$(git rev-parse HEAD)" = "${{ steps.td.outputs.ref }}"
-          ./gradlew -p versions/1.21.1 buildNeoForgeCpu --no-daemon
-
-      - name: Locate Terrain Diffusion Plus jar
-        id: tdjar
-        run: |
-          python - <<'PY' >> "$GITHUB_OUTPUT"
-          from pathlib import Path
-          import yaml
-          d=yaml.safe_load(open('pack/manifest/source_builds.yaml'))['source_builds']['terrain_diffusion_plus']
-          libs=Path('/tmp/terrain-diffusion-plus')/d['build']['output_directory']
-          jars=[p for p in sorted(libs.glob('*.jar')) if not any(x in p.name.lower() for x in ('-sources.jar','-javadoc.jar','-dev.jar','-test.jar','-tests.jar'))]
-          if len(jars) != 1:
-              raise SystemExit(f'Expected one production jar, got {[str(p) for p in jars]}')
-          print('path=' + str(jars[0]))
-          PY
-
       - name: Build pinned Create Radar upstream fix
         id: radar
         run: |
@@ -93,8 +61,7 @@ jobs:
       - name: Rebuild verified server mod tree
         run: |
           python tools/build_verified_profile.py \
-            --profile v1_1_integration \
-            --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
+            --profile v1_1_runtime_smoke \
             --source-artifact "create_radars=${{ steps.radar.outputs.path }}" \
             --output-dir build/verified-pack \
             --evidence-output build/verified-pack-evidence.json
@@ -102,8 +69,7 @@ jobs:
       - name: Rebuild current V1 baseline server tree
         run: |
           python tools/build_verified_profile.py \
-            --profile v1_survival_exploration \
-            --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
+            --profile v1_runtime_smoke \
             --source-artifact "create_radars=${{ steps.radar.outputs.path }}" \
             --output-dir build/baseline-pack \
             --evidence-output build/baseline-pack-evidence.json
@@ -164,11 +130,10 @@ jobs:
           bash ./run.sh nogui < server.stdin > server-first.log 2>&1 &
           PID=$!
           READY=0
-          # Terrain Diffusion Plus performs expensive one-time model loading and
-          # initial terrain/spawn analysis on a fresh world. Give that real work
-          # enough room to complete instead of treating a healthy long first boot
-          # as a compatibility failure.
-          for i in $(seq 1 120); do
+          # This CI-only profile omits Terrain Diffusion so the test isolates
+          # registry/config/datapack/runtime migration behavior. Production
+          # Terrain Diffusion is covered by the separate exact-profile smoke.
+          for i in $(seq 1 72); do
             if grep -q 'Done (' server-first.log 2>/dev/null; then READY=1; break; fi
             if ! kill -0 "$PID" 2>/dev/null; then
               echo 'Server exited before readiness'; cat server-first.log; exit 1
@@ -180,7 +145,7 @@ jobs:
             sleep 5
           done
           if [ "$READY" -ne 1 ]; then
-            echo 'Timed out waiting for integration server readiness after 10 minutes'; tail -n 300 server-first.log; kill "$PID" || true; exit 1
+            echo 'Timed out waiting for integration server readiness after 6 minutes'; tail -n 300 server-first.log; kill "$PID" || true; exit 1
           fi
           printf 'datapack list\n' >&3
           sleep 3
@@ -216,9 +181,7 @@ jobs:
           bash ./run.sh nogui < server.stdin > server-restart.log 2>&1 &
           PID=$!
           READY=0
-          # Restart should be substantially cheaper because the world and model
-          # files already exist, but still allow enough time to catch slow real
-          # initialization rather than an arbitrary CI timeout.
+          # Restart is an in-place baseline-V1 -> V1.1 migration proof.
           for i in $(seq 1 120); do
             if grep -q 'Done (' server-restart.log 2>/dev/null; then READY=1; break; fi
             if ! kill -0 "$PID" 2>/dev/null; then
@@ -231,7 +194,7 @@ jobs:
             sleep 5
           done
           if [ "$READY" -ne 1 ]; then
-            echo 'Timed out waiting for integration restart readiness after 10 minutes'; tail -n 300 server-restart.log; kill "$PID" || true; exit 1
+            echo 'Timed out waiting for integration restart readiness after 6 minutes'; tail -n 300 server-restart.log; kill "$PID" || true; exit 1
           fi
           printf 'datapack list\n' >&3
           sleep 3
