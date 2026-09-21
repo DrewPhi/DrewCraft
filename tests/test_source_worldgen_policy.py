@@ -22,7 +22,7 @@ def test_focused_v1_does_not_override_wda_structure_sets():
 def test_every_shipping_and_combined_smoke_workflow_builds_the_source_profile():
     for name in ("release-candidate-build.yml", "local-dev-release.yml", "full-profile-verify.yml", "server-smoke.yml"):
         text = (ROOT / ".github" / "workflows" / name).read_text(encoding="utf-8")
-        assert "--profile v1_survival_exploration" in text, name
+        assert "--profile v1_1_integration" in text, name
 
 
 def test_focused_v1_live_release_does_not_inject_covenant_resource_pack():
