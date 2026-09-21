@@ -30,6 +30,7 @@ def test_material_transform_removes_legacy_generic_stock_and_conserves_iron():
     assert "mtsofficialpack.copperwire" not in joined
     assert "create:iron_sheet:" in joined
     assert "createaddition:iron_rod:" in joined
+    assert "minecraft:iron_nugget:" in joined
     assert "createaddition:copper_wire:16" in joined
     assert abs(audit["generic_iron_delta_percent"]) <= 5.0
 
@@ -74,3 +75,18 @@ def test_wda_loot_is_appended_without_removing_upstream_pools(tmp_path: Path):
     assert report["modified_wda_loot_tables"] == 1
     assert result["pools"][0]["name"] == "upstream"
     assert result["pools"][-1]["name"] == "drewcraft:industrial_salvage"
+
+
+def test_tiny_fastener_recipe_does_not_get_rod_rounding_inflation():
+    new, audit = integration.transform_material_list([
+        "mts:mtsofficialpack.screws:2",
+    ])
+    assert new == ["minecraft:iron_nugget:2"]
+    assert audit["old_generic_iron_equivalent"] == audit["new_generic_iron_equivalent"]
+    assert audit["generic_iron_delta_percent"] == 0.0
+
+
+def test_single_plate_or_tube_stays_within_global_ten_percent_gate():
+    for legacy in ("mts:mtsofficialpack.plating:1", "mts:mtsofficialpack.metaltube:1"):
+        _, audit = integration.transform_material_list([legacy])
+        assert abs(audit["generic_iron_delta_percent"]) <= 10.0
