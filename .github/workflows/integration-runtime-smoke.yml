@@ -77,7 +77,7 @@ jobs:
       - name: Build and inject DrewCraft mod
         run: |
           gradle -p mods/drewcraft clean test build --no-daemon
-          python tools/inject_drewcraft_mod.py --client build/verified-pack/client --server build/verified-pack/server
+          python tools/inject_drewcraft_mod.py --client build/verified-pack/client --server build/verified-pack/server --strip-worldgen
           python tools/inject_drewcraft_mod.py --client build/baseline-pack/client --server build/baseline-pack/server
 
       - name: Install pinned NeoForge server

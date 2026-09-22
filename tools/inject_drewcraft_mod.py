@@ -12,6 +12,7 @@ import hashlib
 import json
 import pathlib
 import shutil
+import zipfile
 
 NON_PRODUCTION_SUFFIXES = (
     "-sources.jar",
@@ -30,7 +31,7 @@ def sha256(path: pathlib.Path) -> str:
     return h.hexdigest()
 
 
-def inject(pack_root: pathlib.Path, jar: pathlib.Path) -> dict:
+def inject(pack_root: pathlib.Path, jar: pathlib.Path, *, strip_worldgen: bool = False) -> dict:
     if not jar.is_file() or jar.suffix.lower() != ".jar":
         raise RuntimeError(f"DrewCraft production jar is missing: {jar}")
     layout_path = pack_root / "drewcraft-layout.json"
@@ -48,7 +49,18 @@ def inject(pack_root: pathlib.Path, jar: pathlib.Path) -> dict:
 
     destination = pack_root / rel
     destination.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(jar, destination)
+    if strip_worldgen:
+        # The fast integration smoke intentionally omits Terrain Diffusion. A
+        # production DrewCraft jar still contains the TD world presets, which
+        # would make that CI-only profile fail registry loading before it can
+        # test the integration migration itself.
+        with zipfile.ZipFile(jar) as source, zipfile.ZipFile(destination, "w") as target:
+            for info in source.infolist():
+                if info.filename.startswith("data/drewcraft/worldgen/"):
+                    continue
+                target.writestr(info, source.read(info.filename))
+    else:
+        shutil.copy2(jar, destination)
     digest = sha256(destination)
     entry = {
         "id": "drewcraft_mod",
@@ -79,11 +91,16 @@ def main() -> int:
     parser.add_argument("--libs", default="mods/drewcraft/build/libs")
     parser.add_argument("--client", default="build/verified-pack/client")
     parser.add_argument("--server", default="build/verified-pack/server")
+    parser.add_argument(
+        "--strip-worldgen",
+        action="store_true",
+        help="Remove DrewCraft Terrain Diffusion worldgen presets for CI-only no-TD smoke profiles.",
+    )
     args = parser.parse_args()
     jar = pathlib.Path(args.jar) if args.jar else production_jar(pathlib.Path(args.libs))
     results = {
-        "client": inject(pathlib.Path(args.client), jar),
-        "server": inject(pathlib.Path(args.server), jar),
+        "client": inject(pathlib.Path(args.client), jar, strip_worldgen=args.strip_worldgen),
+        "server": inject(pathlib.Path(args.server), jar, strip_worldgen=args.strip_worldgen),
     }
     print(json.dumps(results, sort_keys=True))
     return 0
