@@ -1,10 +1,10 @@
 schema_version: 1
 profile: v1_1_integration
 evidence:
-  workflow: 0.1.8 integration audit
-  generated_at: '2026-09-21'
-  note: Exact provider hashes acquired for isolated integration branch; no release
-    publication implied.
+  workflow: integration-prepare.yml
+  generated_at: '2026-09-20'
+  note: Exact provider hashes acquired on the isolated 0.1.8-dev-integration branch;
+    no release was published.
 artifacts:
   jei:
     provider: modrinth
