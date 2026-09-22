@@ -47,9 +47,9 @@ def main() -> int:
         artifacts[a["id"]] = entry
     doc["profile"] = args.profile
     doc["evidence"] = {
-        "workflow": "0.1.8 integration audit",
-        "generated_at": "2026-09-21",
-        "note": "Exact provider hashes acquired for isolated integration branch; no release publication implied.",
+        "workflow": "integration-prepare.yml",
+        "generated_at": "2026-09-20",
+        "note": "Exact provider hashes acquired on the isolated 0.1.8-dev-integration branch; no release was published.",
     }
     hash_path.write_text(yaml.safe_dump(doc, sort_keys=False), encoding="utf-8")
 
