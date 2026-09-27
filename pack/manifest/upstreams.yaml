@@ -181,6 +181,36 @@ upstreams:
     notes:
       - "Client-side navigation aid; no server installation is required for the V1 minimap."
 
+  xaeros_world_map:
+    display_name: "Xaero's World Map"
+    kind: mod
+    required_for_v1: true
+    ownership_class: UPSTREAM_BINARY
+    side: client
+    source:
+      provider: modrinth
+      project: "NcUtCpym"
+      url: "https://modrinth.com/mod/xaeros-world-map"
+      branch: null
+      candidate_ref: "arbQPyvf"
+    artifact:
+      provider: modrinth
+      project_id: "NcUtCpym"
+      version_id: "arbQPyvf"
+      candidate_version: "neoforge-1.21.1-1.40.11"
+      filename: "xaeroworldmap-neoforge-1.21.1-1.40.11.jar"
+      download_url: "https://cdn.modrinth.com/data/NcUtCpym/versions/arbQPyvf/xaeroworldmap-neoforge-1.21.1-1.40.11.jar"
+      release_status: release
+      sha256: null
+    target:
+      minecraft: "1.21.1"
+      loader: "neoforge"
+    license: "All Rights Reserved"
+    redistribution: "Acquire from the official provider; credit https://modrinth.com/mod/xaeros-world-map."
+    notes:
+      - "Pinned to match Minimap 26.1.0 and XaeroLib 1.1.0; newer World Map 1.46.0 requires Minimap 26.4.0+."
+      - "Persistent explored map is client-owned, separate from DH LODs. Do not ship user map data or configs."
+
   xaero_lib:
     display_name: "XaeroLib"
     kind: library

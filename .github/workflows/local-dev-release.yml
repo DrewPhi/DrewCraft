@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PACK_VERSION: 0.1.10-dev-local
-  DEV_RELEASE_TAG: drewcraft-pack-0.1.10-dev-local
+  PACK_VERSION: 0.1.11-dev-local
+  DEV_RELEASE_TAG: drewcraft-pack-0.1.11-dev-local
 
 jobs:
   build-local-dev:
@@ -168,7 +168,7 @@ jobs:
             --generation-pack-version drewcraft-worldgen-3 \
             --minecraft-version 1.21.1 \
             --neoforge-version 21.1.250 \
-            --minimum-launcher-version 0.1.8 \
+            --minimum-launcher-version 0.1.10 \
             --server-address 150.136.96.174:25565 \
             --health-url http://150.136.96.174:25566/health \
             --runtime-lock launcher/runtime-lock.json

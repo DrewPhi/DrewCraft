@@ -66,7 +66,15 @@ def task_running(response: str) -> bool:
 
 def dh_task_running(response: str) -> bool:
     text = response.lower()
-    return task_running(response) and "not running" not in text and "no pre-generation" not in text
+    return (task_running(response) or "generated radius:" in text) and "not running" not in text and "no pre-generation" not in text
+
+
+def checked_dh_response(response: str) -> str:
+    if not response.strip() or any(word in response.lower() for word in (
+        "unknown", "invalid", "error", "incorrect", "failed", "exception",
+    )):
+        raise RuntimeError(f"Distant Horizons command failed: {response}")
+    return response
 
 
 class Controller:
@@ -218,18 +226,20 @@ class Controller:
         self.save(activeRadius=radius, **({} if resume else {"resumeAttempts": 0}))
 
     def start_dh(self, radius: int) -> None:
-        radius_chunks = max(1, math.ceil(radius / 16))
-        # DH's documented command surface calls this setting generation.mode;
-        # PRE_EXISTING_ONLY prevents the LOD pass from creating a second copy
-        # of terrain that Chunky owns.
-        mode_response = self.rcon("dh", "config", "generation.mode", "PRE_EXISTING_ONLY")
-        if any(word in mode_response.lower() for word in ("unknown", "invalid", "error")):
-            raise RuntimeError(f"Distant Horizons refused PRE_EXISTING_ONLY mode: {mode_response}")
-        print(mode_response, flush=True)
-        response = self.rcon(
+        radius_chunks = max(32, math.ceil(radius / 16))
+        # DH 3.3.1: disable surface prediction and read actual saved chunks only.
+        for setting, value in (("generation.plan", "CHUNKS_ONLY"),
+                               ("generation.chunkMode", "PRE_EXISTING_ONLY")):
+            print(checked_dh_response(self.rcon("dh", "config", setting, value)), flush=True)
+        log = pathlib.Path("/srv/drewcraft/logs/latest.log")
+        stat = log.stat()
+        self.save(dhLogInode=stat.st_ino, dhLogOffset=stat.st_size)
+        response = checked_dh_response(self.rcon(
             "dh", "pregen", "start", "overworld",
             str(self.state["centerX"]), str(self.state["centerZ"]), str(radius_chunks),
-        )
+        ))
+        if "Starting pregen" not in response:
+            raise RuntimeError(f"DH did not acknowledge pregen start: {response}")
         print(response, flush=True)
         self.save(
             phase="dh",
@@ -272,9 +282,20 @@ class Controller:
         print(response, flush=True)
         if dh_task_running(response):
             return False
-        # Once a DH task has been started, a status response reporting no task
-        # means the bounded pass completed (or was already fully cached).
-        return bool(self.state.get("dhStarted"))
+        checked_dh_response(response)
+        # An absent task is not proof of success (restart/cancel/failure).
+        log = pathlib.Path("/srv/drewcraft/logs/latest.log")
+        stat = log.stat()
+        if (stat.st_ino == self.state.get("dhLogInode")
+                and stat.st_size >= self.state.get("dhLogOffset", 0)):
+            with log.open("rb") as stream:
+                stream.seek(self.state.get("dhLogOffset", stat.st_size))
+                messages = stream.read().decode("utf-8", errors="replace")
+            if "Pregen is complete" in messages:
+                return True
+        if response.strip() == "Pregen is not running":
+            self.start_dh(self.state["dhTargetRadius"])
+        return False
 
     @staticmethod
     def running(progress: str) -> bool:
@@ -331,7 +352,17 @@ class Controller:
             if free <= self.state["minimumFreeBytes"]:
                 return self.stop_for_safety("minimum free-space reserve reached")
 
+            if self.state["phase"] == "safety_paused":
+                self.health("ready", "Pregeneration paused at operator/safety limit", joinable=True)
+                time.sleep(self.args.poll_seconds)
+                continue
+
+            if self.state.get("dhOnly") and self.state["phase"] not in {"dh", "complete"}:
+                return self.stop_for_safety("DH-only mode refuses terrain expansion")
+
             if self.state["phase"] == "dh":
+                if not self.state.get("dhStarted"):
+                    self.start_dh(self.state["dhTargetRadius"])
                 if self.dh_finished():
                     dh_target = int(self.state.get("dhTargetRadius", self.state.get("dhRadius", 0)))
                     next_phase = self.state.get("phaseAfterDh", "complete")
@@ -342,10 +373,10 @@ class Controller:
                         lastDhMaintenanceEpoch=time.time(),
                         lastDhMaintenanceUtc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                     )
-                    if next_phase == "generate":
+                    if next_phase == "generate" and not self.state.get("dhOnly"):
                         self.start_next_chunky_batch()
                     else:
-                        self.health("ready", "Overworld and Distant Horizons pregeneration complete")
+                        self.health("ready", "DH pass complete for existing Overworld; terrain expansion paused", joinable=True)
                 time.sleep(self.args.poll_seconds)
                 continue
 
@@ -356,9 +387,9 @@ class Controller:
                         phase="dh", dhStarted=False,
                         lastDhMaintenanceEpoch=time.time(),
                     )
-                    self.start_dh(self.state["activeRadius"])
+                    self.start_dh(self.state.get("dhOnlyRadius", self.state["activeRadius"]))
                 else:
-                    self.health("ready", "World complete; waiting for the next DH maintenance window")
+                    self.health("ready", "Waiting for the next DH maintenance window", joinable=True)
                 time.sleep(self.args.poll_seconds)
                 continue
 

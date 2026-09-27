@@ -25,7 +25,11 @@ import zipfile
 
 from drewcraft_server_list import ensure_server
 
-APP_VERSION = "0.1.9"
+APP_VERSION = "0.1.10"
+XAERO_USER_PATHS = (
+    "xaero", "XaeroWaypoints", "XaeroWorldMap", "config/xaero",
+    "config/xaerominimap.txt", "config/xaeroworldmap.txt", "config/xaerohud.txt",
+)
 PRESERVED_USER_PATHS = (
     "screenshots",
     "resourcepacks",
@@ -37,7 +41,7 @@ PRESERVED_USER_PATHS = (
     # construction. They are runtime cache data, not pack-managed content, and
     # must survive the launcher's versioned-instance convergence.
     "terrain-diffusion-models",
-)
+) + XAERO_USER_PATHS
 HARDLINK_PRESERVED_PATHS = frozenset(("terrain-diffusion-models",))
 
 
@@ -415,6 +419,38 @@ def _copy_preserved_user_data(previous_minecraft: pathlib.Path | None, target_mi
             shutil.copy2(source, target)
 
 
+def _archive_legacy_xaero(app_dir: pathlib.Path) -> None:
+    """One-time, non-destructive salvage before any old instance is replaced.
+
+    Keep each instance separate: merging waypoint files can resurrect deleted
+    waypoints or combine unrelated worlds. The active instance is preserved by
+    the normal copy path; older snapshots are available for manual recovery.
+    """
+    recovery = app_dir / "recovery" / "xaero-v1"
+    marker = recovery / "inventory.json"
+    if marker.is_file():
+        return
+    inventory = []
+    instances = app_dir / "prism-data" / "instances"
+    for instance in sorted(instances.glob("DrewCraft-*")):
+        if instance.is_symlink() or not instance.is_dir():
+            continue
+        minecraft = instance / "minecraft"
+        for rel in XAERO_USER_PATHS:
+            source = minecraft / rel
+            if source.is_symlink() or not source.exists():
+                continue
+            target = recovery / instance.name / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if source.is_dir():
+                # Preserve symlinks as links, never walk outside the instance.
+                shutil.copytree(source, target, dirs_exist_ok=True, symlinks=True)
+            else:
+                shutil.copy2(source, target)
+            inventory.append({"instance": instance.name, "path": rel})
+    atomic_json(marker, {"schemaVersion": 1, "snapshots": inventory})
+
+
 def _ensure_server_entry(minecraft_dir: pathlib.Path, address: str) -> None:
     try:
         ensure_server(minecraft_dir / "servers.dat", address)
@@ -479,6 +515,8 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
     validate_manifest(manifest)
     if manifest["packVersion"] != live["packVersion"]:
         raise RuntimeError("stable pointer and manifest pack versions disagree")
+
+    _archive_legacy_xaero(app_dir)
 
     state_path = app_dir / "state.json"
     if state_path.is_file():

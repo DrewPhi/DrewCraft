@@ -60,6 +60,11 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertFalse(pregen.task_running("No tasks are currently running."))
         self.assertFalse(pregen.dh_task_running("No pre-generation task is running"))
         self.assertTrue(pregen.dh_task_running("Distant Horizons pre-generation running (12%)"))
+        self.assertTrue(pregen.dh_task_running("Generated radius: 32 / 640 chunks (50 cps, 1%), ETA: 1h"))
+        self.assertFalse(pregen.dh_task_running("Pregen is not running"))
+        for response in ("", "Incorrect argument at position 10", "Pregen failed: boom"):
+            with self.assertRaises(RuntimeError):
+                pregen.checked_dh_response(response)
 
     def test_pregen_service_alternates_chunky_then_dh_during_idle_windows(self):
         service = (ROOT / "infra/drewcraft-pregen.service").read_text("utf-8")
@@ -69,7 +74,8 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertIn("--dh-maintenance-interval-seconds 3600", service)
         controller = (ROOT / "infra/pregen_controller.py").read_text("utf-8")
         self.assertIn('"dh", "pregen", "start", "overworld"', controller)
-        self.assertIn('"dh", "config", "generation.mode", "PRE_EXISTING_ONLY"', controller)
+        self.assertIn('("generation.chunkMode", "PRE_EXISTING_ONLY")', controller)
+        self.assertIn('("generation.plan", "CHUNKS_ONLY")', controller)
         self.assertIn('self.rcon("dh", "pregen", "status")', controller)
         self.assertIn('(\"dh\", \"pregen\", \"stop\")', controller)
 
@@ -318,6 +324,17 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         (old_mc / "config").mkdir(exist_ok=True)
         (old_mc / "config" / "removed-from-manifest.toml").write_text("obsolete=true\n", encoding="utf-8")
         (old_mc / "options.txt").write_text("fov:0.5\n", encoding="utf-8")
+        map_files = (
+            "xaero/minimap/Multiplayer_test/waypoints.txt",
+            "xaero/world-map/Multiplayer_test/region.zip",
+            "XaeroWaypoints/legacy.txt", "XaeroWorldMap/legacy.zip",
+            "config/xaero/minimap/client.cfg", "config/xaerominimap.txt",
+            "config/xaeroworldmap.txt", "config/xaerohud.txt",
+        )
+        for rel in map_files:
+            path = old_mc / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(b"personal map data")
 
         _, _, live_b = self.build_release("0.8.0-b")
         state_b = launcher.converge(live_b.as_uri(), app)
@@ -333,6 +350,26 @@ class Bp8ReleaseOperationsTest(unittest.TestCase):
         self.assertFalse((new_mc / "mods" / "removed-from-manifest.jar").exists())
         self.assertFalse((new_mc / "config" / "removed-from-manifest.toml").exists())
         self.assertEqual([], launcher.verify_local(app))
+        for rel in map_files:
+            self.assertEqual(b"personal map data", (new_mc / rel).read_bytes())
+        # Same-version repair must preserve mapping data, too.
+        (new_mc / "mods" / "shared.jar").write_bytes(b"corrupted")
+        launcher.converge(live_b.as_uri(), app)
+        for rel in map_files:
+            self.assertEqual(b"personal map data", (new_mc / rel).read_bytes())
+
+    def test_xaero_recovery_archives_conflicting_instances_without_merging(self):
+        app = self.tmp / "map-recovery"
+        for version, value in (("old", "old waypoint"), ("new", "new waypoint")):
+            path = app / "prism-data" / "instances" / f"DrewCraft-{version}" / "minecraft" / "xaero" / "minimap" / "points.txt"
+            path.parent.mkdir(parents=True)
+            path.write_text(value)
+        launcher._archive_legacy_xaero(app)
+        root = app / "recovery" / "xaero-v1"
+        self.assertEqual("old waypoint", (root / "DrewCraft-old/xaero/minimap/points.txt").read_text())
+        self.assertEqual("new waypoint", (root / "DrewCraft-new/xaero/minimap/points.txt").read_text())
+        with mock.patch.object(launcher.shutil, "copytree", side_effect=AssertionError("must not repeat migration")):
+            launcher._archive_legacy_xaero(app)
 
     def test_launcher_minimum_version_is_enforced(self):
         manifest, _, _ = self.build_release()

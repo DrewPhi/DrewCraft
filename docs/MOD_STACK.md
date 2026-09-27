@@ -11,6 +11,7 @@
 - Distant Horizons
 - Just Enough Items (JEI), on both client and server for recipe synchronization
 - Xaero's Minimap (client-only)
+- [Xaero's World Map](https://modrinth.com/mod/xaeros-world-map) 1.40.11 (client-only; prepared for the next release). Persistent exploration map alongside Minimap 26.1.0 and XaeroLib 1.1.0.
 - When Dungeons Arise with its complete upstream default structure set
 - Vanilla survival systems and structures
 

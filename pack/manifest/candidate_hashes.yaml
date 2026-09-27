@@ -160,6 +160,13 @@ artifacts:
     size: 2138254
     project_id: 1bokaNcj
     version_id: w8HSmbC3
+  xaeros_world_map:
+    provider: modrinth
+    filename: xaeroworldmap-neoforge-1.21.1-1.40.11.jar
+    sha256: a00363399c1672e5bfa399889d128f5ba60f42200ee97312038924df6cbebcb6
+    size: 1386001
+    project_id: NcUtCpym
+    version_id: arbQPyvf
   xaero_lib:
     provider: xaero-maven
     filename: xaerolib-neoforge-1.21.1-1.1.0.jar
