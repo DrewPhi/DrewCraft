@@ -10,7 +10,11 @@ does not by itself prove the rollout completed.
 
 Deployment completed at 2026-09-27 03:15 UTC (September 26 local time):
 Oracle reported `Done`, the AOT isolation hook active, RCON ready, and
-`joinable=true` on 0.1.10-dev-local. The existing pregen controller restarted.
+`joinable=true` on 0.1.10-dev-local. The existing pregen controller restarted;
+its retained checkpoint is `safety_paused` at the existing 125-expansion cap,
+with 18,232,998,067 world bytes. No new terrain generation is running and this
+release did not raise that cap. The health message "Pregeneration active" is
+generic controller status, not evidence that Chunky currently has a task.
 Pre-update Restic snapshot: `d0305258`; receipt
 `20260927T031440722159Z.restic.json` (23,317,238 added bytes).
 Immutable manifest SHA-256:
