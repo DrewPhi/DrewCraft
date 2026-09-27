@@ -1,0 +1,10 @@
+{
+  "criteria": {
+    "first_join": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "rewards": {
+    "loot": ["drewcraft_welcome:dock_guide"]
+  }
+}

@@ -20,7 +20,8 @@ Pre-update Restic snapshot: `d0305258`; receipt
 Immutable manifest SHA-256:
 `405825d26ab5db2267ee4b88878eac450f3cc0f834b01bb10ebf5e776145344f`.
 Release source commit: `357b19d2633a0e234e3c0afa5ddc47febeb471ae`.
-No dock was placed and no local test processes remain running.
+No dock was placed during deployment; the owner placed one afterward (below).
+No local test processes remain running.
 The initial Pack manifests CI failure was a stale test requiring the old V1.1
 profile name in the live-release workflow; its expectation is updated to the
 approved Paradis profile. No shipped artifact changed for that test correction.
@@ -33,13 +34,62 @@ approved Paradis profile. No shipped artifact changed for that test correction.
   The complete release resolves 55 dependencies and both sides passed exact
   artifact-hash verification. No further interactive tests were run after the
   owner requested they stop.
-- **Not verified:** portal round trip, manual dock placement, actual ODM use,
+- **Not verified:** portal round trip, successful return registration, actual ODM use,
   shifting/travel/reconnect edge cases, special-UUID command interception in a
   live player session, and gameplay performance. These are not passed gates.
 - Production world revision 3 and Terrain Diffusion scale 3 are retained.
   Back up before activation. No dock is automatically placed by this release.
 
-### Place the single dock
+### Actual production dock — owner placed
+
+- Logged placement: **2026-09-27 03:30:44 UTC** (September 26 local time).
+- Dimension: `minecraft:overworld`, existing world revision 3.
+- **Foundation origin: X -736, Y 57, Z -180; facing south.** This is the
+  actual logged position, not the earlier suggested (-736,56,-179) command.
+- Owner's shoreline reference: **(-713,63,-180)**, ocean directly south.
+- Template footprint: X -736 through -689, Z -180 through -146;
+  deck/portal block layer Y 64. Portal markers are approximately X -713/-712,
+  Z -153/-152 (template-derived coordinates, not separately surveyed).
+- The server logged successful upstream placement, immediately followed by
+  DrewCraft's **`IllegalStateException: Dock return registration failed`**.
+  The owner sees the dock and portal. A subsequent read-only check found no
+  saved `world/data/dannys_aot_portals.dat` yet; that alone does not establish
+  whether in-memory registration exists or will persist.
+- Owner entered in Creative and reported **"return works all good"**. This is
+  owner-confirmed round-trip evidence, not proof of registration persistence
+  after restart. The command's registration warning still needs investigation.
+- Do not place a duplicate dock. Investigate/repair registration for this dock.
+- Supersedes the provisional (-2104,64,-1976) site, which the owner identified
+  as a narrow river-like waterway despite its saved ocean biome label.
+
+### ODM flight-kick setting
+
+The owner reported Minecraft's flying-disabled kick while using ODM. The
+repository template already had `allow-flight=true`, but the persistent live
+`server.properties` retained `false`. On 2026-09-27 UTC this persistent setting
+was changed to `true` and the server restarted. The setting disables vanilla's
+flight kick; it does not grant players Creative flight. No client update is
+needed. The preceding properties file was retained server-side as a private
+settings backup; do not commit its contents (it includes the RCON credential).
+
+### One-time dock guide
+
+Installed on the live world on 2026-09-27 UTC: server-only datapack
+`pack/world_datapacks/drewcraft-welcome`. A hidden vanilla advancement grants
+each player one **A Passage to Paradis** written book with the dock entrance
+coordinates X -713, Z -180 and deck Y 64. Existing players receive it after
+installation; new players receive it on first join. Vanilla advancement records
+prevent repeat grants after death, reconnect or restart (unless an administrator
+resets those records). Full inventories drop the reward beside the player.
+No client/application release change or terrain regeneration is required.
+
+Operational evidence: `/reload` completed, `/datapack list enabled` listed
+`file/drewcraft-welcome`, and the online player's `drewcraft_welcome:dock_guide`
+completion selector matched. The new datapack had no reported parsing errors;
+the reload also reported unrelated upstream optional Railways/WDA data errors.
+See the datapack README for deliberate replacement-book administration.
+
+### Dock placement command reference (do not place another production dock)
 
 Administrator permission level 4 (or server console) is required:
 
@@ -63,8 +113,8 @@ anything fails; do not remove AOT jars from a world containing AOT saved data.
 
 ## Approved experience
 
-One manually placed Overworld dock near (-2104, 64, -1976), subject to footprint
-and player-build checks. Access is immediately available to all players. No
+One manually placed Overworld dock at the actual location recorded above.
+Access is immediately available to all players. No
 additional natural AOT docks/structures in existing or future Overworld chunks.
 ODM and ordinary AOT equipment work everywhere. Titans, transformations, AOT
 mobs and events belong only in Paradis. Preserve the existing Overworld and its

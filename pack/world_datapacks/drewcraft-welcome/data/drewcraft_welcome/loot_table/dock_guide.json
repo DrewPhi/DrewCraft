@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:advancement_reward",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:written_book_content": {
+                  "title": "A Passage to Paradis",
+                  "author": "DrewCraft",
+                  "generation": 0,
+                  "resolved": true,
+                  "pages": [
+                    "{\"text\":\"A Passage to Paradis\\n\\nA strange vessel waits along the coast.\\n\\nFind the dock in the Overworld:\\n\\nX: -713\\nZ: -180\\n\\nThe deck is at Y: 64.\"}",
+                    "{\"text\":\"Beyond the Dock\\n\\nWalk south along the dock and step onto its portal to enter Paradis.\\n\\nTitans await beyond. Prepare before crossing!\\n\\nUse a return portal in Paradis to come home.\"}"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

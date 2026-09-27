@@ -102,7 +102,14 @@ Implementation gates, before any live deployment:
    Only then lock one client/server manifest, back up before deployment, and
    define rollback handling for players/items saved in the added dimension.
 
-### Planned ocean dock location
+### Ocean dock location — historical scouting, superseded
+
+**Current production dock:** foundation **(-736,57,-180)**, facing **south**,
+placed by the owner at 2026-09-27 03:30:44 UTC on 0.1.10-dev-local. The dock
+appeared, but the return-registration verification failed. The owner subsequently
+confirmed a successful Creative portal round trip; persistence after restart
+remains unverified. See `AOT_INTEGRATION.md` for the exact log evidence;
+do not place another dock at the provisional location below.
 
 Read-only scouting of the existing production Overworld (world revision 3,
 Terrain Diffusion scale 3) identified this provisional location:
@@ -138,11 +145,9 @@ Owner decisions confirmed on 2026-09-26:
 - Block the special `/daot danny` privileges for everyone, including upstream
   hard-coded accounts. Preserve normal AOT progression and transformation.
 
-Implementation is authorized, but not deployed. The minimal AOT/Connector
-dedicated-server boot passed; full-pack/client compatibility, containment,
-portal return and persistence are still unverified. See
-`AOT_INTEGRATION.md` for pinned audit inputs, findings and remaining gates.
-No AOT content or dock has been installed on production.
+Deployed as 0.1.10-dev-local with owner-authorized hands-on acceptance. AOT and
+the owner's dock are now on production. Portal return and persistence remain
+unverified; see `AOT_INTEGRATION.md` for evidence and the registration failure.
 
 If compatibility or isolation cannot be made reliable, leave this feature
 deferred rather than exposing the production world to uncontrolled Titan behavior.
