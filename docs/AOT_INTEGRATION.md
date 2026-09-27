@@ -8,6 +8,19 @@ does not by itself prove the rollout completed.
 
 ## Release evidence and owner test handoff
 
+Deployment completed at 2026-09-27 03:15 UTC (September 26 local time):
+Oracle reported `Done`, the AOT isolation hook active, RCON ready, and
+`joinable=true` on 0.1.10-dev-local. The existing pregen controller restarted.
+Pre-update Restic snapshot: `d0305258`; receipt
+`20260927T031440722159Z.restic.json` (23,317,238 added bytes).
+Immutable manifest SHA-256:
+`405825d26ab5db2267ee4b88878eac450f3cc0f834b01bb10ebf5e776145344f`.
+Release source commit: `357b19d2633a0e234e3c0afa5ddc47febeb471ae`.
+No dock was placed and no local test processes remain running.
+The initial Pack manifests CI failure was a stale test requiring the old V1.1
+profile name in the live-release workflow; its expectation is updated to the
+approved Paradis profile. No shipped artifact changed for that test correction.
+
 - Full dedicated-server mod stack booted; a development client joined the local
   multiplayer server and completed AOT configuration and Sable authentication.
 - Dimension-scoped selectors confirmed Titans absent in Overworld/Nether/End
