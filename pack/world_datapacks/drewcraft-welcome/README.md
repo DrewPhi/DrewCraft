@@ -21,6 +21,11 @@ book-content updates to avoid distributing duplicates.
 Dock entrance: Overworld X -713, Z -180, deck block Y 64. The authoritative
 placement and portal caveats are recorded in `docs/AOT_INTEGRATION.md`.
 
+The current edition contains 21 short lore/tutorial pages. See
+`docs/AOT_FIELD_GUIDE.md` for the resource/control audit and limitations.
+Existing book items keep their previous text; distributing an updated edition
+does not reset or revoke the one-time advancement.
+
 To deliberately replace a lost book without resetting the grant marker:
 
 `/loot give <player> loot drewcraft_welcome:dock_guide`

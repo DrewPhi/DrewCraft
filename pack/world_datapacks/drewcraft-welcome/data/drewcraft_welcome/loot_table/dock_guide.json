@@ -13,12 +13,31 @@
               "components": {
                 "minecraft:written_book_content": {
                   "title": "A Passage to Paradis",
-                  "author": "DrewCraft",
+                  "author": "Paradis Relief Council",
                   "generation": 0,
                   "resolved": true,
                   "pages": [
-                    "{\"text\":\"A Passage to Paradis\\n\\nA strange vessel waits along the coast.\\n\\nFind the dock in the Overworld:\\n\\nX: -713\\nZ: -180\\n\\nThe deck is at Y: 64.\"}",
-                    "{\"text\":\"Beyond the Dock\\n\\nWalk south along the dock and step onto its portal to enter Paradis.\\n\\nTitans await beyond. Prepare before crossing!\\n\\nUse a return portal in Paradis to come home.\"}"
+                    "{\"text\":\"A CALL FROM PARADIS\\n\\nThe city swore an oath of peace. Its soldiers laid down their blades.\\n\\nThe Titans made no such promise.\\nNow the bells ring for strangers willing to defend those who will not fight.\"}",
+                    "{\"text\":\"THE SILENT ARMORIES\\n\\nThe old regiments left supplies scattered through the city.\\n\\nSearch the buildings, salvage what you can, and forge what is missing.\\nTake up their blades. Become a soldier for Paradis.\"}",
+                    "{\"text\":\"THE CROSSING\\n\\nFind the Overworld dock:\\nX: -713\\nZ: -180\\nDeck: Y 64\\nWalk south to its portal.\\nIn Paradis, a return portal leads home. Mark one before wandering far.\"}",
+                    "{\"text\":\"READ BEFORE FLIGHT\\n\\nThese are DEFAULT keys.\\n\\nOptions > Controls > Key Binds shows your bindings and conflicts.\\nSearch Danny's AOT.\\nH is used for both a hook and the cloak hood: rebind one.\"}",
+                    "{\"text\":\"ODM: GET EQUIPPED\\n\\nWear ODM gear in the leggings slot.\\n\\nHold a blade grip in BOTH hands. F swaps the selected item to your offhand.\\n\\nCarry spare blades and a filled gas canister.\"}",
+                    "{\"text\":\"ODM: TAKE FLIGHT\\n\\nAim at terrain.\\nHold G: left hook.\\nHold H: right hook.\\nRelease a key: detach.\\n\\nHold Space to boost.\\nA/D orbit while hooked.\\nPractice low over open ground before fighting.\"}",
+                    "{\"text\":\"BLADES & BOOTS\\n\\nAttack with your blades; aim for a Titan's nape.\\n\\nR ejects a fitted blade or loads a spare blade component into an empty grip.\\n\\nODM boots reduce fall damage, not all of it!\"}",
+                    "{\"text\":\"GAS CANISTER\\n\\nKeep iceburst clusters in your inventory.\\n\\nRight-click the canister to fill it.\\nSneak + right-click to fuel your worn ODM gear.\\nIf realistic resource use is enabled, use the furnace to refill.\"}",
+                    "{\"text\":\"APG EQUIPMENT\\nWear APG ODM gear and hold APG guns in both hands.\\nR loads/unloads cartridges.\\nHold right-click to aim; left-click to fire.\\nHooks: G/H. Boost: Space.\\nCarry spare cartridges!\"}",
+                    "{\"text\":\"APG HOOK WARNING\\n\\nA single attached hook occupies that hand's gun.\\n\\nRelease that hook to aim the gun, or attach both hooks.\\nAim without sneaking.\\nAPG gear needs gas just like blade ODM gear.\"}",
+                    "{\"text\":\"THUNDER SPEARS\\n\\nHold blade grips and carry spears.\\n\\nV loads or unloads a spear on a grip.\\nSneak + left-click fires the left spear; sneak + right-click fires the right.\\nKeep clear of the explosion!\"}",
+                    "{\"text\":\"FLARE GUN\\n\\nCarry flare cartridges.\\nX loads a cartridge.\\nC switches cartridge type.\\nRight-click fires.\\nUse signals to regroup with your friends before a rescue becomes another casualty.\"}",
+                    "{\"text\":\"UNIFORMS & CLOAKS\\n\\nEquip armor in its matching slot; it needs no activation key.\\n\\nH toggles a worn cloak's hood. A raised hood reduces Titan targeting range.\\nResolve the H hook conflict first!\"}",
+                    "{\"text\":\"THE QUARTERMASTER\\n\\nIngots, wires, springs, cylinders and leather are crafting parts, not abilities.\\n\\nUse JEI for recipes: hover an item and press R; U shows uses.\\nCarry food, spare blades, gas and ammunition.\"}",
+                    "{\"text\":\"FORGING STEEL\\n\\nUse the Iceburst Furnace:\\nIron bamboo + raw iron makes hardened iron bamboo.\\nHardened iron bamboo + iron ingot makes ultrahard steel.\\nSupply fuel. Use JEI for the equipment recipes.\"}",
+                    "{\"text\":\"PARADIS RESOURCES\\n\\nIron bamboo grows in the Giant Forest.\\n\\nSearch deep caves below Y 0 for iceburst; its ore generation centers span Y -64 to -1.\\nParadis also generates ordinary ores, including iron.\"}",
+                    "{\"text\":\"SUPPLY LINES\\n\\nDo not assume the city supplies everything.\\n\\nRecipes also use leather, wool, dyes and other vanilla goods.\\nBring supplies from home. Overworld cactus is a useful source of green dye.\"}",
+                    "{\"text\":\"SYRINGES: CAUTION\\n\\nAn empty syringe can extract from a Pure Titan with right-click. Sneak + right-click uses its other extraction action.\\nRead the filled syringe's label. Injection can transform its target!\"}",
+                    "{\"text\":\"SHIFTER FIELD NOTES\\n\\nB shifts only if you have earned a compatible Titan power.\\n1-9 select shifter abilities; Z roars. Abilities vary by Titan.\\nOn DrewCraft, Titan transformations belong in Paradis, not home.\"}",
+                    "{\"text\":\"OTHER FIELD ITEMS\\n\\nArmor Potion: hardening for eligible shifters only.\\n\\nHandcuffs: hold right-click on a target for 5 seconds; the key releases them.\\n\\nBasement Key is marked WIP upstream.\"}",
+                    "{\"text\":\"YOUR ORDERS\\n\\nProtect the civilians.\\nRecover useful supplies.\\nLearn the rooftops.\\nNever leave a friend behind.\\nTheir oath is peace.\\nYour choice is whether peace survives.\\n-- Paradis Relief Council\"}"
                   ]
                 }
               }
