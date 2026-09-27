@@ -49,16 +49,27 @@ def inject(pack_root: pathlib.Path, jar: pathlib.Path, *, strip_worldgen: bool =
 
     destination = pack_root / rel
     destination.parent.mkdir(parents=True, exist_ok=True)
-    if strip_worldgen:
+    integration_data = pack_root / "datapacks/drewcraft-integration/data"
+    integration_files = sorted(p for p in integration_data.rglob("*") if p.is_file())
+    integration_paths = {"data/" + p.relative_to(integration_data).as_posix() for p in integration_files}
+    if strip_worldgen or integration_files:
         # The fast integration smoke intentionally omits Terrain Diffusion. A
         # production DrewCraft jar still contains the TD world presets, which
         # would make that CI-only profile fail registry loading before it can
         # test the integration migration itself.
         with zipfile.ZipFile(jar) as source, zipfile.ZipFile(destination, "w") as target:
             for info in source.infolist():
-                if info.filename.startswith("data/drewcraft/worldgen/"):
+                if strip_worldgen and info.filename.startswith("data/drewcraft/worldgen/"):
+                    continue
+                if info.filename in integration_paths:
                     continue
                 target.writestr(info, source.read(info.filename))
+            # Built-in mod data loads in both new and existing worlds, including
+            # single-player. A loose instance/datapacks folder is not enough.
+            for path in integration_files:
+                info = zipfile.ZipInfo("data/" + path.relative_to(integration_data).as_posix())
+                info.compress_type = zipfile.ZIP_DEFLATED
+                target.writestr(info, path.read_bytes())
     else:
         shutil.copy2(jar, destination)
     digest = sha256(destination)

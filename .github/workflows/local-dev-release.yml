@@ -28,7 +28,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PACK_VERSION: 0.1.8-dev-local
+  PACK_VERSION: 0.1.9-dev-local
   DEV_RELEASE_TAG: drewcraft-dev-pack
 
 jobs:

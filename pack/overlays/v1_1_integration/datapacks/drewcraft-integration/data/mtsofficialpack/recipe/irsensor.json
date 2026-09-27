@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab ",
+    "bce",
+    " df"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:ender_eye"
+    },
+    "b": {
+      "tag": "c:glass_panes/colorless"
+    },
+    "c": {
+      "item": "mts:mtsofficialpack.circuit"
+    },
+    "d": {
+      "tag": "c:dusts/redstone"
+    },
+    "e": {
+      "item": "createaddition:copper_wire"
+    },
+    "f": {
+      "item": "createaddition:iron_rod"
+    }
+  },
+  "result": {
+    "id": "mts:mtsofficialpack.irsensor",
+    "count": 1
+  }
+}

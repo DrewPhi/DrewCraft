@@ -5,6 +5,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("inject_drewcraft_mod", ROOT / "tools/inject_drewcraft_mod.py")
@@ -55,6 +56,22 @@ class DrewCraftModInjectionTest(unittest.TestCase):
         injector.inject(root, jar)
         with self.assertRaisesRegex(RuntimeError, "already represented"):
             injector.inject(root, jar)
+
+    def test_integration_data_is_builtin_identical_on_both_sides(self):
+        jar = self.tmp / "drewcraft.jar"
+        with zipfile.ZipFile(jar, "w") as archive:
+            archive.writestr("data/drewcraft/worldgen/world_preset/test.json", "{}")
+        hashes = []
+        for side in ("client", "server"):
+            root = self.tree(side)
+            recipe = root / "datapacks/drewcraft-integration/data/mtsofficialpack/recipe/irsensor.json"
+            recipe.parent.mkdir(parents=True)
+            recipe.write_text('{"type":"minecraft:crafting_shapeless"}')
+            hashes.append(injector.inject(root, jar, strip_worldgen=True)["sha256"])
+            with zipfile.ZipFile(root / "mods/drewcraft.jar") as archive:
+                self.assertEqual(recipe.read_bytes(), archive.read("data/mtsofficialpack/recipe/irsensor.json"))
+                self.assertNotIn("data/drewcraft/worldgen/world_preset/test.json", archive.namelist())
+        self.assertEqual(hashes[0], hashes[1])
 
     def test_development_version_name_is_a_real_production_jar_not_a_dev_classifier(self):
         libs = self.tmp / "libs"

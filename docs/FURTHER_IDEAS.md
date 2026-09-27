@@ -65,6 +65,46 @@ vehicle spawn and save/reload coverage, and a rollback path. Prioritize UNU
 Parts/Vehicles first, then WarBorn, with GAP as the most legacy-heavy candidate.
 The official 1.21.1 Immersive Vehicles content pack already remains part of V1.
 
+## Danny's AOT: isolated Paradis adventure plan
+
+**Requested:** 2026-09-26. Planning only; not added to the shipping modpack.
+
+Goal: offer an optional Titan/ODM adventure in Paradis while keeping Titans out
+of the Overworld, Nether, and End. Preserve the existing Terrain Diffusion world.
+
+The [official project](https://modrinth.com/mod/dannys-aot) already describes a
+Paradis dimension with giant forests, walled villages, Titans, and portal access.
+Its published loader is Fabric for Minecraft 1.21.1, not native NeoForge. The
+author's [1.0.13 changelog](https://www.curseforge.com/minecraft/mc-mods/dannys-aot/files/7689259)
+explicitly mentions Create zinc ore support with NeoForge/Sinytra Connector.
+That is evidence for a compatibility route, not proof that the latest release
+works with DrewCraft's complete stack. Default dimension isolation is unverified.
+
+Implementation gates, before any live deployment:
+
+1. Select exact AOT, Connector, and required dependency artifacts; review
+   acquisition/licensing and conflicts with our existing libraries. Do not
+   replace NeoForge or silently change Create/Aeronautics/Sable dependencies.
+2. Test a separate client/server compatibility profile: startup, join, ODM,
+   combat, portal travel, dimension generation, save/reload, and restart.
+   Verify survival access and progression; upstream warns of development bugs.
+3. Inspect spawn rules, player shifting, summoning, scripted events, and portal
+   transport. Prefer supported configuration; otherwise evaluate a narrow
+   server-side restriction. Require Titans and Titan transformations to remain
+   in Paradis, including after reconnects and dimension travel. Verify all three
+   ordinary dimensions stay free of Titans; do not assume natural-spawn settings
+   alone enforce this policy.
+4. Verify portal access from the existing world without resetting it, and no
+   unintended changes to ordinary dimension generation. Measure Titan AI,
+   dimension-generation, client rendering, memory, and storage costs. Keep the
+   existing Overworld pregen controller from automatically targeting Paradis.
+5. Report compatibility/isolation evidence and any limitations for approval.
+   Only then lock one client/server manifest, back up before deployment, and
+   define rollback handling for players/items saved in the added dimension.
+
+If compatibility or isolation cannot be made reliable, leave this feature
+deferred rather than exposing the production world to uncontrolled Titan behavior.
+
 ## Re-entry rule
 
 A post-V1 idea may enter a later release only with a narrow player-facing goal, an explicit dependency/profile change, server/client compatibility evidence, a performance budget, and a rollback path. Completed custom code remains disabled by default until such a release adopts it.

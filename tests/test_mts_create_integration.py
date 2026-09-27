@@ -91,3 +91,21 @@ def test_single_plate_or_tube_stays_within_global_ten_percent_gate():
     for legacy in ("mts:mtsofficialpack.plating:1", "mts:mtsofficialpack.metaltube:1"):
         _, audit = integration.transform_material_list([legacy])
         assert abs(audit["generic_iron_delta_percent"]) <= 10.0
+
+
+def test_component_recipes_retire_stock_without_hiding_functional_parts(tmp_path):
+    integration.write_component_recipes(tmp_path)
+    recipes = tmp_path / "data/mtsofficialpack/recipe"
+    for path in recipes.glob("*.json"):
+        recipe = json.loads(path.read_text())
+        if recipe["result"]["id"] in integration.RETIRED_STOCK:
+            assert recipe["neoforge:conditions"] == [{"type": "neoforge:false"}]
+        else:
+            ingredients = json.dumps(recipe.get("ingredients", recipe.get("key")))
+            assert not any(stock in ingredients for stock in integration.RETIRED_STOCK)
+    sensor = json.loads((recipes / "irsensor.json").read_text())
+    assert sensor["key"]["e"] == {"item": "createaddition:copper_wire"}
+    assert sensor["key"]["f"] == {"item": "createaddition:iron_rod"}
+    hidden = json.loads((tmp_path / "data/c/tags/item/hidden_from_recipe_viewers.json").read_text())
+    assert hidden["replace"] is False
+    assert {entry["id"] for entry in hidden["values"]} == set(integration.RETIRED_STOCK)

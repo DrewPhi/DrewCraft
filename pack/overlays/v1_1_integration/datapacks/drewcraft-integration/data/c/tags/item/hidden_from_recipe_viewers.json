@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "mts:mtsofficialpack.plating",
+      "required": false
+    },
+    {
+      "id": "mts:mtsofficialpack.screws",
+      "required": false
+    },
+    {
+      "id": "mts:mtsofficialpack.metaltube",
+      "required": false
+    },
+    {
+      "id": "mts:mtsofficialpack.copperwire",
+      "required": false
+    }
+  ]
+}

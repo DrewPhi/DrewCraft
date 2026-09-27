@@ -19,6 +19,7 @@ OLD_PLATING = "mts:mtsofficialpack.plating"
 OLD_SCREWS = "mts:mtsofficialpack.screws"
 OLD_TUBE = "mts:mtsofficialpack.metaltube"
 OLD_WIRE = "mts:mtsofficialpack.copperwire"
+RETIRED_STOCK = (OLD_PLATING, OLD_SCREWS, OLD_TUBE, OLD_WIRE)
 
 NEW_SHEET = "create:iron_sheet"
 NEW_ROD = "createaddition:iron_rod"
@@ -332,9 +333,27 @@ def write_component_recipes(datapack: Path) -> None:
             [item("create:sturdy_sheet"), item("create:iron_sheet"), item("create:iron_sheet")],
             "mts:mtsofficialpack.armorplate", 2,
         ),
+        "irsensor": shaped(
+            ["ab ", "bce", " df"],
+            {"a": item("minecraft:ender_eye"), "b": tag("c:glass_panes/colorless"),
+             "c": item("mts:mtsofficialpack.circuit"), "d": tag("c:dusts/redstone"),
+             "e": item(NEW_WIRE), "f": item(NEW_ROD)},
+            "mts:mtsofficialpack.irsensor",
+        ),
     }
     for name, data in recipes.items():
         write_json(base / f"{name}.json", data)
+    # Override the original IDs with recipes NeoForge deliberately skips. Keep
+    # item registrations intact so existing inventories survive the migration.
+    for stock in RETIRED_STOCK:
+        name = stock.rsplit(".", 1)[1]
+        disabled = shapeless([item("minecraft:iron_nugget")], stock)
+        disabled["neoforge:conditions"] = [{"type": "neoforge:false"}]
+        write_json(base / f"{name}.json", disabled)
+    write_json(datapack / "data/c/tags/item/hidden_from_recipe_viewers.json", {
+        "replace": False,
+        "values": [{"id": stock, "required": False} for stock in RETIRED_STOCK],
+    })
 
 
 def industrial_loot_pool() -> dict:
@@ -410,8 +429,9 @@ def main() -> int:
     balance["wda_loot_integration"] = loot
     balance["component_recipe_overrides"] = [
         "piston", "spring", "sparkplug", "headlight", "circuit", "processor",
-        "blowtorch", "repairkit", "hydraulics", "armorplate",
+        "blowtorch", "repairkit", "hydraulics", "armorplate", "irsensor",
     ]
+    balance["retired_stock"] = list(RETIRED_STOCK)
     write_json(args.report, balance)
     print(f"mts_overrides={balance['overridden_item_count']} wda_loot_tables={loot['modified_wda_loot_tables']}")
     return 0

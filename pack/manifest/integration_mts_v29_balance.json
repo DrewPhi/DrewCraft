@@ -4494,6 +4494,13 @@
     "blowtorch",
     "repairkit",
     "hydraulics",
-    "armorplate"
+    "armorplate",
+    "irsensor"
+  ],
+  "retired_stock": [
+    "mts:mtsofficialpack.plating",
+    "mts:mtsofficialpack.screws",
+    "mts:mtsofficialpack.metaltube",
+    "mts:mtsofficialpack.copperwire"
   ]
 }
