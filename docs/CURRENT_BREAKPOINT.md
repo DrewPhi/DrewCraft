@@ -1,5 +1,14 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-09-27 map persistence rollout
+
+Launcher 0.1.10 and pack 0.1.11-dev-local are published and deployed. The shared
+client channel matches the healthy, joinable server. World Map is client-only;
+map/waypoint folders now survive launcher updates and repairs. Existing world,
+dock, welcome book and DH-only catch-up state were preserved. See
+`MAP_PERSISTENCE.md` for exact release/backup evidence and remaining owner-led
+client acceptance. No terrain expansion was resumed.
+
 ## 2026-09-26 owner-directed AOT rollout
 
 Release 0.1.10-dev-local uses `v1_2_paradis_candidate`, extending V1.1 with

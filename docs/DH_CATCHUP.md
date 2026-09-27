@@ -43,3 +43,7 @@ Next status check: confirm the native completion message, no retrieval failures,
 and controller transition to `complete`. Inspect database coverage if holes remain.
 If players explore beyond these bounds, enlarge the DH-only scan based on new
 region files; do not use the historical Chunky/DH radius counters as coverage.
+
+Follow-up: the controller recorded native pass completion at 16:47:07 UTC and
+`phase=complete`, `dhRadius=10304`. This checkpoint survived the 0.1.11 deployment;
+maintenance service is active. Independent per-column coverage remains unverified.

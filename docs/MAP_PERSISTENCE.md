@@ -1,6 +1,24 @@
-# Map persistence update (prepared, not deployed)
+# Map persistence update (deployed 2026-09-27)
 
-Next pack: `0.1.11-dev-local`. Required launcher: `0.1.10`.
+Live pack: `0.1.11-dev-local`. Required launcher: `0.1.10`.
+
+## Deployment evidence
+
+- Source `1aa1b85ab828e16e62e13b955f0b0cc80c3f51a6`; 116 Python tests passed.
+- Launcher Windows/macOS/Linux build and publication: run `36334827988` succeeded.
+  Public website latest-release buttons and versioned aliases serve 0.1.10.
+- Immutable pack build/publication: run `36334865597` succeeded.
+- Manifest SHA-256:
+  `edfa6e165d9396fc0c1e623d6599165e6e8c6701c7a2463ee6a38e36ad99837f`.
+- Activated `/srv/drewcraft/releases/0.1.11-dev-local`; readiness/RCON/AOT isolation
+  checks passed at 16:58:32 UTC. Incremental backup receipt:
+  `/srv/drewcraft/backups/20260927T165735779891Z.restic.json`.
+- Shared `drewcraft-dev-pack/live.json` promoted only after server health passed;
+  public health confirms version 0.1.11, `status=ready`, `joinable=true`.
+- Persistent world revision 3, welcome book, dock, and DH-only checkpoint retained.
+  DH mode restored to `CHUNKS_ONLY` / `PRE_EXISTING_ONLY` after restart. The completed
+  catch-up checkpoint is waiting for its next maintenance window; Chunky stays off.
+- Interactive client map/waypoint acceptance remains owner-led; not claimed here.
 
 ## Changes
 
@@ -53,4 +71,4 @@ server/dimension data. Do not blindly overwrite the entire current directory.
 
 Unit tests exercise data preservation during version upgrades and same-version
 repair, separate recovery snapshots, and one-time migration. No interactive
-Minecraft test or live rollout was performed for this change.
+Minecraft client test was performed for this change.
