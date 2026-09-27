@@ -21,8 +21,17 @@ registries:
   radar_integrations: "pack/manifest/radar_candidates.yaml"
   create_combat_mobility: "pack/manifest/create_combat_mobility_candidates.yaml"
   integration: "pack/manifest/integration_candidates.yaml"
+  aot: "pack/manifest/aot_candidates.yaml"
 
 profiles:
+  v1_2_paradis_candidate:
+    extends:
+      - v1_1_integration
+    gameplay_components:
+      - dannys_aot
+    purpose: "Owner-approved Paradis release; production gameplay acceptance is owner-led after deployment."
+    gate: "One manual dock, no automatic Overworld AOT structures, Paradis-only Titans, no special-account privileges."
+
   v1_survival_core:
     description: "Focused DrewCraft V1 base: Diffusion terrain, practical vehicles, Create, distant terrain, and conservative performance fixes."
     foundation:

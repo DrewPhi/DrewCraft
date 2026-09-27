@@ -1,5 +1,17 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-09-26 owner-directed AOT rollout
+
+Release 0.1.10-dev-local uses `v1_2_paradis_candidate`, extending V1.1 with
+Danny's AOT and its exact compatibility dependencies. See `AOT_INTEGRATION.md`
+for evidence, the administrator dock command and explicitly unverified gameplay
+checks. The owner requested stopping local interactive testing and deploying
+for their own real-server acceptance. Preserve world revision 3; no world reset
+or automatic dock placement is authorized. Release assets are versioned; promote
+the launcher's `drewcraft-dev-pack/live.json` only after server activation/health.
+
+The older breakpoint history below is retained; it is not current release state.
+
 **Updated:** 2026-09-19
 **Last completed breakpoint:** **BP-V1A — focused profile convergence**
 **Current breakpoint:** **BP-V1B — server and gameplay proof**

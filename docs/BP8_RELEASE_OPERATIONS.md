@@ -32,6 +32,7 @@ This is the retained operational contract originally completed during BP8. It ap
 - `worldId`, `worldRevision`, and `generationPackVersion` gate compatibility.
 - Do not require a massive pregenerated production world to prove the focused V1 profile. Choose pregeneration radius only after measuring the actual host and desired map size.
 - Backups and restores must be tested with real files before release.
+- Configured hosts use incremental Restic snapshots, with legacy archive restore support; operational instructions and verification gates are in `INCREMENTAL_BACKUPS.md`.
 
 ## Promotion rule
 

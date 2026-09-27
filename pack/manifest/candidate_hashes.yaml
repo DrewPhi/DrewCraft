@@ -6,6 +6,48 @@ evidence:
   note: Exact provider hashes acquired on the isolated 0.1.8-dev-integration branch;
     no release was published.
 artifacts:
+  dannys_aot:
+    provider: modrinth
+    project_id: 7x3oDLDY
+    version_id: p2GQ0M4J
+    filename: dannys-aot-2.4.3.jar
+    sha256: 7f858305c996cbc2c2bd5c43e614e15b7187b29baf3f3591860c73bf5ac842b5
+    size: 45323187
+  sinytra_connector:
+    provider: modrinth
+    project_id: u58R1TMW
+    version_id: IITF0PRC
+    filename: connector-2.0.0-beta.17+1.21.1-full.jar
+    sha256: ca70b57df3a7a4e8d211fea7ff3ae77e768482af374f26bf953ff5fd755564f0
+    size: 4573244
+  forgified_fabric_api:
+    provider: modrinth
+    project_id: Aqlf1Shp
+    version_id: V9WdDUTx
+    filename: forgified-fabric-api-0.116.15+2.3.5+1.21.1.jar
+    sha256: 96f8b489f401c64e87343daf57a030ccd1b58be40fc0aad701278ba58a0fadaf
+    size: 5613159
+  connector_extras:
+    provider: modrinth
+    project_id: FYpiwiBR
+    version_id: dgLCqZyo
+    filename: ConnectorExtras-1.12.1+1.21.1.jar
+    sha256: ee89c3425b9a4bff766aaff02ccf8110c06f5da6ef5d71974556885cf25d4880
+    size: 86284
+  aaa_particles:
+    provider: modrinth
+    project_id: En8uHTOK
+    version_id: jeuOZqpO
+    filename: aaa_particles-1.21-1.4.7-neoforge.jar
+    sha256: 088154a23155ab4417d387e056545f6fcdb9fd9ec771032b6d652d66c403f09d
+    size: 3969631
+  player_animation_library:
+    provider: modrinth
+    project_id: ha1mEyJS
+    version_id: yjxtkvnD
+    filename: PlayerAnimationLibNeoforge-1.1.6+mc.1.21.1.jar
+    sha256: e41ee06000fc95444a482018ec24b3f1e79eb111ca6b8ca119e61ceabf9136c5
+    size: 1156673
   jei:
     provider: modrinth
     filename: jei-1.21.1-neoforge-19.51.0.418.jar
@@ -318,11 +360,11 @@ artifacts:
     size: 1054197
   geckolib:
     provider: modrinth
-    filename: geckolib-neoforge-1.21.1-4.8.2.jar
-    sha256: a733757157bd914b56a24c09d2797c522f0f339eb5e45ec1d70a8a9326ecd9df
-    size: 621848
+    filename: geckolib-neoforge-1.21.1-4.8.3.jar
+    sha256: f5bbf6f9f84021ff044e3debba00a0c03c3d3ffab3150bb72c0f92c8b8218a92
+    size: 622121
     project_id: 8BmcQJ2H
-    version_id: RVIo5f6E
+    version_id: lWsXauBN
   create_aeronautics:
     provider: curseforge
     filename: create-aeronautics-bundled-1.21.1-1.3.2.jar

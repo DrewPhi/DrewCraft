@@ -8,6 +8,8 @@ import json
 import os
 import pathlib
 import pwd
+import re
+import secrets
 import shutil
 import subprocess
 import sys
@@ -240,6 +242,8 @@ def rollback_application(root: pathlib.Path, previous: pathlib.Path | None) -> d
 
 def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual", retain: int = 7,
            copy_dir: pathlib.Path | None = None) -> pathlib.Path:
+    if (root / "state/backup-config.json").exists():
+        return backup_restic(root, manifest, label=label, copy_dir=copy_dir)
     ensure_layout(root)
     identity = require_world_identity(root, manifest)
     persistent = root / "persistent"
@@ -273,6 +277,8 @@ def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual", retain:
 
 
 def restore_backup(archive: pathlib.Path, target_root: pathlib.Path) -> pathlib.Path:
+    if archive.name.endswith(".restic.json"):
+        return restore_restic(archive, target_root)
     expected_file = archive.with_suffix(archive.suffix + ".sha256")
     if not expected_file.is_file():
         raise RuntimeError("backup checksum is missing")
@@ -293,6 +299,82 @@ def restore_backup(archive: pathlib.Path, target_root: pathlib.Path) -> pathlib.
         tf.extractall(target_root, filter="data")
     if not (target / "world" / WORLD_INFO).is_file():
         raise RuntimeError("restored backup is missing DrewCraft world identity")
+    return target
+
+
+def restic_run(config: dict, *args: str, cwd: pathlib.Path | None = None) -> str:
+    if config.get("backend") != "restic":
+        raise RuntimeError("unsupported configured backup backend")
+    result = subprocess.run([
+        "restic", "--no-cache", "--repo", config["repository"],
+        "--password-file", config["passwordFile"], *args,
+    ], cwd=cwd, check=True, text=True, stdout=subprocess.PIPE)
+    return result.stdout
+
+
+def init_restic(root: pathlib.Path, password_file: pathlib.Path) -> dict:
+    ensure_layout(root)
+    config_path = root / "state/backup-config.json"
+    if config_path.exists():
+        raise RuntimeError("backup backend already configured")
+    repository = root.resolve() / "backups/restic"
+    if repository.exists() and any(repository.iterdir()):
+        raise RuntimeError("refusing to initialize a nonempty repository")
+    password_file = password_file.resolve()
+    password_file.parent.mkdir(parents=True, exist_ok=True)
+    # Never read or print the key; never overwrite an existing one.
+    if not password_file.exists():
+        fd = os.open(password_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w") as out:
+            out.write(secrets.token_urlsafe(48) + "\n")
+    config = {"backend": "restic", "repository": str(repository),
+              "passwordFile": str(password_file)}
+    repository.mkdir(mode=0o700, parents=True, exist_ok=True)
+    restic_run(config, "init", "--repository-version", "2")
+    _atomic_json(config_path, config)
+    return config
+
+
+def backup_restic(root: pathlib.Path, manifest: dict, *, label: str,
+                  copy_dir: pathlib.Path | None = None) -> pathlib.Path:
+    if copy_dir is not None:
+        raise RuntimeError("Restic off-host backups require repository replication, not receipt copying")
+    ensure_layout(root)
+    identity = require_world_identity(root, manifest)
+    config = load_json(root / "state/backup-config.json")
+    require_free_space(root, 0, "incremental backup")
+    stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    meta = {"schemaVersion": 1, "createdUtc": stamp,
+            "packVersion": manifest["packVersion"],
+            "protocolVersion": manifest["protocolVersion"], "world": identity}
+    _atomic_json(root / "persistent/.drewcraft-backup-metadata.json", meta)
+    output = restic_run(config, "backup", "--json", "--tag", "drewcraft",
+                        "--tag", label, "persistent", cwd=root)
+    summaries = [item for line in output.splitlines()
+                 if (item := json.loads(line)).get("message_type") == "summary"]
+    if len(summaries) != 1 or not re.fullmatch(r"[0-9a-f]{8,64}", summaries[0].get("snapshot_id", "")):
+        raise RuntimeError("Restic did not confirm a completed snapshot")
+    # Never activate a release after a partial backup (exit 3 raises above).
+    restic_run(config, "check")
+    receipt = root / "backups" / f"{stamp}.restic.json"
+    _atomic_json(receipt, {**meta, **config, "snapshotId": summaries[0]["snapshot_id"],
+                           "summary": summaries[0]})
+    return receipt
+
+
+def restore_restic(receipt: pathlib.Path, target_root: pathlib.Path) -> pathlib.Path:
+    info = load_json(receipt)
+    snapshot = info.get("snapshotId", "")
+    if not re.fullmatch(r"[0-9a-f]{8,64}", snapshot):
+        raise RuntimeError("invalid Restic snapshot ID")
+    if target_root.is_symlink() or (target_root.exists() and any(target_root.iterdir())):
+        raise RuntimeError("Restic restore target must be empty and not a symlink")
+    target_root.mkdir(parents=True, exist_ok=True)
+    restic_run(info, "restore", snapshot, "--target", str(target_root.resolve()), "--verify")
+    target = target_root / "persistent"
+    identity = read_world_identity(target_root)
+    if identity != info["world"]:
+        raise RuntimeError("restored world identity differs from snapshot receipt")
     return target
 
 
@@ -354,6 +436,7 @@ def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--root", default="/srv/drewcraft")
     sub = p.add_subparsers(dest="command", required=True)
+    init = sub.add_parser("backup-init"); init.add_argument("--password-file", default="/etc/drewcraft/restic-password")
     s = sub.add_parser("stage"); s.add_argument("manifest")
     a = sub.add_parser("activate"); a.add_argument("manifest")
     b = sub.add_parser("backup"); b.add_argument("manifest"); b.add_argument("--label", default="manual"); b.add_argument("--retain", type=int, default=7); b.add_argument("--copy-dir")
@@ -361,6 +444,9 @@ def main() -> int:
     u = sub.add_parser("update"); u.add_argument("manifest"); u.add_argument("--stop-command"); u.add_argument("--start-command"); u.add_argument("--health-command"); u.add_argument("--backup-retain", type=int, default=7); u.add_argument("--backup-copy-dir")
     args = p.parse_args()
     root = pathlib.Path(args.root)
+    if args.command == "backup-init":
+        print(json.dumps(init_restic(root, pathlib.Path(args.password_file))))
+        return 0
     if args.command == "restore":
         print(restore_backup(pathlib.Path(args.archive), pathlib.Path(args.target_root)))
         return 0

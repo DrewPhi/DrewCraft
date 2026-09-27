@@ -43,6 +43,7 @@ public final class DrewCraftCommands {
                         .then(StrategicCommands.node())
                         .then(SourceCommands.node())
                         .then(HerdCommands.node())
+                        .then(dev.drewcraft.aot.AotDockCommands.node())
         );
     }
 

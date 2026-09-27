@@ -1,0 +1,80 @@
+schema_version: 1
+last_researched: "2026-09-26"
+target:
+  minecraft: "1.21.1"
+  loader: neoforge
+  java: 21
+components:
+  dannys_aot:
+    display_name: "Danny's AOT"
+    kind: mod
+    side: common
+    provider: modrinth
+    project_id: 7x3oDLDY
+    version_id: p2GQ0M4J
+    candidate_version: "2.4.3"
+    filename: "dannys-aot-2.4.3.jar"
+    download_url: "https://cdn.modrinth.com/data/7x3oDLDY/versions/p2GQ0M4J/dannys-aot-2.4.3.jar"
+    sha256: "7f858305c996cbc2c2bd5c43e614e15b7187b29baf3f3591860c73bf5ac842b5"
+    required_dependencies: [sinytra_connector, forgified_fabric_api, connector_extras, geckolib, aaa_particles, player_animation_library]
+    notes:
+      - "Fabric artifact loaded via Connector; internal metadata reports 2.4.1. Preserve the official jar."
+      - "Requires DrewCraft's dock, command and dimension restrictions before any production world load."
+  sinytra_connector:
+    display_name: "Sinytra Connector"
+    kind: library
+    side: common
+    provider: modrinth
+    project_id: u58R1TMW
+    version_id: IITF0PRC
+    candidate_version: "2.0.0-beta.17+1.21.1"
+    filename: "connector-2.0.0-beta.17+1.21.1-full.jar"
+    download_url: "https://cdn.modrinth.com/data/u58R1TMW/versions/IITF0PRC/connector-2.0.0-beta.17%2B1.21.1-full.jar"
+    sha256: "ca70b57df3a7a4e8d211fea7ff3ae77e768482af374f26bf953ff5fd755564f0"
+    required_dependencies: [forgified_fabric_api]
+  forgified_fabric_api:
+    display_name: "Forgified Fabric API"
+    kind: library
+    side: common
+    provider: modrinth
+    project_id: Aqlf1Shp
+    version_id: V9WdDUTx
+    candidate_version: "0.116.15+2.3.5+1.21.1"
+    filename: "forgified-fabric-api-0.116.15+2.3.5+1.21.1.jar"
+    download_url: "https://cdn.modrinth.com/data/Aqlf1Shp/versions/V9WdDUTx/forgified-fabric-api-0.116.15%2B2.3.5%2B1.21.1.jar"
+    sha256: "96f8b489f401c64e87343daf57a030ccd1b58be40fc0aad701278ba58a0fadaf"
+  connector_extras:
+    display_name: "Connector Extras"
+    kind: library
+    side: common
+    provider: modrinth
+    project_id: FYpiwiBR
+    version_id: dgLCqZyo
+    candidate_version: "1.12.1+1.21.1"
+    filename: "ConnectorExtras-1.12.1+1.21.1.jar"
+    download_url: "https://cdn.modrinth.com/data/FYpiwiBR/versions/dgLCqZyo/ConnectorExtras-1.12.1%2B1.21.1.jar"
+    sha256: "ee89c3425b9a4bff766aaff02ccf8110c06f5da6ef5d71974556885cf25d4880"
+    required_dependencies: [sinytra_connector]
+  aaa_particles:
+    display_name: "AAA Particles"
+    kind: library
+    side: common
+    provider: modrinth
+    project_id: En8uHTOK
+    version_id: jeuOZqpO
+    candidate_version: "1.21-1.4.7-neoforge"
+    filename: "aaa_particles-1.21-1.4.7-neoforge.jar"
+    download_url: "https://cdn.modrinth.com/data/En8uHTOK/versions/jeuOZqpO/aaa_particles-1.21-1.4.7-neoforge.jar"
+    sha256: "088154a23155ab4417d387e056545f6fcdb9fd9ec771032b6d652d66c403f09d"
+  player_animation_library:
+    display_name: "Player Animation Library (Zigy)"
+    kind: library
+    side: common
+    provider: modrinth
+    project_id: ha1mEyJS
+    version_id: yjxtkvnD
+    candidate_version: "1.1.6+mc.1.21.1"
+    filename: "PlayerAnimationLibNeoforge-1.1.6+mc.1.21.1.jar"
+    download_url: "https://cdn.modrinth.com/data/ha1mEyJS/versions/yjxtkvnD/PlayerAnimationLibNeoforge-1.1.6%2Bmc.1.21.1.jar"
+    sha256: "e41ee06000fc95444a482018ec24b3f1e79eb111ca6b8ca119e61ceabf9136c5"
+    notes: ["Distinct from KosmX playeranimator, which Gunsmithing still needs."]

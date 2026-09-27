@@ -183,17 +183,17 @@ libraries:
     side: common
     provider: modrinth
     project_id: "8BmcQJ2H"
-    version_id: "RVIo5f6E"
-    candidate_version: "4.8.2"
-    filename: "geckolib-neoforge-1.21.1-4.8.2.jar"
-    download_url: "https://cdn.modrinth.com/data/8BmcQJ2H/versions/RVIo5f6E/geckolib-neoforge-1.21.1-4.8.2.jar"
-    sha256: "a733757157bd914b56a24c09d2797c522f0f339eb5e45ec1d70a8a9326ecd9df"
+    version_id: "lWsXauBN"
+    candidate_version: "4.8.3"
+    filename: "geckolib-neoforge-1.21.1-4.8.3.jar"
+    download_url: "https://cdn.modrinth.com/data/8BmcQJ2H/versions/lWsXauBN/geckolib-neoforge-1.21.1-4.8.3.jar"
+    sha256: "f5bbf6f9f84021ff044e3debba00a0c03c3d3ffab3150bb72c0f92c8b8218a92"
     release_status: release
     license: MIT
     required_by:
       - ntgl
     notes:
-      - "EVIDENCE 2026-09-15 (A1 test server): NTGL 3.2.0 hard-requires geckolib >= 4.8.2; boot fails without it. Pinned minimum satisfying version."
+      - "AOT 2.4.3 requires >=4.8.3; the full dedicated Create/NTGL/AOT candidate boots with this minimum patch upgrade. Client validation remains a promotion gate."
 
   ntgl:
     display_name: "NukaTeam's Gun Lib"

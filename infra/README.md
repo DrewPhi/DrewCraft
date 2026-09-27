@@ -25,6 +25,7 @@ If a paid OCI tenancy is used, create a dedicated DrewCraft compartment and enfo
 - `drewcraft.service` — Minecraft systemd unit;
 - `drewcraft-health.service` + `health_server.py` — read-only client compatibility endpoint;
 - `serverctl.py` — staged releases, exact hash verification, world-identity guard, backup, activation, application-only rollback, and restore.
+- Configured production backups use Restic deduplicated snapshots; see `docs/INCREMENTAL_BACKUPS.md` for initialization, verified restore, key custody, and retention. Legacy archive restores remain supported.
 - `start-server.sh`, `server.properties`, `user_jvm_args.txt`, and `eula.txt` — production runtime templates. `allow-flight=true` is intentional so legitimate MTS aircraft do not trigger vanilla's flying-player kick.
 - `pregen_controller.py` + `drewcraft-pregen.service` — resumable, size-targeted Overworld-only generation. The controller waits until the server is empty, advances Chunky in 1,024-block radius batches, then lets DH trail 512 blocks behind the confirmed Chunky frontier. Both jobs pause safely when a player joins and resume after the idle grace period. After the target is reached, only hourly DH maintenance passes run. Nether and End are never selected or bordered by this controller.
 
@@ -38,7 +39,7 @@ If a paid OCI tenancy is used, create a dedicated DrewCraft compartment and enfo
   persistent/terrain-diffusion-models/ reusable pinned model downloads
   persistent/terrain-diffusion-cache/  reusable Terrain Diffusion runtime cache
   persistent/operator/        whitelist, operators, and ban lists
-  backups/                    checksummed persistent-state archives
+  backups/                    Restic repository/receipts and legacy archives
   logs/                       persistent logs
   state/                      active-release.json + health.json
   staging/                    incomplete release downloads
@@ -53,8 +54,8 @@ If a paid OCI tenancy is used, create a dedicated DrewCraft compartment and enfo
 2. Verify `persistent/world/drewcraft-world.json` matches manifest `worldId`, `worldRevision`, and `generationPackVersion`.
 3. Download the server/common release into staging.
 4. Verify every size and SHA-256.
-5. Create a checksummed pre-update backup of the entire persistent tree.
-6. Stop Minecraft.
+5. Stop Minecraft (and the pregeneration controller).
+6. Create and verify a pre-update backup of the entire persistent tree; configured hosts use incremental Restic snapshots.
 7. Atomically switch `current`.
 8. Start Minecraft and run health checks.
 9. Publish `health.json` as `ready` only after the check passes.

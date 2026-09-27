@@ -1,6 +1,8 @@
 package dev.drewcraft;
 
 import com.mojang.logging.LogUtils;
+import dev.drewcraft.aot.AotCommandRuntime;
+import dev.drewcraft.aot.AotIsolationRuntime;
 import dev.drewcraft.command.DrewCraftCommands;
 import dev.drewcraft.config.DrewCraftConfig;
 import dev.drewcraft.flak.FlakRuntime;
@@ -34,6 +36,10 @@ public final class DrewCraft {
         DrewCraftBlocks.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.SERVER, DrewCraftConfig.SPEC);
         NeoForge.EVENT_BUS.addListener(DrewCraftCommands::register);
+        NeoForge.EVENT_BUS.addListener(AotCommandRuntime::onCommand);
+        NeoForge.EVENT_BUS.addListener(AotIsolationRuntime::onEntityJoin);
+        NeoForge.EVENT_BUS.addListener(AotIsolationRuntime::onTravel);
+        NeoForge.EVENT_BUS.addListener(AotIsolationRuntime::beforeServerStart);
         NeoForge.EVENT_BUS.addListener(StandardGrantRuntime::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(OverworldBoundaryRuntime::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(StrategicScheduler::onServerTick);

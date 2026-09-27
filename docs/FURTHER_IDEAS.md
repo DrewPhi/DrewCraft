@@ -102,6 +102,48 @@ Implementation gates, before any live deployment:
    Only then lock one client/server manifest, back up before deployment, and
    define rollback handling for players/items saved in the added dimension.
 
+### Planned ocean dock location
+
+Read-only scouting of the existing production Overworld (world revision 3,
+Terrain Diffusion scale 3) identified this provisional location:
+
+- Ocean candidate: **X -2104, Y 64, Z -1976**, sampled surface water in
+  `minecraft:lukewarm_ocean`.
+- Nearby shore: **X -2040, Y 66, Z -1976**, sampled red sand in
+  `minecraft:badlands`.
+- World spawn: **X -1536, Y 92, Z -1536**. The ocean candidate is approximately
+  **718 blocks northwest of spawn** (horizontal straight-line distance).
+
+The scout sampled 1,600 already-generated chunks near spawn. It did not change
+blocks, generate terrain, or place a structure. These coordinates identify an
+area to inspect, not a validated structure origin, deck height, or orientation.
+
+Preferred implementation: place one upstream dock at this existing coastline
+after the compatibility and Titan-isolation gates pass. First inspect the
+actual dock/template footprint, water depth, shoreline, and any player builds;
+choose the final anchor and rotation without overwriting player work. Verify
+whether upstream supports `/place structure` or template placement and whether
+the placed portal needs additional initialization. Back up before placement,
+then test entry to Paradis, return travel, and persistence after restart.
+Do not regenerate the Overworld to obtain the dock.
+
+Owner decisions confirmed on 2026-09-26:
+
+- Only this planned dock in the Overworld; disable automatic AOT structures,
+  including in future chunks. Upstream's dock generator also processes loaded
+  existing chunks, so suppression must be active before the first AOT boot.
+- Dock/portal access is open to everyone immediately, with no progression gate.
+- ODM and ordinary AOT equipment remain usable in all dimensions.
+- Titans, Titan transformations, AOT mobs and events are restricted to Paradis.
+- Block the special `/daot danny` privileges for everyone, including upstream
+  hard-coded accounts. Preserve normal AOT progression and transformation.
+
+Implementation is authorized, but not deployed. The minimal AOT/Connector
+dedicated-server boot passed; full-pack/client compatibility, containment,
+portal return and persistence are still unverified. See
+`AOT_INTEGRATION.md` for pinned audit inputs, findings and remaining gates.
+No AOT content or dock has been installed on production.
+
 If compatibility or isolation cannot be made reliable, leave this feature
 deferred rather than exposing the production world to uncontrolled Titan behavior.
 
