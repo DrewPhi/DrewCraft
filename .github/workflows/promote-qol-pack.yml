@@ -1,9 +1,9 @@
-name: Promote verified 0.1.12 pack
+name: Promote verified 0.1.13 fuel pack
 
 on:
   push:
     tags:
-      - drewcraft-promote-0.1.12
+      - drewcraft-promote-0.1.13
 
 permissions:
   contents: write
@@ -24,8 +24,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/drewcraft-promote"
-          gh release download drewcraft-pack-0.1.12-dev-local --pattern live.json --dir "$RUNNER_TEMP/drewcraft-promote"
-          gh release download drewcraft-pack-0.1.12-dev-local --pattern release-manifest.json --dir "$RUNNER_TEMP/drewcraft-promote"
+          gh release download drewcraft-pack-0.1.13-dev-local --pattern live.json --dir "$RUNNER_TEMP/drewcraft-promote"
+          gh release download drewcraft-pack-0.1.13-dev-local --pattern release-manifest.json --dir "$RUNNER_TEMP/drewcraft-promote"
           python tools/release_contract.py validate "$RUNNER_TEMP/drewcraft-promote/release-manifest.json"
           PYTHONPATH=tools python - <<'PY'
           import json, os, pathlib, urllib.request
@@ -33,11 +33,11 @@ jobs:
           root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'drewcraft-promote'
           pointer = json.loads((root / 'live.json').read_text())
           manifest = json.loads((root / 'release-manifest.json').read_text())
-          assert pointer['packVersion'] == manifest['packVersion'] == '0.1.12-dev-local'
+          assert pointer['packVersion'] == manifest['packVersion'] == '0.1.13-dev-local'
           assert pointer['manifestSha256'] == manifest_sha256(manifest)
           with urllib.request.urlopen('http://150.136.96.174:25566/health', timeout=20) as response:
               health = json.load(response)
-          assert health['packVersion'] == '0.1.12-dev-local', health
+          assert health['packVersion'] == '0.1.13-dev-local', health
           assert health['status'] == 'ready' and health['joinable'] is True, health
           assert health['worldId'] == manifest['world']['worldId'], health
           assert health['worldRevision'] == manifest['world']['worldRevision'], health

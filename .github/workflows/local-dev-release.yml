@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - drewcraft-build-0.1.12
+      - drewcraft-build-0.1.13
 
 permissions:
   contents: write
@@ -16,8 +16,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PACK_VERSION: 0.1.12-dev-local
-  DEV_RELEASE_TAG: drewcraft-pack-0.1.12-dev-local
+  PACK_VERSION: 0.1.13-dev-local
+  DEV_RELEASE_TAG: drewcraft-pack-0.1.13-dev-local
 
 jobs:
   build-local-dev:
