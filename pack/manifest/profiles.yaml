@@ -148,7 +148,7 @@ profiles:
     integration_policy:
       - "Create owns generic industrial stock; MTS owns vehicle-specific parts and final assembly."
       - "MTS workbenches remain the final vehicle/part crafting interface."
-      - "C&A bioethanol is accepted as gasoline/avgas fuel at MTS ethanol-equivalent potency."
+      - "C&A bioethanol is accepted as gasoline/avgas fuel at potency 1.0; lava is reduced to 0.1, giving bioethanol ten times the fuel yield per fluid volume."
       - "Exact MTS V29 material lists are transformed into Create/C&A stock while conserving raw iron burden."
       - "WDA loot receives a small optional industrial bonus pool; ordinary manufacturing remains the reliable progression path."
       - "No selected dependency may require new ore/deposit/structure world generation for progression."

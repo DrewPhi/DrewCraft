@@ -2,15 +2,15 @@
   "fuel": {
     "fuels": {
       "gasoline": {
-        "lava": 1.0,
+        "lava": 0.1,
         "gasoline": 1.0,
         "ethanol": 0.85,
-        "bioethanol": 0.85
+        "bioethanol": 1.0
       },
       "avgas": {
-        "lava": 1.0,
+        "lava": 0.1,
         "gasoline": 1.0,
-        "bioethanol": 0.85
+        "bioethanol": 1.0
       }
     }
   }
