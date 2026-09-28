@@ -4,6 +4,9 @@ on:
   # Build explicitly; promote the shared launcher pointer only after the server
   # has activated this exact manifest. A code push must not update clients first.
   workflow_dispatch:
+  push:
+    tags:
+      - drewcraft-build-0.1.12
 
 permissions:
   contents: write
@@ -13,8 +16,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PACK_VERSION: 0.1.11-dev-local
-  DEV_RELEASE_TAG: drewcraft-pack-0.1.11-dev-local
+  PACK_VERSION: 0.1.12-dev-local
+  DEV_RELEASE_TAG: drewcraft-pack-0.1.12-dev-local
 
 jobs:
   build-local-dev:
@@ -37,7 +40,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check -r tools/requirements-pack.txt
 
       - name: Prepare exact V1.1 integration evidence
-        run: python tools/prepare_integration_profile.py --profile v1_2_paradis_candidate
+        run: python tools/prepare_integration_profile.py --profile v1_2_qol_candidate
 
       - name: Build DrewCraft integration mod
         run: gradle -p mods/drewcraft clean test build --stacktrace --no-daemon
@@ -108,7 +111,7 @@ jobs:
       - name: Build exact verified client/server trees
         run: |
           python tools/build_verified_profile.py \
-            --profile v1_2_paradis_candidate \
+            --profile v1_2_qol_candidate \
             --source-artifact "terrain_diffusion_plus=${{ steps.tdjar.outputs.path }}" \
             --source-artifact "create_radars=${{ steps.radar.outputs.path }}" \
             --output-dir build/verified-pack \

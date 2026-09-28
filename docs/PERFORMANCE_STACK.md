@@ -42,7 +42,7 @@ These mods should enter the **Stage 2 compatibility stack** unless a concrete in
 
 ### Client rendering optimization
 
-- **Embeddium** — primary NeoForge client renderer optimization.
+- **Sodium 0.8.12 (NeoForge 1.21.1)** — preferred client-renderer compatibility spike for the current Sable/Aeronautics stack. Promote only after the complete DrewCraft client passes the renderer matrix below. Embeddium remains excluded because it conflicts with the bundled Veil/Sable stack.
 - **ImmediatelyFast** — immediate-mode/entity/UI/particle rendering optimization.
 - **Entity Culling** — client-side occlusion culling for hidden entities and block entities.
 - **MoreCulling** — additional block/face/item culling. This complements Entity Culling rather than owning the same exact visibility mechanism, but the pair must still be visually tested with Create, MTS, Simple Clouds and Distant Horizons. Its required Cloth Config API dependency is explicitly pinned in the production profile.
@@ -77,7 +77,7 @@ These are **candidate versions, not production locks**. `pack/manifest/performan
 | Clumps | `19.0.0.1` | common |
 | Connectivity | `7.6` | common/server reliability |
 | spark | `1.10.124` | server/admin |
-| Embeddium | `1.0.15` | client |
+| Sodium | `0.8.12` (NeoForge 1.21.1 release) | client; compatibility gate required |
 | ImmediatelyFast | `1.6.13` | client |
 | Entity Culling | `1.10.5` | client |
 | MoreCulling | `1.0.10` | client |
@@ -146,7 +146,7 @@ DrewCraft addresses these deliberately:
 - Lithium + conservative ServerCore improve simulation work;
 - ScalableLux targets lighting;
 - Chunk Sending controls packet spikes;
-- Embeddium handles terrain/chunk rendering;
+- Sodium handles terrain/chunk rendering if the compatibility gate passes;
 - ImmediatelyFast handles immediate-mode rendering workloads;
 - Entity Culling + MoreCulling avoid drawing unnecessary hidden geometry/entities;
 - Distant Horizons renders distant terrain as LOD rather than full-resolution chunks;
@@ -213,8 +213,8 @@ The full baseline stack is not accepted until it passes all normal Stage 2 tests
 
 Test both Windows x86-64 and Apple Silicon macOS:
 
-- Embeddium + Distant Horizons;
-- Embeddium + Simple Clouds + Project Atmosphere;
+- Sodium + Distant Horizons;
+- Sodium + Simple Clouds + Project Atmosphere;
 - ImmediatelyFast;
 - Entity Culling + MoreCulling;
 - large structure approach on foot and at vehicle/aircraft speed;

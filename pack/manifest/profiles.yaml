@@ -22,8 +22,26 @@ registries:
   create_combat_mobility: "pack/manifest/create_combat_mobility_candidates.yaml"
   integration: "pack/manifest/integration_candidates.yaml"
   aot: "pack/manifest/aot_candidates.yaml"
+  qol: "pack/manifest/qol_candidates.yaml"
 
 profiles:
+  v1_2_qol_candidate:
+    extends:
+      - v1_2_paradis_candidate
+    gameplay_components:
+      - jade
+      - mouse_tweaks
+      - appleskin
+      - nemos_inventory_sorting
+      - lambdynamiclights
+    performance_baseline:
+      - sodium
+    purpose: "Paradis release with client quality-of-life and Sodium rendering; no shader loader or shader packs."
+    requirements:
+      - "Jade and AppleSkin must be present on both client and server."
+      - "Sodium, Mouse Tweaks, Nemo's Inventory Sorting and LambDynamicLights must be client-only."
+      - "Client must launch with Sable/Aeronautics, DH, and all selected render mods; held-light toggle must work."
+
   v1_2_paradis_candidate:
     extends:
       - v1_1_integration

@@ -10,6 +10,7 @@ Stage 1 dependency discovery currently comes from **five companion registries**.
 - `performance_candidates.yaml` — intended performance baseline plus isolated optimization experiments. Baseline entries are meant to enter the Stage 2 compatibility stack, but remain candidates until hashes/tests promote them.
 - `mob_structure_candidates.yaml` — controlled tactical hostile-AI, herd-AI, strategic-source structure, and structure-density compatibility spikes. Alternatives in this file are **not** additive by default.
 - `create_combat_mobility_candidates.yaml` — Create combat/physics-mobility candidates and their transitives. The shipping profile selects Big Cannons, Gunsmithing, Aeronautics, and High Seas; incompatible Firepower Components remains held out.
+- `qol_candidates.yaml` — exact Sodium, Jade, Mouse Tweaks, AppleSkin, Nemo's Inventory Sorting, and LambDynamicLights artifacts for the 0.1.12 Paradis quality-of-life release.
 - `endgame_content.yaml` — selected cult/endgame content foundations: Illager Invasion + Puzzles Lib for the cult tactical roster, the xSisyX Fantasy City & Terrain Builder schematic kit for the coherent cult architectural language, the eight derived source-site archetypes, Flightstone/Source Core/flak markers, and the hand-authored hidden capital. Raw third-party schematic/map binaries are not committed here by default.
 
 These files are discovery/evaluation registries, **not production lockfiles**.

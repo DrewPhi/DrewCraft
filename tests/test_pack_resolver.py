@@ -145,6 +145,23 @@ def test_production_profile_resolves_moreculling_cloth_config_dependency():
     assert catalog["cloth_config"]["side"] == "client"
 
 
+def test_qol_release_keeps_client_mods_off_the_server():
+    root = MODULE.parents[1]
+    profiles = pack.load_yaml(root / "pack/manifest/profiles.yaml")
+    catalog = pack.collect_catalog(root, profiles)
+    plan = pack.make_plan(pack.resolve(["v1_2_qol_candidate"], profiles, catalog), catalog)
+    selected = {dep["id"]: dep for dep in plan["dependencies"]}
+    assert {"sodium", "lambdynamiclights", "mouse_tweaks", "nemos_inventory_sorting"} <= selected.keys()
+    assert {"jade", "appleskin"} <= selected.keys()
+    for mod_id in ("sodium", "lambdynamiclights", "mouse_tweaks", "nemos_inventory_sorting"):
+        assert selected[mod_id]["side"] == "client"
+        assert not pack.side_allowed(selected[mod_id]["side"], "server")
+    for mod_id in ("jade", "appleskin"):
+        assert selected[mod_id]["side"] == "common"
+    assert "iris" not in selected
+    assert "embeddium" not in selected
+
+
 def test_playtest_01_excludes_sable_incompatible_optimizers():
     root = MODULE.parents[1]
     profiles = pack.load_yaml(root / "pack/manifest/profiles.yaml")

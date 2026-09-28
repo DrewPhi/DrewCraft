@@ -1,0 +1,88 @@
+schema_version: 1
+last_researched: "2026-09-27"
+target:
+  minecraft: "1.21.1"
+  loader: neoforge
+  java: 21
+components:
+  sodium:
+    display_name: Sodium
+    kind: mod
+    side: client
+    provider: modrinth
+    project_id: AANobbMI
+    version_id: S3DUMfBo
+    candidate_version: "mc1.21.1-0.8.12-neoforge"
+    filename: "sodium-neoforge-0.8.12+mc1.21.1.jar"
+    download_url: "https://cdn.modrinth.com/data/AANobbMI/versions/S3DUMfBo/sodium-neoforge-0.8.12%2Bmc1.21.1.jar"
+    sha256: 2f9e69ec9521e657100ef83b3bdf3f18dba6078d57f9853722d7643a577b2266
+    license: PolyForm-Shield-1.0.0
+    source_repository: CaffeineMC/sodium
+  jade:
+    display_name: Jade
+    kind: mod
+    side: common
+    provider: modrinth
+    project_id: nvQzSEkH
+    version_id: eYz2YBGT
+    candidate_version: "15.10.6+neoforge"
+    filename: "Jade-1.21.1-NeoForge-15.10.6.jar"
+    download_url: "https://cdn.modrinth.com/data/nvQzSEkH/versions/eYz2YBGT/Jade-1.21.1-NeoForge-15.10.6.jar"
+    sha256: 276f1f65a20d04f536989c4f311949d770b52c440c23c2b904a08860f3c93810
+    license: CC-BY-NC-SA-4.0
+    source_repository: Snownee/Jade
+    notes: ["Version includes improved Create Aeronautics compatibility."]
+  mouse_tweaks:
+    display_name: Mouse Tweaks
+    kind: mod
+    side: client
+    provider: modrinth
+    project_id: aC3cM3Vq
+    version_id: 9I21YYxf
+    candidate_version: "1.21-2.26.1-neoforge"
+    filename: "MouseTweaks-neoforge-mc1.21-2.26.1.jar"
+    download_url: "https://cdn.modrinth.com/data/aC3cM3Vq/versions/9I21YYxf/MouseTweaks-neoforge-mc1.21-2.26.1.jar"
+    sha256: 68e6f4201c5de97b77929a7215c9552495696ca6a3bf3ae4eacc34e135f6cc8b
+    license: BSD-3-Clause
+    source_repository: YaLTeR/MouseTweaks
+  appleskin:
+    display_name: AppleSkin
+    kind: mod
+    side: common
+    provider: modrinth
+    project_id: EsAfCjCV
+    version_id: uAKA6Laj
+    candidate_version: "3.0.9+mc1.21"
+    filename: "appleskin-neoforge-mc1.21-3.0.9.jar"
+    download_url: "https://cdn.modrinth.com/data/EsAfCjCV/versions/uAKA6Laj/appleskin-neoforge-mc1.21-3.0.9.jar"
+    sha256: 38b48dd6231341c9f964ce6e42c57ec866c6cc8f72bec938390a59bafb3922df
+    license: Unlicense
+    source_repository: squeek502/AppleSkin
+    notes: ["Server component sends accurate saturation and exhaustion values to clients."]
+  nemos_inventory_sorting:
+    display_name: Nemo's Inventory Sorting
+    kind: mod
+    side: client
+    provider: modrinth
+    project_id: JHgf35QL
+    version_id: UqssIwhh
+    candidate_version: "1.21.1-1.8.2"
+    filename: "nemos-inventory-sorting-NeoForge-1.21.1-1.8.2.jar"
+    download_url: "https://cdn.modrinth.com/data/JHgf35QL/versions/UqssIwhh/nemos-inventory-sorting-NeoForge-1.21.1-1.8.2.jar"
+    sha256: 392056d2923ef15d9be3e63e52931dfff2840272cba05ded37f3c1086b84d520
+    license: All-Rights-Reserved
+    source_repository: NemoNotFound/NemosInventorySorting
+  lambdynamiclights:
+    display_name: LambDynamicLights
+    kind: mod
+    side: client
+    provider: modrinth
+    project_id: yBW8D80W
+    version_id: DZDOX6ps
+    candidate_version: "4.8.10+1.21.1"
+    filename: "lambdynamiclights-4.8.10+1.21.1.jar"
+    download_url: "https://cdn.modrinth.com/data/yBW8D80W/versions/DZDOX6ps/lambdynamiclights-4.8.10%2B1.21.1.jar"
+    sha256: 94e955443ce3817f798c74cbbbb4973e7b55c8b6dec12808b9378e74376b2eb9
+    license: Lambda-License
+    source_repository: LambdAurora/LambDynamicLights
+    notes: ["Official NeoForge jar embeds its required runtime; Fabric API listing is for the cross-loader release and is not a NeoForge dependency."]

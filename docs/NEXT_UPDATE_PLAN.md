@@ -1,6 +1,6 @@
 # DrewCraft Next Update Plan
 
-**Status:** design/audit plan only; no gameplay dependency is promoted by this document  
+**Status:** quality-of-life changes are implemented in the 0.1.12 candidate profile; release and live-client acceptance remain pending.
 **Target:** first post-current-V1 integration pass  
 **Primary constraint:** **no world reset, no new ore/resource world generation, and no new strategic/story axis**
 
@@ -28,6 +28,34 @@ This update deliberately does **not** introduce the deferred Covenant/cult story
 ---
 
 # Candidate additions
+
+## 0. Player quality-of-life + client rendering (next practical update)
+
+These are the low-risk usability candidates for the next client/server release. They do not change world generation or require a world reset. Keep exact artifacts out of the production manifest until the current pack has been resolved and smoke-tested.
+
+| Mod | Intended role | Install scope | Plan |
+| --- | --- | --- | --- |
+| Jade | Identify blocks, machines, fluids, and entities being viewed | Client; add the matching server artifact/config only if its server-provided details are needed | Include; its NeoForge 1.21.1 release specifically notes improved Create Aeronautics compatibility |
+| Mouse Tweaks | Faster inventory dragging and item transfer | Client only | Include |
+| Nemo's Inventory Sorting | Sort/search inventories and containers | Client only | Include with destructive “drop all” action disabled or clearly guarded; make its use an explicit server policy choice |
+| Sodium | Client renderer/FPS improvement | Client only; never install on dedicated server | Compatibility spike before promotion; prefer this over Embeddium for the current Sable/Aeronautics stack |
+| LambDynamicLights | Held torches, lanterns, and other light-emitting items cast local light | Client only | Optional; include only if the exact build works with Sodium and its in-game setting makes the effect easy to disable |
+
+**Shaders are out of scope for this update.** Do not add Iris or shader packs; Aeronautics has a known shader-related visual-compatibility caveat.
+
+### Sodium compatibility and acceptance gate
+
+The current Sable/Aeronautics stack rules out Embeddium, but Sodium 0.8.12 has a NeoForge 1.21.1 release whose compatibility notes list Create Aeronautics 1.3.0+, Sable 2.0.0+, and Veil 4.1.2+. Our pinned stack appears to meet those floors. That is promising, not a pass: test the exact DrewCraft client with Distant Horizons, Create/Aeronautics contraptions, MTS vehicles, and our other renderer mods before shipping. Sodium is client-side, so it must not be added to the server mod list.
+
+Sodium's release targets Minecraft/NeoForge and is a Java client mod, not a Windows-only binary. It should be usable on macOS and Linux as well as Windows when the system's OpenGL/driver stack supports the game, but DrewCraft must smoke-test launch and rendering on each supported OS. Do not promise universal performance gains; the project describes gains as hardware-dependent.
+
+### Rollout order
+
+1. Add Jade, Mouse Tweaks, and Nemo's Inventory Sorting to the client profile; verify screen behavior and config policy.
+2. Add Jade server-side only if tests show server data is required for the details we want to display. Do not add Mouse Tweaks, Nemo, or Sodium to the server.
+3. Test Sodium in a disposable client profile first. Compare FPS/frametime in a repeatable scene and check Create, Sable/Aeronautics, DH, vehicles, and macOS/Linux startup/rendering.
+4. Test LambDynamicLights separately and alongside Sodium; verify the toggle is accessible and actually disables the effect. Drop it if compatibility or controls are awkward.
+5. If the selected client mods pass, record exact versions/hashes in the client manifest, publish the client update, and restart the server only for actual server-side changes. No world reset is expected.
 
 ## 1. Create Crafts & Additions + MTS bioethanol bridge — highest priority
 
