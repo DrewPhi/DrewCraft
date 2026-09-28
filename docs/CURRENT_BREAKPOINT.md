@@ -1,5 +1,19 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-09-27 quality-of-life rollout
+
+Pack 0.1.12-dev-local is published, active on the Oracle server, and promoted
+to the shared launcher channel. The public health endpoint reports ready and
+joinable for `drewcraft-production` revision 3. The update kept the existing
+world (~18 GB), dock, player data, and DH/pregeneration checkpoint; no live
+world was recreated. Jade and AppleSkin are present server-side; Sodium,
+LambDynamicLights, Mouse Tweaks, and Nemo's Inventory Sorting are client-only.
+The pinned full pack assembled and verified locally (223 client files, 218
+server files); 117 Python tests and the Gradle test build passed. The existing
+launcher 0.1.10 meets the release's minimum version and should auto-fetch the
+new pack. Owner-led in-game acceptance on the actual client platforms remains
+open, especially Sodium/Aeronautics/DH rendering and the dynamic-light toggle.
+
 ## 2026-09-27 map persistence rollout
 
 Launcher 0.1.10 and pack 0.1.11-dev-local are published and deployed. The shared
