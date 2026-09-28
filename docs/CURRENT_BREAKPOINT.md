@@ -1,5 +1,17 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-09-28 fuel balance rollout
+
+Pack 0.1.13-dev-local is active on the Oracle server and promoted to the
+shared launcher channel. The public health endpoint reports ready and joinable
+for the existing `drewcraft-production` world, revision 3. The live MTS config
+sets lava potency to 0.1 and Create bioethanol to 1.0 for gasoline and avgas;
+other fuel categories were unchanged. The update took a pre-update restic
+snapshot (`20260928T220040881108Z.restic.json`). The first activation rolled
+back because its readiness check ran before Minecraft finished starting; the
+retry succeeded after allowing normal startup time. In-game fuel consumption
+remains for owner acceptance.
+
 ## 2026-09-27 quality-of-life rollout
 
 Pack 0.1.12-dev-local is published, active on the Oracle server, and promoted
