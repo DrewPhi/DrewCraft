@@ -27,7 +27,8 @@ public final class AotDockCommands {
                     ctx.getSource(), BlockPosArgument.getBlockPos(ctx, "origin"), facing)));
         }
         return Commands.literal("aot").requires(s -> s.hasPermission(4))
-                .then(Commands.literal("dock").then(origin));
+                .then(Commands.literal("dock").then(origin))
+                .then(AotPoweredVillagerCommands.node());
     }
 
     private static int place(CommandSourceStack source, BlockPos origin, Direction facing) {
