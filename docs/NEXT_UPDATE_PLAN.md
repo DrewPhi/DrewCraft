@@ -1,5 +1,11 @@
 # DrewCraft Next Update Plan
 
+October 1 fuel rollout: **0.1.16-dev-local deployed and launcher channel
+promoted**, lava-only potency 0.5 and doubled vehicle tank definitions. No
+world reset or Linear conversion. Owner gameplay acceptance pending; storage
+compatibility work below remains gated and unshipped. Older sections describe
+historical rollout scope rather than additions silently bundled into 0.1.16.
+
 **Status:** the quality-of-life stack is published as 0.1.12-dev-local on the existing production world; live client gameplay/visual acceptance remains pending.
 **Target:** first post-current-V1 integration pass  
 **Primary constraint:** **no world reset, no new ore/resource world generation, and no new strategic/story axis**

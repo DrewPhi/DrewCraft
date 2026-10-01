@@ -1,5 +1,12 @@
 # Storage review — 2026-09-30
 
+October 1 follow-up: actual Linear-library conversion/write/cold-reopen of
+five copied Anvil regions verified every one of 5,120 raw chunk payloads
+byte-for-byte. Source copies unchanged. Upstream baseline 15 tests plus this
+one test pass using a 2 GB test heap (the initial 512 MB worker exhausted
+memory). This still is NOT a DH/Chunky integration or full-world recovery
+test. Fuel-only 0.1.16 shipped without Linear or its experimental DH hook.
+
 Owner approved retaining one backup and evaluating compression, compaction,
 and Linear. No production world format/filesystem conversion was approved
 or performed. No Minecraft restart or client update is required for backups.

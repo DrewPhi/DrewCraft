@@ -1,5 +1,34 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-01 fuel-only 0.1.16 DEPLOYED and launcher promoted
+
+Completed 06:03:27 UTC. Active server 0.1.16-dev-local, world revision 3,
+RCON ready and joinable; server/pregen services active, Chunky resumed from
+existing checkpoint. Shared `drewcraft-dev-pack/live.json` promoted after
+health; installed launcher 0.1.10 auto-fetches matching client files, so no
+new OS launcher binaries or website button changes needed.
+
+Live all five MTS fuel categories confirmed lava-only 0.5. Vehicle-definition
+capacity x2 hook included; existing absolute/default fuel not multiplied.
+Gameplay range/handling acceptance remains owner-led. 114 Java tests pass
+including real pinned-MTS schema test; 62 focused Python tests pass. Linear
+upstream 15 tests plus actual-library five-region/5,120-chunk cold-reopen
+roundtrip pass (16 tests total, 2 GB test heap). No dev Minecraft server/client.
+
+One stopped-world pre-update max-compressed backup retained, verified repository
+and exactly one snapshot: `39a7f78a5007922ce4218f707273d350d13a713a52074ef653d74270fa973ae5`;
+receipt `/srv/drewcraft/backups/20261001T055949341224Z.restic.json`.
+Prior application 0.1.13 retained for application rollback. 0.1.15 explicitly
+withdrawn/unpromoted; final 0.1.16 jar preserves every baseline embedded data
+resource byte-for-byte. All other immutable 0.1.13 assets reused.
+
+Linear NOT installed, experimental DH hook NOT registered in shipping jar,
+and draft Linear-aware controller/inventory NOT deployed. Existing Anvil world
+unchanged except normal gameplay/generation. Remaining storage gates: actual
+DH/Chunky/adapter runtime verification, interrupted conversion/recovery and
+consistent full-world staging/restore proof. Cannot promise zero corruption
+risk; code tests are not a substitute for these gates.
+
 ## 2026-10-01 corrected fuel-only rollout 0.1.16 — in progress
 
 114 DrewCraft Java tests pass, including real pinned-MTS definition/hook-schema
