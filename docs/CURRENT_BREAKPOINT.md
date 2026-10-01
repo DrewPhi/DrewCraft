@@ -1,5 +1,30 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-01 corrected fuel-only rollout 0.1.16 — in progress
+
+114 DrewCraft Java tests pass, including real pinned-MTS definition/hook-schema
+verification; no development Minecraft server/client launched. Actual Linear
+library write/cold-reopen test preserves all 5,120 copied real chunk payloads
+byte-for-byte. Initial copied-region test exhausted default 512 MB test heap;
+rerun at 2 GB passed. This does not prove DH/Chunky/runtime recovery.
+
+Fuel-only release reuses immutable 0.1.13 assets except integration jar, fuel
+config and fuel-policy JSON. ALL baseline embedded `data/` resources are
+preserved byte-for-byte, keeping recipes, loot and worldgen. Experimental
+Linear hook excluded by default; requires `-PenableLinearAdapter` to register.
+Linear itself is NOT installed. Source and safe operational changes pushed.
+
+0.1.15 staging was cancelled before activation when packaging review found
+the raw compile lacked injected recipe resources. Previous application 0.1.13
+was explicitly restored/resumed; launcher channel stayed 0.1.13. Do not promote
+0.1.15. Corrected immutable target is 0.1.16-dev-local; manifest SHA256
+`a91a93e33659e5d51ee3dac337d84bf8b0cae24d5748813669dafdc475c3e421`.
+Deployment via `infra/deploy_fuel_patch.py` verifies resources against active
+jar, takes stopped-world Restic backup, health-checks startup, resumes existing
+pregeneration checkpoint. Promote shared launcher `live.json` ONLY after
+successful deployment and confirmation of exact active version/fuel config.
+No world reset/format conversion; gameplay acceptance remains owner-led.
+
 ## 2026-10-01 code-only fuel/Linear progress — NO LIVE DEPLOYMENT
 
 Owner explicitly prohibited launching a development Minecraft/client/gameplay

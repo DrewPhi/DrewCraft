@@ -61,6 +61,11 @@ def main():
         metadata = jar.read('META-INF/neoforge.mods.toml').decode()
         if 'drewcraft.mts-fuel.mixins.json' not in metadata or 'drewcraft.dh-linear.mixins.json' in metadata:
             raise RuntimeError('Unexpected integration hook selection')
+        previous = ROOT/'current/mods/drewcraft-0.1.0-dev.1.jar'
+        with zipfile.ZipFile(previous) as old:
+            resources = {name: old.read(name) for name in old.namelist() if name.startswith('data/')}
+            if {name: jar.read(name) for name in jar.namelist() if name.startswith('data/')} != resources:
+                raise RuntimeError('Fuel patch altered baseline datapack resources')
     print('Staged verified fuel-only release', manifest['packVersion'], flush=True)
     try:
         rcon('say DrewCraft fuel update: server restarting shortly. Existing world will be preserved.')
