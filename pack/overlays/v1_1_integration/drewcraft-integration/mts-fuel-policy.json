@@ -1,15 +1,18 @@
 {
   "schema_version": 1,
-  "fluid": "createaddition:bioethanol",
-  "mts_fluid_name": "bioethanol",
+  "fluid": "minecraft:lava",
+  "mts_fluid_name": "lava",
   "fuel_categories": {
-    "gasoline": 1.0,
-    "avgas": 1.0
+    "gasoline": 0.5,
+    "avgas": 0.5,
+    "diesel": 0.5,
+    "furnace": 0.5,
+    "brewing_stand": 0.5
   },
-  "diesel_policy": "Do not treat bioethanol as diesel. Keep MTS diesel engines on their existing diesel/biodiesel-compatible fuel categories until DrewCraft has a real renewable diesel path.",
+  "policy": "Lava is the only accepted fluid for every MTS fuel category. All other MTS fuel-fluid mappings are removed. Target lava potency 0.5 and doubled vehicle fuel tanks; the capacity adapter must pass verification before release.",
   "notes": [
-    "MTS matches configured fuels by fluid registry path; createaddition:bioethanol therefore uses the path bioethanol.",
-    "Potency 1.0 makes bioethanol yield ten times as much vehicle fuel per fluid volume as lava at potency 0.1.",
-    "This patch is additive and must preserve any existing administrator fuel settings."
+    "The owner reported Create Crafts & Additions bioethanol glitching in helicopters and requested lava-only MTS fuel.",
+    "MTS matches configured fuels by fluid registry path; the only mapping in each category is lava at potency 0.5.",
+    "Replace the managed fuel mappings with this policy while preserving unrelated administrator MTS settings."
   ]
 }

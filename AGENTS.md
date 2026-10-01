@@ -49,3 +49,10 @@ Prefer resolver, schema, unit, compile, and focused integration tests during ord
 ## Current path
 
 Follow `docs/CURRENT_BREAKPOINT.md`. The next proof is the revised shipping-profile build and server/gameplay smoke gate. Post-V1 systems cannot block V1 release.
+
+For live world size/generation questions, use `sudo drewcraft-world-size --json`
+on the Oracle server (source: `infra/world_size.py`). Report measured bytes,
+Chunky-confirmed completed radius, in-progress target, and playable border
+separately. Never treat legacy `activeRadius`/`chunkyRadius` as completed
+coverage. Saved region entries may be partial; their extents are not a filled
+rectangle, and empty region placeholders are not terrain.

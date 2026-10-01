@@ -123,9 +123,19 @@ def stage_release(root: pathlib.Path, manifest: dict) -> pathlib.Path:
     if staging.exists():
         shutil.rmtree(staging)
     staging.mkdir(parents=True)
+    current = _current_target(root)
     for entry in selected_files(manifest, "server"):
         target = staging / entry["path"]
-        _download(entry["url"], target)
+        cached = current / entry["path"] if current is not None else None
+        if (cached is not None and cached.is_file() and not cached.is_symlink()
+                and cached.stat().st_size == entry["size"]
+                and sha256_file(cached) == entry["sha256"]):
+            target.parent.mkdir(parents=True, exist_ok=True)
+            # Copies, never hardlinks: runtime config writes must not mutate
+            # the retained application used for rollback.
+            shutil.copy2(cached, target)
+        else:
+            _download(entry["url"], target)
         if target.stat().st_size != entry["size"] or sha256_file(target) != entry["sha256"]:
             raise RuntimeError(f"download verification failed for {entry['path']}")
         if entry["path"] == "run.sh":
@@ -240,8 +250,10 @@ def rollback_application(root: pathlib.Path, previous: pathlib.Path | None) -> d
     return manifest
 
 
-def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual", retain: int = 7,
+def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual", retain: int = 1,
            copy_dir: pathlib.Path | None = None) -> pathlib.Path:
+    if retain != 1:
+        raise RuntimeError("DrewCraft backup policy requires exactly one restore point")
     if (root / "state/backup-config.json").exists():
         return backup_restic(root, manifest, label=label, copy_dir=copy_dir)
     ensure_layout(root)
@@ -258,7 +270,7 @@ def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual", retain:
         "world": identity,
     }
     _atomic_json(persistent / ".drewcraft-backup-metadata.json", meta)
-    with tarfile.open(archive, "w:gz") as tf:
+    with tarfile.open(archive, "w:gz", compresslevel=9) as tf:
         tf.add(persistent, arcname="persistent")
     digest = sha256_file(archive)
     archive.with_suffix(archive.suffix + ".sha256").write_text(digest + "\n", encoding="ascii")
@@ -307,7 +319,7 @@ def restic_run(config: dict, *args: str, cwd: pathlib.Path | None = None) -> str
         raise RuntimeError("unsupported configured backup backend")
     result = subprocess.run([
         "restic", "--no-cache", "--repo", config["repository"],
-        "--password-file", config["passwordFile"], *args,
+        "--password-file", config["passwordFile"], "--compression", "max", *args,
     ], cwd=cwd, check=True, text=True, stdout=subprocess.PIPE)
     return result.stdout
 
@@ -328,7 +340,7 @@ def init_restic(root: pathlib.Path, password_file: pathlib.Path) -> dict:
         with os.fdopen(fd, "w") as out:
             out.write(secrets.token_urlsafe(48) + "\n")
     config = {"backend": "restic", "repository": str(repository),
-              "passwordFile": str(password_file)}
+              "passwordFile": str(password_file), "compression": "max", "retain": 1}
     repository.mkdir(mode=0o700, parents=True, exist_ok=True)
     restic_run(config, "init", "--repository-version", "2")
     _atomic_json(config_path, config)
@@ -359,6 +371,16 @@ def backup_restic(root: pathlib.Path, manifest: dict, *, label: str,
     receipt = root / "backups" / f"{stamp}.restic.json"
     _atomic_json(receipt, {**meta, **config, "snapshotId": summaries[0]["snapshot_id"],
                            "summary": summaries[0]})
+    # This dedicated repository has one global restore point, regardless of
+    # label/host. Never discard the old point before a new snapshot passes check.
+    restic_run(config, "forget", "--tag", "drewcraft", "--group-by", "",
+               "--keep-last", "1", "--prune")
+    remaining = json.loads(restic_run(config, "snapshots", "--json", "--tag", "drewcraft"))
+    if len(remaining) != 1 or not remaining[0]["id"].startswith(summaries[0]["snapshot_id"]):
+        raise RuntimeError("single-backup retention did not preserve the new snapshot")
+    for stale in (root / "backups").glob("*.restic.json"):
+        if stale != receipt and load_json(stale).get("repository") == config["repository"]:
+            stale.unlink()
     return receipt
 
 
@@ -399,7 +421,7 @@ def write_health(root: pathlib.Path, status: str, manifest: dict, message: str =
 
 def update_transaction(root: pathlib.Path, manifest: dict, *, stop_command: str | None = None,
                        start_command: str | None = None, health_command: str | None = None,
-                       backup_retain: int = 7, backup_copy_dir: pathlib.Path | None = None) -> dict:
+                       backup_retain: int = 1, backup_copy_dir: pathlib.Path | None = None) -> dict:
     require_world_identity(root, manifest)
     release = stage_release(root, manifest)
     write_health(root, "updating", manifest)
@@ -439,9 +461,9 @@ def main() -> int:
     init = sub.add_parser("backup-init"); init.add_argument("--password-file", default="/etc/drewcraft/restic-password")
     s = sub.add_parser("stage"); s.add_argument("manifest")
     a = sub.add_parser("activate"); a.add_argument("manifest")
-    b = sub.add_parser("backup"); b.add_argument("manifest"); b.add_argument("--label", default="manual"); b.add_argument("--retain", type=int, default=7); b.add_argument("--copy-dir")
+    b = sub.add_parser("backup"); b.add_argument("manifest"); b.add_argument("--label", default="manual"); b.add_argument("--retain", type=int, default=1); b.add_argument("--copy-dir")
     r = sub.add_parser("restore"); r.add_argument("archive"); r.add_argument("--target-root", required=True)
-    u = sub.add_parser("update"); u.add_argument("manifest"); u.add_argument("--stop-command"); u.add_argument("--start-command"); u.add_argument("--health-command"); u.add_argument("--backup-retain", type=int, default=7); u.add_argument("--backup-copy-dir")
+    u = sub.add_parser("update"); u.add_argument("manifest"); u.add_argument("--stop-command"); u.add_argument("--start-command"); u.add_argument("--health-command"); u.add_argument("--backup-retain", type=int, default=1); u.add_argument("--backup-copy-dir")
     args = p.parse_args()
     root = pathlib.Path(args.root)
     if args.command == "backup-init":

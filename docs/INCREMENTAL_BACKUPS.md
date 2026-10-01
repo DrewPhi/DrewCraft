@@ -57,10 +57,14 @@ the stopped source. A repeat snapshot should add only small metadata changes
 when the world is unchanged. Keep historical archives until separately
 approved for deletion; a current snapshot cannot recreate older world states.
 
-No Restic snapshots are automatically forgotten or pruned during deployment.
-The legacy archive `--retain` policy does not prune Restic snapshots. Review
-`restic forget --dry-run` and repository integrity before a separately approved
-retention change. Never delete repository pack files manually.
+As approved September 30, keep exactly one DrewCraft restore point. A new
+snapshot must complete and pass `restic check` before global `--keep-last 1`
+retention/pruning removes old snapshots across labels and hosts. Both Restic
+and archive defaults retain one; overrides are rejected. Restic uses maximum
+compression for new data. Existing data requires a verified repository-copy
+rewrite to change compression, not just a flag. See
+`STORAGE_OPTIMIZATION_REVIEW.md` for the in-progress rewrite and tests.
+Never delete individual repository pack files manually.
 
 The first snapshot must store the data once; future snapshots reuse unchanged
 chunks. New terrain and changed region data still cost space. The first full

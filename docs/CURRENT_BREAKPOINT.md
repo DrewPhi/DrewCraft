@@ -1,5 +1,211 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-01 code-only fuel/Linear progress — NO LIVE DEPLOYMENT
+
+Owner explicitly prohibited launching a development Minecraft/client/gameplay
+test; respect this restriction. Waited five minutes for each requested build
+check and continued code-only work. No Minecraft process was launched.
+
+- Linear legacy jar compiled. Initial upstream test run failed 10/15 solely
+  due to absent corpus resources. Ran upstream `generateCorpus`; subsequent
+  `test jar` passed all 15 tests. Generated synthetic fixtures do not establish
+  live-world integrity or full-stack compatibility.
+- MTS `MtsFuelCapacityPolicy` + `MtsFuelCapacityMixin` doubles the shared JSON
+  vehicle capacity once, after legacy normalization/before item construction.
+  Scopes to JSONVehicle only; saved/default fuel untouched, Create/part storage
+  unchanged. Four Java policy tests pass. Fuel config is 0.5, not shipped yet.
+- `DhLinearRegionReaderMixin` routes DH's cold `read` through the SAME Minecraft
+  RegionFileStorage when Linear is loaded, avoiding hardcoded Anvil fallback
+  and separate stale region instances. Adapter compiles but actual mixin
+  application/concurrency/player-flight behavior is not verified.
+- `infra/region_inventory.py` validates Linear v1 headers/checksums/footer,
+  bounded libzstd decompression and occupied slots. Controller recognizes
+  `.linear` fingerprints; size inventory counts actual Linear slots. Duplicate
+  Anvil/Linear coordinates fail closed instead of double-counting. Dependency
+  must be installed alongside BOTH controller and world-size command.
+- Draft DrewCraft `test build` successful; focused Python regressions pass.
+
+Remaining: inspect/verify cold-reader and capacity hook injection against pinned
+artifacts without launching a game, test actual saved-region corpus through
+upstream APIs, validate conversion failure handling and retention pin through
+cutover, prepare hash-recorded client/server release. Runtime save/reopen,
+DH/Chunky/full-copy/flight acceptance gates are still unfulfilled and cannot
+be claimed from code-only tests. No source commit/push, pack publication,
+server restart, live format conversion or full-world copy was performed.
+
+## 2026-10-01 fuel/Linear implementation started — NOT DEPLOYED
+
+Owner authorized implementation and background builds, with later status check.
+Lava config/policy/tests now target 0.5, but doubled-capacity integration is
+not implemented yet: do not publish the partial fuel update. Pinned MTS 24.0.0
+code inspection finds capacity used both in fuel-tank constructor and the
+automatic-feed threshold; tank-only constructor scaling would miss that path.
+Vehicle mass includes fuel mass, so handling must be tested too.
+
+Linear Java-21 legacy source build/tests started in disposable checkout
+`/tmp/drewcraft-linear-review`, commit aa693e448723a817504957eec2a9c923f7af7ef5:
+`./gradlew test jar -PbuildTarget=legacy --no-daemon`.
+Initial dependency setup/compilation running at handoff, exec session 10020.
+This is upstream baseline validation, NOT the adapted DrewCraft stack and
+NOT a converted-world test. Review Gradle test reports/build output before
+claiming compatibility. DH adapter/controller support still need implementation.
+Live world and server were not modified or restarted in this step.
+
+## 2026-09-30 storage review / one-backup migration
+
+Backup operations policy installed: one verified restore point, maximum
+Restic compression. The one-off `drewcraft-backup-max.service` completed
+successfully October 1 00:04:11 UTC (September 30 local), verified all 1,136
+packs and removed the old repository and seven stale restore points. See
+`docs/STORAGE_OPTIMIZATION_REVIEW.md` for measurements and exact resume checks.
+Copied-region compaction saves 2.85%; actual Btrfs-Zstd saves 14.76% data
+extents. Neither was applied to the live world. Linear-format compression
+looks strong but installed DH's uncached reader explicitly opens `.mca`,
+and our controller/inventory also require Anvil. Linear is not deployable
+as-is. Minecraft and pregeneration remained active; no client rollout.
+
+## 2026-09-30 world target raised to 150 GB
+
+Live service and checkpoint now target 150,000,000,000 total world bytes,
+including DH and all dimensions. Emergency cap is 155 GB; the 25 GB free-space
+reserve is retained. Continuous mode does not use the old expansion-count
+limit. Added a mid-job total-size check that pauses Chunky and DH at the
+target, retains the interrupted phase/frontier, and remains joinable.
+Increasing the target later resumes without treating the interrupted batch
+as complete. Polling gives a small possible overshoot; no exact byte ceiling
+is claimed. Player pause and ten-minute idle grace remain unchanged.
+139 Python tests pass. Minecraft was not restarted. Backup:
+`/srv/drewcraft/state/pregen-150gb-qju32rj6`.
+
+IMPORTANT capacity blocker: filesystem has about 206.9 GB usable capacity,
+70.6 GB used and 136.3 GB available while the world is about 20 GB. Keeping
+the reserve can pause growth around 130 GB before the 150 GB target. Free
+roughly 20 GB elsewhere or expand storage before promising 150 GB completion.
+No backups or unrelated files were deleted, and no paid storage was ordered.
+
+## 2026-09-30 canonical world-size command installed
+
+Run `sudo drewcraft-world-size` after SSH login, or add `--json` for automation.
+The read-only script `infra/world_size.py` is installed at
+`/usr/local/bin/drewcraft-world-size`. It measures live files, includes DH and
+all dimensions, and separately labels confirmed Chunky circle, unfinished
+target, playable border, and irregular saved-region extents. It ignores old
+inflated radius counters and empty region placeholders. Agent instructions
+now require this command for world-size questions. 137 Python tests pass.
+Verified live at 23:08 UTC: 19.43 GB total (6.81 GB DH included), confirmed
+radius 6,144, in-progress 7,168, playable radius 5,824. No service restart.
+
+## 2026-09-30 completed-terrain exploration boundary enabled
+
+Owner requested players stay within pregenerated terrain. Controller now
+enables the existing server mod's circular Overworld-only boundary using
+continuousCompletedRadius minus a 320-block chunk-loading buffer; never the
+in-progress selection radius. It expands only after fresh Chunky completion
+evidence and survives controller restarts. Nether, End and Paradis are not
+affected. Existing enforcement polls the boundary JSON and clamps players
+back inside; it dismounts them on crossing, so it is not a physical aircraft
+wall or an absolute global prohibition on every possible generation cause.
+The buffer covers normal player chunk loading at current view-distance 10.
+Installed server jar contains the boundary runtime classes. No Minecraft
+restart or client update. 132 Python tests pass. Operational backup:
+`/srv/drewcraft/state/pregen-boundary-6e8x1ibj`. At activation, Chunky had
+completed radius 5,120 and the playable radius was 4,800 blocks.
+
+## 2026-09-30 continuous Chunky expansion enabled
+
+Owner requested ongoing idle terrain generation as well as DH catch-up.
+Deployed the continuous mode at 22:59 UTC without restarting Minecraft.
+`continuousChunky=true`, `dhOnly=false`; both services active, zero players,
+and Chunky acknowledged a 1,024-block circle centered at (-1536,-1536).
+Revalidate circles from the center, skipping saved completed chunks, rather
+than seeding the completed frontier from inflated historical radii. After
+each proven Chunky completion, run all pending saved-region DH jobs before
+expanding the radius by another 1,024 blocks. Missing tasks trigger resume,
+not advancement; fresh 100% task-finished evidence is required. Player pause
+and 600-second empty grace remain. Checkpoints survive controller restarts.
+
+The 50 GB world target stops further expansion, while DH maintenance keeps
+running. Existing 55 GB emergency cap, 25 GB free-space reserve and maximum
+radius remain hard safety limits. No terrain deletion, client update, or
+Minecraft restart. Old controller/state backup:
+`/srv/drewcraft/state/continuous-pregen-vdyxr99b`.
+130 Python tests pass including four continuous-cycle behavior tests.
+Next check: confirm real completion advances continuousCompletedRadius and
+that the controller alternates terrain batches with DH delta jobs. Do not
+report legacy activeRadius/chunkyRadius as completed generation evidence.
+
+## 2026-09-30 DH frontier and flight delivery verification
+
+At 22:49 UTC the live idle controller had completed 12 native jobs and all
+895 nonempty saved Overworld region files matched its maintenance baseline.
+New Chunky-saved regions are queued beyond the original catch-up radius;
+there is no fixed-radius cutoff for incremental maintenance. Two additional
+regression tests cover all-direction frontier growth and empty placeholders;
+126 Python tests pass. No runtime change/restart was needed for this request.
+Independent per-column LOD coverage remains unverified.
+
+Correction: an ad-hoc inventory counted empty/short region placeholders as
+chunks. The corrected stored-chunk extents are X -12,464..8,415 and
+Z -11,216..7,647, not the larger placeholder bounds or legacy 130,048 radius.
+
+Live MTS 24.0.0 aircraft/car speed factors are 0.35. Its physical displacement
+is `motion * speedFactor` each tick; at 20 TPS actual horizontal blocks/second
+are `20 * speedFactor * hypot(motion.x, motion.z)`. Aircraft top speed is not
+a single pack constant: engine/propeller choices, mass, drag, altitude and
+flight attitude affect it. No live flight-speed benchmark was performed.
+With view-distance 10, a conservative square-window estimate for fresh full
+chunk delivery is `21 * (abs(vx) + abs(vz)) / 16` chunks/second per pilot.
+At actual speeds 20/40/60 blocks/sec this is about 26–37/53–74/79–111 chunks/sec
+depending on heading, before startup bursts and safety headroom. Live Chunk
+Sending caps are 15 chunks/player/tick and 80 globally, with client desired
+rate multiplied by 0.8. Those are ceilings, not measured throughput. DH LODs
+do not substitute for collision chunks. Flight profiling remains needed
+before blaming or increasing the caps; no chunk-send settings were changed.
+
+## 2026-09-30 incremental DH maintenance deployed
+
+The idle controller is deployed on Oracle; Minecraft was left running. It now
+starts one native catch-up pass from (-1536,-1536) over real saved-region bounds
+(11,328-block radius, including the new western terrain), then queues only new
+or changed region groups. Quiet terrain causes no repeated whole-world pass.
+Region snapshots and pending/active jobs persist across player pauses/restarts;
+changes during a pass remain pending for a later check. Player polling is 10
+seconds, idle grace remains 600 seconds, and idle region-change checks are 60
+seconds. CHUNKS_ONLY/PRE_EXISTING_ONLY and DH's native live chunk hashing remain.
+124 Python tests pass, including six maintenance behavior tests. At 17:31 UTC,
+the live first scan was running at 83.9%, with zero players and both services
+active. New outer terrain is slower than cached sections (latest native ETA
+about 15 minutes; early estimates were much shorter). Health remains joinable.
+Completion is not yet verified. Old script/state backup:
+`/srv/drewcraft/state/dh-incremental-ZSfzin`.
+
+Correction to earlier coverage interpretation: native DH generation can save
+LODs without the ChunkHash record used by live chunk updates. Missing hash rows
+alone do not prove LOD holes; independent per-column coverage remains unverified.
+The fuel changes below remain local and unshipped.
+
+## 2026-09-30 lava-only fuel and flight chunk follow-up
+
+The source pack now configures every MTS fuel category (gasoline, avgas,
+diesel, furnace, and brewing stand) to accept only lava at potency 0.1. This
+change is local and unshipped; live 0.1.13 still has the prior bioethanol
+mapping until a verified client/server pack release is deployed. No world
+reset is needed.
+
+Owner reported plane travel with slow/missing full chunks and DH visual glitches
+after roughly 1–3k blocks. Live read-only status: server ready/joinable,
+world about 19.37 GB, pregeneration controller active in `dhOnly=true` /
+`phase=complete`, Chunky idle (`No tasks running`), and periodic DH passes
+completing. The stored Chunky radius of 130,048 blocks is historical state,
+not verified coverage. DH's saved catch-up radius is 10,304 blocks around
+(-1536,-1536); `coverageVerified=false`. Region-header inventory previously
+found existing terrain across X -701..525 and Z -701..477 region-chunk
+coordinates, but this does not prove every chunk inside that footprint is
+present or that full chunks can be delivered as fast as a plane travels.
+Need the incident's exact start/end coordinates and timestamp/client log to
+separate absent terrain from server chunk-send/terrain-generation delay and
+client/DH rendering behavior. Do not report complete Chunky or DH coverage yet.
+
 ## 2026-09-28 fuel balance rollout
 
 Pack 0.1.13-dev-local is active on the Oracle server and promoted to the

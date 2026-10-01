@@ -33,6 +33,7 @@ world_bundle = load_module("world_bundle", "tools/world_bundle.py")
 world_extract = load_module("extract_world_index", "tools/extract_world_index.py")
 release_layout = load_module("assemble_release_layout", "tools/assemble_release_layout.py")
 load_module("worldgen_guard", "infra/worldgen_guard.py")
+load_module("region_inventory", "infra/region_inventory.py")
 pregen = load_module("pregen_controller", "infra/pregen_controller.py")
 
 

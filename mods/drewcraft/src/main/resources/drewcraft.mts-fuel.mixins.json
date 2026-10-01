@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.drewcraft.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["MtsFuelCapacityMixin"],
+  "injectors": {"defaultRequire": 1}
+}

@@ -27,7 +27,7 @@ If a paid OCI tenancy is used, create a dedicated DrewCraft compartment and enfo
 - `serverctl.py` — staged releases, exact hash verification, world-identity guard, backup, activation, application-only rollback, and restore.
 - Configured production backups use Restic deduplicated snapshots; see `docs/INCREMENTAL_BACKUPS.md` for initialization, verified restore, key custody, and retention. Legacy archive restores remain supported.
 - `start-server.sh`, `server.properties`, `user_jvm_args.txt`, and `eula.txt` — production runtime templates. `allow-flight=true` is intentional so legitimate MTS aircraft do not trigger vanilla's flying-player kick.
-- `pregen_controller.py` + `drewcraft-pregen.service` — resumable, size-targeted Overworld-only generation. The controller waits until the server is empty, advances Chunky in 1,024-block radius batches, then lets DH trail 512 blocks behind the confirmed Chunky frontier. Both jobs pause safely when a player joins and resume after the idle grace period. After the target is reached, only hourly DH maintenance passes run. Nether and End are never selected or bordered by this controller.
+- `pregen_controller.py` + `drewcraft-pregen.service` — resumable, size-targeted Overworld-only generation. The controller waits until the server is empty, advances Chunky in 1,024-block radius batches, then lets DH trail 512 blocks behind the confirmed Chunky frontier. Jobs pause on player join (10-second polling) and resume after 600 seconds empty. On completion or in DH-only mode, one native center-out catch-up pass encloses the actual saved region bounds. Thereafter a cheap 60-second region mtime/size check queues only new/changed areas, grouped into 2,048-block squares and ordered nearest spawn first. Unchanged terrain causes no new native pass. DH's own live chunk hashing handles player edits and skips unchanged chunks. Task snapshots, queues, and baselines persist across restarts; changes during a pass remain dirty for the next check. Nether and End are never selected or bordered by this controller. The older `--dh-maintenance-interval-seconds` flag is accepted for existing service units but no longer schedules whole-world hourly sweeps.
 
 ## Filesystem contract
 
@@ -66,3 +66,21 @@ If a paid OCI tenancy is used, create a dedicated DrewCraft compartment and enfo
 OCI A1 2/12 is accepted only if BP9 representative load testing meets the final MSPT/memory/GC/player-experience limits. The architecture does not depend on Oracle: the release and persistent-world layout can be moved as a unit to another fixed-size ARM64/x64 Linux host.
 
 A paid VM must not be silently resized. Any migration or larger shape is a deliberate operator action.
+## Canonical live world-size command
+
+After SSH login, run `sudo drewcraft-world-size`. For automation, run
+`sudo drewcraft-world-size --json`. Source: `infra/world_size.py`; install with
+`sudo install -m 755 infra/world_size.py /usr/local/bin/drewcraft-world-size`.
+The draft Linear-aware version also requires `region_inventory.py` beside
+the installed command, and beside `/srv/drewcraft/bin/pregen_controller.py`.
+Deploy those files together; do not overwrite only the controller/command.
+Linear slot inspection requires system `libzstd`; Anvil inspection does not.
+This draft is not yet installed on production.
+
+This read-only command measures current world files, rather than cached size
+counters. It labels all-dimension world usage (including DH), allocated disk
+space, DH usage, storage target, Chunky-confirmed completed circle,
+in-progress target, playable border and irregular saved-chunk extents
+separately. Empty/short region placeholders do not count as saved chunks.
+Legacy radius counters are ignored. Output is a live non-atomic snapshot;
+task-confirmed radius is not an independent chunk-status/LOD audit.

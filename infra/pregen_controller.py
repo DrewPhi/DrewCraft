@@ -20,6 +20,7 @@ import tempfile
 import time
 
 from worldgen_guard import read_nbt, verify as verify_worldgen
+from region_inventory import linear_header
 
 
 def estimate_radius(current_radius: int, baseline_bytes: int, measured_bytes: int,
@@ -75,6 +76,62 @@ def checked_dh_response(response: str) -> str:
     )):
         raise RuntimeError(f"Distant Horizons command failed: {response}")
     return response
+
+
+def region_fingerprints(world: pathlib.Path) -> dict[str, list[int]]:
+    """Cheap change detection; only inspect the Overworld's saved region files."""
+    result = {}
+    coordinates = set()
+    for path in (world / "region").glob("r.*.*.*"):
+        if not re.fullmatch(r"r\.-?\d+\.-?\d+\.(mca|linear)", path.name):
+            continue
+        stat = path.stat()
+        coordinate = region_coordinates(path.name)
+        if coordinate in coordinates:
+            raise RuntimeError(f'Duplicate Anvil/Linear region at {coordinate}; conversion requires review')
+        coordinates.add(coordinate)
+        if path.suffix == '.linear':
+            if linear_header(path)[0]:
+                result[path.name] = [stat.st_mtime_ns, stat.st_size]
+        elif stat.st_size >= 8192:
+            result[path.name] = [stat.st_mtime_ns, stat.st_size]
+    return result
+
+
+def region_coordinates(name: str) -> tuple[int, int]:
+    parts = name.split(".")
+    return int(parts[1]), int(parts[2])
+
+
+def existing_world_radius(regions: dict, center_x: int, center_z: int) -> int:
+    """Enclose all saved regions, including newly explored terrain, with margin."""
+    distance = 0
+    for name in regions:
+        rx, rz = region_coordinates(name)
+        distance = max(distance, abs(rx * 512 - center_x),
+                       abs((rx + 1) * 512 - center_x), abs(rz * 512 - center_z),
+                       abs((rz + 1) * 512 - center_z))
+    return max(512, math.ceil((distance + 64) / 16) * 16)
+
+
+def changed_region_jobs(regions: dict, baseline: dict, center_x: int,
+                        center_z: int) -> list[dict]:
+    """Group dirty regions into 2048-block squares, nearest spawn first."""
+    groups: dict[tuple[int, int], dict] = {}
+    for name, fingerprint in regions.items():
+        if baseline.get(name) == fingerprint:
+            continue
+        rx, rz = region_coordinates(name)
+        groups.setdefault((rx // 4, rz // 4), {})[name] = fingerprint
+    jobs = [
+        {"kind": "changed_regions", "centerX": gx * 2048 + 1024,
+         "centerZ": gz * 2048 + 1024, "radius": 1088, "regions": changed}
+        for (gx, gz), changed in groups.items()
+    ]
+    return sorted(jobs, key=lambda job: (
+        (job["centerX"] - center_x) ** 2 + (job["centerZ"] - center_z) ** 2,
+        job["centerX"], job["centerZ"],
+    ))
 
 
 class Controller:
@@ -199,16 +256,24 @@ class Controller:
         return True
 
     def write_boundary(self, radius: int) -> None:
+        enabled = bool(self.state.get("enforcePregenBoundary"))
+        generated_radius = radius
+        if enabled:
+            # Never expose an in-progress selection. Leave space for the
+            # client's full-chunk window (view distance 10) outside the player.
+            generated_radius = int(self.state.get("continuousCompletedRadius", 0))
+            radius = generated_radius - int(self.state.get("boundaryBufferBlocks", 320))
+            if radius <= 8:
+                raise RuntimeError("No completed terrain circle available for exploration boundary")
         atomic_json(self.boundary_path, {
             "schemaVersion": 1,
-            # The V1 world is intentionally not gameplay-bounded.  This file
-            # remains as telemetry for the currently pregenerated frontier,
-            # while players may explore beyond it and generate normally.
-            "enabled": False,
+            "enabled": enabled,
             "dimension": "minecraft:overworld",
             "centerX": self.state["centerX"],
             "centerZ": self.state["centerZ"],
             "radiusBlocks": radius,
+            "generatedRadiusBlocks": generated_radius,
+            "bufferBlocks": generated_radius - radius if enabled else 0,
         })
 
     def configure_and_start(self, radius: int, *, resume: bool = False) -> None:
@@ -227,6 +292,9 @@ class Controller:
 
     def start_dh(self, radius: int) -> None:
         radius_chunks = max(32, math.ceil(radius / 16))
+        job = self.state.get("dhActiveJob") or {}
+        center_x = job.get("centerX", self.state["centerX"])
+        center_z = job.get("centerZ", self.state["centerZ"])
         # DH 3.3.1: disable surface prediction and read actual saved chunks only.
         for setting, value in (("generation.plan", "CHUNKS_ONLY"),
                                ("generation.chunkMode", "PRE_EXISTING_ONLY")):
@@ -236,7 +304,7 @@ class Controller:
         self.save(dhLogInode=stat.st_ino, dhLogOffset=stat.st_size)
         response = checked_dh_response(self.rcon(
             "dh", "pregen", "start", "overworld",
-            str(self.state["centerX"]), str(self.state["centerZ"]), str(radius_chunks),
+            str(center_x), str(center_z), str(radius_chunks),
         ))
         if "Starting pregen" not in response:
             raise RuntimeError(f"DH did not acknowledge pregen start: {response}")
@@ -248,7 +316,64 @@ class Controller:
             dhMaintenanceActive=True,
             dhStarted=True,
             maintenancePaused=False,
+            dhJobCenterX=center_x,
+            dhJobCenterZ=center_z,
         )
+
+    def maintain_dh(self) -> bool:
+        """One catch-up sweep, then persistent jobs for new/changed regions only."""
+        pending = list(self.state.get("dhPendingJobs") or [])
+        if not pending:
+            now = time.time()
+            interval = self.args.dh_change_check_seconds
+            if now - self.state.get("dhLastRegionCheckEpoch", 0) < interval:
+                return False
+            regions = region_fingerprints(self.world)
+            if not regions:
+                self.save(dhLastRegionCheckEpoch=now)
+                return False
+            database = self.world / "data" / "DistantHorizons.sqlite"
+            stat = database.stat() if database.exists() else None
+            identity = [stat.st_dev, stat.st_ino] if stat else None
+            baseline = self.state.get("dhRegionBaseline")
+            radius = existing_world_radius(regions, self.state["centerX"], self.state["centerZ"])
+            if baseline is None or identity != self.state.get("dhDatabaseIdentity"):
+                if radius > self.args.maximum_radius:
+                    raise RuntimeError("Existing Overworld DH bounds exceed maximum radius")
+                pending = [{"kind": "catchup", "centerX": self.state["centerX"],
+                            "centerZ": self.state["centerZ"], "radius": radius,
+                            "regions": regions, "databaseIdentity": identity}]
+            else:
+                pending = changed_region_jobs(regions, baseline,
+                                              self.state["centerX"], self.state["centerZ"])
+            self.save(dhPendingJobs=pending, dhLastRegionCheckEpoch=now,
+                      dhExistingWorldRadius=radius,
+                      dhChangeTracking="region_mtime_ns_and_size")
+        if not pending:
+            return False
+        job = pending.pop(0)
+        # Snapshot before work: any changes during the pass remain dirty later.
+        self.save(dhPendingJobs=pending, dhActiveJob=job, dhStarted=False,
+                  phase="dh", phaseAfterDh="complete")
+        self.start_dh(job["radius"])
+        return True
+
+    def finish_dh_job(self) -> None:
+        job = self.state["dhActiveJob"]
+        baseline = {} if job["kind"] == "catchup" else dict(self.state.get("dhRegionBaseline") or {})
+        baseline.update(job["regions"])
+        updates = {}
+        if job["kind"] == "catchup":
+            database = self.world / "data" / "DistantHorizons.sqlite"
+            stat = database.stat()
+            updates.update(dhDatabaseIdentity=[stat.st_dev, stat.st_ino],
+                           dhRadius=job["radius"], dhOnlyRadius=job["radius"])
+        self.save(phase="complete", dhActiveJob=None, dhStarted=False,
+                  dhRegionBaseline=baseline, dhMaintenanceActive=False,
+                  dhCompletedJobs=self.state.get("dhCompletedJobs", 0) + 1,
+                  lastDhMaintenanceEpoch=time.time(),
+                  lastDhMaintenanceUtc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                  **updates)
 
     def start_next_chunky_batch(self) -> bool:
         current = int(self.state.get("chunkyRadius", self.state["benchmarkRadius"]))
@@ -259,6 +384,76 @@ class Controller:
             return False
         self.save(chunkyRadius=next_radius, phase="generate")
         self.configure_and_start(next_radius, resume=False)
+        return True
+
+    def continuous_chunky_step(self, size: int) -> None:
+        """Expand small circles, requiring real task completion before advancing."""
+        log = pathlib.Path("/srv/drewcraft/logs/latest.log")
+        if self.state["phase"] == "continuous_chunky":
+            response = self.rcon("chunky", "progress")
+            if self.running(response):
+                self.save(lastProgress=response)
+                return
+            stat = log.stat()
+            messages = ""
+            if (stat.st_ino == self.state.get("chunkyLogInode")
+                    and stat.st_size >= self.state.get("chunkyLogOffset", 0)):
+                with log.open("rb") as stream:
+                    stream.seek(self.state["chunkyLogOffset"])
+                    messages = stream.read().decode("utf-8", errors="replace")
+            if re.search(r"Task finished for (?:minecraft:)?overworld\..*\(100(?:\.0+)?%\)", messages):
+                self.save(continuousCompletedRadius=self.state["continuousTargetRadius"],
+                          phase="complete", dhLastRegionCheckEpoch=0)
+                self.write_boundary(self.state["continuousCompletedRadius"])
+                return
+            # Pause/restart is not completion. Resume the saved selection.
+            continued = self.rcon("chunky", "continue")
+            print(continued, flush=True)
+            if "no tasks" in continued.lower():
+                self.start_continuous_chunky(self.state["continuousTargetRadius"])
+            return
+        # DH always catches up before another terrain batch; storage target
+        # stops expansion, but incremental LOD maintenance continues.
+        if self.maintain_dh():
+            return
+        if size >= self.state["targetBytes"]:
+            self.health("ready", "Terrain size target reached; DH maintenance continues", joinable=True)
+            return
+        radius = int(self.state["continuousCompletedRadius"]) + max(16, self.args.generation_batch_blocks)
+        if radius > self.args.maximum_radius:
+            self.health("ready", "Terrain radius safety limit reached; DH maintenance continues", joinable=True)
+            return
+        self.start_continuous_chunky(radius)
+
+    def start_continuous_chunky(self, radius: int) -> None:
+        log = pathlib.Path("/srv/drewcraft/logs/latest.log")
+        stat = log.stat()
+        self.save(phase="continuous_chunky", continuousTargetRadius=radius,
+                  chunkyLogInode=stat.st_ino, chunkyLogOffset=stat.st_size)
+        for command in (("chunky", "world", "minecraft:overworld"),
+                        ("chunky", "shape", "circle"),
+                        ("chunky", "center", str(self.state["centerX"]), str(self.state["centerZ"])),
+                        ("chunky", "radius", str(radius))):
+            response = self.rcon(*command)
+            if any(word in response.lower() for word in ("unknown", "invalid", "error", "incorrect", "failed")):
+                raise RuntimeError(f"Chunky selection failed: {response}")
+        response = self.rcon("chunky", "start")
+        print(response, flush=True)
+        if "task started" not in response.lower():
+            raise RuntimeError(f"Chunky did not acknowledge new task: {response}")
+        self.save(activeRadius=radius)
+        self.write_boundary(radius)
+
+    def pause_at_size_target(self, size: int) -> bool:
+        """Enforce the total-world budget during jobs, not just between batches."""
+        if not self.state.get("continuousChunky") or size < self.state["targetBytes"]:
+            return False
+        if self.state["phase"] != "size_paused":
+            print(self.rcon("chunky", "pause"), flush=True)
+            print(self.rcon("dh", "pregen", "stop"), flush=True)
+            self.save(sizePausedFromPhase=self.state["phase"], phase="size_paused",
+                      dhStarted=False, reason="world storage target reached")
+        self.health("ready", "World storage target reached; background generation paused", joinable=True)
         return True
 
     def start_dh_trailing_pass(self, *, final: bool = False) -> bool:
@@ -352,8 +547,21 @@ class Controller:
             if free <= self.state["minimumFreeBytes"]:
                 return self.stop_for_safety("minimum free-space reserve reached")
 
+            if self.pause_at_size_target(size):
+                time.sleep(self.args.poll_seconds)
+                continue
+            if self.state["phase"] == "size_paused":
+                # Raising the budget resumes the interrupted job, not a new
+                # optimistic completed-radius checkpoint.
+                self.save(phase=self.state.get("sizePausedFromPhase", "complete"), reason=None)
+
             if self.state["phase"] == "safety_paused":
                 self.health("ready", "Pregeneration paused at operator/safety limit", joinable=True)
+                time.sleep(self.args.poll_seconds)
+                continue
+
+            if self.state.get("continuousChunky") and self.state["phase"] in {"complete", "continuous_chunky"}:
+                self.continuous_chunky_step(size)
                 time.sleep(self.args.poll_seconds)
                 continue
 
@@ -364,6 +572,11 @@ class Controller:
                 if not self.state.get("dhStarted"):
                     self.start_dh(self.state["dhTargetRadius"])
                 if self.dh_finished():
+                    if self.state.get("dhActiveJob"):
+                        self.finish_dh_job()
+                        self.health("ready", "DH job complete; checking remaining changed terrain", joinable=True)
+                        time.sleep(self.args.poll_seconds)
+                        continue
                     dh_target = int(self.state.get("dhTargetRadius", self.state.get("dhRadius", 0)))
                     next_phase = self.state.get("phaseAfterDh", "complete")
                     self.save(
@@ -381,15 +594,14 @@ class Controller:
                 continue
 
             if self.state["phase"] == "complete":
-                last = self.state.get("lastDhMaintenanceEpoch", 0)
-                if time.time() - last >= self.args.dh_maintenance_interval_seconds:
-                    self.save(
-                        phase="dh", dhStarted=False,
-                        lastDhMaintenanceEpoch=time.time(),
-                    )
-                    self.start_dh(self.state.get("dhOnlyRadius", self.state["activeRadius"]))
+                try:
+                    started = self.maintain_dh()
+                except (OSError, RuntimeError) as exc:
+                    print(f"DH incremental maintenance deferred: {exc}", flush=True)
+                    self.health("ready", f"DH maintenance waiting: {exc}", joinable=True)
                 else:
-                    self.health("ready", "Waiting for the next DH maintenance window", joinable=True)
+                    if not started:
+                        self.health("ready", "DH idle: waiting for new or changed saved Overworld terrain", joinable=True)
                 time.sleep(self.args.poll_seconds)
                 continue
 
@@ -488,13 +700,15 @@ def main() -> int:
     parser.add_argument("--minimum-free-bytes", type=int, default=25_000_000_000)
     parser.add_argument("--maximum-radius", type=int, default=1_000_000)
     parser.add_argument("--maximum-expansions", type=int, default=3)
-    parser.add_argument("--poll-seconds", type=int, default=60)
+    parser.add_argument("--poll-seconds", type=int, default=10)
     parser.add_argument("--generation-batch-blocks", type=int, default=1024)
     parser.add_argument("--dh-lag-blocks", type=int, default=512)
     parser.add_argument("--idle-grace-seconds", type=int, default=600)
+    parser.add_argument("--dh-change-check-seconds", type=int, default=60,
+                        help="idle interval between cheap saved-region change checks")
     parser.add_argument(
         "--dh-maintenance-interval-seconds", type=int, default=3600,
-        help="minimum idle interval between DH refresh passes after Chunky reaches the target",
+        help="legacy option accepted for existing service units; DH now refreshes changed regions only",
     )
     return Controller(parser.parse_args()).run()
 

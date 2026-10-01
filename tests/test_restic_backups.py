@@ -25,13 +25,38 @@ def fixture_root(tmp_path):
 def test_configured_backup_uses_restic_and_receipt(tmp_path):
     manifest = fixture_root(tmp_path)
     with patch.object(ctl, 'restic_run', side_effect=[json.dumps({
-        'message_type': 'summary', 'snapshot_id': 'a' * 64, 'data_added': 100}), '']) as run:
+        'message_type': 'summary', 'snapshot_id': 'a' * 64, 'data_added': 100}), '', '',
+        json.dumps([{'id': 'a' * 64}])]) as run:
         receipt = ctl.backup(tmp_path, manifest)
     assert receipt.name.endswith('.restic.json')
     assert json.loads(receipt.read_text())['snapshotId'] == 'a' * 64
     assert run.call_args_list[0].args[1] == 'backup'
     assert run.call_args_list[1].args[1] == 'check'
+    assert run.call_args_list[2].args[1:] == ('forget', '--tag', 'drewcraft', '--group-by', '', '--keep-last', '1', '--prune')
     assert not list((tmp_path / 'backups').glob('*.tar.gz'))
+
+
+def test_failed_check_never_prunes_old_snapshot(tmp_path):
+    manifest = fixture_root(tmp_path)
+    with patch.object(ctl, 'restic_run', side_effect=[json.dumps({
+        'message_type': 'summary', 'snapshot_id': 'a' * 64}),
+        subprocess.CalledProcessError(1, 'restic')]) as run:
+        with pytest.raises(subprocess.CalledProcessError):
+            ctl.backup(tmp_path, manifest)
+    assert len(run.call_args_list) == 2
+
+
+def test_restic_always_uses_max_compression():
+    config = {'backend': 'restic', 'repository': '/repo', 'passwordFile': '/secret'}
+    with patch.object(ctl.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, stdout='')) as run:
+        ctl.restic_run(config, 'check')
+    assert run.call_args.args[0][-3:] == ['--compression', 'max', 'check']
+
+
+def test_retention_cannot_be_disabled(tmp_path):
+    manifest = fixture_root(tmp_path)
+    with pytest.raises(RuntimeError, match='exactly one'):
+        ctl.backup(tmp_path, manifest, retain=0)
 
 
 def test_partial_backup_does_not_write_success_receipt(tmp_path):

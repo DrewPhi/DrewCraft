@@ -4,6 +4,152 @@
 **Target:** first post-current-V1 integration pass  
 **Primary constraint:** **no world reset, no new ore/resource world generation, and no new strategic/story axis**
 
+## Owner-requested next-update additions (2026-09-28)
+
+### MTS fuel policy — lava only
+
+Owner reports Create Crafts & Additions bioethanol glitching in helicopters.
+For the next client/server pack release, remove every non-lava MTS fuel mapping
+and make lava the sole accepted fuel for gasoline, avgas, diesel, furnace, and
+brewing-stand categories. Target potency **0.5** in every category: vehicles
+must consume twice the fluid volume compared with potency 1.0. Preserve
+unrelated administrator MTS settings. Validate the packaged config and test
+fueling/consumption in a car, helicopter, and plane before rollout. This is a
+configuration-only update; it must not reset or regenerate the world.
+
+Create Crafts & Additions bioethanol and the renewable netherrack loop can
+remain as Create factory content, but bioethanol is not an MTS vehicle fuel.
+
+### Lava range and tank-fill correction (2026-09-30)
+
+Owner wants weak lava per bucket, but useful range from a completely filled
+vehicle. Revised October 1: lava potency **0.5** and **2x effective vehicle tank
+capacity**, superseding the 0.1/10x proposal. A bucket contributes half the
+tank percentage it did before this correction. Filling takes twice as many buckets, restoring
+approximately the potency-1 full-tank endurance without making lava cheaper
+per kilometre relative to potency 0.5. Example: a formerly 10-bucket tank takes 20 buckets to fill.
+This multiplier is the initial proposed balance, not shipped behavior.
+
+Implementation plan:
+
+1. Inspect the pinned MTS tank capacity, transfer and engine-consumption
+   paths; confirm potency units and all affected content-pack definitions.
+2. Prefer increasing actual vehicle fuel capacity 2x through a supported
+   definition override, preserving millibucket conservation. Do NOT globally
+   shrink lava fluid quantities, alter Create tanks, or reduce combustion cost.
+   If supported overrides do not exist, scope a tested adapter to MTS vehicle
+   fuel tanks only. Do not claim this is a config-only change yet.
+3. Preserve existing vehicles and their absolute saved fuel quantities;
+   they should show a lower fill percentage, not receive free fuel. Preserve
+   pump/storage quantities and verify filling, draining, automation and reload
+   do not duplicate or lose fluid. Tank-dependent mass/weight calculations
+   must be reviewed rather than silently changing aircraft handling.
+4. Verify bucket-to-percentage and full-tank range in a car, helicopter and
+   plane; check fuel gauges, transfer limits, save/restart and JEI-facing
+   descriptions. Ensure correct behavior on both client and server.
+5. Publish one matching client/server release after these checks, with no
+   world reset. Backup single-point/max-compression policy is already deployed.
+   Linear may join this rollout ONLY after the storage verification gates
+   below pass. Live filesystem migration is not bundled with Linear.
+
+### Compression verification and deployment gates (2026-10-01)
+
+See `STORAGE_OPTIMIZATION_REVIEW.md` for measured sample results and the
+installed DH cold-reader incompatibility. This is a plan, not authorization
+to convert the live world before tests pass.
+
+1. Pin the exact Java-21/NeoForge-1.21.1 Linear artifact and source revision.
+   Implement/test the DH uncached-region read adapter and make the controller,
+   region fingerprints and world-size command understand both formats.
+   Verify mixed/interrupted conversion cannot hide terrain or lose job progress.
+2. On disposable copied complete regions, run the ACTUAL mod (the prior
+   benchmark tested only the format layout). Include mountains, coast/ocean,
+   structures, edited/player-built chunks, entities/POI and oversized/external
+   chunks if present. Compare decompressed NBT before/after, preserving chunk
+   status, blocks, block entities, entities and timestamps where applicable.
+3. Boot/save/stop/reopen the copied-world test server. Prove DH can read cold,
+   uncached Linear regions and create LODs without generating missing terrain.
+   Test Chunky's skip-existing/new-chunk paths, idle pause/resume, boundaries,
+   changed-region DH updates and size-limit accounting. C2ME is NOT added to
+   this release merely because Linear has compatibility hooks.
+4. Make a consistent full-world staging copy with sufficient free space;
+   never copy a changing live world as the final migration baseline. Convert
+   and validate every dimension, player data and sample build/portal locations.
+   Measure before/after terrain, entities/POI, DH and TOTAL world bytes separately.
+   Record conversion time, RAM, save latency and aircraft chunk-loading behavior.
+   Assess cold-read CPU costs: disk savings must not worsen flight stalls.
+5. Demonstrate restoration of the retained backup on a disposable target.
+   Keep ONE verified pre-conversion production restore point throughout
+   cutover and acceptance; do not let an automatic post-conversion backup
+   replace it until rollback is no longer needed. Test conversion interruption
+   and failures without risking the only restore point.
+6. Choose moderate live compression based on measured latency. Consider higher
+   compression for cold/idle data only if verified; do not use maximum levels
+   on every hot save. Btrfs's ~15% sampled data-extent savings remain a separate
+   filesystem migration candidate, not an additive guaranteed gain with Linear.
+
+Deployment after ALL gates pass:
+
+- One matching immutable client/server release: lava-only potency 0.5,
+  doubled vehicle tanks and their validated integration; Linear server-side
+  only if its loader/network requirements permit; required DH adapter and
+  DrewCraft tools on the appropriate sides.
+- Stage/hash-check artifacts, pause pregeneration, stop/save consistently,
+  retain the one verified pre-conversion backup, activate/convert the existing
+  world, health-check joins, DH cold reads and saves before resuming idle pregen.
+  No world reset or fresh Terrain Diffusion generation to replace old chunks.
+- Publish launcher/channel/website download pointers only after artifacts exist
+  and server acceptance passes. Preserve client maps, waypoints, saves and options.
+- Remove disposable staging copies after acceptance. Do not delete the retained
+  backup or claim an application-only rollback undoes a world-format conversion.
+- If Linear fails a gate, ship the verified fuel update separately; no live
+  world conversion. Backup max compression/one-point retention already shipped.
+
+Capacity claim: 49–62% sample TERRAIN-file reduction is not a measured full-world
+reduction. DH and other data are separate; backup and free-space reserves also
+count against disk capacity. Project usable terrain area from measured total
+bytes per completed chunk after full-copy validation, report uncertainty, and
+do not promise twice the world radius (twice the area gives ~1.41x radius).
+
+### Paradis Shifter Hunt event
+
+Add a rare, server-run Paradis event that announces a shifter Titan and its
+coordinates to chat, gives players a limited hunt window, then despawns the
+Titan if it survives. Choose only a Titan power that no connected or saved
+player currently holds. Keep the event entirely inside Paradis.
+
+Danny's AOT already has AI for ordinary Pure Titans. SpringDAOT's current
+1.21.1 Titan module advertises more intelligent AI shifters and powered
+villager shifters, but its public feature list does not establish that all Nine
+Titans are available as autonomous roaming bosses or provide the requested
+announcement/timer/scheduled-spawn system. Treat it as a candidate AI/form
+provider, not a ready-made boss-event scheduler. The event likely needs a small
+DrewCraft server-side controller unless runtime inspection proves the add-on
+already supports the complete loop.
+
+Candidate addons to inspect together with Danny's AOT:
+
+- **SpringDAOT: Titans** is the closest candidate for additional Titan forms
+  and AI shifters. It is a 1.21.1 Fabric addon, needs SpringDAOT API/Families/
+  Progression plus ODM and Danny's AOT, and introduces absorption/progression
+  systems. Test the split Titans module; do not also install SpringDAOT: All
+  Features or duplicate split modules.
+- **Danny's AOT - Barrels** adds Beast Titan barrel abilities, not the general
+  boss scheduler. Include only if those attacks fit the event and can be
+  dimension/griefing controlled.
+- **Danny's AOT - Config** can help manage Titan spawn settings, but is an
+  admin configuration UI rather than event AI.
+
+The addons are Fabric artifacts being considered for DrewCraft's
+NeoForge/Sinytra Connector stack. Resolve exact dependencies and licenses,
+then test client/server startup, AI target selection and movement, Titan
+transformations, multiplayer combat, despawn/cleanup, and restart recovery in
+an isolated profile before packaging. Do not grant players shifter powers,
+power absorption, special commands, or shifter eggs. Killing the event boss
+must not bypass DrewCraft's existing no-player-Titan-power rule. Persist the
+active event and clean it up safely after restart; do not put the Overworld or
+its existing world revision at risk.
+
 ## Goal
 
 The next update should make the existing DrewCraft pillars reinforce one another instead of behaving like separate mod islands.
@@ -58,29 +204,28 @@ Sodium's release targets Minecraft/NeoForge and is a Java client mod, not a Wind
 4. Test LambDynamicLights separately and alongside Sodium; verify the toggle is accessible and actually disables the effect. Drop it if compatibility or controls are awkward.
 5. If the selected client mods pass, record exact versions/hashes in the client manifest, publish the client update, and restart the server only for actual server-side changes. No world reset is expected.
 
-## 1. Create Crafts & Additions + MTS bioethanol bridge — highest priority
+## 1. Create Crafts & Additions manufacturing — highest priority
 
 Why:
 
-- adds Create-native biomass/bioethanol production from renewable materials already present in the world;
+- adds Create-native manufacturing and biomass/bioethanol production from renewable materials already present in the world;
 - adds rods, wires, the Rolling Mill, and useful Create manufacturing vocabulary;
 - can bridge kinetic power and electricity, but DrewCraft does not need to make electricity a new progression axis immediately;
 - requires no new ore generation for the intended DrewCraft loop.
 
 Target loop:
 
-**farm crops/plants → Create processing → biomass → bioethanol → storage/fuel station → MTS cars/trucks/aircraft**
+**farm crops/plants → Create processing → biomass/bioethanol factory**
 
 Implementation intent:
 
 - add Create Crafts & Additions only after exact 1.21.1 NeoForge/Create-6 compatibility smoke passes;
-- configure C&A bioethanol as an accepted MTS vehicle fuel through MTS fuel configuration/integration;
-- keep MTS fuel pumps/tanks as the player-facing vehicle fueling hardware;
-- test fluid transfer between Create tanks/pipes and MTS fuel infrastructure;
+- do not configure C&A bioethanol as an MTS vehicle fuel; the next target is lava at potency 0.5 only, with doubled vehicle tanks;
+- keep MTS fuel pumps/tanks as the player-facing vehicle fueling hardware and test lava transfer/consumption;
 - initially avoid making motors/alternators/large electrical infrastructure mandatory for vehicle progression;
 - no crude-oil worldgen is introduced in this update.
 
-This is the first experiment to implement.
+This is a Create factory expansion, not a vehicle-fuel bridge.
 
 ## 2. Create: Steam 'n' Rails
 
@@ -143,7 +288,7 @@ The larger value is not the six mods individually. The larger value is making th
 The DrewCraft integration layer should own:
 
 - MTS crafting overrides that consume Create/C&A stock;
-- the MTS bioethanol fuel bridge;
+- lava-only MTS fuel mappings at potency 0.5 with doubled vehicle tanks;
 - recipe normalization across duplicate generic materials;
 - curated WDA loot additions;
 - optional feature gating for addon content that creates unwanted parallel tech trees;
@@ -404,8 +549,8 @@ Implementation procedure:
 3. Generate the audited DrewCraft MTS override set.
 4. Add tests for raw-material-equivalence budgets.
 5. Verify MTS benches and JEI.
-6. Add bioethanol fuel acceptance to MTS.
-7. Test farm → bioethanol → MTS pump → car/plane end to end.
+6. Verify every MTS fuel category accepts only lava at potency 0.5 and vehicle tanks have double capacity.
+7. Test lava transfer and consumption end to end in cars, helicopters, and planes.
 
 This phase should happen before the other addon integrations so later content enters an already coherent economy.
 
@@ -440,7 +585,7 @@ The next update is ready only if:
 - all current MTS vehicles/parts remain craftable;
 - MTS workbenches remain the final vehicle assembly interface;
 - the exact V29 recipe audit passes the ±10% raw-metal budget gate;
-- bioethanol can be manufactured from renewable existing-world inputs and consumed by MTS vehicles;
+- every MTS fuel category accepts only lava at potency 0.5, with doubled vehicle tanks;
 - Create/MTS fluid transfer and fueling survive server restart;
 - WDA + Lootr works correctly for multiple players;
 - Create trains/Steam 'n' Rails survive chunk crossing and restart;

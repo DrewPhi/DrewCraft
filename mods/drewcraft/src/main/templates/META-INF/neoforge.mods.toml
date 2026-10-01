@@ -20,6 +20,11 @@ config="drewcraft.command-policy.mixins.json"
 [[mixins]]
 config="drewcraft.aot.mixins.json"
 
+[[mixins]]
+config="drewcraft.mts-fuel.mixins.json"
+
+${linear_mixin_entry}
+
 [[dependencies.${mod_id}]]
 modId="neoforge"
 type="required"
