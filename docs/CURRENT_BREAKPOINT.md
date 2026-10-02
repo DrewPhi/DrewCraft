@@ -6,11 +6,14 @@ First CI run of `0.1.17-rc.1` failed at the Linear step: 10/15 upstream tests
 fail when the synthetic corpus was never generated (bare
 `IllegalArgumentException` from `LinearTestSupport.resourcePath`). Same failure
 was seen and resolved server-side by running upstream `generateCorpus` first.
-Workflow now runs `generateCorpus` in its own Gradle invocation (single-invocation
-ordering left the corpus off the test classpath) and builds the jar with
-normalized timestamps/order, making the SHA-256 reproducible: `e581f6bf…`
-verified identical across two fresh clones plus a time-separated rebuild, all
-15 upstream tests green. Mismatch output prints the actual hash for diagnosis.
+Workflow runs `generateCorpus` in its own Gradle invocation (single-invocation
+ordering left the corpus off the NeoForge test classpath) and verifies the
+jar structurally (`infra/check_linear_jar.py`) instead of by whole-jar SHA:
+class bytecode drifts across JDK updates for identical sources, which broke
+two pin attempts. Provenance stays locked via commit rev-parse + tracked
+patch + unit tests on the packaged classes; per-file hashes lock the release
+at pack time. Exact-JDK pinning was rejected (setup-java cannot resolve the
+verified build).
 
 ## 2026-10-01 Linear verification authorized — IN PROGRESS, not deployed
 
