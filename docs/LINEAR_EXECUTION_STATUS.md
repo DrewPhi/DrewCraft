@@ -15,8 +15,14 @@ generation/play. Launcher channel remains 0.1.16. No Linear promotion yet.
   corrupt Linear files when per-region backups are disabled.
 - Conversion-only property aborts startup BEFORE world loading/ticking after
   conversion; its explicit completion marker, not exit code, is the result.
-- NeoForge **21.1.250**, Java 21; artifact SHA256
-  `db54e76b0e2fa3e562e31e598a0ddfbe075a461428f15fdbf54b2faaa2da2866`.
+- NeoForge **21.1.250**, Java 21; isolated-test artifact SHA256
+  `db54e76b0e2fa3e562e31e598a0ddfbe075a461428f15fdbf54b2faaa2da2866`
+  (server-built, live chain + Java acceptance ran against it). The release
+  artifact is rebuilt reproducibly with normalized jar timestamps/order; its
+  pinned SHA256 is
+  `e581f6bf3a17b10016b4eaf18ec0020698a1cad8db81961f561ffc47ceee84d9`
+  (verified identical across fresh clones and rebuilds; same code + patch,
+  all 15 upstream tests pass on it).
   Final jar includes upstream MIT copyright/license notice.
 - Upstream plus real-region/converter tests: **19 passed**; additional focused
   strict-corruption/source-header tests pass, **6 converter safety tests** total.

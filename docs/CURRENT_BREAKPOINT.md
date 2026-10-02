@@ -6,9 +6,11 @@ First CI run of `0.1.17-rc.1` failed at the Linear step: 10/15 upstream tests
 fail when the synthetic corpus was never generated (bare
 `IllegalArgumentException` from `LinearTestSupport.resourcePath`). Same failure
 was seen and resolved server-side by running upstream `generateCorpus` first.
-Workflow now runs `./gradlew generateCorpus test jar`; the corpus is test-only
-and does not change the pinned `db54e76b…` jar hash. Commit `fa87f36` (Linear
-prep set) is pushed to `main`. Production remains Anvil 0.1.16; no cutover yet.
+Workflow now runs `generateCorpus` in its own Gradle invocation (single-invocation
+ordering left the corpus off the test classpath) and builds the jar with
+normalized timestamps/order, making the SHA-256 reproducible: `e581f6bf…`
+verified identical across two fresh clones plus a time-separated rebuild, all
+15 upstream tests green. Mismatch output prints the actual hash for diagnosis.
 
 ## 2026-10-01 Linear verification authorized — IN PROGRESS, not deployed
 

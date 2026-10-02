@@ -10,10 +10,14 @@ index a31aec1..9079598 100644
  }
  
  task generateCorpus(type: JavaExec) {
-@@ -104,6 +105,10 @@ task benchmark(type: JavaExec) {
+@@ -104,6 +105,14 @@ task benchmark(type: JavaExec) {
  }
  
  jar {
++    // DrewCraft release rule: the pinned SHA-256 must reproduce on rebuild.
++    // Normalize entry timestamps and ordering; test corpus stays out of the jar.
++    preserveFileTimestamps = false
++    reproducibleFileOrder = true
 +    from('LICENSE') {
 +        into 'META-INF/licenses'
 +        rename { 'linear-MIT.txt' }
