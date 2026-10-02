@@ -108,7 +108,8 @@ jobs:
           git checkout --detach "${RADAR_SOURCE[1]}"
           test "$(git rev-parse HEAD)" = "${RADAR_SOURCE[1]}"
           bash gradlew build --no-daemon
-          python - <<'PY' >> "$GITHUB_OUTPUT"
+          # Unquoted heredoc: RADAR_SOURCE must expand in the shell before Python runs.
+          python - <<PY >> "$GITHUB_OUTPUT"
           import pathlib
           libs=pathlib.Path('/tmp/create-radar-upstream') / "${RADAR_SOURCE[2]}"
           jars=[p for p in sorted(libs.glob('*.jar')) if not p.name.lower().endswith(('-sources.jar','-source.jar','-javadoc.jar','-dev.jar'))]
