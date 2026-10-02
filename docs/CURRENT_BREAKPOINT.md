@@ -1,5 +1,15 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-02 Linear release candidate build — retry after corpus fix
+
+First CI run of `0.1.17-rc.1` failed at the Linear step: 10/15 upstream tests
+fail when the synthetic corpus was never generated (bare
+`IllegalArgumentException` from `LinearTestSupport.resourcePath`). Same failure
+was seen and resolved server-side by running upstream `generateCorpus` first.
+Workflow now runs `./gradlew generateCorpus test jar`; the corpus is test-only
+and does not change the pinned `db54e76b…` jar hash. Commit `fa87f36` (Linear
+prep set) is pushed to `main`. Production remains Anvil 0.1.16; no cutover yet.
+
 ## 2026-10-01 Linear verification authorized — IN PROGRESS, not deployed
 
 Latest check: the seven-stage runtime chain PASSED at 19:48:09 UTC. Final state

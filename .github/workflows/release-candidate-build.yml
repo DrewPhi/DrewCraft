@@ -67,7 +67,7 @@ jobs:
           git checkout --detach aa693e448723a817504957eec2a9c923f7af7ef5
           test "$(git rev-parse HEAD)" = aa693e448723a817504957eec2a9c923f7af7ef5
           git apply "$GITHUB_WORKSPACE/infra/linear-safety.patch"
-          ./gradlew test jar -PbuildTarget=legacy --no-daemon
+          ./gradlew generateCorpus test jar -PbuildTarget=legacy --no-daemon
           artifact=build/libs/linear-1.21.1-1.3.3+legacy.jar
           test -f "$artifact"
           echo 'db54e76b0e2fa3e562e31e598a0ddfbe075a461428f15fdbf54b2faaa2da2866  '"$artifact" | sha256sum --check
