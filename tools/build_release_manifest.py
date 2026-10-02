@@ -38,6 +38,8 @@ def main() -> int:
     p.add_argument("--runtime-lock", default="launcher/runtime-lock.json")
     p.add_argument("--server-address")
     p.add_argument("--health-url")
+    p.add_argument("--world-storage-format", choices=("anvil", "linear-v1"), default="anvil")
+    p.add_argument("--world-storage-version")
     args = p.parse_args()
 
     lock = json.loads(pathlib.Path(args.runtime_lock).read_text("utf-8"))
@@ -62,6 +64,15 @@ def main() -> int:
         runtime=runtime_from_lock(lock),
         server=server or None,
     )
+    if args.world_storage_format == "linear-v1":
+        if not args.world_storage_version:
+            raise ValueError("--world-storage-version is required for linear-v1 releases")
+        manifest["worldStorage"] = {
+            "format": args.world_storage_format,
+            "version": args.world_storage_version,
+        }
+    elif args.world_storage_version:
+        raise ValueError("--world-storage-version is only valid with linear-v1")
     digest = write_manifest(args.output, manifest)
     print(json.dumps({"packVersion": manifest["packVersion"], "sha256": digest, "files": len(manifest["files"])}, sort_keys=True))
     return 0

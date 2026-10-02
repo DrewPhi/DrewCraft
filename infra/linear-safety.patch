@@ -1,0 +1,225 @@
+diff --git a/build.gradle b/build.gradle
+index a31aec1..9079598 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -90,6 +90,7 @@ tasks.named('processTestResources', ProcessResources).configure {
+ 
+ tasks.named('test', Test).configure {
+     useJUnitPlatform()
++    maxHeapSize = '2G'
+ }
+ 
+ task generateCorpus(type: JavaExec) {
+@@ -104,6 +105,10 @@ task benchmark(type: JavaExec) {
+ }
+ 
+ jar {
++    from('LICENSE') {
++        into 'META-INF/licenses'
++        rename { 'linear-MIT.txt' }
++    }
+     from(configurations.zstdRuntime) {
+         into 'META-INF/linear-libs'
+         rename { 'zstd-jni.jar' }
+@@ -138,5 +143,3 @@ tasks.withType(ProcessResources).configureEach {
+         expand replaceProperties
+     }
+ }
+-
+-
+diff --git a/src/main/java/com/memesgmm/linear/Linear.java b/src/main/java/com/memesgmm/linear/Linear.java
+index dda3260..a8fa8c6 100644
+--- a/src/main/java/com/memesgmm/linear/Linear.java
++++ b/src/main/java/com/memesgmm/linear/Linear.java
+@@ -43,6 +43,26 @@ public class Linear {
+         }
+     }
+ 
++    /** Offline maintenance mode: convert with Minecraft's real reader before any ticking. */
++    @SubscribeEvent
++    public void onConversionOnly(net.neoforged.neoforge.event.server.ServerAboutToStartEvent event) {
++        if (!Boolean.getBoolean("drewcraft.linear.convertOnly")) return;
++        java.nio.file.Path world = event.getServer().getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT);
++        try (var directories = java.nio.file.Files.walk(world)) {
++            for (var directory : directories.filter(java.nio.file.Files::isDirectory).sorted().toList()) {
++                String name = directory.getFileName().toString();
++                if (name.equals("region") || name.equals("entities") || name.equals("poi")) {
++                    com.memesgmm.linear.linear.MCAConverter.convertFolder(directory);
++                }
++            }
++            java.nio.file.Files.writeString(world.resolve(".linear-conversion-complete"), "verified-before-world-load\n");
++        } catch (java.io.IOException e) {
++            throw new IllegalStateException("Offline conversion failed; do not load world", e);
++        }
++        // Intentionally abort startup: loading/ticking would invalidate the byte comparison.
++        throw new IllegalStateException("DREWCRAFT_CONVERSION_ONLY_COMPLETE: expected maintenance shutdown before ticking");
++    }
++
+     @SubscribeEvent
+     public void onServerStarting(ServerStartingEvent event) {
+         runtime.onServerStarting(event.getServer());
+diff --git a/src/main/java/com/memesgmm/linear/linear/LinearRegionFile.java b/src/main/java/com/memesgmm/linear/linear/LinearRegionFile.java
+index 979dcf6..29010e9 100644
+--- a/src/main/java/com/memesgmm/linear/linear/LinearRegionFile.java
++++ b/src/main/java/com/memesgmm/linear/linear/LinearRegionFile.java
+@@ -793,6 +793,11 @@ public class LinearRegionFile implements AutoCloseable {
+             loadFromDisk(path);
+             return true;
+         } catch (IOException primaryEx) {
++            if (!LinearConfig.isBackupEnabled()) {
++                // DrewCraft uses one verified world snapshot, not stale per-region
++                // backups. Never quarantine then silently regenerate player data.
++                throw new IllegalStateException("Corrupt Linear region; restore world snapshot before restart: " + path, primaryEx);
++            }
+             LinearRuntime.LOGGER.error(
+                     "[Linear] Failed to load {}: {}", path.getFileName(), primaryEx.getMessage());
+         }
+diff --git a/src/main/java/com/memesgmm/linear/linear/MCAConverter.java b/src/main/java/com/memesgmm/linear/linear/MCAConverter.java
+index aca8dc5..a0361fd 100644
+--- a/src/main/java/com/memesgmm/linear/linear/MCAConverter.java
++++ b/src/main/java/com/memesgmm/linear/linear/MCAConverter.java
+@@ -54,7 +54,7 @@ public final class MCAConverter {
+         } catch (IOException e) {
+             LinearRuntime.LOGGER.error(
+                     "[Linear] Cannot list region folder {}: {}", regionFolder, e.getMessage());
+-            return;
++            throw new IllegalStateException("Cannot inventory region folder " + regionFolder, e);
+         }
+ 
+         int total = mcaFiles.size();
+@@ -103,14 +103,18 @@ public final class MCAConverter {
+         pool.shutdown();
+         try {
+             if (!pool.awaitTermination(30, java.util.concurrent.TimeUnit.MINUTES)) {
++                pool.shutdownNow();
+                 LinearRuntime.LOGGER.error(
+                         "[Linear] Conversion timed out after 30 minutes in {}. " +
+                                 "Remaining .mca files were NOT deleted.", regionFolder.getFileName());
++                throw new IllegalStateException("Region conversion timed out: " + regionFolder);
+             }
+         } catch (InterruptedException e) {
++            pool.shutdownNow();
+             Thread.currentThread().interrupt();
+             LinearRuntime.LOGGER.error("[Linear] MCA conversion interrupted in {}!",
+                     regionFolder.getFileName());
++            throw new IllegalStateException("Region conversion interrupted", e);
+         }
+ 
+         long ms  = System.currentTimeMillis() - t0;
+@@ -124,6 +128,7 @@ public final class MCAConverter {
+             LinearRuntime.LOGGER.warn(
+                     "[Linear] Conversion complete: {} ok, {} FAILED in {}ms. " +
+                             "Failed .mca files were NOT deleted - restart to retry.", ok, bad, ms);
++            throw new IllegalStateException("Refusing to open incompletely converted storage: " + regionFolder);
+         }
+     }
+ 
+@@ -139,10 +144,35 @@ public final class MCAConverter {
+         Path linearPath = dir.resolve("r." + regionX + "." + regionZ + ".linear");
+ 
+         // Already converted on a previous interrupted run.
+-        if (Files.exists(linearPath)) {
+-            Files.delete(mcaPath);
+-            deleteMccFiles(dir, regionX, regionZ);
+-            return;
++        boolean existing = Files.exists(linearPath);
++
++        boolean[] occupied = new boolean[1024];
++        long sourceSize = Files.size(mcaPath);
++        if (sourceSize != 0) {
++            if (sourceSize < 8192) throw new IOException("Truncated Anvil header; source retained: " + mcaPath);
++            try (RandomAccessFile source = new RandomAccessFile(mcaPath.toFile(), "r")) {
++                for (int i = 0; i < 1024; i++) {
++                    source.seek(i * 4L);
++                    int location = source.readInt();
++                    if (location == 0) continue;
++                    int offset = location >>> 8, sectors = location & 255;
++                    long start = offset * 4096L;
++                    // Minecraft may leave the final allocated sector only partly
++                    // filled. Validate its actual payload, not absent padding.
++                    long paddedSize = ((sourceSize + 4095L) / 4096L) * 4096L;
++                    if (offset < 2 || sectors == 0 || start + 5 > sourceSize || start + sectors * 4096L > paddedSize)
++                        throw new IOException("Invalid Anvil location; source retained: " + mcaPath + ":" + i);
++                    source.seek(start);
++                    int length = source.readInt();
++                    int codec = source.readUnsignedByte();
++                    if (length < 1 || length > sectors * 4096 - 4 || start + 4L + length > sourceSize || (codec & 127) < 1 || (codec & 127) > 3)
++                        throw new IOException("Invalid Anvil payload; source retained: " + mcaPath + ":" + i);
++                    if ((codec & 128) != 0 && !Files.isRegularFile(dir.resolve("c." +
++                            (regionX * 32 + i % 32) + "." + (regionZ * 32 + i / 32) + ".mcc")))
++                        throw new IOException("Missing external chunk; source retained: " + mcaPath + ":" + i);
++                    occupied[i] = true;
++                }
++            }
+         }
+ 
+         byte[][] chunkData  = new byte[1024][];
+@@ -154,7 +184,10 @@ public final class MCAConverter {
+                 int lz = i / 32;
+                 ChunkPos pos = new ChunkPos(regionX * 32 + lx, regionZ * 32 + lz);
+                 DataInputStream dis = rf.getChunkDataInputStream(pos);
+-                if (dis == null) continue;
++                if (dis == null) {
++                    if (occupied[i]) throw new IOException("Occupied source chunk unreadable; retaining " + mcaPath);
++                    continue;
++                }
+                 try {
+                     chunkData[i] = dis.readAllBytes();
+                     chunkCount++;
+@@ -164,6 +197,13 @@ public final class MCAConverter {
+             }
+         }
+ 
++        if (existing) {
++            verifyEquivalent(linearPath, chunkData, regionX, regionZ);
++            Files.delete(mcaPath);
++            deleteMccFiles(dir, regionX, regionZ);
++            return;
++        }
++
+         if (chunkCount == 0) {
+             Files.delete(mcaPath);
+             deleteMccFiles(dir, regionX, regionZ);
+@@ -181,9 +221,9 @@ public final class MCAConverter {
+                 try (DataOutputStream dos = linear.write(pos)) {
+                     dos.write(chunkData[i]);
+                 }
+-                chunkData[i] = null; // release ASAP
+             }
+             linear.flush();
++            verifyEquivalent(linearPath, chunkData, regionX, regionZ);
+             writeOk = true;
+         } finally {
+             LinearRegionFile.ALL_OPEN.remove(linear);
+@@ -196,6 +236,24 @@ public final class MCAConverter {
+         deleteMccFiles(dir, regionX, regionZ);
+     }
+ 
++    private static void verifyEquivalent(Path path, byte[][] expected, int rx, int rz) throws IOException {
++        if (!LinearRegionFile.verifyOnDisk(path).ok) {
++            throw new IOException("Invalid converted region; both source and target retained: " + path);
++        }
++        try (LinearRegionFile reopened = new LinearRegionFile(path, false,
++                com.memesgmm.linear.util.LinearCompat.createDummyStorageInfo())) {
++            for (int i = 0; i < 1024; i++) {
++                ChunkPos pos = new ChunkPos(rx * 32 + i % 32, rz * 32 + i / 32);
++                try (DataInputStream input = reopened.read(pos)) {
++                    byte[] actual = input == null ? null : input.readAllBytes();
++                    if (!Arrays.equals(expected[i], actual)) {
++                        throw new IOException("Conversion mismatch at " + pos + "; Anvil source retained");
++                    }
++                }
++            }
++        }
++    }
++
+     private static void deleteMccFiles(Path dir, int regionX, int regionZ) {
+         for (int lz = 0; lz < 32; lz++) {
+             for (int lx = 0; lx < 32; lx++) {
+@@ -329,4 +387,4 @@ public final class MCAConverter {
+             } catch (IOException ignored) {}
+         }
+     }
+-}
+\ No newline at end of file
++}

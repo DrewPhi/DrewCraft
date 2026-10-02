@@ -1,5 +1,33 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-01 Linear verification authorized — IN PROGRESS, not deployed
+
+Latest check: the seven-stage runtime chain PASSED at 19:48:09 UTC. Final state
+is `linear-verification/chain-evidence-chunky-retry2/state.json`; it reuses the
+first three original passes and records the remaining four. New Terrain
+Diffusion generation and native DH LOD output both passed. Measured region
+compression saves 39.69%; fresh staging DH makes total-world sizes incomparable.
+The apparent Chunky stall was asynchronous work still finishing, not an actual
+cancelled generation job. Isolated test server stopped; production Minecraft
+and idle pregeneration services are active. Do not rerun the completed chain.
+Next: remaining controller runtime/pause/checkpoint, interrupted-save recovery,
+Java latency and production migration/release gates listed in execution status.
+
+See `LINEAR_EXECUTION_STATUS.md` and `LINEAR_VERIFICATION_PLAN.md` for exact
+artifacts, pinned snapshot and continuation. Production/launcher remain
+0.1.16 on Anvil. The sole pre-conversion snapshot is pinned; backups deliberately
+fail while pinned. Isolated restore was interrupted by automatic host service
+updates and is being resumed with verification. Do not overwrite staging or
+run an old application against converted data. No client/account test.
+
+Latest continuation: full stopped-world comparison PASSED (2,735 regions,
+994,754 raw payloads; metadata differences explicitly inspected). Converted
+runtime boot/save/reopen reached RCON readiness. `drewcraft-linear-chain` now
+runs the isolated DH/Chunky/storage/log stages automatically; durable results
+are `/srv/drewcraft/linear-verification/chain-evidence/state.json`. Check its
+recorded failed/completed stage before resubmitting. No automatic production
+conversion or release promotion is included; see execution status for gates.
+
 ## 2026-10-01 fuel-only 0.1.16 DEPLOYED and launcher promoted
 
 Completed 06:03:27 UTC. Active server 0.1.16-dev-local, world revision 3,

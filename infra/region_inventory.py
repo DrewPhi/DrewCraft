@@ -21,7 +21,7 @@ def linear_header(path):
     return count, length, checksum
 
 
-def linear_slots(path):
+def _read_linear(path, include_payloads):
     count, length, checksum = linear_header(path)
     with path.open('rb') as stream:
         stream.seek(32)
@@ -52,4 +52,21 @@ def linear_slots(path):
     slots = [slot for slot, size in enumerate(sizes) if size]
     if len(slots) != count or sum(sizes) + 8192 != decoded:
         raise ValueError(f'Linear chunk directory mismatch: {path}')
-    return slots
+    if not include_payloads:
+        return slots
+    body = ctypes.string_at(target, decoded)
+    offset = 8192
+    payloads = {}
+    for slot, size in enumerate(sizes):
+        if size:
+            payloads[slot] = body[offset:offset + size]
+            offset += size
+    return payloads
+
+
+def linear_payloads(path):
+    return _read_linear(path, True)
+
+
+def linear_slots(path):
+    return _read_linear(path, False)

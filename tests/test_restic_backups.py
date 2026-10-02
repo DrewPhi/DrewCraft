@@ -22,6 +22,16 @@ def fixture_root(tmp_path):
     return {'packVersion': 'test', 'protocolVersion': 1, 'world': identity}
 
 
+def test_backup_hold_blocks_retention_and_direct_restic(tmp_path):
+    ctl._atomic_json(tmp_path / 'state/backup-hold.json', {'reason': 'linear migration'})
+    with patch.object(ctl, 'restic_run') as run:
+        with pytest.raises(RuntimeError, match='pinned'):
+            ctl.backup(tmp_path, {})
+        with pytest.raises(RuntimeError, match='pinned'):
+            ctl.backup_restic(tmp_path, {}, label='manual')
+        run.assert_not_called()
+
+
 def test_configured_backup_uses_restic_and_receipt(tmp_path):
     manifest = fixture_root(tmp_path)
     with patch.object(ctl, 'restic_run', side_effect=[json.dumps({

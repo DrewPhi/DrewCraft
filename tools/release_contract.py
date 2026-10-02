@@ -64,6 +64,23 @@ def validate_manifest(manifest: dict) -> dict:
         if key not in world:
             raise ValueError(f"world metadata missing {key}")
 
+    storage = manifest.get("worldStorage")
+    if storage is not None:
+        if not isinstance(storage, dict) or storage.get("format") not in {"anvil", "linear-v1"}:
+            raise ValueError("worldStorage.format must be anvil or linear-v1")
+        if storage["format"] == "linear-v1" and not storage.get("version"):
+            raise ValueError("linear-v1 worldStorage requires an exact version")
+        if storage["format"] == "anvil" and storage.get("version") is not None:
+            raise ValueError("Anvil worldStorage must not declare a Linear version")
+        if set(storage) - {"format", "version"}:
+            raise ValueError("worldStorage has unsupported fields")
+        if storage["format"] == "linear-v1" and not any(
+            entry.get("side") in ("common", "server")
+            and entry.get("path", "").startswith("mods/linear-")
+            for entry in manifest["files"]
+        ):
+            raise ValueError("linear-v1 release lacks its exact Linear server mod")
+
     seen = set()
     for entry in manifest["files"]:
         side = entry.get("side")

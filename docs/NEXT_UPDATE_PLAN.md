@@ -60,6 +60,10 @@ Implementation plan:
 
 ### Compression verification and deployment gates (2026-10-01)
 
+Detailed executable sequence and stop/resume gates: `LINEAR_VERIFICATION_PLAN.md`
+(BP0–BP7). Planning only; isolated-server testing and production conversion
+still require the relevant explicit approval.
+
 See `STORAGE_OPTIMIZATION_REVIEW.md` for measured sample results and the
 installed DH cold-reader incompatibility. This is a plan, not authorization
 to convert the live world before tests pass.

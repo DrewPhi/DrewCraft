@@ -203,7 +203,26 @@ def _replace_link(temp_link: pathlib.Path, dest: pathlib.Path) -> None:
     os.replace(temp_link, dest)
 
 
+def require_storage_compatibility(root: pathlib.Path, manifest: dict) -> None:
+    state_path = root / 'state/world-storage.json'
+    state = load_json(state_path) if state_path.exists() else {}
+    actual_linear = state.get('format') == 'linear-v1' or any(
+        (root / 'persistent/world').rglob('r.*.*.linear'))
+    target = manifest.get('worldStorage', {}).get('format', 'anvil')
+    has_linear = any(entry['path'].startswith('mods/linear-')
+                     for entry in selected_files(manifest, 'server'))
+    if actual_linear and (target != 'linear-v1' or not has_linear):
+        raise RuntimeError('Refusing Anvil-only application against Linear world; restore world before rollback')
+    if target == 'linear-v1':
+        if not has_linear:
+            raise RuntimeError('Linear storage release lacks its exact server mod')
+        if not actual_linear and any((root / 'persistent/world').rglob('*.mca')):
+            if not state.get('migrationAuthorized') or not (root / 'state/backup-hold.json').exists():
+                raise RuntimeError('Anvil conversion requires explicit protected world-format transaction')
+
+
 def activate(root: pathlib.Path, release: pathlib.Path, manifest: dict) -> pathlib.Path | None:
+    require_storage_compatibility(root, manifest)
     ensure_layout(root)
     require_world_identity(root, manifest)
     _wire_persistent_paths(root, release)
@@ -237,6 +256,7 @@ def rollback_application(root: pathlib.Path, previous: pathlib.Path | None) -> d
         raise RuntimeError(f"previous release is unavailable: {previous}")
 
     manifest = _manifest_for_release(previous)
+    require_storage_compatibility(root, manifest)
     require_world_identity(root, manifest)
     temp_link = root / ".current.rollback"
     if temp_link.exists() or temp_link.is_symlink():
@@ -252,6 +272,7 @@ def rollback_application(root: pathlib.Path, previous: pathlib.Path | None) -> d
 
 def backup(root: pathlib.Path, manifest: dict, *, label: str = "manual", retain: int = 1,
            copy_dir: pathlib.Path | None = None) -> pathlib.Path:
+    require_backup_unpinned(root)
     if retain != 1:
         raise RuntimeError("DrewCraft backup policy requires exactly one restore point")
     if (root / "state/backup-config.json").exists():
@@ -347,8 +368,15 @@ def init_restic(root: pathlib.Path, password_file: pathlib.Path) -> dict:
     return config
 
 
+def require_backup_unpinned(root: pathlib.Path) -> None:
+    """Never replace a migration's only pre-conversion restore point."""
+    if (root / "state/backup-hold.json").exists():
+        raise RuntimeError("backup restore point is pinned; complete or roll back migration before replacing it")
+
+
 def backup_restic(root: pathlib.Path, manifest: dict, *, label: str,
                   copy_dir: pathlib.Path | None = None) -> pathlib.Path:
+    require_backup_unpinned(root)
     if copy_dir is not None:
         raise RuntimeError("Restic off-host backups require repository replication, not receipt copying")
     ensure_layout(root)
@@ -422,6 +450,7 @@ def write_health(root: pathlib.Path, status: str, manifest: dict, message: str =
 def update_transaction(root: pathlib.Path, manifest: dict, *, stop_command: str | None = None,
                        start_command: str | None = None, health_command: str | None = None,
                        backup_retain: int = 1, backup_copy_dir: pathlib.Path | None = None) -> dict:
+    require_storage_compatibility(root, manifest)
     require_world_identity(root, manifest)
     release = stage_release(root, manifest)
     write_health(root, "updating", manifest)

@@ -15,6 +15,19 @@
     "minimumLauncherVersion": {"type": ["string", "null"]},
     "worldId": {"type": ["string", "null"]},
     "worldRevision": {"type": ["integer", "null"], "minimum": 0},
+    "worldStorage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format"],
+      "properties": {
+        "format": {"enum": ["anvil", "linear-v1"]},
+        "version": {"type": "string", "minLength": 1}
+      },
+      "allOf": [
+        {"if": {"properties": {"format": {"const": "linear-v1"}}}, "then": {"required": ["version"]}},
+        {"if": {"properties": {"format": {"const": "anvil"}}}, "then": {"not": {"required": ["version"]}}}
+      ]
+    },
     "files": {
       "type": "array",
       "items": {
