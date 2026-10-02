@@ -43,7 +43,10 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          # Exact pin: class bytecode (and thus the pinned Linear SHA-256)
+          # varies across JDK updates. Verify any bump with a local
+          # Temurin build of the safety-patched jar before changing this.
+          java-version: '21.0.12+8'
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
