@@ -3,8 +3,10 @@
 Owner authorized BP0–BP7, including isolated server-only tests and conditional
 deployment if every safety gate passes. No client/account login is involved.
 
-Production: 0.1.16-dev-local, Anvil, existing world unchanged except normal
-generation/play. Launcher channel remains 0.1.16. No Linear promotion yet.
+Production: 0.1.17-rc.1, Linear, converted 2026-10-02 (cutover
+evidence: fresh snapshot 9255ec4d, conversion marker verified-before-world-load,
+3,705 .linear / 0 .mca/.mcc, RCON-ready boots, pregen resumed). Launcher
+channel remains pre-Linear until the client publish gate closes.
 
 ## BP0 progress
 

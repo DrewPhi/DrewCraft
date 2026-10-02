@@ -1,5 +1,19 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-02 Linear 0.1.17-rc.1 DEPLOYED to production (Anvil→Linear cutover)
+
+Production runs `0.1.17-rc.1` on Linear storage: stopped empty server, fresh
+verified Restic snapshot `9255ec4d` (hold rotated to it), authorized migration,
+activated the CI-built release, conversion-only boot completed with marker
+`verified-before-world-load` (3,705 `.linear`, 0 `.mca`/`.mcc` retained),
+normal boot reached RCON readiness, save-all flushes, no fallback files, no
+mixin/corruption errors, pregen resumed. State `world-storage.json` is
+`linear-v1`; backup stays pinned to the pre-cutover snapshot. Stale restic
+lock from the 10-01 interrupted baseline (PID 266958) was found dead and
+cleared before snapshotting. Launcher channel NOT yet republished: `live.json`
+for 0.1.17-rc.1 exists only in the CI artifact; no stable pointer published.
+Client update awaits the public-host publish decision (Pages path unresolved).
+
 ## 2026-10-02 Linear release candidate build — retry after corpus fix
 
 First CI run of `0.1.17-rc.1` failed at the Linear step: 10/15 upstream tests
