@@ -14,6 +14,17 @@ cleared before snapshotting. Launcher channel NOT yet republished: `live.json`
 for 0.1.17-rc.1 exists only in the CI artifact; no stable pointer published.
 Client update awaits the public-host publish decision (Pages path unresolved).
 
+## 2026-10-03 0.1.17-rc.1 client payload on GitHub Releases (prerelease, stable untouched)
+
+Per owner direction: 279 DrewCraft-owned files hosted as `drewcraft-pack-0.1.17-rc.1`
+prerelease assets (flat `side--path` names, fuel-flow convention); provider files
+stay on CurseForge/Modrinth CDNs. Manifest rebuilt with immutable release URLs,
+channel `candidate`, validated by `release_contract`. Draft assets 404, so the
+release is a published prerelease (page visible, no channel pointer flipped).
+Verified: all 326 manifest entries download with matching size+SHA-256, and the
+launcher's own fetch path (validate + side filter + verified download) passes.
+`live.json` stays local-only; stable remains 0.1.16 until owner playtests Linear.
+
 ## 2026-10-02 Linear release candidate build — retry after corpus fix
 
 First CI run of `0.1.17-rc.1` failed at the Linear step: 10/15 upstream tests
