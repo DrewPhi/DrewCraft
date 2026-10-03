@@ -1,3 +1,4 @@
+#!/bin/bash
 #SBATCH --job-name=dc-tile-test
 #SBATCH --partition=scavenge
 #SBATCH --gres=gpu:l40s:1
@@ -22,7 +23,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 
 # TD variant under test is selected by which jar sits in app/mods.
 # The setup step places exactly one terrain-diffusion jar there.
-python3 hpc/hpc_chunky_tile.py \
+/usr/bin/python3.11 hpc/hpc_chunky_tile.py \
   --app "$HOME/diffusion_model_infinite_test/app" \
   --work "$HOME/diffusion_model_infinite_test/work-tile-test" \
   --java "$HOME/diffusion_model_infinite_test/jdk" \
