@@ -1,6 +1,17 @@
 # DrewCraft Current Development Breakpoint
 
-## 2026-10-03 0.1.17-rc.2 rebuild on full v1_2_qol_candidate profile
+## 2026-10-03 0.1.17-rc.2 DEPLOYED with full mod set (app-only update)
+
+rc.1 had built the narrower `v1_1_integration` profile and dropped 12 production
+mods; rc.2 builds `v1_2_qol_candidate` (338 files, resolver-verified). World was
+frozen first (saved, announced, services stopped; no registry warnings, player
+in Overworld). Published as prerelease `drewcraft-pack-0.1.17-rc.2`, manifest
+rebuilt with immutable release URLs (channel candidate), all 338 entries
+download-verified, launcher fetch test passes. Server assembled (279 seed +
+41 current + 8 CDN), activated from rc.1, booted RCON-ready with zero mixin/
+corruption/registry errors, dannys-aot loads via Connector as designed,
+save-all flushes, pregen resumed (idle grace on empty server). Stable channel
+and `live.json` untouched at 0.1.16 until owner playtests.
 
 0.1.17-rc.1 built the narrower `v1_1_integration` profile and silently dropped
 12 production mods (dannys-aot, Jade, AppleSkin, Connector stack, Forgified,
