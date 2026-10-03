@@ -1,6 +1,13 @@
 # DrewCraft Current Development Breakpoint
 
-## 2026-10-02 Linear 0.1.17-rc.1 DEPLOYED to production (Anvil→Linear cutover)
+## 2026-10-03 0.1.17-rc.2 rebuild on full v1_2_qol_candidate profile
+
+0.1.17-rc.1 built the narrower `v1_1_integration` profile and silently dropped
+12 production mods (dannys-aot, Jade, AppleSkin, Connector stack, Forgified,
+QoL clients). World frozen (saved, announced, mc+pregen stopped) before any
+damage: no registry warnings, player stayed in Overworld. RC workflow now
+builds `v1_2_qol_candidate` (62 deps, resolver-verified to restore all 12).
+Fix is app-only: Linear world untouched, no conversion involved.
 
 Production runs `0.1.17-rc.1` on Linear storage: stopped empty server, fresh
 verified Restic snapshot `9255ec4d` (hold rotated to it), authorized migration,
