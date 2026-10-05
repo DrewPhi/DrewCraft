@@ -1,5 +1,17 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-03 client channel promoted to 0.1.17-rc.2
+
+Owner authorized fixing the client rollout. The shared launcher pointer at
+`drewcraft-dev-pack/live.json` now targets the published rc.2 manifest, SHA-256
+`7d17795ebc8d1da7076a69913233370c24072504c1edb5000959f82c7bef95e2`.
+Verified all 224 client/common files (404,478,570 bytes) through their public
+download URLs against manifest sizes/hashes before promotion. After promotion,
+the launcher’s actual fetch, manifest validation and server_ready checks pass
+against production rc.2, world revision 3. Existing/fresh launchers converge on
+their next launch. No server restart or world mutation performed. Owner gameplay
+acceptance remains outstanding; this was download/compatibility verification.
+
 ## 2026-10-03 0.1.17-rc.2 DEPLOYED with full mod set (app-only update)
 
 rc.1 had built the narrower `v1_1_integration` profile and dropped 12 production
