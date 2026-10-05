@@ -18,15 +18,15 @@ cd ~/diffusion_model_infinite_test
 
 # CUDA userspace if the TD CUDA backend needs it (harmless if absent).
 module load CUDA/12.6.0 2>/dev/null || true
-export JAVA_HOME="$HOME/diffusion_model_infinite_test/jdk"
+export JAVA_HOME="$HOME/diffusion_model_infinite_test/bundle/jdk"
 export PATH="$JAVA_HOME/bin:$PATH"
 
 # TD variant under test is selected by which jar sits in app/mods.
 # The setup step places exactly one terrain-diffusion jar there.
 /usr/bin/python3.11 hpc/hpc_chunky_tile.py \
-  --app "$HOME/diffusion_model_infinite_test/app" \
+  --app "$HOME/diffusion_model_infinite_test/bundle/app" \
   --work "$HOME/diffusion_model_infinite_test/work-tile-test" \
-  --java "$HOME/diffusion_model_infinite_test/jdk" \
+  --java "$HOME/diffusion_model_infinite_test/bundle/jdk" \
   --seed -6008857613538391475 \
   --level-type 'drewcraft\:terrain_diffusion_scale_3' \
   --center -7936 -256 \
