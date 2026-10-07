@@ -23,7 +23,7 @@ def test_focused_v1_does_not_override_wda_structure_sets():
 def test_every_shipping_and_combined_smoke_workflow_builds_the_source_profile():
     for name in ("release-candidate-build.yml", "local-dev-release.yml", "full-profile-verify.yml", "server-smoke.yml"):
         text = (ROOT / ".github" / "workflows" / name).read_text(encoding="utf-8")
-        profile = "v1_2_qol_candidate" if name == "local-dev-release.yml" else "v1_1_integration"
+        profile = "v1_2_qol_candidate" if name in ("local-dev-release.yml", "release-candidate-build.yml") else "v1_1_integration"
         assert f"--profile {profile}" in text, name
 
 
