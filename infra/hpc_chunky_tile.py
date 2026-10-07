@@ -44,6 +44,7 @@ def main() -> int:
     ap.add_argument("--app", type=Path, required=True)
     ap.add_argument("--work", type=Path, required=True)
     ap.add_argument("--java", type=Path, required=True)
+    ap.add_argument("--models", type=Path, required=True)
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--level-type", required=True)
     ap.add_argument("--center", nargs=2, type=int, required=True)
@@ -57,22 +58,34 @@ def main() -> int:
     work = args.work
     world = work / "world"
     result: dict = {"status": "RUNNING", "startedUnix": time.time(),
-                    "center": args.center, "radius": args.radius}
+                    "center": args.center, "radius": args.radius,
+                    "comparisonStatus": "NOT_RUN", "dhPregenerationRequested": False}
     proc = None
     try:
         if work.exists():
             raise RuntimeError(f"work dir exists; refusing overwrite: {work}")
+        eula = args.app / "eula.txt"
+        if not eula.is_file() or not re.search(r"(?m)^eula=true\s*$", eula.read_text()):
+            raise RuntimeError("Bundle must contain the already accepted production eula.txt")
+        if not args.models.is_dir() or not any(args.models.glob("*.onnx")):
+            raise RuntimeError("Pinned model directory missing or has no ONNX models")
         (work / "mods").mkdir(parents=True)
         for name in sorted((args.app / "mods").glob("*.jar")):
             shutil.copy2(name, work / "mods" / name.name)
-        for name in ("config", "datapacks", "libraries"):
+        for name in ("config", "datapacks", "libraries", "defaultconfigs", "drewcraft-integration"):
             src = args.app / name
             if src.is_dir():
                 shutil.copytree(src, work / name, symlinks=True)
-        for name in ("run.sh", "user_jvm_args.txt"):
+        for name in ("run.sh", "user_jvm_args.txt", "eula.txt"):
             src = args.app / name
             if src.is_file():
                 shutil.copy2(src, work / name)
+        shutil.copytree(args.models, work / "terrain-diffusion-models")
+        td_config = work / "config/terrain-diffusion-mc.properties"
+        if td_config.is_file():
+            lines = [line for line in td_config.read_text().splitlines()
+                     if not line.startswith("explorer.address=")]
+            td_config.write_text("\n".join(lines + ["explorer.address=127.0.0.1"]) + "\n")
         secret = secrets.token_urlsafe(32)
         (work / "server.properties").write_text(
             "\n".join([
@@ -93,9 +106,9 @@ def main() -> int:
         (work / "server.properties").chmod(0o600)
         (work / "logs").mkdir(exist_ok=True)
         (world / "datapacks").mkdir(parents=True)
-        managed = work / "datapacks/drewcraft-structures"
-        if (managed / "pack.mcmeta").is_file():
-            shutil.copytree(managed, world / "datapacks/drewcraft-structures")
+        for managed in (work / "datapacks").glob("*"):
+            if managed.is_dir() and (managed / "pack.mcmeta").is_file():
+                shutil.copytree(managed, world / "datapacks" / managed.name)
 
         java = args.java / "bin/java"
         log = open(work / "runner.log", "w")
@@ -107,6 +120,8 @@ def main() -> int:
         ready = {"ok": False}
 
         def is_ready() -> bool:
+            if proc.poll() is not None:
+                raise RuntimeError(f"HPC server exited during boot: {proc.returncode}; see runner.log")
             try:
                 response = rcon(secret, args.rcon_port, "list")
                 ready["ok"] = bool(re.search(r"There are \d+ ", response))
@@ -130,6 +145,8 @@ def main() -> int:
         t1 = time.monotonic()
 
         def finished() -> bool:
+            if proc.poll() is not None:
+                raise RuntimeError(f"HPC server exited during generation: {proc.returncode}")
             with open(work / "logs/latest.log", "rb") as stream:
                 stream.seek(offset)
                 tail = stream.read().decode("utf-8", "replace")[-8000:]
@@ -149,11 +166,9 @@ def main() -> int:
             list((world / "region").glob("r.*.*.mca"))
         result["regionFiles"] = len(region)
         result["status"] = "PASS"
-        return 0
     except BaseException as error:  # noqa: BLE001 - report then exit nonzero
         result["status"] = "FAILED"
         result["error"] = f"{type(error).__name__}: {error}"
-        return 1
     finally:
         if proc is not None and proc.poll() is None:
             try:
@@ -164,8 +179,17 @@ def main() -> int:
                 proc.wait(timeout=180)
             except subprocess.TimeoutExpired:
                 proc.kill()
+                proc.wait(timeout=30)
+                result["status"] = "FAILED"
+                result["shutdownError"] = "Server required forced termination; output is not accepted"
         result["finishedUnix"] = time.time()
-        print("HPC_RESULT " + json.dumps(result, sort_keys=True), flush=True)
+        line = "HPC_RESULT " + json.dumps(result, sort_keys=True)
+        if work.is_dir():
+            (work / "result.json").write_text(json.dumps(result, sort_keys=True) + "\n")
+            with (work / "runner.log").open("a") as stream:
+                stream.write(line + "\n")
+        print(line, flush=True)
+    return 0 if result["status"] == "PASS" else 1
 
 
 if __name__ == "__main__":

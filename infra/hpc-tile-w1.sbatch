@@ -27,9 +27,10 @@ export PATH="$JAVA_HOME/bin:$PATH"
   --app "$HOME/diffusion_model_infinite_test/bundle/app" \
   --work "$HOME/diffusion_model_infinite_test/work-tile-w1" \
   --java "$HOME/diffusion_model_infinite_test/bundle/jdk" \
+  --models "$HOME/diffusion_model_infinite_test/bundle/models/terrain-diffusion-models" \
   --seed -6008857613538391475 \
   --level-type 'drewcraft\:terrain_diffusion_scale_3' \
-  --center -13056 -256 \
+  --center -7936 -256 \
   --radius 800 \
   --rcon-port 25580 \
   --server-port 25565
