@@ -1,5 +1,12 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-12 launcher 0.1.11 released (auto-update live)
+
+Managed ZGC JVM flag + DH functional defaults ship in `launcher-v0.1.11`
+(all 8 installer/updater assets published by CI). Running launchers
+self-update on next launch, then converge instances (JVM flag + DH keys
+applied to fresh and existing installs without touching user choices).
+
 ## 2026-10-12 DH 3.3.3 direct swap FAILED, rolled back to 3.3.1
 
 3.3.3 boots crash in spawn prep: its new Chunky coupling calls
