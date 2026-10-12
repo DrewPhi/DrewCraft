@@ -1,5 +1,17 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-12 DH 3.3.3 direct swap FAILED, rolled back to 3.3.1
+
+3.3.3 boots crash in spawn prep: its new Chunky coupling calls
+`ChunkyProvider.get()` during chunk load before Chunky initializes, throwing
+`IllegalStateException: Chunky is not loaded` → `Failed to initialize server`.
+Adapter mixin itself applied fine (not the failure). Rolled back to pinned
+3.3.1 (hash-verified) with pre-swap backup intact; clean boot, tuned DH values
+re-applied after the failed boot rewrote parts of the config (caps/threads
+restored, verified persistent). Lesson: 3.3.3 needs DH-side fix or a
+load-order workaround; do not retry blind. Pre-update backup now routine
+(backups unpinned).
+
 ## 2026-10-12 backups unpinned, disk reclaimed, pregen resumed
 
 Migration hold released after two fresh verified snapshots (audit trail kept);
