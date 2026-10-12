@@ -137,3 +137,23 @@ def test_interrupted_restore_leaves_converted_world_and_pin_intact(tmp_path):
     assert (tmp_path / 'persistent/converted.linear').read_bytes() == b'keep-converted-data'
     assert (tmp_path / 'state/backup-hold.json').is_file()
     assert not (tmp_path / 'migration-failed-persistent').exists()
+
+
+def test_unpin_requires_verified_replacement_and_archives_hold(tmp_path):
+    old = tmp_path / 'releases/old'
+    old.mkdir(parents=True)
+    (tmp_path / 'current').symlink_to(old, target_is_directory=True)
+    receipt = tmp_path / 'backups/snapshot.restic.json'
+    migration.serverctl._atomic_json(receipt, {'snapshotId': 'a' * 64})
+    (tmp_path / 'persistent').mkdir()
+    migration.pin(tmp_path, receipt)
+    with pytest.raises(RuntimeError, match='stopped'):
+        migration.unpin_after_acceptance(tmp_path, stopped=False, replacement_receipt=receipt)
+    with pytest.raises(RuntimeError, match='differ'):
+        migration.unpin_after_acceptance(tmp_path, stopped=True, replacement_receipt=receipt)
+    fresh = tmp_path / 'backups/fresh.restic.json'
+    migration.serverctl._atomic_json(fresh, {'snapshotId': 'b' * 64})
+    released = migration.unpin_after_acceptance(tmp_path, stopped=True, replacement_receipt=fresh)
+    assert not (tmp_path / 'state/backup-hold.json').exists()
+    assert (tmp_path / 'state/migration-hold-released-latest.json').is_file()
+    assert released['replacementReceipt'] == str(fresh.resolve())

@@ -3,6 +3,7 @@
 Caller must stop Minecraft/generators before pinning or recovery. Failed files
 are moved aside, not deleted. The sole snapshot stays pinned through acceptance.
 """
+import datetime as dt
 import os
 import pathlib
 import re
@@ -112,6 +113,44 @@ def rotate_pin(root: pathlib.Path, new_receipt: pathlib.Path, *, stopped: bool) 
             'targetFormat': old.get('targetFormat', 'linear')}
     serverctl._atomic_json(old_path, hold)
     return hold
+
+
+def unpin_after_acceptance(root: pathlib.Path, *, stopped: bool,
+                           replacement_receipt: pathlib.Path) -> dict:
+    """Release the migration backup hold once a verified replacement exists.
+
+    Requires: stopped services, an existing hold, and a replacement receipt
+    (restic-verified snapshot of the CURRENT world, normally taken after the
+    migration proves healthy) that differs from the hold's receipt. The hold
+    is moved aside (audit trail), never deleted outright, restoring the
+    normal one-backup retention policy. Without this, ALL backups fail while
+    pinned, including pre-update safety backups.
+    """
+    if not stopped:
+        raise RuntimeError('Unpinning requires stopped Minecraft and generators')
+    root = root.resolve()
+    hold_path = root / 'state/backup-hold.json'
+    if not hold_path.exists():
+        raise RuntimeError('No pinned backup to release')
+    hold = serverctl.load_json(hold_path)
+    replacement_receipt = replacement_receipt.resolve(strict=True)
+    if root / 'backups' not in replacement_receipt.parents:
+        raise RuntimeError('Receipt must belong to this server')
+    info = serverctl.load_json(replacement_receipt)
+    if not SNAPSHOT_RE.match(str(info.get('snapshotId', ''))):
+        raise RuntimeError('Replacement receipt has no valid snapshot ID')
+    if str(replacement_receipt) == hold.get('receipt'):
+        raise RuntimeError('Replacement must differ from the pinned receipt')
+    if info.get('snapshotId') == hold.get('snapshotId'):
+        raise RuntimeError('Replacement must be a different snapshot')
+    stamp = dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+    archived = root / 'state' / f'migration-hold-released-{stamp}.json'
+    hold_path.rename(archived)
+    released = {'schemaVersion': 1, 'releasedHold': hold,
+                'replacementReceipt': str(replacement_receipt),
+                'releasedUtc': stamp}
+    serverctl._atomic_json(root / 'state' / 'migration-hold-released-latest.json', released)
+    return released
 
 
 def recover(root: pathlib.Path, *, stopped: bool) -> pathlib.Path:
