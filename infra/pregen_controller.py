@@ -16,6 +16,7 @@ import pathlib
 import pwd
 import re
 import shutil
+import sqlite3
 import tempfile
 import time
 
@@ -132,6 +133,43 @@ def changed_region_jobs(regions: dict, baseline: dict, center_x: int,
         (job["centerX"] - center_x) ** 2 + (job["centerZ"] - center_z) ** 2,
         job["centerX"], job["centerZ"],
     ))
+
+
+DH_PYRAMID_CHECK_SECONDS = 6 * 3600
+DH_BACKFILL_MAX_ATTEMPTS = 3
+
+
+def dh_pyramid_gaps(database: pathlib.Path, *, max_cells: int = 5000) -> list[tuple[int, int, int]]:
+    """Find LOD columns missing beneath a present parent (known DH laziness).
+
+    Returns (level, x, z) triples, finest missing level first. Empty when the
+    database is absent or the pyramid is complete. Read-only; safe on a live
+    server database.
+    """
+    if not database.is_file():
+        return []
+    connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True, timeout=30)
+    try:
+        levels = [row[0] for row in
+                  connection.execute("SELECT DISTINCT DetailLevel FROM FullData ORDER BY DetailLevel DESC")]
+        gaps: list[tuple[int, int, int]] = []
+        for parent, child in zip(levels, levels[1:]):
+            if parent != child + 1:
+                continue
+            children = set(connection.execute(
+                "SELECT PosX, PosZ FROM FullData WHERE DetailLevel=?", (child,)))
+            for (px, pz) in connection.execute(
+                    "SELECT PosX, PosZ FROM FullData WHERE DetailLevel=?", (parent,)):
+                for dx in (0, 1):
+                    for dz in (0, 1):
+                        cell = (2 * px + dx, 2 * pz + dz)
+                        if cell not in children:
+                            gaps.append((child, cell[0], cell[1]))
+                            if len(gaps) >= max_cells:
+                                return gaps
+        return gaps
+    finally:
+        connection.close()
 
 
 class Controller:
@@ -358,6 +396,48 @@ class Controller:
         self.start_dh(job["radius"])
         return True
 
+    def maintain_dh_backfill(self) -> bool:
+        """Queue a DH LOD backfill when the stored pyramid has holes.
+
+        Fingerprint checks only notice CHANGED regions; holes under unchanged
+        chunks (DH's lazy lower levels) need this explicit completeness pass.
+        Checked at most every DH_PYRAMID_CHECK_SECONDS; gives up after
+        DH_BACKFILL_MAX_ATTEMPTS consecutive passes without shrinkage.
+        """
+        if self.state.get("dhActiveJob") or self.state.get("dhPendingJobs"):
+            return False
+        now = time.time()
+        if now - self.state.get("dhPyramidCheckEpoch", 0) < DH_PYRAMID_CHECK_SECONDS:
+            return False
+        database = self.world / "data" / "DistantHorizons.sqlite"
+        try:
+            gaps = dh_pyramid_gaps(database)
+        except (OSError, sqlite3.Error) as exc:
+            print(f"DH pyramid check deferred: {exc}", flush=True)
+            self.save(dhPyramidCheckEpoch=now)
+            return False
+        self.save(dhPyramidCheckEpoch=now, dhPyramidGaps=len(gaps))
+        if not gaps:
+            self.save(dhBackfillAttempts=0)
+            return False
+        previous = self.state.get("dhPyramidGapCount")
+        attempts = int(self.state.get("dhBackfillAttempts", 0))
+        attempts = attempts + 1 if previous is not None and len(gaps) >= previous else 0
+        self.save(dhBackfillAttempts=attempts, dhPyramidGapCount=len(gaps))
+        if attempts >= DH_BACKFILL_MAX_ATTEMPTS:
+            print(f"DH backfill stalled at {len(gaps)} gaps; waiting for new terrain", flush=True)
+            return False
+        regions = region_fingerprints(self.world)
+        if not regions:
+            return False
+        radius = existing_world_radius(regions, self.state["centerX"], self.state["centerZ"])
+        job = {"kind": "backfill", "centerX": self.state["centerX"],
+               "centerZ": self.state["centerZ"], "radius": radius,
+               "regions": regions, "gapCells": len(gaps)}
+        self.save(dhPendingJobs=[job])
+        print(f"Queued DH backfill for {len(gaps)} missing LOD cells", flush=True)
+        return True
+
     def finish_dh_job(self) -> None:
         job = self.state["dhActiveJob"]
         baseline = {} if job["kind"] == "catchup" else dict(self.state.get("dhRegionBaseline") or {})
@@ -414,6 +494,10 @@ class Controller:
             return
         # DH always catches up before another terrain batch; storage target
         # stops expansion, but incremental LOD maintenance continues.
+        # DH LOD backfill (holes under unchanged chunks) outranks Chunky
+        # expansion; ordinary changed-region catch-up follows it.
+        if self.maintain_dh_backfill():
+            return
         if self.maintain_dh():
             return
         if size >= self.state["targetBytes"]:
