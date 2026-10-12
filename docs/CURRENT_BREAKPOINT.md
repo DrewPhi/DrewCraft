@@ -1,5 +1,17 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-12 DH backfill verdict: gaps persist, mechanism exhausted
+
+Full-radius DH pregen completed cleanly (95% then done; outer ring is void
+frontier, not a stall) yet the pyramid recount is unchanged at 293 missing
+cells: DH skips those columns as already-seen and will not self-heal them.
+Auto-gate now stalls out correctly per design. Remaining options are live-with
+(0.15% of cells), targeted invalidation trials on staging, or the 3.3.3 update
+(whose changelog does not claim this fix). Also learned: Chunky expansion was
+running concurrently and cut DH throughput 10x; park the controller (not just
+Chunky) for future manual DH passes. DH `config` command is set-only in the
+`<section.path> <value>` lowercase form used by the controller.
+
 ## 2026-10-12 flight send-rate tuning (live, drifts repaired on update)
 
 For MTS aircraft chunk streaming: `network-compression-threshold` 256→512
