@@ -1,5 +1,16 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-12 DH server-tuning literature review + thread fix staged
+
+Official wiki confirms our direction (500 KB/s ≈ 5–10 LODs/sec; we run 6000)
+and adds the key find: DH thread pools oversubscribed on few cores cause
+exactly our tick-starvation symptoms — we ran 4 threads on 2 CPUs. Set
+`numberOfThreads` 4→2 (takes effect on next restart; player online, no restart
+yet). Also validated: same DH build both sides preferred (true), pregen LODs
+highly recommended (done), ZGC endorsed against G1GC hitches (queued as the
+JVM step). Client-side asks outstanding: Distant Generation enabled on both
+ends, sane CPU-load setting on player machines.
+
 ## 2026-10-12 DH backfill verdict: gaps persist, mechanism exhausted
 
 Full-radius DH pregen completed cleanly (95% then done; outer ring is void
