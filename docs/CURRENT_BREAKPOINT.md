@@ -19,8 +19,14 @@ the world. This is a candidate-gap check, not proof of all-column completeness.
 Audit: 78,872 base cells inside the completed circle have rows; 40 sampled
 sections have complete generation markers. The old 293-hole claim was misleading.
 
-All 199 local tests pass. Cross-platform launcher publication is the next gate;
-record the CI run and published assets after completion. Pack stays rc.2 / DH 3.3.1.
+All 199 local tests pass. Commit f9ca557 pushed; CI run 38308114882 passed every
+job and published launcher-v0.1.12. Alias run 38308242974 passed; all eight
+installer/updater assets exist and latest-release selection is 0.1.12. Website
+buttons dynamically select those versioned assets. Prior server config/scripts
+are retained in `/srv/drewcraft/state/dh-flight-vfwv7j5m`. Minecraft and pregen
+are active, health joinable, both generation policy values verified persistent,
+and the filtered saved-terrain gap candidate count is zero. Pack stays rc.2 /
+DH 3.3.1. Owner flight acceptance remains outstanding.
 
 ## 2026-10-12 launcher 0.1.11 released (auto-update live)
 
