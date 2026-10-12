@@ -1,5 +1,14 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-12 flight send-rate tuning (live, drifts repaired on update)
+
+For MTS aircraft chunk streaming: `network-compression-threshold` 256→512
+(persistent server.properties, operator-owned) and chunk-sending
+`maxChunksPerTick` 15→25 / `maxChunksPerTickAll` 80→120 (release-managed
+config; drift repaired on next update). View/simulation distances and entity
+broadcast deliberately unchanged — flight needs them high. Server restarted
+clean; pregen resumed on its own.
+
 ## 2026-10-12 DH backfill automation + stale safety pause cleared
 
 Pregen had been `safety_paused` (minimum-free-space trip during the Linear
