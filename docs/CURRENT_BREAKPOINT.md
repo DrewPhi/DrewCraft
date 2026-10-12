@@ -1,5 +1,15 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-12 ZGC enabled, server declared good for flight test
+
+`user_jvm_args.txt` now `-Xms4G -Xmx8G -XX:+UseZGC -XX:+ZGenerational`
+(reversible to tuned G1GC on any misbehavior). Restart also activated the
+pending DH 2-thread setting. Clean boot, zero mixin/corruption/bind errors,
+RCON + save-all + health all green, pregen resumed alone. Operator-owned
+config drifts (JVM flags, DH threads/caps, chunk-send, explorer bind) all
+repair on next release update. Awaiting owner flight test with mandated
+client DH settings.
+
 ## 2026-10-12 DH server-tuning literature review + thread fix staged
 
 Official wiki confirms our direction (500 KB/s ≈ 5–10 LODs/sec; we run 6000)
