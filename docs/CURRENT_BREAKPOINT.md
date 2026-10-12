@@ -1,5 +1,14 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-12 backups unpinned, disk reclaimed, pregen resumed
+
+Migration hold released after two fresh verified snapshots (audit trail kept);
+normal one-backup retention restored. Restic repo had ballooned to 51 GB and
+tripped the 25 GB reserve again — removed 14 retired releases plus the three
+disposable verification worlds (64 GB): 90 GB free. Safety pause cleared,
+pregen active. Operator state-file writes must preserve drewcraft ownership
+(controller self-heals via atomic chown, but write as the service user).
+
 ## 2026-10-12 ZGC enabled, server declared good for flight test
 
 `user_jvm_args.txt` now `-Xms4G -Xmx8G -XX:+UseZGC -XX:+ZGenerational`
