@@ -136,10 +136,11 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
             (minecraft2 / "config/simpleclouds-client.toml").read_text("utf-8"),
             "# user chose Beautiful clouds\n",
         )
-        self.assertEqual(
-            (minecraft2 / "config/DistantHorizons.toml").read_text("utf-8"),
-            "# user chose 384 chunks\n",
-        )
+        # User content is preserved byte-for-byte, but missing *functional*
+        # DH keys (distant generation) merge in so multiplayer keeps working.
+        migrated = (minecraft2 / "config/DistantHorizons.toml").read_text("utf-8")
+        self.assertTrue(migrated.startswith("# user chose 384 chunks\n"))
+        self.assertIn("enableDistantGeneration = true", migrated)
 
     def test_deleted_config_does_not_resurrect_stale_cached_copy(self):
         state, minecraft = self.state()
@@ -176,6 +177,43 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
         self.assertIn("my:custom_entity", payload["entityWhitelist"])
         self.assertFalse(client_defaults.ensure_vehicle_entity_culling_whitelist(minecraft))
 
+
+
+    def test_dh_functional_defaults_merge_without_touching_user_values(self):
+        state, minecraft = self.state()
+        target = minecraft / "config/DistantHorizons.toml"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(
+            "[client.advanced.worldGenerator]\n"
+            "enableDistantGeneration = false\n"
+            "\n"
+            "[client.advanced.graphics.quality]\n"
+            "lodChunkRenderDistanceRadius = 128\n",
+            encoding="utf-8",
+        )
+        self.assertFalse(client_defaults.ensure_dh_functional_defaults(minecraft))
+        text = target.read_text("utf-8")
+        self.assertIn("enableDistantGeneration = false", text)
+        self.assertIn("lodChunkRenderDistanceRadius = 128", text)
+        self.assertEqual(text.count("enableDistantGeneration"), 1)
+
+    def test_dh_functional_defaults_added_under_existing_table(self):
+        state, minecraft = self.state()
+        target = minecraft / "config/DistantHorizons.toml"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("[client.advanced.worldGenerator]\n", encoding="utf-8")
+        self.assertTrue(client_defaults.ensure_dh_functional_defaults(minecraft))
+        text = target.read_text("utf-8")
+        self.assertIn("enableDistantGeneration = true", text)
+        self.assertEqual(text.count("[client.advanced.worldGenerator]"), 1)
+        self.assertFalse(client_defaults.ensure_dh_functional_defaults(minecraft))
+
+    def test_fresh_install_gets_potato_quality_and_functional_dh(self):
+        state, minecraft = self.state()
+        self.assertTrue(client_defaults.apply_client_defaults(self.app, state))
+        dh = (minecraft / "config/DistantHorizons.toml").read_text("utf-8")
+        self.assertIn("lodChunkRenderDistanceRadius = 32", dh)
+        self.assertIn("enableDistantGeneration = true", dh)
 
 if __name__ == "__main__":
     unittest.main()

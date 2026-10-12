@@ -475,6 +475,7 @@ def configure_prism_instance(instance_root: pathlib.Path, java_path: str | None,
         lines.extend(["OverrideJavaLocation=true", f"JavaPath={java_path}"])
     cfg.write_text("\n".join(lines) + "\n", encoding="utf-8")
     _apply_memory_settings(instance_root)
+    _apply_managed_jvm_args(instance_root)
 
     mmc_pack = {
         "formatVersion": 1,
@@ -529,6 +530,8 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
                 existing_state["javaExecutable"] = runtime.get("java")
                 atomic_json(state_path, existing_state)
                 _apply_memory_settings(
+                    pathlib.Path(existing_state["prismRoot"]) / "instances" / existing_state["instanceId"])
+                _apply_managed_jvm_args(
                     pathlib.Path(existing_state["prismRoot"]) / "instances" / existing_state["instanceId"])
                 _remove_deprecated_managed_resource_packs(
                     pathlib.Path(existing_state["prismRoot"]) / "instances" / existing_state["instanceId"] / "minecraft")
@@ -627,6 +630,46 @@ def _apply_memory_settings(instance_root: pathlib.Path) -> None:
         else:
             lines.append(f"{key}={value}")
             changed = True
+    if changed or not cfg.is_file():
+        cfg.parent.mkdir(parents=True, exist_ok=True)
+        cfg.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+MANAGED_JVM_ARGS = ("-XX:+UseZGC",)
+"""Managed client JVM flags, appended without removing user flags.
+
+ZGC removes the stop-the-world pauses G1GC shows under Distant Horizons
+load. Prism reads these from the instance.cfg JvmArgs key; unknown keys are
+ignored, so a wrong key name degrades to plain defaults rather than a
+broken launch.
+"""
+
+
+def _apply_managed_jvm_args(instance_root: pathlib.Path) -> None:
+    """Idempotently ensure managed JVM flags in an existing instance.cfg.
+
+    Never removes user flags: appends each missing managed flag to the
+    existing JvmArgs value, or creates the key. Runs on every converge so
+    pre-existing installs gain it without a reinstall.
+    """
+    cfg = instance_root / "instance.cfg"
+    try:
+        text = cfg.read_text(encoding="utf-8") if cfg.is_file() else ""
+    except OSError:
+        return
+    lines = text.splitlines()
+    changed = False
+    for index, line in enumerate(lines):
+        if line.startswith("JvmArgs="):
+            present = line.split("=", 1)[1].split()
+            missing = [flag for flag in MANAGED_JVM_ARGS if flag not in present]
+            if missing:
+                lines[index] = line + " " + " ".join(missing)
+                changed = True
+            break
+    else:
+        lines.append("JvmArgs=" + " ".join(MANAGED_JVM_ARGS))
+        changed = True
     if changed or not cfg.is_file():
         cfg.parent.mkdir(parents=True, exist_ok=True)
         cfg.write_text("\n".join(lines) + "\n", encoding="utf-8")

@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import pathlib
+import re
 import shutil
 import tempfile
 
@@ -187,6 +188,47 @@ def _cache_current_graphics(app_dir: pathlib.Path, minecraft_dir: pathlib.Path) 
             shutil.copy2(source, cached)
 
 
+DH_FUNCTIONAL_DEFAULTS = {
+    # Distant Generation must be on at both ends, otherwise generation
+    # silently does not run. Seed it for installs that lack the key; never
+    # overwrite a deliberate user choice.
+    ("[client.advanced.worldGenerator]", "enableDistantGeneration"): "true",
+}
+
+
+def ensure_dh_functional_defaults(minecraft_dir: pathlib.Path) -> bool:
+    """Merge missing functional DH keys without touching user values.
+
+    Graphics preferences (render distance, quality) stay entirely with the
+    user and the Potato seeding. Only keys the multiplayer pipeline
+    requires are filled in when absent.
+    """
+    path = minecraft_dir / pathlib.Path("config/DistantHorizons.toml")
+    try:
+        text = path.read_text("utf-8") if path.is_file() else ""
+    except OSError:
+        return False
+    lines = text.splitlines()
+    changed = False
+    for (table, key), value in DH_FUNCTIONAL_DEFAULTS.items():
+        if any(re.match(rf"\s*{re.escape(key)}\s*=", line) for line in lines):
+            continue
+        header = next((i for i, line in enumerate(lines)
+                       if line.strip() == table), None)
+        if header is None:
+            if lines and lines[-1].strip():
+                lines.append("")
+            lines.append(table)
+            lines.append(f"{key} = {value}")
+        else:
+            lines.insert(header + 1, f"{key} = {value}")
+        changed = True
+    if changed or not path.is_file():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return changed
+
+
 def ensure_vehicle_entity_culling_whitelist(minecraft_dir: pathlib.Path) -> bool:
     """Keep Immersive Vehicles visible without removing user culling entries."""
     path = minecraft_dir / pathlib.Path(ENTITY_CULLING_PATH)
@@ -249,6 +291,10 @@ def apply_client_defaults(app_dir: pathlib.Path, state: dict) -> bool:
             "instanceId": state.get("instanceId"),
         })
         seeded = True
+
+    # Functional DH keys (distant generation) merge after Potato seeding so
+    # first-launch quality defaults are never skipped; existing values win.
+    ensure_dh_functional_defaults(minecraft_dir)
 
     # Cache the mod-owned client configs immediately so the very next pack
     # update can restore them even if no intermediate launcher run occurs.
