@@ -1,5 +1,15 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-12 DH backfill automation + stale safety pause cleared
+
+Pregen had been `safety_paused` (minimum-free-space trip during the Linear
+cutover) with no auto-resume path; disk is healthy again (40 GB free), so the
+pause was cleared to `complete`. New controller gate: throttled DH pyramid
+check queues a backfill ahead of Chunky expansion (fingerprints miss holes
+under unchanged chunks); first run queued 293 missing cells and DH pregen is
+filling them. Idle grace 600s → 180s. Deployed controller was pre-Linear
+(.mca-only fingerprints); repo copy + region_inventory now live in bin/.
+
 ## 2026-10-03 client channel promoted to 0.1.17-rc.2
 
 Owner authorized fixing the client rollout. The shared launcher pointer at
