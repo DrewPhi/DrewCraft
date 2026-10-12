@@ -21,7 +21,7 @@ import tempfile
 import time
 
 from worldgen_guard import read_nbt, verify as verify_worldgen
-from region_inventory import linear_header
+from region_inventory import linear_header, linear_slots
 
 
 def estimate_radius(current_radius: int, baseline_bytes: int, measured_bytes: int,
@@ -139,7 +139,8 @@ DH_PYRAMID_CHECK_SECONDS = 6 * 3600
 DH_BACKFILL_MAX_ATTEMPTS = 3
 
 
-def dh_pyramid_gaps(database: pathlib.Path, *, max_cells: int = 5000) -> list[tuple[int, int, int]]:
+def dh_pyramid_gaps(database: pathlib.Path, *, max_cells: int = 5000,
+                    saved_world: pathlib.Path | None = None) -> list[tuple[int, int, int]]:
     """Find LOD columns missing beneath a present parent (known DH laziness).
 
     Returns (level, x, z) triples, finest missing level first. Empty when the
@@ -153,6 +154,28 @@ def dh_pyramid_gaps(database: pathlib.Path, *, max_cells: int = 5000) -> list[tu
         levels = [row[0] for row in
                   connection.execute("SELECT DISTINCT DetailLevel FROM FullData ORDER BY DetailLevel DESC")]
         gaps: list[tuple[int, int, int]] = []
+        base = set(connection.execute("SELECT PosX, PosZ FROM FullData WHERE DetailLevel=0"))
+        footprints = {level: {(x >> level, z >> level) for x, z in base}
+                      for level in levels if level > 0} if saved_world else {}
+        region_slots = {}
+
+        def saved_base_cell(x, z):
+            coordinate = (x // 8, z // 8)
+            if coordinate not in region_slots:
+                region = saved_world / "region" / f"r.{coordinate[0]}.{coordinate[1]}"
+                linear = pathlib.Path(str(region) + ".linear")
+                anvil = pathlib.Path(str(region) + ".mca")
+                if linear.is_file():
+                    region_slots[coordinate] = set(linear_slots(linear))
+                elif anvil.is_file():
+                    with anvil.open("rb") as stream:
+                        header = stream.read(4096)
+                    region_slots[coordinate] = {i for i in range(len(header) // 4)
+                                                if int.from_bytes(header[i*4:i*4+3], "big")}
+                else:
+                    region_slots[coordinate] = set()
+            return any(((z % 8)*4+dz)*32+(x % 8)*4+dx in region_slots[coordinate]
+                       for dx in range(4) for dz in range(4))
         for parent, child in zip(levels, levels[1:]):
             if parent != child + 1:
                 continue
@@ -164,6 +187,9 @@ def dh_pyramid_gaps(database: pathlib.Path, *, max_cells: int = 5000) -> list[tu
                     for dz in (0, 1):
                         cell = (2 * px + dx, 2 * pz + dz)
                         if cell not in children:
+                            if saved_world and ((child == 0 and not saved_base_cell(*cell))
+                                                or (child > 0 and cell not in footprints[child])):
+                                continue  # Ungenerated frontier is not a repairable LOD gap.
                             gaps.append((child, cell[0], cell[1]))
                             if len(gaps) >= max_cells:
                                 return gaps
@@ -411,7 +437,7 @@ class Controller:
             return False
         database = self.world / "data" / "DistantHorizons.sqlite"
         try:
-            gaps = dh_pyramid_gaps(database)
+            gaps = dh_pyramid_gaps(database, saved_world=self.world)
         except (OSError, sqlite3.Error) as exc:
             print(f"DH pyramid check deferred: {exc}", flush=True)
             self.save(dhPyramidCheckEpoch=now)

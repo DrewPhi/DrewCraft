@@ -140,7 +140,7 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
         # DH keys (distant generation) merge in so multiplayer keeps working.
         migrated = (minecraft2 / "config/DistantHorizons.toml").read_text("utf-8")
         self.assertTrue(migrated.startswith("# user chose 384 chunks\n"))
-        self.assertIn("enableDistantGeneration = true", migrated)
+        self.assertIn('generatorPlan = "CHUNKS_ONLY"', migrated)
 
     def test_deleted_config_does_not_resurrect_stale_cached_copy(self):
         state, minecraft = self.state()
@@ -184,28 +184,29 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
         target = minecraft / "config/DistantHorizons.toml"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(
-            "[client.advanced.worldGenerator]\n"
-            "enableDistantGeneration = false\n"
+            "[common.worldGenerator]\n"
+            'generatorPlan = "DISABLED"\n'
             "\n"
             "[client.advanced.graphics.quality]\n"
             "lodChunkRenderDistanceRadius = 128\n",
             encoding="utf-8",
         )
-        self.assertFalse(client_defaults.ensure_dh_functional_defaults(minecraft))
+        self.assertTrue(client_defaults.ensure_dh_functional_defaults(minecraft))
         text = target.read_text("utf-8")
-        self.assertIn("enableDistantGeneration = false", text)
+        self.assertIn('generatorPlan = "DISABLED"', text)
         self.assertIn("lodChunkRenderDistanceRadius = 128", text)
-        self.assertEqual(text.count("enableDistantGeneration"), 1)
+        self.assertEqual(text.count("generatorPlan"), 1)
+        self.assertFalse(client_defaults.ensure_dh_functional_defaults(minecraft))
 
     def test_dh_functional_defaults_added_under_existing_table(self):
         state, minecraft = self.state()
         target = minecraft / "config/DistantHorizons.toml"
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text("[client.advanced.worldGenerator]\n", encoding="utf-8")
+        target.write_text("[common.worldGenerator]\n", encoding="utf-8")
         self.assertTrue(client_defaults.ensure_dh_functional_defaults(minecraft))
         text = target.read_text("utf-8")
-        self.assertIn("enableDistantGeneration = true", text)
-        self.assertEqual(text.count("[client.advanced.worldGenerator]"), 1)
+        self.assertIn('generatorPlan = "CHUNKS_ONLY"', text)
+        self.assertEqual(text.count("[common.worldGenerator]"), 1)
         self.assertFalse(client_defaults.ensure_dh_functional_defaults(minecraft))
 
     def test_fresh_install_gets_potato_quality_and_functional_dh(self):
@@ -213,7 +214,26 @@ class LauncherGraphicsDefaultsTest(unittest.TestCase):
         self.assertTrue(client_defaults.apply_client_defaults(self.app, state))
         dh = (minecraft / "config/DistantHorizons.toml").read_text("utf-8")
         self.assertIn("lodChunkRenderDistanceRadius = 32", dh)
-        self.assertIn("enableDistantGeneration = true", dh)
+        self.assertIn('generatorPlan = "CHUNKS_ONLY"', dh)
+        self.assertIn('overdrawPrevention = "0.2"', dh)
+
+    def test_flight_migration_updates_existing_settings_once(self):
+        state, minecraft = self.state()
+        target = minecraft / "config/DistantHorizons.toml"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('[client.advanced.worldGenerator]\nenableDistantGeneration = true\n'
+                          '[common.worldGenerator]\ngeneratorPlan = "SURFACE_THEN_CHUNKS"\n'
+                          '[client.advanced.graphics.culling]\noverdrawPrevention = "-1.0"\n'
+                          '[client.advanced.graphics.quality]\nlodChunkRenderDistanceRadius = 128\n')
+        client_defaults.apply_client_defaults(self.app, state)
+        text = target.read_text()
+        self.assertNotIn('enableDistantGeneration', text)
+        self.assertIn('generatorPlan = "CHUNKS_ONLY"', text)
+        self.assertIn('overdrawPrevention = "0.2"', text)
+        self.assertIn('lodChunkRenderDistanceRadius = 128', text)
+        target.write_text(text.replace('overdrawPrevention = "0.2"', 'overdrawPrevention = "0.1"'))
+        client_defaults.apply_client_defaults(self.app, state)
+        self.assertIn('overdrawPrevention = "0.1"', target.read_text())
 
 if __name__ == "__main__":
     unittest.main()

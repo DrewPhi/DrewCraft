@@ -33,6 +33,27 @@ def test_complete_pyramid_and_missing_database_are_clean(tmp_path):
     assert controller_module.dh_pyramid_gaps(tmp_path / "absent.sqlite") == []
 
 
+def test_frontier_is_ignored_but_saved_terrain_gap_is_retained(tmp_path):
+    db = tmp_path / "dh.sqlite"
+    database(db, [(1, 0, 0), (0, 0, 0), (0, 1, 0), (0, 0, 1)])
+    world = tmp_path / "world"
+    (world / "region").mkdir(parents=True)
+    assert controller_module.dh_pyramid_gaps(db, saved_world=world) == []
+    header = bytearray(4096)
+    slot = 4 * 32 + 4  # A saved chunk beneath the missing 64-block cell.
+    header[slot*4:slot*4+4] = bytes([0, 0, 2, 1])
+    (world / "region/r.0.0.mca").write_bytes(header)
+    assert controller_module.dh_pyramid_gaps(db, saved_world=world) == [(0, 1, 1)]
+
+
+def test_coarse_frontier_is_ignored_without_base_lods_beneath_it(tmp_path):
+    db = tmp_path / "dh.sqlite"
+    database(db, [(2, 0, 0), (1, 0, 0), (0, 0, 0)])
+    world = tmp_path / "world"
+    (world / "region").mkdir(parents=True)
+    assert controller_module.dh_pyramid_gaps(db, saved_world=world) == []
+
+
 def make_controller(tmp_path, state):
     world = tmp_path / "world"
     (world / "data").mkdir(parents=True, exist_ok=True)

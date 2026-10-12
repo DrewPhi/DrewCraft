@@ -2,6 +2,7 @@
 set -euo pipefail
 
 cd /srv/drewcraft/current
+python3 /srv/drewcraft/bin/dh_server_defaults.py --config config/DistantHorizons.toml
 rm -rf world logs terrain-diffusion-models terrain-diffusion-cache
 rm -f ops.json whitelist.json banned-ips.json banned-players.json
 

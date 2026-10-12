@@ -1,5 +1,27 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-12 DH flight transition fix / launcher 0.1.12
+
+Owner authorized deploying the transition and configuration fixes. Launcher
+0.1.12 uses DH 3.3.1's actual `common.worldGenerator` generatorPlan/chunkGeneratorMode
+keys, removing the inert 0.1.11 enableDistantGeneration key. A one-time migration
+sets CHUNKS_ONLY/PRE_EXISTING_ONLY and overdrawPrevention 0.2 with the existing
+fast-movement reduction enabled. Later user edits and render distance/quality
+are preserved; migration is cached across pack updates. This is a mitigation
+awaiting owner aircraft testing, not a demonstrated flight-throughput fix.
+
+Server policy helper enforces CHUNKS_ONLY/PRE_EXISTING_ONLY at startup while
+preserving other config. Deployed helper plus wrapper hook, applied both runtime
+RCON settings, and resumed the maintenance controller without restarting Minecraft.
+Pyramid backfill now filters the ungenerated frontier using saved base chunks
+and existing base LOD footprints, rather than repeatedly trying to fill outside
+the world. This is a candidate-gap check, not proof of all-column completeness.
+Audit: 78,872 base cells inside the completed circle have rows; 40 sampled
+sections have complete generation markers. The old 293-hole claim was misleading.
+
+All 199 local tests pass. Cross-platform launcher publication is the next gate;
+record the CI run and published assets after completion. Pack stays rc.2 / DH 3.3.1.
+
 ## 2026-10-12 launcher 0.1.11 released (auto-update live)
 
 Managed ZGC JVM flag + DH functional defaults ship in `launcher-v0.1.11`

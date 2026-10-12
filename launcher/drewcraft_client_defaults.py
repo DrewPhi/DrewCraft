@@ -189,19 +189,19 @@ def _cache_current_graphics(app_dir: pathlib.Path, minecraft_dir: pathlib.Path) 
 
 
 DH_FUNCTIONAL_DEFAULTS = {
-    # Distant Generation must be on at both ends, otherwise generation
-    # silently does not run. Seed it for installs that lack the key; never
-    # overwrite a deliberate user choice.
-    ("[client.advanced.worldGenerator]", "enableDistantGeneration"): "true",
+    # Actual DH 3.3.1 config paths, verified against its packaged Config classes.
+    ("[common.worldGenerator]", "generatorPlan"): '"CHUNKS_ONLY"',
+    ("[common.worldGenerator]", "chunkGeneratorMode"): '"PRE_EXISTING_ONLY"',
+    ("[client.advanced.graphics.culling]", "overdrawPrevention"): '"0.2"',
+    ("[client.advanced.graphics.culling]", "reduceOverdrawWithFastMovement"): "true",
 }
 
 
-def ensure_dh_functional_defaults(minecraft_dir: pathlib.Path) -> bool:
+def ensure_dh_functional_defaults(minecraft_dir: pathlib.Path, *, migrate_flight_settings: bool = False) -> bool:
     """Merge missing functional DH keys without touching user values.
 
-    Graphics preferences (render distance, quality) stay entirely with the
-    user and the Potato seeding. Only keys the multiplayer pipeline
-    requires are filled in when absent.
+    A one-time flight migration updates just these four keys. Subsequent runs
+    preserve player changes; render distance, quality and all other keys stay.
     """
     path = minecraft_dir / pathlib.Path("config/DistantHorizons.toml")
     try:
@@ -210,9 +210,18 @@ def ensure_dh_functional_defaults(minecraft_dir: pathlib.Path) -> bool:
         return False
     lines = text.splitlines()
     changed = False
-    for (table, key), value in DH_FUNCTIONAL_DEFAULTS.items():
-        if any(re.match(rf"\s*{re.escape(key)}\s*=", line) for line in lines):
+    # Remove the inert key shipped by launcher 0.1.11, only in its old table.
+    table = ""
+    retained = []
+    for line in lines:
+        if line.strip().startswith("["):
+            table = line.strip()
+        if table == "[client.advanced.worldGenerator]" and re.match(r"\s*enableDistantGeneration\s*=", line):
+            changed = True
             continue
+        retained.append(line)
+    lines = retained
+    for (table, key), value in DH_FUNCTIONAL_DEFAULTS.items():
         header = next((i for i, line in enumerate(lines)
                        if line.strip() == table), None)
         if header is None:
@@ -221,7 +230,16 @@ def ensure_dh_functional_defaults(minecraft_dir: pathlib.Path) -> bool:
             lines.append(table)
             lines.append(f"{key} = {value}")
         else:
-            lines.insert(header + 1, f"{key} = {value}")
+            end = next((i for i in range(header + 1, len(lines))
+                        if lines[i].strip().startswith("[")), len(lines))
+            existing = next((i for i in range(header + 1, end)
+                             if re.match(rf"\s*{re.escape(key)}\s*=", lines[i])), None)
+            if existing is not None:
+                if not migrate_flight_settings or lines[existing].strip() == f"{key} = {value}":
+                    continue
+                lines[existing] = f"{key} = {value}"
+            else:
+                lines.insert(header + 1, f"{key} = {value}")
         changed = True
     if changed or not path.is_file():
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -292,9 +310,12 @@ def apply_client_defaults(app_dir: pathlib.Path, state: dict) -> bool:
         })
         seeded = True
 
-    # Functional DH keys (distant generation) merge after Potato seeding so
-    # first-launch quality defaults are never skipped; existing values win.
-    ensure_dh_functional_defaults(minecraft_dir)
+    # Apply the owner-approved flight fix once, then preserve later user edits.
+    flight_marker = app_dir / "user-data/dh-flight-defaults.json"
+    migrate_flight = not flight_marker.is_file()
+    ensure_dh_functional_defaults(minecraft_dir, migrate_flight_settings=migrate_flight)
+    if migrate_flight:
+        _atomic_json(flight_marker, {"schemaVersion": 1, "launcherVersion": "0.1.12"})
 
     # Cache the mod-owned client configs immediately so the very next pack
     # update can restore them even if no intermediate launcher run occurs.
