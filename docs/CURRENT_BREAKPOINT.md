@@ -26,7 +26,9 @@ Verifier `drewcraft-pregen-memory-verify-20261014` waits for startup, observes a
 native DH radius advancement or a completed native job, checks new log for OOM,
 and verifies `chunky.maxWorkingCount=2` inside the running JVM. Its separate
 `state/pregen-memory-verification.json` must say pass and match this boot's log
-identity before pack 0.1.19 deployment is permitted. Runtime verification pending.
+identity before pack 0.1.19 deployment is permitted. Runtime verification PASSED
+at 23:01:55 UTC: native DH advanced 63 -> 192.3 chunks of radius, active JVM
+property is 2, Linear cache is 8, and the new server log contains no heap OOM.
 
 Controller now detects heap OOM incrementally, freezes background scheduling in
 `fault_paused` until explicit recovery, and reports the fault while retaining game
@@ -40,7 +42,11 @@ Native DH catch-up started with CHUNKS_ONLY / PRE_EXISTING_ONLY and radius 708
 chunks (11,328 blocks), over actual saved region bounds. Observed radius 63 at
 23:00:54, 135 at 23:01:24, and controller radius 150 / 4.5% at 23:01:32.
 This is actual post-restart native DH work, not just a service-health assertion.
-Runtime verifier final JVM-property/clean-log receipt remains to confirm.
+Runtime verifier final JVM-property/clean-log receipt is PASS at
+`/srv/drewcraft/state/pregen-memory-verification.json`. Subsequent live poll:
+DH radius 271.9 / 708, 14.74%, native ETA 8m34s (variable, not a promise);
+Chunky reports no tasks running. No new OutOfMemoryError. The exact same
+10,240 confirmed / 11,264 unfinished terrain checkpoint remains intact.
 Resubmitted GitHub LOD publication: 38651310584, reuses already uploaded assets.
 Owner-side rollout chain resumed with `--publication-run 38651310584`; it waits
 for the current-boot memory proof before deploying and promoting the client.
