@@ -25,6 +25,15 @@ request cap is 100, so former server value 150 is normalized to 100.
 First remote preflight hit an older serverctl missing the generalized storage
 guard; aborted before changing services. Narrow exact-Linear guard used instead.
 Transaction unit: drewcraft-dh333-rollout-v2. Always check its actual outcome.
+Latest observed phase: fresh snapshot/check completed; Restic single-backup
+retention pruning still running (server intentionally stopped). Local completion
+chain `tools/complete_dh_rollout.py` is running as exec session 95375. It waits
+for the durable DH333_DEPLOYMENT_COMPLETE marker, checks server+pregen active,
+public joinable health and launcher assets, then promotes exact live.json only
+if the existing channel still names rc.2 (or already names the same new hash).
+It writes `build/dh-rollout-result.json` on success. Failure leaves the pointer
+unchanged. Do not infer completion from these preparation notes; check the
+remote journal, public live.json/health and local result/session first.
 
 Run 38597402842 successfully booted BOTH the full baseline pack and patched
 DH333. Its candidate log confirms `[Rcon] LINEAR_SAVED_BLOCK_PASS`; the test
