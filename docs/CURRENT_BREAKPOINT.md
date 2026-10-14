@@ -12,6 +12,20 @@ Release is not promoted until matching launcher assets and pack files exist,
 the server has a fresh verified world+DH backup, and startup passes. Rollout
 status must be checked live; this entry records authorization/preparation only.
 
+Launcher 0.1.13 CI 38611348786 and aliases 38611524062 passed; all eight public
+assets exist. Pack 0.1.18 assets/source/manifest are published as a prerelease,
+manifest SHA256 e724ace68689c989f8c5001daccded484666ce946686138b48125219d1bd3a7f;
+client pointer is still withheld pending server health. Deployment helper
+`tools/deploy_dh_patch.py` validates the exact DH-only delta and old world/Linear
+identity, preserves current operator configs/JVM tuning, requires zero players,
+takes a stopped-world verified Restic backup, pins that one restore point,
+migrates schema, activates and health-checks. After activation failure it stops
+and requires world/DH + app recovery, not blind app-only rollback. DH333 sync
+request cap is 100, so former server value 150 is normalized to 100.
+First remote preflight hit an older serverctl missing the generalized storage
+guard; aborted before changing services. Narrow exact-Linear guard used instead.
+Transaction unit: drewcraft-dh333-rollout-v2. Always check its actual outcome.
+
 Run 38597402842 successfully booted BOTH the full baseline pack and patched
 DH333. Its candidate log confirms `[Rcon] LINEAR_SAVED_BLOCK_PASS`; the test
 incorrectly required that /say broadcast in the RCON return. Replaced chat

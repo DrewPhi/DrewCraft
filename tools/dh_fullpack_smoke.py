@@ -110,7 +110,7 @@ def run(root, candidate):
             command(*args)
         wait(lambda: bool(re.search(r'Task finished for (?:minecraft:)?overworld', log.read_text()[offset:])))
         time.sleep(4)
-        pregen(32, wait)
+        pregen(512, wait)  # Native DH minimum is 32 chunks = 512 blocks.
     # TD's fresh-spawn injection is unconditional even for flat generators.
     # Seed an initialized flat save with just exact released Linear first; then
     # restore EVERY released mod and datapack for the actual acceptance stages.
