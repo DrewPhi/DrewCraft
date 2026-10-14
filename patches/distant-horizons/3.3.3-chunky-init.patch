@@ -21,7 +21,7 @@ index d880373..a087144 100644
 +		{
 +			// Spawn preparation can run before ChunkyProvider is initialized.
 +			// A later chunk update retries; unrelated API errors must remain visible.
-+			if ("Chunky is not loaded".equals(exception.getMessage()))
++			if ("Chunky is not loaded.".equals(exception.getMessage()))
 +			{
 +				return;
 +			}

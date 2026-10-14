@@ -26,7 +26,7 @@ jobs:
           test "$(git -C build/dh-upstream/coreSubProjects rev-parse HEAD)" = b02c66d778beea11a931291815d652cd8abaa7ad
           mkdir -p build/dh-input
           python - <<'PY'
-          import pathlib, urllib.request
+          import hashlib, json, pathlib, urllib.request
           root=pathlib.Path('build/dh-input')
           urls={
             'dh333.jar':'https://cdn.modrinth.com/data/uCdwusMi/versions/9w34y8ai/DistantHorizons-3.3.3-1.21.1-fabric-neoforge.jar',
@@ -36,10 +36,18 @@ jobs:
           for name,url in urls.items():
               with urllib.request.urlopen(url,timeout=120) as response:
                   (root/name).write_bytes(response.read())
+          with urllib.request.urlopen('https://github.com/DrewPhi/DrewCraft/releases/download/drewcraft-pack-0.1.17-rc.2/release-manifest.json',timeout=120) as response:
+              manifest=response.read()
+          assert hashlib.sha256(manifest).hexdigest()=='7d17795ebc8d1da7076a69913233370c24072504c1edb5000959f82c7bef95e2'
+          item=next(e for e in json.loads(manifest)['files'] if e['path']=='mods/Chunky-NeoForge-1.4.23.jar')
+          with urllib.request.urlopen(item['url'],timeout=120) as response:
+              data=response.read()
+          assert hashlib.sha256(data).hexdigest()==item['sha256']
+          (root/'chunky.jar').write_bytes(data)
           PY
       - name: Compile source patch and prove regression on actual DH class
         run: |
-          python tools/build_dh_compat.py --source build/dh-upstream --jar build/dh-input/dh333.jar --dependency-jar build/dh-input/log4j-api.jar --dependency-jar build/dh-input/log4j-core.jar --output build/dh-compat
+          python tools/build_dh_compat.py --source build/dh-upstream --jar build/dh-input/dh333.jar --chunky-jar build/dh-input/chunky.jar --dependency-jar build/dh-input/log4j-api.jar --dependency-jar build/dh-input/log4j-core.jar --output build/dh-compat
       - name: Prepare pinned isolated NeoForge and Chunky runtime
         run: |
           python -m pip install --disable-pip-version-check rcon==2.4.9

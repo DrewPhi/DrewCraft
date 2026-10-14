@@ -34,6 +34,8 @@ def run(root):
         end=time.monotonic()+timeout
         while time.monotonic()<end:
             if proc.poll() is not None:raise RuntimeError('Server exited; inspect smoke-server.log')
+            if log.exists() and re.search(r'Failed to initialize server|Encountered an unexpected exception', log.read_text()):
+                raise RuntimeError('Server startup crashed; inspect smoke-server.log')
             if predicate():return
             time.sleep(2)
         raise TimeoutError('Smoke gate timed out')

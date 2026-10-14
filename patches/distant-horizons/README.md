@@ -14,7 +14,7 @@ Source pins:
   by `tools/build_dh_compat.py`.
 
 The fix changes only `AbstractChunkyAccessor`: synchronize listener setup,
-defer specifically `IllegalStateException("Chunky is not loaded")`, and set
+defer specifically `IllegalStateException("Chunky is not loaded.")`, and set
 listenerBound only after success. Subsequent chunk updates retry setup.
 All other exceptions still propagate. Chunky's generation event and DH's
 generation suppression/re-enable logic remain unchanged. This fixes the observed
@@ -23,7 +23,7 @@ startup lifecycle failure; it does not claim to fix aircraft throughput.
 Build from the pinned upstream tree, plus the official base jar:
 
 ```sh
-python3 tools/build_dh_compat.py --source build/dh-upstream-3.3.3 --jar /path/to/DistantHorizons-3.3.3-1.21.1-fabric-neoforge.jar --dependency-jar /path/to/log4j-api-2.22.1.jar --dependency-jar /path/to/log4j-core-2.22.1.jar --output build/dh-candidate
+python3 tools/build_dh_compat.py --source build/dh-upstream-3.3.3 --jar /path/to/DistantHorizons-3.3.3-1.21.1-fabric-neoforge.jar --chunky-jar /path/to/Chunky-NeoForge-1.4.23.jar --dependency-jar /path/to/log4j-api-2.22.1.jar --dependency-jar /path/to/log4j-core-2.22.1.jar --output build/dh-candidate
 ```
 
 The builder compiles this one source class against the pinned release, preserving
@@ -34,6 +34,10 @@ allow delayed initialization, register once under concurrent calls, and propagat
 unrelated errors. It emits a complete source archive, build recipe, patch and
 hash report alongside the candidate jar. This is a targeted source rebuild,
 not a claim to have compiled the entire upstream multi-loader project.
+
+The probe calls the hash-pinned production `ChunkyProvider.get()` directly
+while uninitialized, rather than fabricating its exception message. This guards
+against the punctuation mismatch exposed by the first isolated server run.
 
 Release gates: isolated NeoForge/Chunky boot and native DH pregen, then exact
 DrewCraft stack including Linear adapter and saved production-style chunks/LODs.

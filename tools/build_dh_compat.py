@@ -18,7 +18,7 @@ SOURCE = Path('coreSubProjects/core/src/main/java/com/seibel/distanthorizons/cor
 CLASS = 'com/seibel/distanthorizons/core/wrapperInterfaces/modAccessor/AbstractChunkyAccessor.class'
 UPSTREAM_SHA512 = 'd14b32d3fd143a06514d6ad388eee11e9d657c84e1a937aaf8d033b1137fb43ef8b05cff1011a994cc42f3106823c51234f8bc18d72bb05bc317a20ea83c50ed'
 ORIGINAL_SOURCE_SHA256 = 'fd3e71c51f1475aafba4da9db591ba02ddfff285801f85de11369c22ef4d9755'
-PATCHED_SOURCE_SHA256 = 'b1df5e524b0d2e63eb8b946d0eca496e277aa5e930b7dd07c3f0e835521cb3df'
+PATCHED_SOURCE_SHA256 = 'edabf210adb31c02d9013e6dc0c2a8a5085fc45654f8bffacf7f83380cb6380f'
 PINS = {'upstreamRepository': 'https://gitlab.com/distant-horizons-team/distant-horizons',
         'upstreamCommit': 'a54dd3eb1df0078e63a71266d042c10d9cda4493',
         'coreCommit': 'b02c66d778beea11a931291815d652cd8abaa7ad',
@@ -33,6 +33,7 @@ def sha(path, algorithm='sha256'):
 
 def build(args):
     assert sha(args.jar, 'sha512') == UPSTREAM_SHA512, 'Not the exact official DH 3.3.3 release'
+    assert sha(args.chunky_jar) == 'd72f235cf1f56f2c374f52c00bdda5034524b28142305a84cfc123a3f92ad274', 'Not production Chunky 1.4.23'
     source_hash = sha(args.source / SOURCE)
     assert source_hash in (ORIGINAL_SOURCE_SHA256, PATCHED_SOURCE_SHA256), 'Unrecognized upstream source'
     args.output.mkdir(parents=True, exist_ok=False)
@@ -47,7 +48,7 @@ def build(args):
     assert sha(target) == PATCHED_SOURCE_SHA256
     classes = args.output / 'classes'
     classes.mkdir()
-    cp = os.pathsep.join(map(str, [args.jar, *args.dependency_jar]))
+    cp = os.pathsep.join(map(str, [args.jar, args.chunky_jar, *args.dependency_jar]))
     subprocess.run([args.javac, '--release', '8', '-proc:none', '-cp', cp, '-d', str(classes), str(target)], check=True)
     probe_classes = args.output / 'probe'
     probe_classes.mkdir()
@@ -101,11 +102,13 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument('--source', type=Path, required=True)
     p.add_argument('--jar', type=Path, required=True)
+    p.add_argument('--chunky-jar', type=Path, required=True)
     p.add_argument('--dependency-jar', type=Path, action='append', default=[])
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--javac', default='javac')
     p.add_argument('--java', default='java')
     args = p.parse_args()
     args.source = args.source.resolve(); args.jar = args.jar.resolve(); args.output = args.output.resolve()
+    args.chunky_jar = args.chunky_jar.resolve()
     args.dependency_jar = [path.resolve() for path in args.dependency_jar]
     build(args)

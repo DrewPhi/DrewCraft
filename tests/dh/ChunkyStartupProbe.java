@@ -2,6 +2,7 @@ import com.seibel.distanthorizons.core.wrapperInterfaces.modAccessor.AbstractChu
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import org.popcraft.chunky.ChunkyProvider;
 
 /** Exercises the actual DH class, without starting Minecraft or using an account. */
 public final class ChunkyStartupProbe {
@@ -11,7 +12,8 @@ public final class ChunkyStartupProbe {
         public String getModName() { return "chunky"; }
         protected void bindOnGenerationProgressEvent() {
             attempts++;
-            if (!ready) throw new IllegalStateException("Chunky is not loaded");
+            // Exercise the pinned production provider, not a hand-written error string.
+            if (!ready) ChunkyProvider.get();
         }
     }
     static void require(boolean condition, String message) {
@@ -53,6 +55,17 @@ public final class ChunkyStartupProbe {
             throw new AssertionError("Unrelated errors must not be hidden");
         } catch (IllegalStateException expected) {
             require("Different API failure".equals(expected.getMessage()), "Wrong exception propagated");
+        }
+        Probe nullMessage = new Probe() {
+            protected void bindOnGenerationProgressEvent() {
+                throw new IllegalStateException();
+            }
+        };
+        try {
+            nullMessage.tryRunFirstTimeSetup();
+            throw new AssertionError("Null-message errors must not be hidden");
+        } catch (IllegalStateException expected) {
+            require(expected.getMessage() == null, "Wrong null-message exception");
         }
         System.out.println("CHUNKY_STARTUP_PROBE_PASS");
     }

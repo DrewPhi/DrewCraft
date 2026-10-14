@@ -2,6 +2,14 @@
 
 ## 2026-10-14 DH 3.3.3 source compatibility candidate (NOT deployed)
 
+First isolated run 38590444047 failed: the provider's real message ends in a
+period, unlike the original synthetic probe. Corrected the exact match and
+replaced the fabricated exception with a call to the hash-pinned production
+ChunkyProvider. The strengthened probe passes on the patch and reproduces the
+original failure without Minecraft. Null-message/unrelated errors propagate.
+The runtime harness now fails promptly on logged startup crashes rather than
+waiting four minutes for RCON. A fresh isolated runtime result is still required.
+
 Owner requested upgrading DH and authorized source modifications. A narrowly
 scoped patch defers Chunky listener registration only when Chunky reports that
 it is not loaded yet, marks registration complete only after success, and
