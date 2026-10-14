@@ -2,6 +2,23 @@
 
 ## 2026-10-14 DH 3.3.3 source compatibility candidate (NOT deployed)
 
+Corrected isolated run 38593392410 PASSED (94 seconds): actual NeoForge startup,
+Chunky, native LOD output, save and restart. Owner authorized the next gates.
+Manual `dh-fullpack-candidate` workflow assembles hash-verified public rc.2
+server/common files, runs DH331 on disposable flat Linear data, keeps central
+old LOD rows and removes outer rows on this fixture only, upgrades to the exact
+successful patched artifact, and checks saved-block retention, old LOD key
+retention, native LOD growth from saved chunks, SQLite integrity and restart.
+Client-only rendering/aircraft and production Diffusion-world loading are not
+claimed by this headless flat-world test.
+
+`tools/dh_config_upgrade.py` preserves schema-4 settings with a byte-exact config
+backup and atomic schema-5 rewrite. Five new unit tests pass (204 total). The
+runtime gate checks important shared client graphics, generation, thread,
+server identity and transfer-cap settings survive actual DH333 config loading.
+The tool is not yet wired into public launcher/server updates; no production
+config or database is changed by these checks. Promotion remains gated.
+
 First isolated run 38590444047 failed: the provider's real message ends in a
 period, unlike the original synthetic probe. Corrected the exact match and
 replaced the fabricated exception with a call to the hash-pinned production
