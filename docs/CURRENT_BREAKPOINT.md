@@ -15,7 +15,10 @@ GUI is started. Cases include CRLF/LF, missing POSIX APIs, pre-existing backup
 from a failed launch, and reopening. Native Windows/macOS/Linux build jobs now
 run this test before packaging/publication. Passing source tests prove launcher
 preparation/handoff, NOT Minecraft rendering/gameplay or Microsoft login.
-Publication status still requires live CI/assets verification.
+All 227 local tests pass. CI 38623525074 passed every job, including the new
+native Windows/macOS/Linux entrypoint tests, and published launcher-v0.1.15.
+Verified all eight public installer/updater assets and latest-release selection
+of 0.1.15. Owner retry is next; no real Minecraft/account session was launched.
 
 ## 2026-10-14 launcher 0.1.14 migration hotfix
 
