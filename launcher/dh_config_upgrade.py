@@ -47,7 +47,7 @@ def migrate(path: Path) -> bool:
             stream.flush()
             os.fsync(stream.fileno())
         os.chmod(name, stat.st_mode & 0o777)
-        if os.geteuid() == 0:
+        if hasattr(os, 'geteuid') and hasattr(os, 'chown') and os.geteuid() == 0:
             os.chown(name, stat.st_uid, stat.st_gid)
         if path.read_bytes() != original:
             raise RuntimeError('Config changed during migration; stop Minecraft first')

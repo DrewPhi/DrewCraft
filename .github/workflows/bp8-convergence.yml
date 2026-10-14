@@ -140,6 +140,10 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Test actual launcher preparation and handoff on Windows (no game/account)
+        run: |
+          python -m pip install --disable-pip-version-check pytest
+          python -m pytest -q tests/test_dh_launcher_portability.py
       - name: Verify pinned Java and Prism archives
         shell: pwsh
         run: |
@@ -193,6 +197,10 @@ jobs:
           subprocess.run([runtime['prism'], '--version'], check=True)
           print(runtime)
           PY
+      - name: Test actual launcher preparation and handoff on macOS (no game/account)
+        run: |
+          python -m pip install --disable-pip-version-check pytest
+          python -m pytest -q tests/test_dh_launcher_portability.py
       - name: Build Apple Silicon app and DMG
         run: |
           python -m pip install --disable-pip-version-check pyinstaller==6.16.0 certifi==2026.7.22
@@ -239,6 +247,10 @@ jobs:
           subprocess.run([runtime['prism'], '--version'], check=True, env=env)
           print(runtime)
           PY
+      - name: Test actual launcher preparation and handoff on Linux (no game/account)
+        run: |
+          python -m pip install --disable-pip-version-check pytest
+          python -m pytest -q tests/test_dh_launcher_portability.py
       - name: Build Ubuntu/Debian launcher package
         run: |
           python -m pip install --disable-pip-version-check pyinstaller==6.16.0 certifi==2026.7.22

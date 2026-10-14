@@ -1,5 +1,22 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-14 launcher 0.1.15 Windows migration fix + native OS gate
+
+Owner reported `os has no attribute geteuid` after the CRLF fix. Shared DH
+migration now calls POSIX ownership APIs only when both geteuid and chown exist.
+0.1.14 was published successfully; this subsequent Windows runtime defect was
+not covered by its Linux-only migration tests. Launcher bumped to 0.1.15.
+
+New `tests/test_dh_launcher_portability.py` exercises the real launcher main
+through graphics preservation, actual schema migration, memory settings,
+state/lock handling and final Prism command construction. Only acquisition,
+self-update, health and process execution are mocked; no game, real account or
+GUI is started. Cases include CRLF/LF, missing POSIX APIs, pre-existing backup
+from a failed launch, and reopening. Native Windows/macOS/Linux build jobs now
+run this test before packaging/publication. Passing source tests prove launcher
+preparation/handoff, NOT Minecraft rendering/gameplay or Microsoft login.
+Publication status still requires live CI/assets verification.
+
 ## 2026-10-14 launcher 0.1.14 migration hotfix
 
 Owner reported "Unrecognized version declaration; refusing to rewrite" on
