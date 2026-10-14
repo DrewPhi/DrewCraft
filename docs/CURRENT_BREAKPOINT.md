@@ -29,6 +29,15 @@ then activates/health-checks. It has NOT run yet. Do not claim rollout complete.
 Aircraft disappearance remains a separate full-chunk/entity/flight issue; LODs
 are visual data, not collision chunks or proof of reliable unlimited speed.
 
+Rollout chain is `tools/complete_dh_preload_rollout.py`, with durable progress in
+`build/dh-preload-rollout-state.json` on this owner computer. It waits for the
+signed export and public launcher 0.1.16, dispatches verified GH cache publishing,
+then submits guarded Oracle deployment and promotes the client pointer LAST.
+Any failed gate aborts; players online defer the deployment rather than kicking
+them. The owner computer must remain awake for this owner-side chain (Oracle
+export/timer jobs run independently). Native public launcher build: 38635764289.
+254 local tests pass after rollout guard tests. Main now contains the feature.
+
 ## Optional DH radius preload candidate
 
 Owner approved the optional slider/remembered radius/skip design. Work is on
