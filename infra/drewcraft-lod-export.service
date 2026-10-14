@@ -1,0 +1,19 @@
+[Unit]
+Description=Export signed optional visual LOD download cache while idle
+After=drewcraft.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 /srv/drewcraft/state/dh-preload-validation-code/tools/refresh_dh_preload.py --metadata /srv/drewcraft/state/dh-preload-validation-20261014/metadata.json --key /etc/drewcraft/lod-export-signing.pem
+Nice=15
+CPUQuota=60%
+MemoryMax=1G
+IOWeight=10
+TimeoutStartSec=5h
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/drewcraft/state
+

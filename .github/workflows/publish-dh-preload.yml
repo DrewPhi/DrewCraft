@@ -1,0 +1,27 @@
+name: Publish verified DH cache
+
+on:
+  schedule:
+    - cron: '35 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dh-cache-publication
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify and publish signed visual LOD cache
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tools/publish_dh_preload.py --public-key infra/lod-export-public.pem --target "$GITHUB_SHA"

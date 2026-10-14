@@ -6,6 +6,8 @@ import argparse
 import http.server
 import json
 import pathlib
+import re
+import shutil
 import socket
 
 
@@ -13,8 +15,33 @@ class Handler(http.server.BaseHTTPRequestHandler):
     state_file: pathlib.Path
     server_host: str
     server_port: int
+    lod_root = pathlib.Path('/srv/drewcraft/state/lod-public')
+
+    def lod_file(self):
+        name = self.path.removeprefix('/lod-export/')
+        if not re.fullmatch(r'(publication\.json|[0-9a-f]{64}\.(sqlite|jsonl\.gz))', name):
+            self.send_error(404)
+            return
+        root = self.lod_root.resolve()
+        path = (root / name).resolve()
+        if path.parent != root or not path.is_file():
+            self.send_error(404)
+            return
+        with path.open('rb') as stream:
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/octet-stream')
+            self.send_header('Content-Length', str(path.stat().st_size))
+            self.send_header('Cache-Control', 'no-store' if name == 'publication.json' else 'public, max-age=31536000, immutable')
+            self.end_headers()
+            try:
+                shutil.copyfileobj(stream, self.wfile, 256 * 1024)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
 
     def do_GET(self):
+        if self.path.startswith('/lod-export/'):
+            self.lod_file()
+            return
         if self.path not in ("/health.json", "/health"):
             self.send_error(404)
             return

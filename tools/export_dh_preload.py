@@ -36,12 +36,22 @@ def export(source, output, metadata, base_url, previous=None, timeout=900):
     tiles = []
     old_urls = {tile['sha256']:tile['url'] for tile in (previous or {}).get('tiles', [])}
     started = time.monotonic()
+    last_report = [started]
     def bounded(*args):
         if time.monotonic()-started > timeout:
             raise TimeoutError('Snapshot/export budget expired; catalog was not published')
+        if len(args) == 3 and time.monotonic()-last_report[0] >= 30:
+            print('SNAPSHOT_PAGES', args[2]-args[1], '/', args[2], flush=True)
+            last_report[0] = time.monotonic()
     with tempfile.TemporaryDirectory(prefix='dh-export-', dir=output.parent) as temp:
         snapshot = Path(temp) / 'snapshot.sqlite'
         with closing(sqlite3.connect(source.resolve().as_uri() + '?mode=ro', uri=True)) as src, closing(sqlite3.connect(snapshot)) as dest:
+            # Pin a WAL read snapshot: without this, frequent server writes can
+            # restart a multi-GB online backup indefinitely. WAL readers do not
+            # block the server writer. Non-WAL fixtures retain normal backup.
+            if src.execute('PRAGMA journal_mode').fetchone()[0].lower() == 'wal':
+                src.execute('BEGIN')
+                src.execute('SELECT count(*) FROM sqlite_master').fetchone()
             src.backup(dest, pages=4096, progress=bounded, sleep=.05)
         print('CONSISTENT_SNAPSHOT', flush=True)
         with closing(sqlite3.connect(snapshot)) as db:
