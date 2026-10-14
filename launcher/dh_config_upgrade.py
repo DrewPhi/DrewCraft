@@ -19,7 +19,9 @@ def migrate(path: Path) -> bool:
         return False
     if data.get('_version') != 4:
         raise ValueError('Only explicit DH config schema 4 -> 5 is supported')
-    updated, count = re.subn(r'(?m)^([ \t]*_version[ \t]*=[ \t]*)4([ \t]*(?:#.*)?)$',
+    # DH/NightConfig can write CRLF, including on configs carried between OSes.
+    # Match the carriage return explicitly and retain it byte-for-byte.
+    updated, count = re.subn(r'''(?m)^([ \t]*(?:_version|"_version"|'_version')[ \t]*=[ \t]*\+?)4([ \t]*(?:#[^\r\n]*)?\r?)$''',
                              r'\g<1>5\2', original.decode('utf-8'), count=1)
     if count != 1:
         raise ValueError('Unrecognized version declaration; refusing to rewrite')

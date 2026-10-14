@@ -34,3 +34,16 @@ def test_refuses_unknown_or_malformed_without_mutation(tmp_path, content):
         module.migrate(path)
     assert path.read_text() == content
     assert not list(tmp_path.glob('*.bak'))
+
+
+@pytest.mark.parametrize('newline', ['\r\n', '\n'])
+@pytest.mark.parametrize('declaration', ['_version = 4', '_version=4 # DH config', '"_version" = 4', "'_version' = +4"])
+def test_accepts_real_line_endings_and_keeps_exact_bytes(tmp_path, newline, declaration):
+    path = tmp_path / 'DistantHorizons.toml'
+    original = (declaration + newline + '[client.advanced.graphics.quality]' + newline +
+                'lodChunkRenderDistanceRadius = 96' + newline).encode()
+    path.write_bytes(original)
+    assert module.migrate(path)
+    assert path.read_bytes() == original.replace(b'4', b'5', 1)
+    assert next(tmp_path.glob('*.bak')).read_bytes() == original
+    assert not module.migrate(path)

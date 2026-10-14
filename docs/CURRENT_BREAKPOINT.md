@@ -1,5 +1,23 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-14 launcher 0.1.14 migration hotfix
+
+Owner reported "Unrecognized version declaration; refusing to rewrite" on
+launch. Schema migration accepted TOML parsing but its line regex rejected CRLF
+unless a comment happened to absorb the carriage return. Fixed CRLF/LF handling,
+including quoted root keys and explicit positive version integers, preserving
+all bytes except the version digit and keeping the byte-exact original backup.
+Eight new regression cases cover those variants. Launcher bumped to 0.1.14;
+publication status must be checked in BP8 convergence before calling it released.
+No server changes or restart needed for this client-only correction.
+
+DH333 rollout completed: remote journal confirms DH333_DEPLOYMENT_COMPLETE at
+18:10:30 UTC. Server+pregen active, health joinable, pack 0.1.18. Completion
+chain promoted the matching client pointer (manifest hash e724ace68689c989f8c5001daccded484666ce946686138b48125219d1bd3a7f).
+Snapshot d75ad39e60ba6eb2ca9012bf4999cd64e9630e58ca4c302f0c5a13ee4a4c2ee7
+remains held pending owner gameplay acceptance. Full flight/LOD performance
+acceptance is still unverified.
+
 ## 2026-10-14 DH 3.3.3 source compatibility candidate (NOT deployed)
 
 Owner explicitly authorized deploying patched DH333 for their own real-server
