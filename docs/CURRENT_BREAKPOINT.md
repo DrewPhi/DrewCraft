@@ -1,5 +1,29 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-14 DH 3.3.3 source compatibility candidate (NOT deployed)
+
+Owner requested upgrading DH and authorized source modifications. A narrowly
+scoped patch defers Chunky listener registration only when Chunky reports that
+it is not loaded yet, marks registration complete only after success, and
+serializes concurrent registration attempts. Other failures remain visible.
+`patches/distant-horizons/README.md` records upstream source pins, licensing,
+the patch, and reproducible build instructions. The builder retains all other
+official JAR entries unchanged and produces a complete corresponding source
+archive from the pinned upstream checkout.
+
+Actual-class regression probe reproduces the failure on official 3.3.3 and
+passes on the candidate (retry, concurrent registration, unrelated failures).
+Both pristine-source and already-patched-source builds passed locally; all
+199 existing Python tests pass. The manual `dh-compat-candidate` workflow tests
+isolated NeoForge/Chunky startup, native LOD generation, save and restart and
+uploads candidate artifacts, without publishing a launcher channel.
+
+Production and the released pack remain on DH 3.3.1. Remaining gates: isolated
+runtime result, full DrewCraft/Linear saved-world compatibility, schema 4-to-5
+config preservation on server/client, fresh verified backup, and one-manifest
+rollout. No world regeneration is intended. Flight improvement is NOT proven;
+C2ME/Krypton are separate experiments, not bundled into this patch.
+
 ## 2026-10-12 DH flight transition fix / launcher 0.1.12
 
 Owner authorized deploying the transition and configuration fixes. Launcher

@@ -1,0 +1,36 @@
+diff --git a/core/src/main/java/com/seibel/distanthorizons/core/wrapperInterfaces/modAccessor/AbstractChunkyAccessor.java b/core/src/main/java/com/seibel/distanthorizons/core/wrapperInterfaces/modAccessor/AbstractChunkyAccessor.java
+index d880373..a087144 100644
+--- a/core/src/main/java/com/seibel/distanthorizons/core/wrapperInterfaces/modAccessor/AbstractChunkyAccessor.java
++++ b/core/src/main/java/com/seibel/distanthorizons/core/wrapperInterfaces/modAccessor/AbstractChunkyAccessor.java
+@@ -71,15 +71,27 @@ public abstract class AbstractChunkyAccessor implements IChunkyAccessor
+ 	
+ 	private boolean listenerBound = false;
+ 	@Override
+-	public void tryRunFirstTimeSetup()
++	public synchronized void tryRunFirstTimeSetup()
+ 	{
+ 		if (this.listenerBound)
+ 		{
+ 			return;
+ 		}
++		try
++		{
++			this.bindOnGenerationProgressEvent();
++		}
++		catch (IllegalStateException exception)
++		{
++			// Spawn preparation can run before ChunkyProvider is initialized.
++			// A later chunk update retries; unrelated API errors must remain visible.
++			if ("Chunky is not loaded".equals(exception.getMessage()))
++			{
++				return;
++			}
++			throw exception;
++		}
+ 		this.listenerBound = true;
+-		
+-		this.bindOnGenerationProgressEvent();
+ 	}
+ 	
+ 	/** 
+
