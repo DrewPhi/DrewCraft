@@ -35,6 +35,16 @@ pause drain. Neither timeout declares completion, restarts Minecraft or starts D
 alongside unconfirmed Chunky work. Future pack/runtime defaults use cache 8 and
 `-Dchunky.maxWorkingCount=2`; JVM heap remains unchanged.
 
+Live recovery completed at 23:00:39 UTC; Minecraft and controller are active.
+Native DH catch-up started with CHUNKS_ONLY / PRE_EXISTING_ONLY and radius 708
+chunks (11,328 blocks), over actual saved region bounds. Observed radius 63 at
+23:00:54, 135 at 23:01:24, and controller radius 150 / 4.5% at 23:01:32.
+This is actual post-restart native DH work, not just a service-health assertion.
+Runtime verifier final JVM-property/clean-log receipt remains to confirm.
+Resubmitted GitHub LOD publication: 38651310584, reuses already uploaded assets.
+Owner-side rollout chain resumed with `--publication-run 38651310584`; it waits
+for the current-boot memory proof before deploying and promoting the client.
+
 LOD export completed all 905 tiles. Initial GitHub publication 38639364460 failed
 in a release-asset upload after ~31 minutes; old helper suppressed CLI stderr.
 Publisher now exposes errors and retries only absent immutable assets, retaining

@@ -57,7 +57,7 @@ def wait_for(function, seconds):
         time.sleep(60)
 
 
-def main():
+def main(publication_run=None):
     pointer=json.loads(POINTER.read_text())
     expected=pointer['manifestSha256']
     assert pointer['packVersion']=='0.1.19'
@@ -89,13 +89,16 @@ def main():
                 'DrewCraft-Linux-x86_64','DrewCraft-macOS-arm64'}<=names
     wait_for(launcher_ready,3600)
     state('publishing_catalog')
-    dispatched=datetime.datetime.now(datetime.timezone.utc)-datetime.timedelta(seconds=3)
-    gh('workflow','run','publish-dh-preload.yml','--ref','main')
-    def find_run():
-        runs=json.loads(gh('run','list','--workflow','publish-dh-preload.yml','--event','workflow_dispatch',
-                          '--branch','main','--limit','5','--json','databaseId,createdAt'))
-        return next((run['databaseId'] for run in runs if datetime.datetime.fromisoformat(run['createdAt'].replace('Z','+00:00'))>=dispatched),None)
-    run_id=wait_for(find_run,180)
+    if publication_run is None:
+        dispatched=datetime.datetime.now(datetime.timezone.utc)-datetime.timedelta(seconds=3)
+        gh('workflow','run','publish-dh-preload.yml','--ref','main')
+        def find_run():
+            runs=json.loads(gh('run','list','--workflow','publish-dh-preload.yml','--event','workflow_dispatch',
+                              '--branch','main','--limit','5','--json','databaseId,createdAt'))
+            return next((run['databaseId'] for run in runs if datetime.datetime.fromisoformat(run['createdAt'].replace('Z','+00:00'))>=dispatched),None)
+        run_id=wait_for(find_run,180)
+    else:
+        run_id=publication_run
     state('publishing_catalog',runId=run_id)
     def published():
         run=json.loads(gh('run','view',str(run_id),'--json','status,conclusion'))
@@ -131,8 +134,12 @@ def main():
 
 
 if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--publication-run',type=int)
+    args=parser.parse_args()
     try:
-        main()
+        main(args.publication_run)
     except Exception as error:
         state('failed',error=str(error))
         raise
