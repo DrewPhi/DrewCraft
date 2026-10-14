@@ -91,6 +91,8 @@ def export(source, output, metadata, base_url, previous=None, timeout=900):
                 tiles.append({'sha256':digest, 'size':target.stat().st_size, 'rows':rows, 'detailLevel':level,
                               'bounds':[tx*unit,tz*unit,(tx+1)*unit,(tz+1)*unit],
                               'url':old_urls.get(digest,base_url + '/' + target.name)})
+                if len(tiles) % 25 == 0:
+                    print('EXPORT_PROGRESS', len(tiles), '/', len(keys), 'tiles', flush=True)
     catalog = {'schemaVersion':1, 'identity':metadata['identity'], 'dhSha256':DH_SHA256,
                'layoutSha256':fingerprint, 'levelKey':metadata['levelKey'],
                'serverKey':metadata.get('serverKey',''), 'spawn':metadata['spawn'],
@@ -113,6 +115,7 @@ if __name__ == '__main__':
     parser.add_argument('--metadata', type=Path, required=True)
     parser.add_argument('--base-url', required=True)
     parser.add_argument('--previous', type=Path)
+    parser.add_argument('--timeout', type=int, default=900)
     args = parser.parse_args()
     export(args.source, args.output, json.loads(args.metadata.read_text()), args.base_url,
-           json.loads(args.previous.read_text()) if args.previous else None)
+           json.loads(args.previous.read_text()) if args.previous else None, timeout=args.timeout)

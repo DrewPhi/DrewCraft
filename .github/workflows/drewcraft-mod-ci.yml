@@ -36,3 +36,10 @@ jobs:
 
       - name: Compile and test DrewCraft
         run: gradle -p mods/drewcraft test build --stacktrace --no-daemon
+
+      - name: Retain compiled integration mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: drewcraft-integration
+          path: mods/drewcraft/build/libs/*.jar
+          if-no-files-found: error
