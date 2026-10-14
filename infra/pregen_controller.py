@@ -497,6 +497,17 @@ class Controller:
         log = pathlib.Path("/srv/drewcraft/logs/latest.log")
         if self.state["phase"] == "continuous_chunky":
             response = self.rcon("chunky", "progress")
+            if self.state.get("chunkyYieldRequested"):
+                # Pause acknowledges a stop request before outstanding async
+                # chunk work drains. Do not restart the controller or overlap
+                # DH with that work; poll normally and retain the checkpoint.
+                if self.running(response):
+                    self.save(lastProgress=response)
+                    self.health("ready", "Chunky draining paused work before DH catch-up", joinable=True)
+                else:
+                    self.save(phase="complete", chunkyYieldRequested=False,
+                              continuousChunkySuspended=True, dhLastRegionCheckEpoch=0)
+                return
             if self.running(response):
                 self.save(lastProgress=response)
                 # Large diffusion batches can last days. Yield at a bounded
@@ -506,10 +517,7 @@ class Controller:
                             self.state.get("lastDhMaintenanceEpoch", 0))
                 if time.time() - since >= interval:
                     print(checked_dh_response(self.rcon("chunky", "pause")), flush=True)
-                    if self.running(self.rcon("chunky", "progress")):
-                        raise RuntimeError("Chunky did not pause for DH handoff")
-                    self.save(phase="complete", continuousChunkySuspended=True,
-                              dhLastRegionCheckEpoch=0)
+                    self.save(chunkyYieldRequested=True)
                 return
             stat = log.stat()
             messages = ""
@@ -561,7 +569,8 @@ class Controller:
         log = pathlib.Path("/srv/drewcraft/logs/latest.log")
         stat = log.stat()
         self.save(phase="continuous_chunky", continuousTargetRadius=radius,
-                  continuousChunkySuspended=False, chunkySliceStartedEpoch=time.time(),
+                  continuousChunkySuspended=False, chunkyYieldRequested=False,
+                  chunkySliceStartedEpoch=time.time(),
                   chunkyLogInode=stat.st_ino, chunkyLogOffset=stat.st_size)
         for command in (("chunky", "world", "minecraft:overworld"),
                         ("chunky", "shape", "circle"),

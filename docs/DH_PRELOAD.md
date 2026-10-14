@@ -1,7 +1,32 @@
-# Optional radius-based DH preloading — candidate
+# Optional radius-based DH preloading — rollout in progress
 
 Branch: `feature/dh-radius-preload`. **Not published or deployed.** The working
 launcher 0.1.15 and server pack 0.1.18 remain unchanged.
+
+October 14 rollout: native 0.1.16 builds passed (38634525372); the recorder
+compiled in 38634214200. Pack 0.1.19 is staged as an immutable prerelease, NOT
+promoted. Its integration jar preserves every production entry byte-for-byte
+and adds only `LastOverworldLocation.class`; all other managed files are unchanged.
+252 local tests pass, including signed-publication and backup-hold rotation.
+
+Production export runs as `drewcraft-lod-export-v2-20261014.service`. SQLite WAL
+read snapshot pinning prevents writes from restarting the copy. The consistent
+snapshot completed at 20:50:12 UTC; tile packaging follows. Relay job
+`drewcraft-lod-relay-first-20261014` adopts only a completed catalog, signs it,
+and enables `drewcraft-lod-export.timer` (six-hour idle checks after new DH jobs).
+Export jobs are low-priority and preserve a 25 GiB free-space reserve.
+
+Only public verification material lives in Git. A dedicated server RSA key signs
+LOD data, not SSH/GitHub operations. The existing health port serves only a signed
+envelope and content-addressed visual blobs, never arbitrary/world paths. GitHub
+verifies signatures, world identity, payload hashes and uploaded asset sizes,
+then promotes catalog last. No owner SSH key or GitHub credential is copied.
+Unreferenced relay blobs expire after seven days; current referenced files stay.
+
+The controller requests a Chunky pause after an hour-long slice, waits for async
+work to drain, runs saved-terrain DH jobs, then continues the exact checkpoint.
+Pausing never advances completed coverage. Live controller is waiting for Chunky
+drain; actual new native DH-job start remains to verify. Player pauses remain.
 
 ## User experience
 
@@ -17,7 +42,7 @@ or optional preload errors must not block normal play.
 Center: locally recorded last known Overworld location for the exact world,
 otherwise world spawn. A client-only recorder samples every ten seconds and at
 normal logout. Positions remain local; no public player-position endpoint.
-It requires the updated DrewCraft integration jar (not yet released).
+It requires the updated DrewCraft integration jar (staged in pack 0.1.19).
 
 DH can choose different name-based folders for direct-connect/server-list joins.
 Successful opt-in preloading selects IP_ONLY for this managed instance so DH
@@ -35,8 +60,9 @@ template; no player data/credentials/other world databases are published.
 
 SHA-256 hashes identify payloads. Unchanged tile content retains its prior URL;
 new/revised tiles get immutable release URLs. The small HTTPS catalog is promoted
-last. Neither exporter nor launcher uploads/publishes by itself. A publishing
-job/cadence is still needed before enabling this in a public pack.
+last. Neither exporter nor launcher uploads/publishes by itself. The signed relay
+and GitHub publisher above implement refresh publication; the first full catalog
+must still finish before enabling this in a public pack.
 
 The launcher validates world ID/revision/address/dimension, exact DH hash, schema
 layout and payload hashes. Per-tile SQLite transactions retain newer client rows

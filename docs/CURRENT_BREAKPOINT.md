@@ -1,5 +1,34 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-14 optional LOD preload public rollout IN PROGRESS
+
+Owner accepted DH333's visual improvement and authorized publishing radius-based
+LOD downloading. Native launcher 0.1.16 candidate passed Actions 38634525372;
+client recorder compiled in 38634214200. Pack 0.1.19 is staged as a prerelease,
+but production pack/client pointer remain 0.1.18 until catalog + matching server
+are ready. No world or mod-list overhaul: inject only the client recorder class
+into the existing integration jar, preserving every other entry and hook.
+252 local tests pass, including held-backup rotation-before-prune tests.
+
+Live read-only export `drewcraft-lod-export-v2-20261014` completed its consistent
+11 GB SQLite snapshot at 20:50:12 UTC; packaging remains. Initial relay chain
+`drewcraft-lod-relay-first-20261014` signs the completed catalog and enables
+six-hour idle export checks. New `publish-dh-preload.yml` verifies a pinned
+LOD-only signing public key and payload hashes, publishes immutable HTTPS blobs,
+then catalog last. No GitHub token/owner SSH key is copied to Oracle/Actions.
+
+Controller fix is installed: long Chunky batches yield for DH after an hour,
+retain their checkpoint and do NOT advance the confirmed frontier on pause.
+First implementation rejected asynchronous pause too early; corrected to wait
+for outstanding work without restart/error or concurrent DH. Live controller is
+stable awaiting that drain. Verify actual DH start, initial full catalog, public
+launcher 0.1.16 and guarded server 0.1.19 activation before promoting live.json.
+`tools/deploy_dh_preload.py` preserves config/JVM/world, checks zero players,
+verifies a fresh backup before rotating its existing hold and pruning to one,
+then activates/health-checks. It has NOT run yet. Do not claim rollout complete.
+Aircraft disappearance remains a separate full-chunk/entity/flight issue; LODs
+are visual data, not collision chunks or proof of reliable unlimited speed.
+
 ## Optional DH radius preload candidate
 
 Owner approved the optional slider/remembered radius/skip design. Work is on

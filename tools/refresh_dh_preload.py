@@ -24,7 +24,7 @@ from dh_preload import atomic_json, canonical, identity, validate_catalog
 def prepare(root, metadata_path, key, adopt=None):
     sys.path.insert(0, str(root/'bin'))
     from deploy_fuel_patch import rcon
-    if 'There are 0 ' not in rcon('list'):
+    if not adopt and 'There are 0 ' not in rcon('list'):
         print('LOD export deferred: players online', flush=True)
         return
     manifest = json.loads((root/'current/.drewcraft-release-manifest.json').read_text())

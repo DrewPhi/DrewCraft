@@ -184,7 +184,12 @@ def test_long_chunky_batch_yields_without_advancing_frontier(tmp_path):
     obj = controller(tmp_path)
     obj.state.update(phase="continuous_chunky", continuousCompletedRadius=6144,
                      continuousTargetRadius=7168, chunkySliceStartedEpoch=1)
-    obj.rcon = mock.Mock(side_effect=["Task running", "Task paused", "No tasks running"])
+    obj.rcon = mock.Mock(side_effect=["Task running", "Task paused", "Task running", "No tasks running"])
+    obj.continuous_chunky_step(10_000)
+    assert obj.state["chunkyYieldRequested"]
+    assert obj.state["phase"] == "continuous_chunky"
+    obj.continuous_chunky_step(10_000)
+    assert obj.state["phase"] == "continuous_chunky"  # async work still draining
     obj.continuous_chunky_step(10_000)
     assert obj.state["phase"] == "complete"
     assert obj.state["continuousChunkySuspended"]
