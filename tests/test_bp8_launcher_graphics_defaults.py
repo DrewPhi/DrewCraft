@@ -5,6 +5,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -23,6 +24,24 @@ client_defaults = load_module(
 
 
 class LauncherGraphicsDefaultsTest(unittest.TestCase):
+    def test_patched_dh_migrates_only_matching_pack_and_preserves_choices(self):
+        state, minecraft = self.state()
+        client_defaults.apply_client_defaults(self.app, state)
+        config = minecraft / 'config/DistantHorizons.toml'
+        config.write_text('_version = 4\n[client.advanced.graphics.quality]\nlodChunkRenderDistanceRadius = 96\n')
+        client_defaults.apply_client_defaults(self.app, state)
+        self.assertIn('_version = 4', config.read_text())
+        jar = minecraft / 'mods/DistantHorizons-3.3.3-1.21.1-drewcraft.1.jar'
+        jar.parent.mkdir(exist_ok=True)
+        jar.write_bytes(b'test fixture')
+        with mock.patch.object(client_defaults.hashlib, 'sha256') as digest:
+            digest.return_value.hexdigest.return_value = 'b43f5ac302a2ed6039d34f737d3182a0bc771333c71653c06aa7528cae6ecb67'
+            client_defaults.apply_client_defaults(self.app, state)
+            client_defaults.apply_client_defaults(self.app, state)
+        self.assertIn('_version = 5', config.read_text())
+        self.assertIn('lodChunkRenderDistanceRadius = 96', config.read_text())
+        self.assertEqual(len(list(config.parent.glob('*.schema4-*.bak'))), 1)
+
     def setUp(self):
         self.tmp = pathlib.Path(tempfile.mkdtemp(prefix="drewcraft-potato-"))
         self.app = self.tmp / "app"

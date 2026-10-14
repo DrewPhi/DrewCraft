@@ -9,6 +9,8 @@ versioned Prism instances without overwriting later edits.
 from __future__ import annotations
 
 import json
+import hashlib
+import importlib.util
 import os
 import pathlib
 import re
@@ -314,6 +316,22 @@ def apply_client_defaults(app_dir: pathlib.Path, state: dict) -> bool:
     flight_marker = app_dir / "user-data/dh-flight-defaults.json"
     migrate_flight = not flight_marker.is_file()
     ensure_dh_functional_defaults(minecraft_dir, migrate_flight_settings=migrate_flight)
+    # Launcher updates alone must not upgrade the config of the older DH pack.
+    dh_jar = minecraft_dir / 'mods/DistantHorizons-3.3.3-1.21.1-drewcraft.1.jar'
+    if dh_jar.is_file():
+        if hashlib.sha256(dh_jar.read_bytes()).hexdigest() != 'b43f5ac302a2ed6039d34f737d3182a0bc771333c71653c06aa7528cae6ecb67':
+            raise RuntimeError('Unrecognized DH compatibility build; refusing config migration')
+        try:
+            from dh_config_upgrade import migrate
+        except ModuleNotFoundError:
+            spec = importlib.util.spec_from_file_location('drewcraft_dh_config_upgrade', pathlib.Path(__file__).with_name('dh_config_upgrade.py'))
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            migrate = module.migrate
+        import tomllib
+        path = minecraft_dir / 'config/DistantHorizons.toml'
+        if tomllib.loads(path.read_text('utf-8')).get('_version') is not None:
+            migrate(path)
     if migrate_flight:
         _atomic_json(flight_marker, {"schemaVersion": 1, "launcherVersion": "0.1.12"})
 

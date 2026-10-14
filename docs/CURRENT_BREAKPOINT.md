@@ -2,6 +2,16 @@
 
 ## 2026-10-14 DH 3.3.3 source compatibility candidate (NOT deployed)
 
+Owner explicitly authorized deploying patched DH333 for their own real-server
+playtest despite incomplete full-pack LOD/config/restart acceptance. Release
+0.1.18 is a DH-only delta over immutable rc.2; same world/Linear/all other mods.
+Launcher 0.1.13 adds hash-gated config migration only when the exact patched
+DH333 jar is installed. Old DH331 installs keep schema 4. Shared migration
+implementation is now `launcher/dh_config_upgrade.py` with a tools CLI shim.
+Release is not promoted until matching launcher assets and pack files exist,
+the server has a fresh verified world+DH backup, and startup passes. Rollout
+status must be checked live; this entry records authorization/preparation only.
+
 Run 38597402842 successfully booted BOTH the full baseline pack and patched
 DH333. Its candidate log confirms `[Rcon] LINEAR_SAVED_BLOCK_PASS`; the test
 incorrectly required that /say broadcast in the RCON return. Replaced chat
