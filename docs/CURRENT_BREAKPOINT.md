@@ -2,6 +2,15 @@
 
 ## 2026-10-14 DH 3.3.3 source compatibility candidate (NOT deployed)
 
+Run 38597402842 successfully booted BOTH the full baseline pack and patched
+DH333. Its candidate log confirms `[Rcon] LINEAR_SAVED_BLOCK_PASS`; the test
+incorrectly required that /say broadcast in the RCON return. Replaced chat
+matching with a stored numeric block-predicate result, verified on baseline,
+upgrade and restart. Added regression checks rejecting zero/missing results.
+Also corrected native DH pregen radius units: convert block radius to chunks
+(512 blocks = 32 chunks), keeping the disposable scan within saved terrain.
+This evidence does not yet complete native LOD/config/restart acceptance.
+
 Full-pack run 38594839322 timed out BEFORE upgrading DH: TD's unconditional
 fresh-overworld spawn hook ran inference even with a flat generator. Corrected
 test seeds an initialized disposable flat save with the exact released Linear

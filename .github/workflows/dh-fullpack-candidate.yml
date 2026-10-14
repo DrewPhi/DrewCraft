@@ -29,7 +29,7 @@ jobs:
       - name: Check migration unit tests
         run: |
           python -m pip install --disable-pip-version-check rcon==2.4.9 pytest
-          python -m pytest -q tests/test_dh_config_upgrade.py
+          python -m pytest -q tests/test_dh_config_upgrade.py tests/test_dh_smoke_checks.py
       - name: Assemble exact released server mod set (isolated)
         run: python tools/dh_fullpack_prepare.py build/dh-fullpack
       - name: Verify baseline save, upgrade, Linear LOD reading, config preservation and restart

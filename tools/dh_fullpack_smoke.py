@@ -17,6 +17,7 @@ import time
 import tomllib
 from rcon.source import Client
 from dh_config_upgrade import migrate
+from dh_smoke_checks import dh_radius_chunks, verify_saved_block
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'infra'))
 from worldgen_guard import read_nbt
@@ -96,11 +97,13 @@ def run(root, candidate):
                         proc.kill(); proc.wait(timeout=15)
         print('FULLPACK_STAGE_PASS', name, flush=True)
     def pregen(radius, wait):
-        reply = command('dh', 'pregen', 'start', 'overworld', '0', '0', str(radius))
+        reply = command('dh', 'pregen', 'start', 'overworld', '0', '0', str(dh_radius_chunks(radius)))
         assert 'Starting pregen' in reply, reply
         wait(lambda: 'Pregen is not running' in command('dh', 'pregen', 'status'))
     def baseline_action(wait):
         command('setblock', '0', '65', '0', 'minecraft:diamond_block')
+        command('scoreboard', 'objectives', 'add', 'dh_acceptance', 'dummy')
+        verify_saved_block(command)
         log = root / 'logs/latest.log'
         offset = len(log.read_text())
         for args in [('chunky','world','minecraft:overworld'), ('chunky','center','0','0'), ('chunky','radius','640'), ('chunky','start')]:
@@ -145,8 +148,7 @@ def run(root, candidate):
     assert migrate(config)
     before_config = tomllib.loads(config.read_text())
     def candidate_action(wait):
-        reply = command('execute','if','block','0','65','0','minecraft:diamond_block','run','say','LINEAR_SAVED_BLOCK_PASS')
-        assert 'LINEAR_SAVED_BLOCK_PASS' in reply, reply
+        verify_saved_block(command)
         pregen(512, wait)
     stage('candidate-333', candidate_action)
     after = lods()
