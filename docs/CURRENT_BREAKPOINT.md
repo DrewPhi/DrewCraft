@@ -7,7 +7,14 @@ Owner approved the optional slider/remembered radius/skip design. Work is on
 unchanged. See `docs/DH_PRELOAD.md` for implementation, safety boundaries and
 remaining gates. Local Python tests currently pass; candidate CI includes native
 platform import/preparation, client-only Java recorder compilation, and a real
-DH export/import/restart fixture. No production export or rollout is yet claimed.
+DH export/import/restart fixture. These passed in 38628888742 and 38628963071.
+Bounded read-only production probe also passed: 256 base + 90 parent sections,
+10 tiles / 33,839,298 payload bytes; exact row equality and SQLite integrity.
+Source schema fingerprint 8ac02d06c086b839a50ce847b4f8a0d077ccbf53b3a864ac90592bbae406f9b9.
+Private probe result: /srv/drewcraft/state/dh-preload-validation-20261014/result.json.
+Production launcher/server remain unchanged. Full catalog export/hosting,
+refresh cadence and matching recorder/launcher pack release remain to implement;
+basic validation is green, not evidence of a public working preload yet.
 
 ## 2026-10-14 launcher 0.1.15 Windows migration fix + native OS gate
 

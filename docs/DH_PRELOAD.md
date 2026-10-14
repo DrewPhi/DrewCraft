@@ -77,3 +77,23 @@ Current candidate does not stop/restart production, expose a new port, export
 private player positions or provision cloud resources. First production export,
 automatic publishing/cadence, real-world cache acceptance and public rollout
 remain pending. Do not describe this source implementation as live functionality.
+
+## Basic validation evidence
+
+- 240 local Python tests pass.
+- Native Windows/macOS/Linux candidate tests/builds and ARM Java compilation
+  passed: Actions `38628888742`. Publication intentionally skipped on branch.
+- Real pinned DH333 export/import/restart passed: Actions `38628963071`.
+  Exported/imported rows match byte-for-byte before DH opens/saves the DB.
+- `tools/dh_production_preload_probe.py` passed on a bounded read-only production
+  sample: 256 base sections + 90 parent sections, 10 tiles, 33,839,298 compressed
+  payload bytes. Exact binary/metadata equality and SQLite integrity passed.
+  Layout fingerprint `8ac02d06c086b839a50ce847b4f8a0d077ccbf53b3a864ac90592bbae406f9b9`.
+  Private result directory: `/srv/drewcraft/state/dh-preload-validation-20261014`.
+  No source DB writes, server restart, publication or owner-account launch.
+
+These basic gates are green. Remaining work is release infrastructure: full
+catalog export + HTTPS tile/catalog publication + refresh cadence + immutable
+pack including the client recorder + launcher release promotion. Real rendered
+client acceptance and actual flight performance remain owner tests, not proven
+by the database/server fixture.
