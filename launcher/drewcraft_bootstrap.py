@@ -41,6 +41,11 @@ PRESERVED_USER_PATHS = (
     # construction. They are runtime cache data, not pack-managed content, and
     # must survive the launcher's versioned-instance convergence.
     "terrain-diffusion-models",
+    # Mutable DH databases must survive pack-instance updates, but must never
+    # be hard-linked between instances (both games could write the same DB).
+    "Distant_Horizons_server_data",
+    "drewcraft-last-location.json",
+    "drewcraft-preload-world.json",
 ) + XAERO_USER_PATHS
 HARDLINK_PRESERVED_PATHS = frozenset(("terrain-diffusion-models",))
 
@@ -401,7 +406,20 @@ def _copy_preserved_user_data(previous_minecraft: pathlib.Path | None, target_mi
         if not source.exists() or target.exists():
             continue
         if source.is_dir():
-            if rel in HARDLINK_PRESERVED_PATHS:
+            if rel == 'Distant_Horizons_server_data':
+                # A plain copy of an open WAL database can silently lose rows.
+                # Use SQLite's consistent online backup, excluding sidecars.
+                import sqlite3
+                from contextlib import closing
+                def copy_lod_file(src, dst):
+                    if pathlib.Path(src).suffix == '.sqlite':
+                        with closing(sqlite3.connect(pathlib.Path(src).resolve().as_uri()+'?mode=ro',uri=True)) as original, closing(sqlite3.connect(dst)) as cloned:
+                            original.backup(cloned,pages=4096,sleep=.05)
+                        return dst
+                    return shutil.copy2(src,dst)
+                shutil.copytree(source,target,copy_function=copy_lod_file,
+                                ignore=shutil.ignore_patterns('*-wal','*-shm','*.lock'))
+            elif rel in HARDLINK_PRESERVED_PATHS:
                 # Model assets are immutable and hash-validated by Terrain
                 # Diffusion. Hard-linking avoids copying ~2 GiB on every
                 # converge; copy2 remains the cross-filesystem fallback.
@@ -578,6 +596,7 @@ def converge(live_url: str, app_dir: pathlib.Path, progress=None, cancelled=None
         "prismExecutable": runtime.get("prism"),
         "javaExecutable": runtime.get("java"),
         "server": manifest.get("server", {}),
+        "world": manifest.get("world", {}),
     }
     atomic_json(app_dir / "state.json", state)
     if progress:

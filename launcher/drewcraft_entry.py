@@ -232,6 +232,12 @@ def main() -> int:
         state = _converge_with_progress(LIVE_URL, app_dir)
         apply_client_defaults(app_dir, state)
         _force_eight_gib(state)
+        try:
+            from dh_preload_ui import offer
+            offer(app_dir, state)
+        except Exception as error:
+            # Optional visual data must never become another launch blocker.
+            print('DrewCraft optional terrain preload skipped:', error, flush=True)
         if _needs_login(state):
             return _authenticate_and_launch(state, app_dir)
         return launch(app_dir)

@@ -66,10 +66,16 @@ jobs:
           data=fetch(item['url']);assert hashlib.sha256(data).hexdigest()==item['sha256']
           (root/'mods').mkdir(exist_ok=True)
           (root/item['path']).write_bytes(data)
-          shutil.copy2('build/dh-compat/DistantHorizons-3.3.3-1.21.1-drewcraft.1.jar',root/'mods')
+          # This branch tests preload compatibility with the EXACT live DH
+          # artifact, not a newly timestamped rebuild of equivalent classes.
+          candidate=fetch('https://github.com/DrewPhi/DrewCraft/releases/download/drewcraft-pack-0.1.18/common--mods--DistantHorizons-3.3.3-1.21.1-drewcraft.1.jar')
+          assert hashlib.sha256(candidate).hexdigest()=='b43f5ac302a2ed6039d34f737d3182a0bc771333c71653c06aa7528cae6ecb67'
+          (root/'mods/DistantHorizons-3.3.3-1.21.1-drewcraft.1.jar').write_bytes(candidate)
           PY
       - name: Verify actual startup, Chunky, native LOD output and restart
         run: python tools/dh_candidate_smoke.py build/dh-smoke
+      - name: Verify real DH accepts radius-preload exported/imported data
+        run: python tools/dh_preload_runtime_smoke.py build/dh-smoke
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -80,5 +86,7 @@ jobs:
             build/dh-compat/*.tar.gz
             build/dh-smoke/smoke-server.log
             build/dh-smoke/smoke-result.json
+            build/dh-smoke/preload-result.json
+            build/dh-smoke/preload-restart.log
             build/dh-smoke/logs/*.log
           if-no-files-found: error

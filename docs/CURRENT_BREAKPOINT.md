@@ -1,5 +1,14 @@
 # DrewCraft Current Development Breakpoint
 
+## Optional DH radius preload candidate
+
+Owner approved the optional slider/remembered radius/skip design. Work is on
+`feature/dh-radius-preload`; production launcher 0.1.15/server pack 0.1.18 remain
+unchanged. See `docs/DH_PRELOAD.md` for implementation, safety boundaries and
+remaining gates. Local Python tests currently pass; candidate CI includes native
+platform import/preparation, client-only Java recorder compilation, and a real
+DH export/import/restart fixture. No production export or rollout is yet claimed.
+
 ## 2026-10-14 launcher 0.1.15 Windows migration fix + native OS gate
 
 Owner reported `os has no attribute geteuid` after the CRLF fix. Shared DH
