@@ -2,6 +2,13 @@
 
 ## 2026-10-14 DH 3.3.3 source compatibility candidate (NOT deployed)
 
+Full-pack run 38594839322 timed out BEFORE upgrading DH: TD's unconditional
+fresh-overworld spawn hook ran inference even with a flat generator. Corrected
+test seeds an initialized disposable flat save with the exact released Linear
+jar alone, verifies saved flat generator and initialized spawn, then restores
+ALL released mods/datapacks before DH331 baseline and DH333 upgrade/restart.
+Unexpected diffusion spawn search now fails fast. Live world remains untouched.
+
 Corrected isolated run 38593392410 PASSED (94 seconds): actual NeoForge startup,
 Chunky, native LOD output, save and restart. Owner authorized the next gates.
 Manual `dh-fullpack-candidate` workflow assembles hash-verified public rc.2

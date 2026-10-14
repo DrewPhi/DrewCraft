@@ -12,12 +12,16 @@ import secrets
 import shutil
 import sqlite3
 import subprocess
+import sys
 import time
 import tomllib
 from rcon.source import Client
 from dh_config_upgrade import migrate
 
-BAD = r'MixinApplyError|InvalidMixinException|Failed to initialize server|Encountered an unexpected exception|Corrupt Linear region|Chunky is not loaded'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'infra'))
+from worldgen_guard import read_nbt
+
+BAD = r'MixinApplyError|InvalidMixinException|Failed to initialize server|Encountered an unexpected exception|Corrupt Linear region|Chunky is not loaded|Querying coarse map to find spawn'
 
 
 def run(root, candidate):
@@ -104,6 +108,28 @@ def run(root, candidate):
         wait(lambda: bool(re.search(r'Task finished for (?:minecraft:)?overworld', log.read_text()[offset:])))
         time.sleep(4)
         pregen(32, wait)
+    # TD's fresh-spawn injection is unconditional even for flat generators.
+    # Seed an initialized flat save with just exact released Linear first; then
+    # restore EVERY released mod and datapack for the actual acceptance stages.
+    held_mods = root / 'fullpack-mods'
+    (root / 'mods').rename(held_mods)
+    (root / 'mods').mkdir()
+    shutil.copy2(held_mods / linear.name, root / 'mods' / linear.name)
+    world_packs = root / 'world/datapacks'
+    held_packs = root / 'fullpack-world-datapacks'
+    if world_packs.exists():
+        world_packs.rename(held_packs)
+    try:
+        stage('seed-flat', lambda wait: None)
+        saved = read_nbt(root / 'world/level.dat')['Data']
+        assert saved['initialized'] == 1, 'Seed world has not initialized spawn'
+        assert saved['WorldGenSettings']['dimensions']['minecraft:overworld']['generator']['type'] == 'minecraft:flat'
+    finally:
+        # Remove only our one-file seed mods directory, retaining that file.
+        (root / 'mods').rename(root / 'seed-mods')
+        held_mods.rename(root / 'mods')
+        if held_packs.exists():
+            held_packs.rename(world_packs)
     stage('baseline-331', baseline_action)
     # Controlled missing-LOD fixture on disposable data ONLY. Keep central old
     # rows to test preservation, remove outer rows so native pregen must read
@@ -144,7 +170,7 @@ def run(root, candidate):
     assert after <= lods()
     assert not list((root / 'world/region').glob('*.mca'))
     result = {'status':'PASS', 'baselineBaseLods':len(before), 'candidateBaseLods':len(after),
-              'candidateSha256':report['jarSha256'], 'scope':'Full rc.2 server mod set, disposable flat Linear data, existing DH331 LOD upgrade, native saved-chunk LOD growth, restart, shared client/server config preservation. Not production-world or aircraft acceptance.'}
+              'candidateSha256':report['jarSha256'], 'scope':'Flat save seeded with released Linear only; full rc.2 server mod set restored before baseline/upgrade tests. Existing DH331 LOD upgrade, native saved-chunk LOD growth, restart, shared client/server config preservation. Not production-world or aircraft acceptance.'}
     (root / 'fullpack-result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result), flush=True)
 

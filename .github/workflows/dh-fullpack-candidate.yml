@@ -41,6 +41,7 @@ jobs:
           name: dh-fullpack-upgrade-evidence
           path: |
             build/dh-fullpack/*331.log
+            build/dh-fullpack/seed-flat.log
             build/dh-fullpack/*333.log
             build/dh-fullpack/candidate-restart.log
             build/dh-fullpack/fullpack-result.json
