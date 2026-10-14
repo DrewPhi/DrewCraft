@@ -497,11 +497,27 @@ class Controller:
         log = pathlib.Path("/srv/drewcraft/logs/latest.log")
         if self.state["phase"] == "continuous_chunky":
             response = self.rcon("chunky", "progress")
+            if self.running(response):
+                now = time.time()
+                match = re.search(r"Processed:\s*([\d,]+)\s+chunks", response)
+                token = match.group(1).replace(",", "") if match else response
+                if token != self.state.get("chunkyProgressToken"):
+                    self.save(chunkyProgressToken=token, chunkyLastAdvanceEpoch=now)
+                elif now-self.state.get("chunkyLastAdvanceEpoch", now) >= getattr(self.args, "chunky_stall_seconds", 7200):
+                    self.pause_for_fault("Chunky made no chunk-count progress for the configured stall timeout")
+                    return
             if self.state.get("chunkyYieldRequested"):
                 # Pause acknowledges a stop request before outstanding async
                 # chunk work drains. Do not restart the controller or overlap
                 # DH with that work; poll normally and retain the checkpoint.
                 if self.running(response):
+                    now = time.time()
+                    requested = self.state.get("chunkyYieldRequestedEpoch")
+                    if requested is None:
+                        self.save(chunkyYieldRequestedEpoch=now)
+                    elif now-requested >= getattr(self.args, "chunky_drain_timeout_seconds", 1800):
+                        self.pause_for_fault("Chunky did not drain after pause; operator recovery required")
+                        return
                     self.save(lastProgress=response)
                     self.health("ready", "Chunky draining paused work before DH catch-up", joinable=True)
                 else:
@@ -517,7 +533,7 @@ class Controller:
                             self.state.get("lastDhMaintenanceEpoch", 0))
                 if time.time() - since >= interval:
                     print(checked_dh_response(self.rcon("chunky", "pause")), flush=True)
-                    self.save(chunkyYieldRequested=True)
+                    self.save(chunkyYieldRequested=True, chunkyYieldRequestedEpoch=time.time())
                 return
             stat = log.stat()
             messages = ""
@@ -555,6 +571,7 @@ class Controller:
                 self.start_continuous_chunky(self.state["continuousTargetRadius"])
             elif "task continuing" in response.lower():
                 self.save(phase="continuous_chunky", continuousChunkySuspended=False,
+                          chunkyProgressToken=None, chunkyLastAdvanceEpoch=time.time(),
                           chunkySliceStartedEpoch=time.time())
             else:
                 raise RuntimeError(f"Could not resume Chunky checkpoint: {response}")
@@ -570,6 +587,7 @@ class Controller:
         stat = log.stat()
         self.save(phase="continuous_chunky", continuousTargetRadius=radius,
                   continuousChunkySuspended=False, chunkyYieldRequested=False,
+                  chunkyProgressToken=None, chunkyLastAdvanceEpoch=time.time(),
                   chunkySliceStartedEpoch=time.time(),
                   chunkyLogInode=stat.st_ino, chunkyLogOffset=stat.st_size)
         for command in (("chunky", "world", "minecraft:overworld"),
@@ -656,6 +674,44 @@ class Controller:
             self.health(status, f"Overworld pregeneration paused safely: {reason}", joinable=(status == "ready"))
         return 2
 
+    def pause_for_fault(self, reason: str) -> None:
+        """Persist an explicit fault, never declare a paused task completed."""
+        self.save(faultPausedFromPhase=self.state["phase"], phase="fault_paused",
+                  reason=reason, faultDetectedUtc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+        for command in (("chunky", "pause"), ("dh", "pregen", "stop")):
+            try:
+                print(self.rcon(*command), flush=True)
+            except Exception as exc:
+                print(f"Fault pause command failed: {exc}", flush=True)
+        self.health("ready", f"Pregeneration FAULT: {reason}; gameplay remains joinable", joinable=True)
+        print(f"PREGEN_FAULT {reason}", flush=True)
+
+    def workers_healthy(self) -> bool:
+        """Bounded incremental log scan; JVM can survive a dead I/O worker."""
+        if self.state.get("phase") == "fault_paused":
+            self.health("ready", f"Pregeneration FAULT: {self.state.get('reason')}; operator recovery required", joinable=True)
+            return False
+        path = pathlib.Path(getattr(self.args, "log_file", "/srv/drewcraft/logs/latest.log"))
+        try:
+            stat = path.stat()
+            same = self.state.get("workerLogIdentity") == [stat.st_dev, stat.st_ino]
+            offset = self.state.get("workerLogOffset", 0) if same else 0
+            tail = self.state.get("workerLogTail", "") if same else ""
+            if offset > stat.st_size:
+                offset, tail = 0, ""
+            with path.open("rb") as stream:
+                stream.seek(offset)
+                text = tail + stream.read(4*1024*1024).decode("utf-8", errors="replace")
+                offset = stream.tell()
+        except FileNotFoundError:
+            return True
+        self.save(workerLogIdentity=[stat.st_dev, stat.st_ino], workerLogOffset=offset,
+                  workerLogTail=text[-128:])
+        if "OutOfMemoryError" in text:
+            self.pause_for_fault("Java OutOfMemoryError detected in server log")
+            return False
+        return True
+
     def run(self) -> int:
         # Allow an operator to increase --target-bytes without deleting state.
         if self.args.target_bytes > self.state.get("targetBytes", 0):
@@ -665,6 +721,9 @@ class Controller:
         self.write_boundary(self.state["activeRadius"])
         world_verified = False
         while True:
+            if not self.workers_healthy():
+                time.sleep(self.args.poll_seconds)
+                continue
             if not self.idle_window():
                 time.sleep(self.args.poll_seconds)
                 continue
@@ -843,6 +902,9 @@ def main() -> int:
     parser.add_argument("--maximum-radius", type=int, default=1_000_000)
     parser.add_argument("--maximum-expansions", type=int, default=3)
     parser.add_argument("--poll-seconds", type=int, default=10)
+    parser.add_argument("--log-file", default="/srv/drewcraft/logs/latest.log")
+    parser.add_argument("--chunky-stall-seconds", type=int, default=7200)
+    parser.add_argument("--chunky-drain-timeout-seconds", type=int, default=1800)
     parser.add_argument("--generation-batch-blocks", type=int, default=1024)
     parser.add_argument("--dh-lag-blocks", type=int, default=512)
     parser.add_argument("--idle-grace-seconds", type=int, default=600)

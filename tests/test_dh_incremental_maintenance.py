@@ -212,6 +212,54 @@ def test_dh_catchup_resumes_same_chunky_checkpoint(tmp_path):
     assert obj.state["continuousCompletedRadius"] == 6144
 
 
+def test_worker_oom_fault_stays_joinable_and_does_not_auto_resume(tmp_path):
+    obj=controller(tmp_path)
+    obj.state.update(phase="continuous_chunky",continuousCompletedRadius=6144)
+    obj.args.log_file=tmp_path/'latest.log'
+    obj.args.log_file.write_text('IO worker failed: java.lang.OutOfMemoryError: Java heap space\n')
+    obj.rcon=mock.Mock(return_value='paused')
+    assert not obj.workers_healthy()
+    assert obj.state['phase']=='fault_paused'
+    assert obj.state['faultPausedFromPhase']=='continuous_chunky'
+    assert obj.state['continuousCompletedRadius']==6144
+    assert obj.rcon.call_count==2
+    obj.health.assert_called_with('ready',mock.ANY,joinable=True)
+    obj.args.log_file.write_text('clean now\n')
+    assert not obj.workers_healthy()  # explicit recovery, never auto-clear
+    assert obj.rcon.call_count==2
+
+
+def test_worker_log_rotation_and_split_marker_are_detected(tmp_path):
+    obj=controller(tmp_path)
+    obj.args.log_file=tmp_path/'latest.log'
+    obj.args.log_file.write_text('normal\n')
+    obj.rcon=mock.Mock(return_value='paused')
+    assert obj.workers_healthy()
+    replacement=tmp_path/'replacement.log'
+    replacement.write_text('x'*(4*1024*1024-8)+'OutOfMemoryError\n')
+    replacement.replace(obj.args.log_file)
+    assert obj.workers_healthy()  # bounded read splits fatal marker
+    assert not obj.workers_healthy()
+
+
+def test_chunky_no_progress_and_drain_timeouts_never_advance_frontier(tmp_path):
+    obj=controller(tmp_path)
+    obj.state.update(phase='continuous_chunky',continuousCompletedRadius=6144,
+                     chunkyProgressToken='100',chunkyLastAdvanceEpoch=1)
+    obj.rcon=mock.Mock(return_value='Task running. Processed: 100 chunks')
+    with mock.patch.object(pregen.time,'time',return_value=8000):
+        obj.continuous_chunky_step(1000)
+    assert obj.state['phase']=='fault_paused'
+    assert obj.state['continuousCompletedRadius']==6144
+    obj.state.update(phase='continuous_chunky',chunkyProgressToken=None,
+                     chunkyYieldRequested=True,chunkyYieldRequestedEpoch=1)
+    with mock.patch.object(pregen.time,'time',return_value=2000):
+        obj.continuous_chunky_step(1000)
+    assert obj.state['phase']=='fault_paused'
+    assert 'drain' in obj.state['reason']
+    assert obj.state['continuousCompletedRadius']==6144
+
+
 def test_missing_chunky_task_never_counts_as_completed_radius(tmp_path):
     obj = controller(tmp_path)
     obj.state.update(phase="continuous_chunky", continuousCompletedRadius=6144,

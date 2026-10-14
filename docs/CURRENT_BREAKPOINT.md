@@ -1,5 +1,47 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-14 Linear heap exhaustion / pregeneration recovery IN PROGRESS
+
+Root cause confirmed in production log at 18:11 UTC: 50 Java heap OOMs inside
+LinearRegionFile.validateLinearBytes while Chunky scanned existing chunks.
+Thread dump: Chunky blocked in Semaphore.acquire; no active terrain-inference
+workers. Pause only sets a flag, so failed futures left the task stuck and our
+controller waited forever. Not evidence of continuing model prediction.
+Heap max is 8 GiB; Linear cached 64 regions. Read-only Zstd header inventory:
+1,467 Overworld regions, median decoded size 53.4 MiB, max 163.4 MiB; largest
+64 sum to 8.89 GiB (potential footprint, not a measurement of actual heap cache).
+
+Owner authorized cache 8, Chunky in-flight limit 2, clean restart, exact-checkpoint
+preservation and native DH first, plus explicit fatal/stall detection. 263 local
+tests pass. Recovery job `drewcraft-pregen-memory-recovery-20261014` stopped the
+empty server cleanly, verified fresh snapshot
+`75cb7a6a600ca9b280baaa6b559c91fc77044408463b23ca53f73e9e5c92da98`,
+pinned it before pruning its predecessor, applied the limits and started Minecraft.
+World, storage format, mod list and terrain identity unchanged. Completed radius
+10,240 and unfinished target 11,264 are preserved; queue a saved-world native DH
+catch-up before continuing the existing Chunky task. Recovery metadata/checkpoints:
+`/srv/drewcraft/state/pregen-memory-recovery-3hh3sddg`.
+
+Verifier `drewcraft-pregen-memory-verify-20261014` waits for startup, observes actual
+native DH radius advancement or a completed native job, checks new log for OOM,
+and verifies `chunky.maxWorkingCount=2` inside the running JVM. Its separate
+`state/pregen-memory-verification.json` must say pass and match this boot's log
+identity before pack 0.1.19 deployment is permitted. Runtime verification pending.
+
+Controller now detects heap OOM incrementally, freezes background scheduling in
+`fault_paused` until explicit recovery, and reports the fault while retaining game
+joinability. Limits: two hours without chunk-count progress, thirty minutes for
+pause drain. Neither timeout declares completion, restarts Minecraft or starts DH
+alongside unconfirmed Chunky work. Future pack/runtime defaults use cache 8 and
+`-Dchunky.maxWorkingCount=2`; JVM heap remains unchanged.
+
+LOD export completed all 905 tiles. Initial GitHub publication 38639364460 failed
+in a release-asset upload after ~31 minutes; old helper suppressed CLI stderr.
+Publisher now exposes errors and retries only absent immutable assets, retaining
+successful partial batches. Client promotion was held before any server cutover.
+Resume chain now waits for the runtime memory proof above before publication /
+deployment / pointer promotion. Current public pack remains 0.1.18, launcher 0.1.16.
+
 ## 2026-10-14 optional LOD preload public rollout IN PROGRESS
 
 Owner accepted DH333's visual improvement and authorized publishing radius-based

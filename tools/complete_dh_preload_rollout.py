@@ -63,6 +63,11 @@ def main():
     assert pointer['packVersion']=='0.1.19'
     assert hashlib.sha256(fetch(pointer['manifestUrl'])).hexdigest()==expected
     assert json.loads(fetch(LIVE))['manifestSha256']==OLD, 'Client channel changed; do not overwrite'
+    state('waiting_for_verified_memory_recovery')
+    def memory_recovered():
+        result=remote("sudo python3 -c 'import json,pathlib;p=pathlib.Path(\"/srv/drewcraft/state/pregen-memory-verification.json\");s=pathlib.Path(\"/srv/drewcraft/logs/latest.log\").stat();v=json.loads(p.read_text()) if p.exists() else {};print(v.get(\"status\")==\"pass\" and v.get(\"logIdentity\")==[s.st_dev,s.st_ino])'")
+        return result.strip()=='True'
+    wait_for(memory_recovered,7200)
     state('waiting_for_signed_export')
     def exported():
         try:

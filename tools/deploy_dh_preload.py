@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import time
+import tomllib
 import urllib.request
 
 ROOT=Path('/srv/drewcraft')
@@ -52,6 +53,13 @@ def deploy(expected_hash):
     unchanged=lambda m:[e for e in m['files'] if not e['path'].startswith('mods/drewcraft-')]
     assert unchanged(manifest)==unchanged(old), 'Not a recorder-only update'
     assert json.loads((ROOT/'state/world-storage.json').read_text())['format']=='linear-v1'
+    assert tomllib.loads((current/'config/linear-server.toml').read_text())['regionCacheSize']==8
+    assert '-Dchunky.maxWorkingCount=2' in (current/'user_jvm_args.txt').read_text().split()
+    checkpoint=json.loads((ROOT/'state/pregen.json').read_text())
+    proof=json.loads((ROOT/'state/pregen-memory-verification.json').read_text())
+    log_stat=(ROOT/'logs/latest.log').stat()
+    assert proof.get('status')=='pass' and proof.get('logIdentity')==[log_stat.st_dev,log_stat.st_ino], 'Current server memory recovery runtime verification is required'
+    assert checkpoint.get('phase')!='fault_paused', 'Pregeneration fault is unresolved'
     serverctl.require_world_identity(ROOT,manifest)
     with urllib.request.urlopen(manifest['server']['dhPreloadUrl'],timeout=30) as response:
         catalog=json.loads(response.read(8*1024**2))
@@ -84,7 +92,7 @@ def deploy(expected_hash):
             raise RuntimeError('Server readiness timed out')
         log=(ROOT/'logs/latest.log').read_text()
         assert 'Done (' in log
-        for error in ('MixinApplyError','InvalidMixinException','Failed to initialize server','Corrupt Linear region'):
+        for error in ('MixinApplyError','InvalidMixinException','Failed to initialize server','Corrupt Linear region','OutOfMemoryError'):
             assert error not in log,error
         assert 'Saved the game' in rcon('save-all flush')
         serverctl.write_health(ROOT,'ready',manifest,'Optional downloadable DH cache enabled')

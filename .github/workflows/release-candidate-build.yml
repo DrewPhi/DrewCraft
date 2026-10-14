@@ -161,7 +161,7 @@ jobs:
         run: |
           mkdir -p build/verified-pack/server/mods build/verified-pack/server/config
           install -m 0644 build/linear-server/linear-1.21.1-1.3.3+legacy.jar build/verified-pack/server/mods/
-          printf '%s\n' 'compressionLevel = 4' 'regionCacheSize = 64' 'backupEnabled = false' 'autoRecompressEnabled = false' > build/verified-pack/server/config/linear-server.toml
+          printf '%s\n' 'compressionLevel = 4' 'regionCacheSize = 8' 'backupEnabled = false' 'autoRecompressEnabled = false' > build/verified-pack/server/config/linear-server.toml
 
       - name: Download and verify exact NeoForge installer
         run: |

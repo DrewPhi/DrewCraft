@@ -11,6 +11,7 @@ import pytest
 ROOT=Path(__file__).parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
 from publish_dh_preload import verify
+import publish_dh_preload as publisher
 
 
 def test_publication_signature_rejects_modified_catalog(tmp_path):
@@ -51,3 +52,25 @@ def test_public_lod_route_rejects_symlink_outside_root(tmp_path):
     errors=[]
     module.Handler.lod_file(SimpleNamespace(path='/lod-export/'+'a'*64+'.sqlite',lod_root=directory,send_error=errors.append))
     assert errors==[404]
+
+
+def test_upload_retry_retains_successful_immutable_assets(tmp_path,monkeypatch):
+    paths=[tmp_path/'one.gz',tmp_path/'two.gz']
+    for path in paths:
+        path.write_bytes(b'data')
+    calls=[]
+    present={}
+    def gh(*args,**kwargs):
+        if args[1]=='view':
+            return SimpleNamespace(stdout=__import__('json').dumps({'assets':[{'name':name,'size':size} for name,size in present.items()]}))
+        calls.append(args)
+        if len(calls)==1:
+            present['one.gz']=4
+            return SimpleNamespace(returncode=1,stderr='transient network error')
+        assert str(paths[0]) not in args
+        present['two.gz']=4
+        return SimpleNamespace(returncode=0,stderr='')
+    monkeypatch.setattr(publisher,'gh',gh)
+    monkeypatch.setattr(publisher.time,'sleep',lambda seconds:None)
+    publisher.upload_batch('tag',paths)
+    assert len(calls)==2

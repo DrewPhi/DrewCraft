@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.error
 import urllib.request
 
@@ -40,7 +41,33 @@ def verify(envelope, public_key, directory):
 
 
 def gh(*args, check=True):
-    return subprocess.run(['gh',*args,'--repo',REPO], check=check, capture_output=True, text=True)
+    result = subprocess.run(['gh',*args,'--repo',REPO], capture_output=True, text=True,
+                            timeout=900 if args[:2]==('release','upload') else 120)
+    if check and result.returncode:
+        raise RuntimeError(f'GitHub command failed ({args[:3]}): {result.stderr[-2000:]}')
+    return result
+
+
+def upload_batch(tag, paths):
+    """Retry only absent immutable assets after a partially successful upload."""
+    error = ''
+    for attempt in range(4):
+        listed = gh('release','view',tag,'--json','assets')
+        present = {asset['name']:asset['size'] for asset in json.loads(listed.stdout)['assets']}
+        for path in paths:
+            if path.name in present and present[path.name]!=path.stat().st_size:
+                raise RuntimeError('Existing immutable asset has wrong size: '+path.name)
+        missing = [path for path in paths if path.name not in present]
+        if not missing:
+            return
+        result = gh('release','upload',tag,*map(str,missing),check=False)
+        if result.returncode==0:
+            return
+        error=result.stderr[-2000:]
+        print('LOD_UPLOAD_RETRY',attempt+1,error,flush=True)
+        if attempt<3:
+            time.sleep(10*(attempt+1))
+    raise RuntimeError('LOD asset upload failed after retries: '+error)
 
 
 def publish(public_key, target):
@@ -88,12 +115,12 @@ def publish(public_key, target):
                     raise ValueError('Corrupted LOD payload')
                 batch.append(path)
                 if len(batch)==16:
-                    gh('release','upload',tag,*map(str,batch))
+                    upload_batch(tag,batch)
                     for done in batch:
                         done.unlink()
                     batch=[]
             if batch:
-                gh('release','upload',tag,*map(str,batch))
+                upload_batch(tag,batch)
                 for done in batch:
                     done.unlink()
             verified = gh('release','view',tag,'--json','assets')

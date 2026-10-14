@@ -56,7 +56,7 @@ def main():
     packed.replace(jar)
     shutil.copy2(UPLOAD / 'linear-1.21.1-1.3.3+legacy.jar', runtime / 'mods')
     (runtime / 'config/linear-server.toml').write_text(
-        'compressionLevel = 4\nregionCacheSize = 64\nbackupEnabled = false\nautoRecompressEnabled = false\n')
+        'compressionLevel = 4\nregionCacheSize = 8\nbackupEnabled = false\nautoRecompressEnabled = false\n')
     print('ISOLATED_RUNTIME_READY', runtime, flush=True)
 
 
