@@ -180,6 +180,33 @@ def test_continuous_size_target_keeps_dh_but_stops_expansion(tmp_path):
     obj.start_continuous_chunky.assert_not_called()
 
 
+def test_long_chunky_batch_yields_without_advancing_frontier(tmp_path):
+    obj = controller(tmp_path)
+    obj.state.update(phase="continuous_chunky", continuousCompletedRadius=6144,
+                     continuousTargetRadius=7168, chunkySliceStartedEpoch=1)
+    obj.rcon = mock.Mock(side_effect=["Task running", "Task paused", "No tasks running"])
+    obj.continuous_chunky_step(10_000)
+    assert obj.state["phase"] == "complete"
+    assert obj.state["continuousChunkySuspended"]
+    assert obj.state["continuousCompletedRadius"] == 6144
+    assert obj.state["continuousTargetRadius"] == 7168
+
+
+def test_dh_catchup_resumes_same_chunky_checkpoint(tmp_path):
+    obj = controller(tmp_path)
+    obj.state.update(continuousChunkySuspended=True, continuousTargetRadius=7168,
+                     continuousCompletedRadius=6144, targetBytes=50_000)
+    obj.maintain_dh_backfill = mock.Mock(return_value=False)
+    obj.maintain_dh = mock.Mock(return_value=False)
+    obj.start_continuous_chunky = mock.Mock()
+    obj.rcon = mock.Mock(return_value="[Chunky] Task continuing for minecraft:overworld.")
+    obj.continuous_chunky_step(10_000)
+    obj.start_continuous_chunky.assert_not_called()
+    assert obj.state["phase"] == "continuous_chunky"
+    assert not obj.state["continuousChunkySuspended"]
+    assert obj.state["continuousCompletedRadius"] == 6144
+
+
 def test_missing_chunky_task_never_counts_as_completed_radius(tmp_path):
     obj = controller(tmp_path)
     obj.state.update(phase="continuous_chunky", continuousCompletedRadius=6144,

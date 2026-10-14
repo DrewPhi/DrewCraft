@@ -499,6 +499,17 @@ class Controller:
             response = self.rcon("chunky", "progress")
             if self.running(response):
                 self.save(lastProgress=response)
+                # Large diffusion batches can last days. Yield at a bounded
+                # wall-clock interval without claiming the circle completed.
+                interval = getattr(self.args, "dh_maintenance_interval_seconds", 3600)
+                since = max(self.state.get("chunkySliceStartedEpoch", 0),
+                            self.state.get("lastDhMaintenanceEpoch", 0))
+                if time.time() - since >= interval:
+                    print(checked_dh_response(self.rcon("chunky", "pause")), flush=True)
+                    if self.running(self.rcon("chunky", "progress")):
+                        raise RuntimeError("Chunky did not pause for DH handoff")
+                    self.save(phase="complete", continuousChunkySuspended=True,
+                              dhLastRegionCheckEpoch=0)
                 return
             stat = log.stat()
             messages = ""
@@ -529,6 +540,17 @@ class Controller:
         if size >= self.state["targetBytes"]:
             self.health("ready", "Terrain size target reached; DH maintenance continues", joinable=True)
             return
+        if self.state.get("continuousChunkySuspended"):
+            response = self.rcon("chunky", "continue")
+            print(response, flush=True)
+            if "no tasks" in response.lower():
+                self.start_continuous_chunky(self.state["continuousTargetRadius"])
+            elif "task continuing" in response.lower():
+                self.save(phase="continuous_chunky", continuousChunkySuspended=False,
+                          chunkySliceStartedEpoch=time.time())
+            else:
+                raise RuntimeError(f"Could not resume Chunky checkpoint: {response}")
+            return
         radius = int(self.state["continuousCompletedRadius"]) + max(16, self.args.generation_batch_blocks)
         if radius > self.args.maximum_radius:
             self.health("ready", "Terrain radius safety limit reached; DH maintenance continues", joinable=True)
@@ -539,6 +561,7 @@ class Controller:
         log = pathlib.Path("/srv/drewcraft/logs/latest.log")
         stat = log.stat()
         self.save(phase="continuous_chunky", continuousTargetRadius=radius,
+                  continuousChunkySuspended=False, chunkySliceStartedEpoch=time.time(),
                   chunkyLogInode=stat.st_ino, chunkyLogOffset=stat.st_size)
         for command in (("chunky", "world", "minecraft:overworld"),
                         ("chunky", "shape", "circle"),

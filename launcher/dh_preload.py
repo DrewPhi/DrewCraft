@@ -296,7 +296,10 @@ def managed_game_running(prism_root):
         try:
             if 'java' not in (process.info['name'] or '').lower():
                 continue
-            if any(instances in arg.casefold() for arg in process.info['cmdline'] or []):
+            command = process.info['cmdline']
+            if command is None:
+                raise RuntimeError('Cannot inspect a Java process; skip terrain preload')
+            if any(instances in arg.casefold() for arg in command):
                 return True
         except psutil.NoSuchProcess:
             continue
