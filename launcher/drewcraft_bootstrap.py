@@ -25,7 +25,7 @@ import zipfile
 
 from drewcraft_server_list import ensure_server
 
-APP_VERSION = "0.1.16"
+APP_VERSION = "0.1.17"
 XAERO_USER_PATHS = (
     "xaero", "XaeroWaypoints", "XaeroWorldMap", "config/xaero",
     "config/xaerominimap.txt", "config/xaeroworldmap.txt", "config/xaerohud.txt",

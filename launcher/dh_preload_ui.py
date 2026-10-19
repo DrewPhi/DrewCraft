@@ -1,12 +1,13 @@
 """Optional preload prompt. Failure/absence always offers normal play."""
 import json
+import os
 from pathlib import Path
 import queue
 import threading
 import urllib.parse
 import urllib.request
 from dh_preload import (Cancelled, apply_selection, atomic_json, identity,
-                        last_center, max_radius, select_tiles, validate_catalog)
+                        last_center, max_radius, selection_plan, validate_catalog)
 
 
 def offer(app_dir, state):
@@ -39,6 +40,10 @@ def offer(app_dir, state):
             saved = {}
     except (OSError,ValueError):
         saved = {}
+    configure = os.environ.get('DREWCRAFT_CONFIGURE_LODS') == '1'
+    if saved and not saved.get('enabled') and not configure:
+        root.destroy()
+        return
     root.title('DrewCraft — distant terrain')
     root.geometry('600x340')
     frame = ttk.Frame(root,padding=18)
@@ -52,8 +57,9 @@ def offer(app_dir, state):
     detail.pack(anchor='w')
     def estimate(*args):
         value = radius.get()
-        size = sum(tile['size'] for tile in select_tiles(catalog,center,value))
-        detail.configure(text=f'{value:,} blocks ({value/16:,.0f} chunks) radius · up to {size/1024**2:,.1f} MiB\n0 = skip; maximum includes all available sections. Cached tiles may need no download.')
+        plan = selection_plan(app_dir,minecraft,catalog,center,value)
+        size = plan['downloadBytes']
+        detail.configure(text=f'{value:,} blocks ({value/16:,.0f} chunks) radius · {size/1024**2:,.1f} MiB to download\n{len(plan["pending"])} new/updated tiles to install. Saved terrain is reused.')
     slider = tk.Scale(frame,from_=0,to=maximum,orient='horizontal',variable=radius,command=estimate,showvalue=False)
     slider.pack(fill='x')
     estimate()
@@ -123,4 +129,6 @@ def offer(app_dir, state):
                 status.configure(text=event.get('label',''))
         root.after(100,update)
     root.after(100,update)
+    if saved.get('enabled') and not configure:
+        root.after(50,start)
     root.mainloop()

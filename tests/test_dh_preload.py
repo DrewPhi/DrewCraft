@@ -111,6 +111,28 @@ def test_export_reuses_unchanged_tile_urls(exported,tmp_path):
     assert all(t['url']==old[t['sha256']]['url'] for t in unchanged)
 
 
+def test_selection_plan_reuses_imported_tiles_and_cached_archives(exported,tmp_path):
+    _,output,catalog = exported
+    minecraft = tmp_path/'minecraft'
+    planned = preload.selection_plan(tmp_path,minecraft,catalog,[0,0],10000)
+    assert planned['downloadBytes'] == sum(t['size'] for t in catalog['tiles'])
+    target = planned['database']
+    target.parent.mkdir(parents=True)
+    shutil.copy2(output/(catalog['template']['sha256']+'.sqlite'),target)
+    first = catalog['tiles'][0]
+    preload.import_tile(target,output/(first['sha256']+'.jsonl.gz'),catalog,first)
+    cache = tmp_path/'user-data/dh-downloads'
+    cache.mkdir(parents=True)
+    for tile in catalog['tiles'][1:]:
+        shutil.copy2(output/(tile['sha256']+'.jsonl.gz'),cache/tile['sha256'])
+    planned = preload.selection_plan(tmp_path,minecraft,catalog,[0,0],10000)
+    assert len(planned['pending']) == len(catalog['tiles'])-1
+    assert planned['downloadBytes'] == 0
+    for tile in planned['pending']:
+        preload.import_tile(target,cache/tile['sha256'],catalog,tile)
+    assert preload.selection_plan(tmp_path,minecraft,catalog,[0,0],10000)['pending'] == []
+
+
 def test_cache_folder_matches_dh_guava_percent_escaping(exported):
     _,_,catalog = exported
     assert preload.server_folder(catalog,{})=='DrewCraft'

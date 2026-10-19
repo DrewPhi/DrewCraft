@@ -308,6 +308,22 @@ def managed_game_running(prism_root):
     return False
 
 
+def selection_plan(app_dir, minecraft, catalog, center, radius):
+    """Read receipts once; estimate only work that has not already been imported."""
+    folder = server_folder(catalog, {'client':{'advanced':{'multiplayer':{'serverFolderNameMode':'IP_ONLY'}}}})
+    database = Path(minecraft) / 'Distant_Horizons_server_data' / folder / catalog['levelKey'].replace(':','@@') / 'DistantHorizons.sqlite'
+    receipts = set()
+    if database.exists():
+        with closing(sqlite3.connect(database.resolve().as_uri()+'?mode=ro', uri=True)) as conn:
+            if conn.execute("SELECT 1 FROM sqlite_master WHERE name='DrewCraftPreload'").fetchone():
+                receipts = {row[0] for row in conn.execute('SELECT Identity FROM DrewCraftPreload')}
+    pending = [t for t in select_tiles(catalog,center,radius) if 'tile:'+t['sha256'] not in receipts]
+    cache = Path(app_dir) / 'user-data/dh-downloads'
+    # Keep slider estimates cheap; download() verifies the full hash before use.
+    missing = [t for t in pending if not ((cache/t['sha256']).is_file() and (cache/t['sha256']).stat().st_size==t['size'])]
+    return {'database':database, 'pending':pending, 'downloadBytes':sum(t['size'] for t in missing)}
+
+
 def apply_selection(app_dir, state, catalog, center, radius, *, progress=lambda event:None, cancelled=lambda:False):
     validate_catalog(catalog,state)
     if radius == 0:
@@ -331,9 +347,15 @@ def apply_selection(app_dir, state, catalog, center, radius, *, progress=lambda 
     directory.mkdir(parents=True,exist_ok=True)
     database = directory / 'DistantHorizons.sqlite'
     cache = app_dir / 'user-data/dh-downloads'
-    selected = select_tiles(catalog,center,radius)
+    plan = selection_plan(app_dir,minecraft,catalog,center,radius)
+    selected = plan['pending']
+    if not selected:
+        if not catalog.get('serverKey'):
+            enable_stable_cache_name(minecraft / 'config/DistantHorizons.toml')
+        progress({'phase':'status','label':'Distant terrain is already up to date'})
+        return 0
     required = sum(tile['size'] for tile in selected)
-    if shutil.disk_usage(directory).free < required * 4 + catalog['template']['size'] + 1024**3:
+    if shutil.disk_usage(directory).free < required * 4 + plan['downloadBytes'] + catalog['template']['size'] + 1024**3:
         raise RuntimeError('Not enough free disk space for selected terrain and database transaction')
     if not database.exists():
         template = download(catalog['template'],cache,progress=progress,cancelled=cancelled)
