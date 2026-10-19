@@ -23,6 +23,15 @@ that receipt is ready with the exact hash above. Client pointer remains held
 until verification. Existing backup-hold rotates only after the new backup
 verifies. No terrain/LOD regeneration or format conversion is performed.
 
+Owner-side `python3 -u tools/complete_flight_cache_rollout.py` is also running.
+It waits up to fifteen minutes for that exact ready receipt plus an active
+Minecraft service, refuses to overwrite an unrelated live pointer, promotes
+`drewcraft-dev-pack/live.json`, and writes
+`build/flight-cache-rollout-state.json` on completion. The owner computer must
+remain awake. At 20:59 UTC the required restic backup was still CPU-active;
+Minecraft was temporarily stopped for this backup. Disk had 56 GiB free.
+Do not claim pack 0.1.20 live until both receipts/public pointer confirm it.
+
 Historical entries below predate the completed 0.1.19 rollout; they are not
 evidence of the current live release.
 
