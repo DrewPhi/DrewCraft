@@ -139,6 +139,20 @@ artifacts:
     size: 26277
     project_id: 831663
     file_id: 8752593
+  seamless_chunks:
+    provider: modrinth
+    project_id: MslYld7M
+    version_id: U9AicWcu
+    filename: seamlesschunks-neoforge-0.1.0-beta.7.jar
+    sha256: 4fb5a1172294a5c3f33c58956613b240c806555d77f55ed041bdd2e02fe9d85b
+    size: 61668
+  seamless_yacl:
+    provider: modrinth
+    project_id: 1eAoo2KR
+    version_id: 7TVdVtxF
+    filename: yet_another_config_lib_v3-3.8.2+1.21.1-neoforge.jar
+    sha256: b5c30321b46cfaa521645a04aff89d2804d8167a25bb23ad4b1ae8da73093a2f
+    size: 1118651
   chunky:
     provider: curseforge
     filename: Chunky-NeoForge-1.4.23.jar

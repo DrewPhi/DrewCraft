@@ -26,6 +26,28 @@ policy:
     - "Provider file IDs below are exact current 1.21.1 NeoForge candidate identities; SHA-256 is still computed from the acquired artifact before lock."
 
 baseline:
+  seamless_chunks:
+    display_name: SeamlessChunks
+    provider: modrinth
+    project_id: MslYld7M
+    version_id: U9AicWcu
+    candidate_version: "0.1.0-beta.7+1.21.1-neoforge"
+    filename: seamlesschunks-neoforge-0.1.0-beta.7.jar
+    side: common
+    license: MIT
+    required_dependencies: [architectury, seamless_yacl]
+    sha256: 4fb5a1172294a5c3f33c58956613b240c806555d77f55ed041bdd2e02fe9d85b
+    role: "Movement-priority flight chunk delivery; replaces Chunk Sending, never combine them."
+  seamless_yacl:
+    display_name: YetAnotherConfigLib
+    provider: modrinth
+    project_id: 1eAoo2KR
+    version_id: 7TVdVtxF
+    candidate_version: "3.8.2+1.21.1-neoforge"
+    filename: "yet_another_config_lib_v3-3.8.2+1.21.1-neoforge.jar"
+    side: client
+    license: LGPL-3.0-or-later
+    sha256: b5c30321b46cfaa521645a04aff89d2804d8167a25bb23ad4b1ae8da73093a2f
   modernfix:
     display_name: "ModernFix"
     provider: curseforge

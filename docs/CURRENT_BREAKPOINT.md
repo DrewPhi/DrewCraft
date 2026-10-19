@@ -1,5 +1,31 @@
 # DrewCraft Current Development Breakpoint
 
+## 2026-10-19 flight delivery / remembered LOD cache
+
+Launcher 0.1.17 is publicly published: BP8 convergence run 39322385396 passed
+all native platform builds and publication. Eighteen focused cache/launcher
+checks pass. The optional radius is remembered; cached/imported tiles are reused,
+the estimate shows pending downloads only, and fully imported selections bypass
+the disk-space requirement. See docs/FLIGHT_CACHE_UPDATE.md to change the radius.
+
+Pack 0.1.20 is staged publicly as a prerelease; exact manifest SHA-256
+`ed94360f816052e852b50b5af05683741ca5ea2f9741f27fe4df29ca17aa91b4`.
+Only Chunk Sending is removed; SeamlessChunks beta.7 + Architectury 13.0.11
+and client-only YACL 3.8.2 plus conservative config are added. Every other entry,
+world identity and Linear storage contract are unchanged. Profile resolution
+passes. No dev Minecraft/client session is being run; owner flight test remains.
+
+Oracle deployment job `drewcraft-flight-cache-20261019` was submitted at
+20:53 UTC. It requires an empty server, verified fresh backup and successful
+startup/save before readiness. Check its journal and
+`/srv/drewcraft/state/flight-cache-deploy.json`; do not promote live.json until
+that receipt is ready with the exact hash above. Client pointer remains held
+until verification. Existing backup-hold rotates only after the new backup
+verifies. No terrain/LOD regeneration or format conversion is performed.
+
+Historical entries below predate the completed 0.1.19 rollout; they are not
+evidence of the current live release.
+
 ## 2026-10-14 Linear heap exhaustion / pregeneration recovery IN PROGRESS
 
 Root cause confirmed in production log at 18:11 UTC: 50 Java heap OOMs inside

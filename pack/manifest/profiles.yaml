@@ -71,7 +71,7 @@ profiles:
       - ferritecore
       - lithium
       - servercore
-      - chunk_sending
+      - seamless_chunks
       - alltheleaks
       - fastsuite
       - fastworkbench
@@ -207,7 +207,7 @@ profiles:
       - lithium
       - servercore
       - scalablelux
-      - chunk_sending
+      - seamless_chunks
       - alltheleaks
       - fastsuite
       - fastworkbench
