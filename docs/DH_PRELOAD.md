@@ -1,7 +1,10 @@
-# Optional radius-based DH preloading — rollout in progress
+# Optional radius-based DH preloading
 
-Branch: `feature/dh-radius-preload`. **Not published or deployed.** The working
-launcher 0.1.15 and server pack 0.1.18 remain unchanged.
+Current: pack 0.1.19 completed rollout on October 14. Launcher 0.1.17 was
+published October 19 with remembered preload choices and pending-only download
+estimates. See `FLIGHT_CACHE_UPDATE.md` and `CURRENT_BREAKPOINT.md` for the
+current flight-update checkpoint. October 14 staging notes below are historical,
+not current deployment status.
 
 October 14 rollout: native 0.1.16 builds passed (38634525372); the recorder
 compiled in 38634214200. Pack 0.1.19 is staged as an immutable prerelease, NOT
@@ -29,6 +32,14 @@ Pausing never advances completed coverage. Live controller is waiting for Chunky
 drain; actual new native DH-job start remains to verify. Player pauses remain.
 
 ## User experience
+
+Since launcher 0.1.17 the first choice is remembered: subsequent launches check
+the saved radius automatically and skip already imported tiles. Disabled preloads
+stay disabled. Set `DREWCRAFT_CONFIGURE_LODS=1` to reopen the radius selector, or
+remove only `user-data/dh-preload.json`. Archives and imported databases persist.
+Network estimates exclude imported tiles and locally cached archives; archive
+hashes are checked before import. If no tiles need importing, no extra disk-space
+reservation is demanded.
 
 When the shipping manifest supplies an HTTPS `server.dhPreloadUrl`, the launcher
 checks its catalog and offers a remembered opt-in checkbox and radius slider.
